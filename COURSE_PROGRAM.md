@@ -42,7 +42,7 @@ These are the concepts to cover, roughly ordered by complexity:
 
 ### Tier 1: Fundamentals
 - The AI-assisted coding spectrum (overview)
-- (Conditional) LLM fundamentals: how they work at a practical level — tokens, context windows, probability, why hallucinations happen. Include if the group needs it; skip if they already have the mental model.
+- (Conditional) LLM fundamentals: how they work at a practical level — tokens, context windows, probability, why hallucinations happen.
 - Vibe coding: prompt-and-accept workflow. Talk with the agent, don't open files — focus entirely on the output.
 - Analyzing AI output: what did it actually produce?
 - Code quality awareness: dead code, inconsistent patterns, missing tests
