@@ -68,7 +68,7 @@ These are the concepts to cover, roughly ordered by complexity:
 
 ### Tier 4: Context Engineering
 - Spec-driven development: defining WHAT before prompting HOW — specs as context for the AI
-- Research-driven development: using documentation tools (context7) to ground the AI in accurate, current docs before implementing
+- Research-driven development: using documentation tools (context7, context-hub) to ground the AI in accurate, current docs before implementing
 - Subagent orchestration in practice: using agents for code review, doc research, exploration — not just implementation
 - Deep context engineering: shaping AI behavior through project structure and documentation
 - Full workflow integration: spec → research → tests → implementation → review
@@ -144,7 +144,7 @@ Not a dedicated session, but surfaced where relevant:
 - Custom instructions: CLAUDE.md as the agent's persistent memory
 - Skills and slash commands: building reusable capabilities
 - MCP and external tools: connecting the agent to the world
-- Documentation tools (e.g. context7): why accurate docs matter — the AI hallucinates APIs, context7 fixes that
+- Documentation tools (e.g. context7, context-hub): why accurate docs matter — the AI hallucinates APIs, context7, context-hub fixes that
 - Subagents: intro to the concept — different agent types for different tasks (research, exploration, code review). Not deep usage yet, just "these exist and here's what they do"
 - Worktrees: delegating and parallelizing work
 - Security sidebar: sandboxing, permissions, allowlists
@@ -153,7 +153,7 @@ Not a dedicated session, but surfaced where relevant:
 - Write a CLAUDE.md for your project (coding style, patterns, constraints)
 - Create a custom skill or command for a repeated task
 - Set up an MCP tool or external integration
-- Try a documentation tool (context7): ask the agent to look up a library you're using — compare the output with and without it
+- Try a documentation tool (context7, context-hub): ask the agent to look up a library you're using — compare the output with and without it
 - Try subagents or worktrees for parallel work
 
 **Reflection & Discussion (~15-20 min)**
@@ -167,7 +167,7 @@ Not a dedicated session, but surfaced where relevant:
 
 **Theory: "Shaping The Input" + "The Full Loop" (~20-30 min)**
 - Spec-driven development: define WHAT before prompting HOW
-- Research before implementation: use documentation tools (context7) to ground the AI — "look it up, don't guess"
+- Research before implementation: use documentation tools (context7, context-hub) to ground the AI — "look it up, don't guess"
 - Subagent orchestration in practice: different agents for different jobs — research agents for exploring docs, review agents for catching issues, exploration agents for codebase search. Not just "make it build things"
 - Context engineering: the AI's output is only as good as what you feed it
 - The full workflow: spec → research → tests → implementation → review
@@ -177,7 +177,7 @@ Not a dedicated session, but surfaced where relevant:
 
 **Hands-on (~1.5 hours)**
 - Write a spec for a feature, then have the AI implement it
-- Research before coding: use context7 to look up the libraries/APIs you need — compare how the AI's output changes when it has accurate docs
+- Research before coding: use context7/context-hub to look up the libraries/APIs you need — compare how the AI's output changes when it has accurate docs
 - Use subagents for non-implementation tasks: have a research agent explore your codebase, a review agent check your last change
 - Practice the full loop: spec → research → plan → test → implement → review
 - Experiment with delegation: what can you safely hand off? What benefits do specialized agents bring beyond just "more AI"?
