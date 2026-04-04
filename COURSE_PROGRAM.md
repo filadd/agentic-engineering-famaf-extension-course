@@ -62,7 +62,7 @@ These are the concepts to cover, roughly ordered by complexity:
 - Custom instructions (CLAUDE.md basics, rules files)
 - Skills / slash commands: teaching AI reusable behaviors
 - MCP / external tools: extending what the agent can access
-- Documentation tools (e.g. context7): fetching up-to-date library docs so the AI works with accurate references instead of guessing
+- Documentation tools (e.g. [context7](https://context7.com/), [context-hub](https://github.com/andrewyng/context-hub)): fetching up-to-date library docs so the AI works with accurate references instead of guessing
 - Subagents: delegating subtasks to specialized agents — intro to the concept and available agent types
 - Worktrees: isolated parallel execution
 
