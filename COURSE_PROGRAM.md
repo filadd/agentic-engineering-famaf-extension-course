@@ -235,7 +235,8 @@ For students who don't bring their own:
 
 - [MIT Missing Semester 2026: Agentic Coding lecture](https://missing.csail.mit.edu/2026/agentic-coding/) — full lecture content, exercises, and tool walkthroughs
 - [Addy Osmani: "Agentic Engineering"](https://addyosmani.com/blog/agentic-engineering/) — defines the discipline, "managing an intern" framing, skill atrophy warnings
-- [Simon Willison: "Vibe Engineering"](https://simonwillison.net/) — analysis of vibe coding and the case for discipline (search for "vibe coding" posts)
+  - [Simon Willison: "Agentic Engineering Patterns"](https://simonwillison.net/guides/agentic-engineering-patterns/)
+- [Simon Willison: "Vibe Engineering"](https://simonwillison.net/2025/Oct/7/vibe-engineering/) — analysis of vibe coding and the case for discipline (search for "vibe coding" posts)
 - [OWASP Top 10 for Agentic Applications (2025)](https://genai.owasp.org/resource-center/security-guides/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/) — ASI01-ASI10: goal hijack, tool misuse, rogue agents, cascading failures
 - [OWASP GenAI Security Project](https://genai.owasp.org/) — broader LLM security resources, supply chain risks, prompt injection
 - Karpathy's progression from coining "vibe coding" to proposing "agentic engineering" — [original vibe coding tweet/thread (Feb 2025)](https://x.com/karpathy/status/1889105372806840545)
