@@ -19,6 +19,7 @@ Short course for university CS students with some project experience but little/
     1. Vibecoding origin (Karpathy): https://x.com/i/status/1886192184808149383
     2. Vibecoding as videogame (Naval) https://x.com/i/status/2039617101221224858
     3. Kids Vibecoding (usando Lovable): https://www.instagram.com/reels/DKj1ghsiRN3/
+    4. Vibe coding in prod: https://youtu.be/fHWFF_pnqDk?si=aJ7ctIkNvouw_3Ix
 2. **AI-Assisted Coding** — copilot-style completions, developer maintains control
 3. **Directed AI Assistance** — experienced use of LLMs with constraints, specs, and review
 4. **Agentic Coding** — orchestrating AI agents on tasks with oversight
