@@ -46,16 +46,16 @@ Vibe coding is a great on-ramp — fast, fun, empowering. But professional softw
 
 These are the concepts to cover, roughly ordered by complexity:
 
-### Tier 1: Fundamentals
+### [Diego] Tier 1: Fundamentals
 - The AI-assisted coding spectrum (overview)
-- (Conditional) LLM fundamentals: how they work at a practical level — tokens, context windows, probability, why hallucinations happen.
+-  LLM fundamentals: how they work at a practical level — tokens, context windows, probability, why hallucinations happen.
 - Vibe coding: prompt-and-accept workflow. Talk with the agent, don't open files — focus entirely on the output.
 - Analyzing AI output: what did it actually produce?
 - Code quality awareness: dead code, inconsistent patterns, missing tests
 - Comprehension debt: you shipped code you don't understand
 - The productivity illusion (METR study, CodeRabbit data)
 
-### Tier 2: Planning & Review
+### [Agus] Tier 2: Planning & Review
 - Code review of AI output (reading diffs, understanding changes)
 - Task decomposition: breaking work into reviewable units
 - Plan mode: planning before executing
@@ -64,7 +64,7 @@ These are the concepts to cover, roughly ordered by complexity:
 - Debugging AI-generated code
 - Git workflow with AI (branching, reviewing diffs, reverting)
 
-### Tier 3: Tooling & Skills
+### [Diego] Tier 3: Tooling & Skills
 - Custom instructions (CLAUDE.md basics, rules files)
 - Skills / slash commands: teaching AI reusable behaviors
 - MCP / external tools: extending what the agent can access
@@ -72,7 +72,7 @@ These are the concepts to cover, roughly ordered by complexity:
 - Subagents: delegating subtasks to specialized agents — intro to the concept and available agent types
 - Worktrees: isolated parallel execution
 
-### Tier 4: Context Engineering
+### [Agus] Tier 4: Context Engineering
 - Spec-driven development: defining WHAT before prompting HOW — specs as context for the AI
 - Research-driven development: using documentation tools (context7, context-hub) to ground the AI in accurate, current docs before implementing
 - Subagent orchestration in practice: using agents for code review, doc research, exploration — not just implementation
