@@ -4,10 +4,10 @@ A 4-session extension course at FaMAF (Universidad Nacional de Cordoba) that wal
 
 ## Sessions
 
-1. **The Vibe Coding Experience** — prompt-and-accept workflow, analyze what the AI actually produced
+1. **The Vibe Coding Experience** — prompt-and-accept workflow, anatomy of a coding agent (tool + harness + LLM), analyze what the AI actually produced
 2. **Planning & Review** — task decomposition, plan mode, test-first development, git workflow
-3. **Tooling & Skills** — CLAUDE.md, custom skills, MCP tools, subagents, worktrees
-4. **Context Engineering** — spec-driven development, research-driven development, full workflow integration
+3. **Tooling & Skills** — tools and harness deep dive, CLAUDE.md, custom skills, MCP, subagents, worktrees
+4. **Context Engineering** — spec-driven development, agent orchestration (Teams pattern), full workflow integration
 
 ## Structure
 

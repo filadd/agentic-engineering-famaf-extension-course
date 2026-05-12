@@ -54,6 +54,10 @@ These are the concepts to cover, roughly ordered by complexity:
 - Code quality awareness: dead code, inconsistent patterns, missing tests
 - Comprehension debt: you shipped code you don't understand
 - The productivity illusion (METR study, CodeRabbit data)
+- Anatomy of a coding agent (brief intro): LLM + tools + harness — just enough vocabulary to use these terms in later sessions
+  - Tool: a function the LLM can invoke (read file, run shell, edit code)
+  - Coding agent: an LLM that takes actions on a codebase via tools, not just suggests text
+  - Harness: the program wrapping the LLM (context management, tool dispatch, permissions). Claude Code is a harness.
 
 ### [Agus] Tier 2: Planning & Review
 - Code review of AI output (reading diffs, understanding changes)
@@ -65,9 +69,11 @@ These are the concepts to cover, roughly ordered by complexity:
 - Git workflow with AI (branching, reviewing diffs, reverting)
 
 ### [Diego] Tier 3: Tooling & Skills
+- Tools deep dive: what tools are, how the LLM calls them, examples in Claude Code (Read, Bash, Edit, Grep). Why tools are the unit of capability.
+- Harness deep dive: what Claude Code provides as a harness — context management, tool dispatch, permissions, hooks, slash commands. Comparison with other harnesses (Cursor, Aider, OpenCode). Why the harness matters as much as the model.
 - Custom instructions (CLAUDE.md basics, rules files)
 - Skills / slash commands: teaching AI reusable behaviors
-- MCP / external tools: extending what the agent can access
+- MCP / external tools: extending the harness — the LLM gains new tools at runtime
 - Documentation tools (e.g. [context7](https://context7.com/), [context-hub](https://github.com/andrewyng/context-hub)): fetching up-to-date library docs so the AI works with accurate references instead of guessing
 - Subagents: delegating subtasks to specialized agents — intro to the concept and available agent types
 - Worktrees: isolated parallel execution
@@ -75,7 +81,8 @@ These are the concepts to cover, roughly ordered by complexity:
 ### [Agus] Tier 4: Context Engineering
 - Spec-driven development: defining WHAT before prompting HOW — specs as context for the AI
 - Research-driven development: using documentation tools (context7, context-hub) to ground the AI in accurate, current docs before implementing
-- Subagent orchestration in practice: using agents for code review, doc research, exploration — not just implementation
+- Agent orchestration in practice: coordinating multiple agents on a task. The "Teams" pattern — a planner agent dispatches work to specialized worker agents (research, review, exploration, implementation) running in parallel via subagents + worktrees.
+- Framework vs. roll-your-own orchestration: a real design decision when you start coordinating agents. Example of an opinionated framework — `oh-my-openagent` (https://github.com/code-yeongyu/oh-my-openagent), with named discipline agents (Sisyphus planner, Hephaestus worker, Prometheus interviewer), automatic model routing, and parallel team mode. Useful to *learn from* — it shows what orchestration looks like at scale — but worth discussing the tradeoff: adopt a framework's opinions, or design your own orchestration on top of Claude Code's primitives (subagents, worktrees, Task tool). Neither is universally better; the choice depends on how much control vs. convention the team wants.
 - Deep context engineering: shaping AI behavior through project structure and documentation
 - Full workflow integration: spec → research → tests → implementation → review
 - When to delegate vs. intervene (developing intuition)
@@ -96,6 +103,7 @@ Not a dedicated session, but surfaced where relevant:
 **Intro (~30 min)**
 - What is AI-assisted coding? Brief tour of the spectrum
 - (Conditional) LLM fundamentals: how they work, tokens, context windows, hallucinations
+- Anatomy of a coding agent: tool + harness + LLM. ~5 min, just to plant the vocabulary. Show "Claude Code = a harness that calls Claude with a toolbelt." We'll come back to these in Session 3.
 - Set expectations: today we start at the shallow end on purpose
 - Introduce project briefs (or students pitch their own)
 
@@ -147,9 +155,11 @@ Not a dedicated session, but surfaced where relevant:
 - Show-and-tell: how did planning and review change the work?
 
 **Theory: "Teaching The Agent" + "Parallel Execution" (~20-30 min)**
+- Tools: the unit of agent capability. What a tool definition looks like (name + schema + handler), how the LLM decides which to call, examples from Claude Code's built-in toolbelt. Why a smarter tool often beats a smarter model.
+- Harness: the program that wraps the LLM. Claude Code's responsibilities — context window management, tool execution, permissions, hooks, slash commands, plan mode. Quick comparison with Cursor / Aider / OpenCode so students see that "harness" is a real design space, not just "the UI."
 - Custom instructions: CLAUDE.md as the agent's persistent memory
 - Skills and slash commands: building reusable capabilities
-- MCP and external tools: connecting the agent to the world
+- MCP and external tools: how external services plug into the harness as new tools — the agent's capabilities grow at runtime
 - Documentation tools (e.g. context7, context-hub): why accurate docs matter — the AI hallucinates APIs, context7, context-hub fixes that
 - Subagents: intro to the concept — different agent types for different tasks (research, exploration, code review). Not deep usage yet, just "these exist and here's what they do"
 - Worktrees: delegating and parallelizing work
@@ -174,7 +184,8 @@ Not a dedicated session, but surfaced where relevant:
 **Theory: "Shaping The Input" + "The Full Loop" (~20-30 min)**
 - Spec-driven development: define WHAT before prompting HOW
 - Research before implementation: use documentation tools (context7, context-hub) to ground the AI — "look it up, don't guess"
-- Subagent orchestration in practice: different agents for different jobs — research agents for exploring docs, review agents for catching issues, exploration agents for codebase search. Not just "make it build things"
+- Agent orchestration (the "Teams" pattern): a planner agent dispatches work to specialized worker agents — research, review, exploration, implementation — in parallel via subagents + worktrees. Why orchestration is the natural next step from single-agent context engineering.
+- A design decision: framework vs. roll-your-own orchestration. Walk through oh-my-openagent (https://github.com/code-yeongyu/oh-my-openagent) as a concrete example of an opinionated orchestration framework — discipline agents (Sisyphus, Hephaestus, Prometheus), automatic model routing, parallel team mode. Open the discussion: do you adopt those opinions, or design your own orchestration on Claude Code's primitives? Frame it as a real choice the student will face, not a recommended path.
 - Context engineering: the AI's output is only as good as what you feed it
 - The full workflow: spec → research → tests → implementation → review
 - Developing delegation intuition: what to hand off vs. what requires your judgment
@@ -187,6 +198,7 @@ Not a dedicated session, but surfaced where relevant:
 - Use subagents for non-implementation tasks: have a research agent explore your codebase, a review agent check your last change
 - Practice the full loop: spec → research → plan → test → implement → review
 - Experiment with delegation: what can you safely hand off? What benefits do specialized agents bring beyond just "more AI"?
+- (Optional) Compare two paths: (a) read through oh-my-openagent's discipline agents and try `ultrawork` on a small task, vs. (b) sketch a minimal roll-your-own orchestrator on top of Claude Code's subagents + Task tool. Discuss which approach feels right for your project — and why.
 
 **Closing Discussion (~20-30 min)**
 - Retrospective: compare your codebase across all 4 sessions
