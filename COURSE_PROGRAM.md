@@ -81,7 +81,7 @@ These are the concepts to cover, roughly ordered by complexity:
 ### [Agus] Tier 4: Context Engineering
 - Spec-driven development: defining WHAT before prompting HOW — specs as context for the AI
 - Research-driven development: using documentation tools (context7, context-hub) to ground the AI in accurate, current docs before implementing
-- Agent orchestration in practice: coordinating multiple agents on a task. The "Teams" pattern — a planner agent dispatches work to specialized worker agents (research, review, exploration, implementation) running in parallel via subagents + worktrees.
+- Agent orchestration: the *pattern* of coordinating multiple agents on a task — distinct from the subagent primitive introduced in Tier 3. Orchestration is about dispatch and coordination (who plans, who works, how results merge); subagents are one substrate to implement it on, alongside separate Claude sessions, the Task tool, or MCP-mediated handoffs. The "Teams" pattern is a common form: a planner agent dispatches to specialized worker agents (research, review, exploration, implementation), often running in parallel.
 - Framework vs. roll-your-own orchestration: a real design decision when you start coordinating agents. Example of an opinionated framework — `oh-my-openagent` (https://github.com/code-yeongyu/oh-my-openagent), with named discipline agents (Sisyphus planner, Hephaestus worker, Prometheus interviewer), automatic model routing, and parallel team mode. Useful to *learn from* — it shows what orchestration looks like at scale — but worth discussing the tradeoff: adopt a framework's opinions, or design your own orchestration on top of Claude Code's primitives (subagents, worktrees, Task tool). Neither is universally better; the choice depends on how much control vs. convention the team wants.
 - Deep context engineering: shaping AI behavior through project structure and documentation
 - Full workflow integration: spec → research → tests → implementation → review
@@ -102,7 +102,7 @@ Not a dedicated session, but surfaced where relevant:
 
 **Intro (~30 min)**
 - What is AI-assisted coding? Brief tour of the spectrum
-- (Conditional) LLM fundamentals: how they work, tokens, context windows, hallucinations
+- LLM fundamentals: how they work, tokens, context windows, hallucinations
 - Anatomy of a coding agent: tool + harness + LLM. ~5 min, just to plant the vocabulary. Show "Claude Code = a harness that calls Claude with a toolbelt." We'll come back to these in Session 3.
 - Set expectations: today we start at the shallow end on purpose
 - Introduce project briefs (or students pitch their own)
@@ -184,7 +184,7 @@ Not a dedicated session, but surfaced where relevant:
 **Theory: "Shaping The Input" + "The Full Loop" (~20-30 min)**
 - Spec-driven development: define WHAT before prompting HOW
 - Research before implementation: use documentation tools (context7, context-hub) to ground the AI — "look it up, don't guess"
-- Agent orchestration (the "Teams" pattern): a planner agent dispatches work to specialized worker agents — research, review, exploration, implementation — in parallel via subagents + worktrees. Why orchestration is the natural next step from single-agent context engineering.
+- Agent orchestration as a coordination pattern: distinct from the subagent primitive (Session 3). Orchestration = *how* multiple agents share work (dispatch, planning, result merging); subagents are one substrate to run it on, alongside separate sessions, the Task tool, or MCP-mediated handoffs. The "Teams" pattern is the canonical form: a planner agent dispatches to specialized worker agents (research, review, exploration, implementation), often in parallel. Why orchestration is the natural next step from single-agent context engineering.
 - A design decision: framework vs. roll-your-own orchestration. Walk through oh-my-openagent (https://github.com/code-yeongyu/oh-my-openagent) as a concrete example of an opinionated orchestration framework — discipline agents (Sisyphus, Hephaestus, Prometheus), automatic model routing, parallel team mode. Open the discussion: do you adopt those opinions, or design your own orchestration on Claude Code's primitives? Frame it as a real choice the student will face, not a recommended path.
 - Context engineering: the AI's output is only as good as what you feed it
 - The full workflow: spec → research → tests → implementation → review
