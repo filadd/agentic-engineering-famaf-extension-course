@@ -1,5 +1,7 @@
 # Sesión 1 — Ejercicio práctico: Vibe coding puro
 
+> 🔴 **TO REVIEW** — generado por Claude, todavía sin revisar por Diego.
+
 ## Objetivo
 
 Construir un prototipo que **funcione** (o que parezca funcionar) hablándole al agente, sin abrir ni una vez el código.
