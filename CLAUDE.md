@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This is the course material repository for "From Vibe Coding to Agentic Engineering", a 4-session extension course at FaMAF (Universidad Nacional de Cordoba). Target audience: ~20-30 CS students with some project experience but little professional training.
+This is the course material repository for "From Vibe Coding to Agentic Engineering", a 6-session extension course at FaMAF (Universidad Nacional de Cordoba). Target audience: ~20-30 CS students with some project experience but little professional training.
 
 ## Structure
 
@@ -12,6 +12,8 @@ sessions/          — per-session materials (slides, exercises, instructor note
   session-2/       — Planning & Review
   session-3/       — Tooling & Skills
   session-4/       — Context Engineering
+  session-5/       — Coding Harness (internals)
+  session-6/       — Open Source Models & CCAD
 examples/          — example projects, configs, and code snippets used in demos
 resources/         — reference materials, reading lists, links
 COURSE_PROGRAM.md  — full course design document

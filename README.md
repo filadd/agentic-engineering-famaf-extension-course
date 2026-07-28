@@ -1,6 +1,6 @@
 # From Vibe Coding to Agentic Engineering
 
-A 4-session extension course at FaMAF (Universidad Nacional de Cordoba) that walks CS students through the full spectrum of AI-assisted development — from pure "vibe coding" to structured agentic engineering.
+A 6-session extension course at FaMAF (Universidad Nacional de Cordoba) that walks CS students through the full spectrum of AI-assisted development — from pure "vibe coding" to structured agentic engineering, and then into the internals: how a coding harness works, and running open-weights models on UNC's supercomputing center.
 
 ## Sessions
 
@@ -8,6 +8,8 @@ A 4-session extension course at FaMAF (Universidad Nacional de Cordoba) that wal
 2. **Planning & Review** — task decomposition, plan mode, test-first development, git workflow
 3. **Tooling & Skills** — tools and harness deep dive, CLAUDE.md, custom skills, MCP, subagents, worktrees
 4. **Context Engineering** — spec-driven development, agent orchestration (Teams pattern), full workflow integration
+5. **Coding Harness (internals)** — TBD
+6. **Open Source Models & CCAD** — open weights vs. hosted APIs, serving a model on UNC's HPC clusters, pointing your own agent at it
 
 ## Structure
 

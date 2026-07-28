@@ -35,7 +35,7 @@ Vibe coding is a great on-ramp — fast, fun, empowering. But professional softw
 
 ## Format
 
-- **4 sessions**, 1 per week, ~2-3 hours each
+- **6 sessions**, 1 per week, ~2-3 hours each (originally 4; sessions 5-6 added as a deeper technical arc — see below)
 - Each session: theory → hands-on → show-and-tell discussion
 - **Same project across all 4 sessions** — students see their codebase evolve
 - Students bring their own project idea; default fallback is a small web app
@@ -89,12 +89,26 @@ These are the concepts to cover, roughly ordered by complexity:
 - Professional accountability: you sign off on what the AI produces
 - The spectrum revisited: when is each approach appropriate?
 
+### [Agus] Tier 5: Harness Internals
+- **TBD** — topics to be defined by the owner. See `harness_internals.md` and `sessions/session-5/`.
+
+### [Diego] Tier 6: Open Source Models & HPC
+- Open weights vs. hosted APIs as a **spectrum of control**: capability, where your data lives, cost shape (per-token vs. per-hour vs. capex), ops burden, offline capability. Honest about the capability gap on long-horizon agentic work and reliable tool calling.
+- What it takes to run one: the VRAM arithmetic (parameters × bytes-per-parameter, before context), quantization and its cost to structured output (i.e. to tool calling), and the two families of runtime — local/single-user (llama.cpp, Ollama) vs. serving (vLLM, SGLang).
+- The OpenAI-compatible endpoint as the interoperability story: why a harness can point at a different model with a base-URL change. This is the technical bridge from Tier 5.
+- HPC mechanics: login node vs. compute node, the job scheduler (you describe a job and wait your turn), modules/environments, reaching a service on a node with no public address, shared-resource etiquette.
+- **CCAD (Centro de Computación de Alto Desempeño, UNC)**: what it is, what hardware exists, and how a student gets an account. Guest intro by Ale Silva. Most students don't know UNC runs an HPC center they can use — arguably the highest-value practical takeaway of the course, independent of AI.
+- Supply chain and self-hosting risk: what you trust when you download multi-gigabyte binary weights; how self-hosting removes a third party and adds you as the operator.
+- When open source is the right call: sensitive data, cost-dominated volume, research reproducibility, offline work, studying the model itself — versus wanting the best coding agent today with no ops capacity.
+
 ### Cross-cutting: Security & Trust (woven throughout)
 Not a dedicated session, but surfaced where relevant:
 - **Session 1**: security issues found during code analysis (common vulnerabilities in AI output)
 - **Session 2**: reviewing code with a security lens, what to look for
 - **Session 3**: sandboxing, permission models, why tools have allowlists/denylists
 - **Session 4**: trust boundaries, prompt injection awareness, supply chain risks with agents
+- **Session 5**: TBD
+- **Session 6**: model supply chain (binary weights from a hub), self-hosting as an operator responsibility, weaker models as easier injection targets
 
 ## Proposed Sessions
 
@@ -201,12 +215,47 @@ Not a dedicated session, but surfaced where relevant:
 - (Optional) Compare two paths: (a) read through oh-my-openagent's discipline agents and try `ultrawork` on a small task, vs. (b) sketch a minimal roll-your-own orchestrator on top of Claude Code's subagents + Task tool. Discuss which approach feels right for your project — and why.
 
 **Closing Discussion (~20-30 min)**
+
+> With 6 sessions, the full-course retrospective moves to Session 6. Session 4 keeps the spectrum revisit and the cost/limits discussion as a checkpoint, not a farewell — decide which session owns the closing before the course runs.
+
 - Retrospective: compare your codebase across all 4 sessions
 - The spectrum revisited: when is each approach appropriate?
 - Cost and token awareness (brief): AI tools aren't free — model tiering (fast/cheap vs slow/powerful), why context engineering saves money too, not just quality. Think of tokens as a budget, not an infinite resource
 - When NOT to use AI: recognizing limitations, avoiding overreliance, the skill atrophy risk. AI amplifies expertise — if you don't have the fundamentals, it amplifies confusion. "Don't use AI as a crutch" (MIT Missing Semester)
 - Career implications: what skills matter in an AI-augmented world?
 - Key takeaway: AI tools amplify expertise — invest in fundamentals
+
+### Session 5: Coding Harness (internals)
+
+Owner: **Agus**. **TBD** — session design to be written by the owner in `sessions/session-5/INSTRUCTOR.md`.
+
+Known dependency: **Session 6 currently assumes** students leave this session with an agent of their own that they can point at a different model. If the hands-on takes a different shape, Session 6's hands-on needs rework — sync between owners.
+
+### Session 6: Open Source Models & Running on CCAD
+
+Owner: Diego. Guest: **Ale Silva (CCAD)**. Goes last because it depends on Session 5 — students who wrote their own loop already believe the model is swappable.
+
+**Recap & Sharing (~10-15 min)**
+
+**Guest: intro to CCAD (~20-25 min)**
+- Ale Silva on the Centro de Computación de Alto Desempeño: what it is, who it serves, what hardware exists, how a student gets an account, what HPC is normally used for at UNC. Scope to be agreed with him.
+
+**Theory: "The Model Is a Component" (~25 min, split around the hands-on)**
+- Open weights vs. hosted APIs: the control spectrum.
+- What it takes to run one: VRAM arithmetic, quantization, local vs. serving runtimes, the OpenAI-compatible endpoint.
+- HPC mechanics: login vs. compute node, the scheduler, port forwarding, shared-resource etiquette.
+- Security sidebar: model supply chain, self-hosting as operator responsibility.
+- *After* the hands-on: when open source is the right call — deliberately placed once students have felt the ops burden.
+
+**Hands-on (~60-75 min)**
+- Get onto a cluster, request a GPU allocation, serve a small open-weights model with an OpenAI-compatible endpoint, forward the port, change the base URL in the Session 5 agent, and compare both models on the same multi-step task.
+- A fallback endpoint is provided: the comparison is the lesson, not beating the queue.
+
+**Course Closing (~15-20 min)**
+- Full retrospective across all six sessions: open the repo, look at the first commit.
+- The spectrum revisited (Session 1's slide, returned to).
+- When NOT to use AI; skill atrophy; AI amplifies expertise.
+- Key takeaway: everything from Sessions 2-5 — planning, review, tests, context, tools, harness — transfers across models. That's why the course taught structure instead of a product.
 
 ## Progression Arc
 
@@ -216,6 +265,11 @@ The arc follows a clear logic (and mirrors growing from a hands-off boss to an e
 2. **Human process** → add your judgment: plan, review, test, debug ("start doing stand-ups and code reviews")
 3. **Tool leverage** → use the tool's capabilities to scale your judgment ("give the intern better tools and clear documentation")
 4. **Context shaping** → engineer the AI's environment (specs, project context, documentation) so it produces better output by default ("build a team culture where good work happens by default")
+
+Sessions 5-6 change the question. The first four ask *how do I work well with this thing?*; the last two ask *what is this thing made of, and what if I swap its parts?*
+
+5. **Open the box** → TBD (Agus)
+6. **Swap the model** → the model is one replaceable component; everything you learned survives the swap
 
 Each session adds a layer of structure. Students feel *why* each layer matters because they've experienced the problems it solves.
 
@@ -243,6 +297,11 @@ For students who don't bring their own:
 - Pre-work: should students come to Session 1 with a project idea already?
 - Do we want a final deliverable (repo + reflection) or is the journey enough?
 - LLM fundamentals block: include or skip depending on group assessment?
+- Does the extension-course format actually allow 6 weeks? Confirm before announcing.
+- **Session 5 tooling prerequisites**: TBD once Agus defines the session. If the hands-on hits the API directly, note that raw API access is a different requirement from "Claude Code works" — course-wide keys, a proxy, or their own?
+- **Session 6 needs CCAD accounts provisioned in advance** (form + email, not same-day). Send instructions weeks ahead; confirm whether bulk/expedited provisioning is possible and whether a sponsoring researcher is required.
+- **Session 6 hands-on is hostage to the GPU queue** unless CCAD can reserve a window for the class. Fallback endpoint needed either way.
+- Which session owns the full-course retrospective now that there are six? (Currently duplicated between Session 4's closing and Session 6.)
 
 ## References & Inspiration
 
@@ -258,3 +317,15 @@ For students who don't bring their own:
 - Udemy: "The Complete Course on Coding Agents" by Nikolai Schuler & Jagger Bellagarda — [Udemy search](https://www.udemy.com/courses/search/?q=coding+agents+claude+code)
 - ICSE 2026 AGENT Workshop — academic research on agentic software engineering
 - The 80% Problem in Agentic Coding (vault: Reading_List/Queue)
+
+### Session 5 — Harness internals
+- **TBD** (Agus)
+
+### Session 6 — Open source models & HPC
+- [CCAD — Centro de Computación de Alto Desempeño, UNC](https://supercomputo.unc.edu.ar/ccad/) — created by Ordenanza HCS 18/2010; serves UNC faculties, the Astronomical Observatory, and external research organizations
+- [CCAD wiki / documentation](https://wiki.ccad.unc.edu.ar/) — the reference for cluster usage
+- [Opening a CCAD account](https://wiki.ccad.unc.edu.ar/empezar/abrir-cuenta.html) — SSH keys → request form → credentials by email
+- [CCAD equipment](https://supercomputo.unc.edu.ar/equipamiento/) — active clusters: Boogie (2025), Gordito (2025/2026), Mendieta Fase 2 (2022), Serafín (2021), Eulogia (2018/2021), Mulatona (2018). Per-cluster specs live on the individual pages and the wiki
+- [CCAD services](https://supercomputo.unc.edu.ar/servicios/pedido-de-cuentas/) — account requests, intensive-use requests, user support
+- [CCAD status](https://stats.uptimerobot.com/eLhTV5CMni) · [dashboard](https://stats.ccad.unc.edu.ar/) — check before class
+- Guest: **Ale Silva** (CCAD) — intro to the center. Details in the email thread; see `sessions/session-6/INSTRUCTOR.md` → Pending from Ale
