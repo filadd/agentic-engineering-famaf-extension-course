@@ -1,5 +1,8 @@
 # Session 6 — Open Source Models & Running on CCAD (Instructor Notes)
 
+> 🔴 **TO REVIEW** — this file was Claude-generated and has **not** been reviewed by Diego yet.
+> Treat every claim, timing, and pedagogical choice as a proposal, not a decision.
+
 > Owner: Diego. Status: skeleton — **blocked on the email thread with Ale Silva** (see Pending from Ale). Audience-facing materials live alongside this file (slides.md, exercise/README.md) and are in Spanish. These notes are for the instructor in English.
 >
 > Guest: **Ale Silva (CCAD)** — invited to open the session with an intro to the center. Confirm scope, date, and duration.

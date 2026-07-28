@@ -6,6 +6,9 @@ title: Sesión 6 — Modelos Open Source y CCAD
 ---
 
 <!--
+🔴 TO REVIEW — generado por Claude, todavía SIN revisar por Diego.
+Tratar todo el contenido como propuesta, no como decisión.
+
 Skeleton de la presentación de la Sesión 6.
 Cada slide tiene un título + una nota de oradora/orador (HTML comment).
 El contenido del cuerpo de cada slide está pendiente.

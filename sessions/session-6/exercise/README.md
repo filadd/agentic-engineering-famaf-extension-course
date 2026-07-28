@@ -1,5 +1,7 @@
 # Sesión 6 — Ejercicio práctico: tu agente, otro modelo
 
+> 🔴 **TO REVIEW** — generado por Claude, todavía sin revisar por Diego.
+
 > ⚠️ **Este ejercicio está en borrador.** Los comandos concretos del CCAD (scheduler, módulos, partición con GPU, política de trabajos interactivos) se completan una vez confirmado el setup con el CCAD. Los pasos de abajo describen el flujo; la sintaxis exacta se entrega en clase.
 
 ## Objetivo
