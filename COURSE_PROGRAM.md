@@ -107,6 +107,8 @@ These are the concepts to cover, roughly ordered by complexity:
 
 ### [Diego] Tier 6: Open Source Models & HPC
 
+> 🔴 **TO REVIEW** — Claude-generated, not yet reviewed by Diego.
+
 - **Open source vs. open weights**: open weights means you can download and run them; open source in the strong sense means you could reproduce the model (training code + data information). Nearly everything marketed as "open source AI" is open weights — the binary, not the recipe.
 - **Licences**, where that distinction gets consequences: standard software licences (Apache 2.0, MIT) vs. bespoke licences with usage restrictions and scale clauses (Llama community licence, Gemma terms) vs. restrictions on the output itself. The three questions to answer before shipping: commercial use? redistribute a fine-tune? who owns the generations?
 - Open weights vs. hosted APIs as a **spectrum of control**: capability, where your data lives, cost shape (per-token vs. per-hour vs. capex), ops burden, offline capability. Honest about the capability gap on long-horizon agentic work and reliable tool calling.
@@ -280,6 +282,8 @@ Owner: **Agus**. **TBD** — session design to be written by the owner in `sessi
 Known dependency: **Session 6 currently assumes** students leave this session with an agent of their own that they can point at a different model. If the hands-on takes a different shape, Session 6's hands-on needs rework — sync between owners.
 
 ### Session 6: Open Source Models & Running on CCAD
+
+> 🔴 **TO REVIEW** — Claude-generated, not yet reviewed by Diego.
 
 Owner: Diego. Guest: **Ale Silva (CCAD)**. Goes last because it depends on Session 5 — students who wrote their own loop already believe the model is swappable.
 
