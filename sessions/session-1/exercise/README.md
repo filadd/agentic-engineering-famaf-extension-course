@@ -1,19 +1,19 @@
-# Sesión 1 — Ejercicio práctico: Vibe coding puro
+# Sesión 1 — Ejercicio práctico: tu primer coding agent + vibe coding
 
-> 🔴 **TO REVIEW** — generado por Claude, todavía sin revisar por Diego.
+> 🟡 Los pasos vienen del outline de Diego; la redacción todavía puede cambiar.
 
 ## Objetivo
 
-Construir un prototipo que **funcione** (o que parezca funcionar) hablándole al agente, sin abrir ni una vez el código.
+Dejar **Pi funcionando sobre un proyecto tuyo**, con un `AGENTS.md` propio, y arrancar a construir hablándole al agente **sin abrir el código**.
 
-El objetivo no es que el código sea bueno. Es que al final de la sesión tengas algo hecho **y no sepas qué hay adentro** — para que la lección de las próximas tres sesiones no sea una opinión del docente, sino algo que ya te pasó.
+El objetivo no es que el código sea bueno. Es que salgas de la clase con la herramienta andando y con algo hecho **que no sepas qué tiene adentro** — para que la lección de las próximas sesiones no sea una opinión del docente, sino algo que ya te pasó.
 
-Este es el proyecto que vas a usar durante las 4 sesiones. Elegí algo que te dé ganas de seguir.
+Este es el proyecto que vas a usar durante las 6 sesiones. Elegí algo que te dé ganas de seguir.
 
 ## Antes de empezar
 
-- Tené [Claude Code](https://docs.anthropic.com/en/docs/claude-code) instalado y respondiendo en una terminal.
-- Creá un directorio vacío para el proyecto e inicializá un repo git (`git init`) — te va a servir desde la Sesión 2.
+- Tené **node y npm** instalados (`node --version` tiene que responder).
+- Tené una cuenta de **GitHub** y `git` configurado con tu nombre y mail.
 - Elegí tu proyecto: uno propio, o uno de los briefs del final de este documento.
 - Cerrá el editor. En serio. Hoy no lo vas a necesitar.
 
@@ -28,13 +28,61 @@ Estas cuatro reglas son el ejercicio. Van a incomodar, y esa incomodidad es inte
 
 Si el agente te pregunta algo, contestale. Si te propone opciones, elegí. Todo eso es parte del juego. Lo único vedado es leer.
 
+> Las reglas aplican desde el paso 6. Los pasos 1 a 5 son setup: ahí sí mirás lo que hacés.
+
 ## Pasos
 
-### 1. Elegí y arrancá (~10 min)
+### 1. Instalá Pi (~8 min)
+
+Seguí la guía oficial: **https://pi.dev/docs/latest/quickstart**
+
+Ahí está el comando de instalación y cómo autenticarte (`/login`). No copiamos el comando acá a propósito: la docs oficial es la que se mantiene al día.
+
+Si te trabás, levantá la mano — hay profes de práctico dando vueltas. Si ya lo tenés andando, ayudá al de al lado.
+
+### 2. Creá el proyecto (~4 min)
+
+```
+mkdir mi-proyecto
+cd mi-proyecto
+git init
+```
+
+Creá también el repo en GitHub y conectalo (`git remote add origin ...`). Desde la Sesión 2 vamos a usar git como red de seguridad, así que conviene tenerlo desde hoy.
+
+### 3. Probá los comandos de base (~8 min)
+
+Arrancá Pi dentro de la carpeta del proyecto (`pi`) y probá:
+
+- `/model` — ver y cambiar el modelo que estás usando. Fijate en la ventana de contexto que soporta.
+- `/new` y `/resume` — empezar una conversación nueva y volver a una anterior. Acordate: **cada conversación arranca en blanco**.
+- `@archivo` — referenciar un archivo en tu mensaje.
+- `!comando` — correr un comando de shell sin salir de Pi.
+- `Shift+Tab` — cambiar cuánto "piensa" el modelo antes de responder.
+
+Probalos aunque el proyecto todavía esté vacío. La idea es que el agente no sea una caja negra.
+
+### 4. Escribí tu AGENTS.md (~8 min)
+
+`AGENTS.md` es el archivo donde le explicás tu proyecto al agente. Pi lo carga al arrancar, junto con los de los directorios de arriba.
+
+1. Copiá [`AGENTS.md.template`](./AGENTS.md.template) a la raíz de tu proyecto, con el nombre `AGENTS.md`.
+2. Completá los `TODO` que puedas: qué es el proyecto, en qué lenguaje/stack lo vas a hacer.
+3. **Pedile a Pi que le agregue una línea.** Por ejemplo: "agregá a AGENTS.md una línea que diga que todos los mensajes de commit van en español". Mirá cómo lo edita.
+
+Esta es la primera vez que el agente escribe su propio contexto. En la Sesión 3 vamos a volver sobre esto en serio.
+
+### 5. Reiniciá Pi y mirá el contexto (~4 min)
+
+El `AGENTS.md` que acabás de escribir **todavía no está cargado**: Pi lee los archivos de contexto al arrancar.
+
+Salí y volvé a entrar (o usá `/reload`). Fijate qué te dice Pi sobre el contexto que cargó: cuántos archivos, de dónde. Esa es la memoria de trabajo con la que va a razonar todo lo que le pidas.
+
+### 6. Arrancá a vibecodear (~15 min)
+
+**Desde acá aplican las 4 reglas.** Cerrá el editor.
 
 Contale al agente qué querés construir, en una o dos frases. Dejalo empezar. No le des estructura, no le digas qué stack usar salvo que tengas una preferencia fuerte.
-
-### 2. Iterá hasta que funcione (~60-90 min)
 
 Ciclo: pedí algo → mirá el resultado corriendo → describí lo que falta o lo que está mal → repetí.
 
@@ -44,15 +92,9 @@ Cosas que van a pasar y son parte del ejercicio:
 - Te vas a tentar con abrir un archivo para entender qué pasó. No lo hagas.
 - Vas a querer decirle *cómo* arreglarlo. Limitate a decirle *qué* está mal.
 
-Anotá en un papel (o en un archivo aparte, no en el código) los momentos en que sentiste que perdiste el control. Los vamos a usar en la discusión final.
+Anotá en un papel (o en un archivo aparte, no en el código) los momentos en que sentiste que perdiste el control.
 
-### 3. Llegá a algo mostrable (~15 min)
-
-Antes de que se termine el bloque, asegurate de tener algo que se pueda demostrar: la app corre y hace al menos una cosa completa de punta a punta.
-
-Si está a medias, está bien igual. No lo arregles a mano.
-
-### 4. Reality check (~10 min, en clase)
+### 7. Reality check: abrí los archivos (~12 min, en clase)
 
 Recién ahora: **abrí los archivos.** Leé lo que shippeaste, sin apuro, en silencio.
 
@@ -64,18 +106,24 @@ Mientras leés, buscá:
 - ¿Hay secrets, claves o tokens escritos directamente en el código?
 - ¿Hay input del usuario que entra sin validarse a ningún lado?
 - Elegí el archivo más largo: ¿podrías explicar línea por línea qué hace?
+- ¿Cazaste alguno de los tres modos de falla que vimos? (cascading errors, "los tests pasan", scope creep)
 
 Lo que encuentres lo compartimos con el grupo.
 
 ## Resultado esperado
 
-Al final de la sesión deberías tener:
+Al final de la clase deberías tener:
 
-- Un prototipo que corre y hace algo, en un repo git.
+- Pi instalado y andando.
+- Un repo git con tu proyecto y un `AGENTS.md` propio.
+- Un prototipo que corre y hace algo (aunque sea poco).
 - Una lista de cosas que te sorprendieron al abrir el código.
-- Una respuesta propia (aunque incómoda) a: *¿lo subirías a producción?*
 
-No hay nada formal para entregar. Guardá el repo: lo seguimos usando las próximas tres sesiones.
+No hay nada formal para entregar. Guardá el repo: lo seguimos usando las próximas cinco sesiones.
+
+## Para la semana
+
+Seguí vibecodeando tu proyecto **con las mismas reglas** (sin abrir los archivos) hasta que sientas que se te va de las manos. Anotá cuándo pasa. La Sesión 2 abre con eso.
 
 ## Preguntas para la discusión final
 
@@ -88,7 +136,7 @@ No hay nada formal para entregar. Guardá el repo: lo seguimos usando las próxi
 
 ## Anexo: proyectos por defecto
 
-Si no traés una idea propia, elegí uno de estos. Todos son alcanzables como prototipo en ~90 minutos y tienen suficiente sustancia para aguantar las 4 sesiones (auth, estado, datos, validación).
+Si no traés una idea propia, elegí uno de estos. Todos arrancan como prototipo en poco tiempo y tienen suficiente sustancia para aguantar las 6 sesiones (auth, estado, datos, validación).
 
 **A. Lista de tareas con usuarios**
 Registro y login, cada usuario ve solo sus tareas, marcar como completada, filtrar por estado.

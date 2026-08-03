@@ -1,0 +1,32 @@
+# AGENTS.md
+
+<!--
+Template mínimo para la Sesión 1. Copialo a la raíz de tu proyecto como AGENTS.md
+y completá los TODO. Pi lo carga al arrancar (o con /reload).
+Esto es contexto: cada línea que agregás acá se la come la ventana de contexto.
+Corto y concreto le sirve más al agente que largo y prolijo.
+-->
+
+## Qué es este proyecto
+
+TODO: una o dos frases. Qué hace y para quién.
+
+## Stack
+
+TODO: lenguaje, framework, base de datos. Si todavía no decidiste, escribí "a decidir" — pero decidilo antes de que lo decida el agente por vos.
+
+## Cómo se corre
+
+- Instalar dependencias: `TODO`
+- Levantar el proyecto: `TODO`
+- Correr los tests: `TODO` (si todavía no hay tests, dejalo anotado acá)
+
+## Convenciones
+
+- Los mensajes de commit van en español.
+- TODO: agregá las tuyas a medida que aparezcan (estilo, nombres, estructura de carpetas).
+
+## Qué no tocar
+
+- No commitear archivos `.env` ni claves de ningún tipo.
+- TODO: archivos o carpetas que el agente no debería modificar.

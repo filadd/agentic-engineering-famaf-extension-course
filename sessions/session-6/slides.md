@@ -60,7 +60,19 @@ Diego Piloni · con Ale Silva (CCAD)
 
 # Parte 2 — Pesos abiertos vs. API hosteada
 
-<!-- Sección. Espectro de control, no tribalismo. -->
+<!-- Sección. Espectro de control, no tribalismo. Arrancar por la distinción que casi nadie hace bien. -->
+
+---
+
+## Open source ≠ open weights
+
+<!-- La distinción que ordena todo el bloque. "Open weights": podés bajar los pesos y correrlos. "Open source" en el sentido fuerte: además tenés el código de entrenamiento y la información sobre los datos, o sea podrías reproducir el modelo. Casi todo lo que se anuncia como "open source AI" es open weights: te dan el binario, no la receta. Analogía: es un ejecutable gratis, no el código fuente. Aclarar que nosotros vamos a usar "pesos abiertos" cuando corresponda. -->
+
+---
+
+## Las licencias importan
+
+<!-- Bajar la distinción a algo con consecuencias prácticas. Tres familias: 1) licencias de software estándar (Apache 2.0, MIT) — uso comercial libre, derivados, redistribución. 2) licencias propias con restricciones (la community license de Llama, los terms de Gemma): límites de uso, cláusulas de escala, obligaciones de naming o de política de uso aceptable. 3) restricciones sobre el output (algunas prohíben usarlo para entrenar otros modelos). Preguntas que hay que saber contestar antes de meter un modelo en un proyecto: ¿puedo usarlo comercialmente? ¿puedo redistribuir un fine-tune? ¿de quién es lo que genera? VERIFICAR la licencia de cada modelo que nombremos la semana de la clase — cambian entre versiones del mismo modelo. -->
 
 ---
 
@@ -103,6 +115,12 @@ Diego Piloni · con Ale Silva (CCAD)
 ## El endpoint compatible con OpenAI
 
 <!-- Acá está todo el puente con la Sesión 5: casi todos los runtimes exponen una API compatible, así que un harness apunta a otro modelo cambiando la base URL. Nada más. -->
+
+---
+
+## Demo: una GPU que entra en una mochila (Agus)
+
+<!-- Agus trae su GPU portátil y sirve un modelo chico en vivo, ahí mismo. Hace concreta la tercera columna del espectro ("pesos abiertos, tu GPU"): sin cola, sin túnel, sin cuenta, y con la data sin salir de la sala. Mostrar el consumo de VRAM real contra la cuenta que hicimos dos slides atrás, y la velocidad de tokens por segundo. Sirve además como endpoint de respaldo del hands-on si el scheduler del CCAD se pone imposible. CONFIRMAR con Agus que la trae y probarla antes. -->
 
 ---
 
@@ -175,6 +193,12 @@ Diego Piloni · con Ale Silva (CCAD)
 # Parte 6 — ¿Cuándo conviene?
 
 <!-- Sección. Va DESPUÉS del hands-on a propósito: la discusión de criterio es mejor cuando ya sintieron la carga de operación. -->
+
+---
+
+## ¿Está a la altura de ser el motor de un proyecto serio?
+
+<!-- LA pregunta de la sesión, y la que ellos van a querer hacer. Contestarla con lo que acaban de medir en el hands-on, no con opiniones. Los ejes concretos: ¿llama las tools respetando el schema, siempre? ¿aguanta una tarea de 20 pasos sin perderse? ¿le alcanza la ventana de contexto para un repo real? ¿la latencia hace tolerable el loop? Nuestra respuesta honesta hoy (VERIFICAR la semana de la clase, esto cambia rápido): para tareas acotadas, revisiones, tareas repetitivas de alto volumen y trabajo con data sensible, sí. Como motor principal de un coding agent en un proyecto serio y de largo plazo, todavía no del todo — y el cuello de botella suele ser el tool calling confiable, no el "saber programar". Abrir a discusión: que la sala argumente con lo que midió. -->
 
 ---
 

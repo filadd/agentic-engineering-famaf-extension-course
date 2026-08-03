@@ -64,7 +64,7 @@ Acá está todo el punto del ejercicio: en tu agente de la Sesión 5, cambiá la
 
 Nada más del loop cambia. El resto de tu código no sabe que pasó algo.
 
-> Si te ganó la cola: usá el endpoint de respaldo que se entrega en clase. El paso importante es este, y el que viene.
+> Si te ganó la cola: usá el **endpoint de respaldo** que se entrega en clase — va a estar corriendo sobre la GPU portátil que trae Agus, ahí mismo en el aula. El paso importante es este, y el que viene.
 
 ### 6. Compará (~15 min)
 
@@ -78,6 +78,8 @@ Anotá:
 - ¿Cómo se sintió la latencia?
 
 Es esperable que el modelo abierto sea visiblemente peor en tool calling de varios pasos. **Eso es dato, no fracaso**: es exactamente el eje de la discusión del cierre.
+
+Guardá estos números: la discusión de después es **¿este modelo está a la altura de mover un proyecto serio?**, y queremos que se conteste con lo que midieron y no con opiniones.
 
 ## Resultado esperado
 
@@ -93,5 +95,6 @@ Cuando termines, **liberá la GPU**. Es hardware compartido y alguien está espe
 
 1. ¿Qué fue más difícil: hacer andar el modelo o hacer andar la red?
 2. ¿Dónde se rompió el modelo abierto? ¿Fue capacidad, o fue el formato de las tools?
-3. Con lo que te costó: ¿para qué proyecto tuyo valdría la pena, y para cuál claramente no?
-4. Después de seis sesiones: ¿qué parte de lo que aprendiste depende del modelo que uses, y qué parte no?
+3. ¿Lo pondrías como motor de un coding agent en un proyecto serio? ¿Qué le falta, concretamente?
+4. Con lo que te costó: ¿para qué proyecto tuyo valdría la pena, y para cuál claramente no?
+5. Después de seis sesiones: ¿qué parte de lo que aprendiste depende del modelo que uses, y qué parte no?

@@ -39,7 +39,7 @@ Vibe coding is a great on-ramp — fast, fun, empowering. But professional softw
 - Each session: theory → hands-on → show-and-tell discussion
 - **Same project across all 4 sessions** — students see their codebase evolve
 - Students bring their own project idea; default fallback is a small web app
-- Tool: Claude Code (leaning toward, TBD)
+- Tool: **Pi** (`pi.dev`) — decided; installed by students in Session 1
 - Class size: ~20-30 students
 
 ## Topic Inventory
@@ -47,9 +47,17 @@ Vibe coding is a great on-ramp — fast, fun, empowering. But professional softw
 These are the concepts to cover, roughly ordered by complexity:
 
 ### [Diego] Tier 1: Fundamentals
+- **Responsibility is the starting point**: accountability stays with the person, not the AI. "The agent wrote it" is not an excuse. Everything else in the course is a way of living up to that.
 - The AI-assisted coding spectrum (overview)
--  LLM fundamentals: how they work at a practical level — tokens, context windows, probability, why hallucinations happen.
-- Vibe coding: prompt-and-accept workflow. Talk with the agent, don't open files — focus entirely on the output.
+- Generative AI: what it is, where LLMs sit inside it
+- LLM fundamentals: how they work at a practical level — tokens, context windows, probability, why hallucinations happen.
+- The model landscape: Anthropic (Claude), OpenAI (GPT), Z.ai (GLM), Moonshot AI (Kimi). Reading a model page: modalities, context window, price. OpenAI's model-comparison page as a way to teach the base concepts in one pass.
+- Tokens as the unit of everything: input, output, and price. Multimodality — images and audio become tokens too.
+- Pricing shapes: per-token (API) vs subscription, and when each makes sense.
+- Context window as finite working memory — and the rule of thumb we actually use: **don't go past 50%** of what the model supports. Nothing persists between conversations.
+- Chat vs agent: a chat returns text and you execute; an agent executes in a loop (reads, runs, edits, checks, retries).
+- A short timeline: tab completion (Copilot) → chat beside the editor → Cursor → terminal coding agents (Claude Code, Codex, Pi).
+- Vibe coding: prompt-and-accept workflow. Talk with the agent, don't open files — focus entirely on the output. Working definition: *programar sin pensar que el código existe*.
 - Analyzing AI output: what did it actually produce?
 - Code quality awareness: dead code, inconsistent patterns, missing tests
 - Comprehension debt: you shipped code you don't understand
@@ -57,7 +65,9 @@ These are the concepts to cover, roughly ordered by complexity:
 - Anatomy of a coding agent (brief intro): LLM + tools + harness — just enough vocabulary to use these terms in later sessions
   - Tool: a function the LLM can invoke (read file, run shell, edit code)
   - Coding agent: an LLM that takes actions on a codebase via tools, not just suggests text
-  - Harness: the program wrapping the LLM (context management, tool dispatch, permissions). Claude Code is a harness.
+  - Harness: the program wrapping the LLM (context management, tool dispatch, permissions). Pi is a harness.
+  - The catalogue by environment: web (Lovable, v0, Bolt, Claude Code web), desktop (Claude Code desktop), terminal (Claude Code, Codex, Pi, opencode)
+- First contact with project context: `AGENTS.md` as the file where you explain the project to the agent (opened up properly in Tier 3).
 
 ### [Agus] Tier 2: Planning & Review
 - Code review of AI output (reading diffs, understanding changes)
@@ -96,7 +106,11 @@ These are the concepts to cover, roughly ordered by complexity:
 
 > 🔴 **TO REVIEW** — Claude-generated, not yet reviewed by Diego.
 
+- **Open source vs. open weights**: open weights means you can download and run them; open source in the strong sense means you could reproduce the model (training code + data information). Nearly everything marketed as "open source AI" is open weights — the binary, not the recipe.
+- **Licences**, where that distinction gets consequences: standard software licences (Apache 2.0, MIT) vs. bespoke licences with usage restrictions and scale clauses (Llama community licence, Gemma terms) vs. restrictions on the output itself. The three questions to answer before shipping: commercial use? redistribute a fine-tune? who owns the generations?
 - Open weights vs. hosted APIs as a **spectrum of control**: capability, where your data lives, cost shape (per-token vs. per-hour vs. capex), ops burden, offline capability. Honest about the capability gap on long-horizon agentic work and reliable tool calling.
+- **Is an open model good enough to be the engine of a serious project?** Answered from the hands-on measurements, on concrete axes: schema-respecting tool calls every time, surviving a 20-step task, context window against a real repo, latency inside an agent loop. The bottleneck is usually reliable tool calling, not the ability to write code.
+- **Running one on your own hardware**, made concrete: Agus brings a portable GPU and serves a small model in the room — no queue, no tunnel, no account, data never leaves the room.
 - What it takes to run one: the VRAM arithmetic (parameters × bytes-per-parameter, before context), quantization and its cost to structured output (i.e. to tool calling), and the two families of runtime — local/single-user (llama.cpp, Ollama) vs. serving (vLLM, SGLang).
 - The OpenAI-compatible endpoint as the interoperability story: why a harness can point at a different model with a base-URL change. This is the technical bridge from Tier 5.
 - HPC mechanics: login node vs. compute node, the job scheduler (you describe a job and wait your turn), modules/environments, reaching a service on a node with no public address, shared-resource etiquette.
@@ -117,27 +131,55 @@ Not a dedicated session, but surfaced where relevant:
 
 ### Session 1: The Vibe Coding Experience
 
-**Intro (~30 min)**
-- What is AI-assisted coding? Brief tour of the spectrum
-- LLM fundamentals: how they work, tokens, context windows, hallucinations
-- Anatomy of a coding agent: tool + harness + LLM. ~5 min, just to plant the vocabulary. Show "Claude Code = a harness that calls Claude with a toolbelt." We'll come back to these in Session 3.
-- Set expectations: today we start at the shallow end on purpose
-- Introduce project briefs (or students pitch their own)
+> **This session runs 3 hours** (every other session is 2): ~2 h of introductions + theory, ~1 h of hands-on. It carries all the shared vocabulary for the course *and* the tool install, which is why the usual theory/hands-on ratio is inverted here.
 
-**Hands-on: Pure Vibe Coding (~1.5-2 hours)**
-- Rules: talk with the agent, describe what you want — don't open files to see the code
-- Focus entirely on the output: does it look right? Does it work?
-- Iterate by describing problems, not by reading the code
-- Goal: get a working (or "working") prototype
+**Part 1 — Who we are (~10 min)**
+- Diego and Agus: academic and industry background, what we do now, and concretely how we use AI at Filadd
+- Introduce the Filadd TAs who help during the hands-on
 
-**Analysis & Discussion: "The Reality Check" (~30 min)**
-- Now open the files — what did the AI actually produce?
-- Group discussion: identify patterns — what's good, what's concerning?
-- Surface common issues: no tests, security holes, dead code, inconsistent patterns
-- The productivity illusion: METR study (19% slower despite feeling 20% faster), CodeRabbit (1.7x more issues)
-- Agent failure modes to watch for: cascading errors (one bad assumption compounds), false success reporting (AI says "tests pass" but modified the assertions to match), scope creep (the agent over-solved the problem)
-- The 80% problem: AI handled most of the work fast, but the remaining rough edges are where the real effort lives — and that's where understanding the code matters
-- Key question: "Would you ship this? Would you maintain this?"
+**Part 2 — What this course is (~20 min)**
+- This course is built on our own experience, not on theory — for theory there are excellent online courses (DeepLearning.AI/Andrew Ng, Karpathy, Simon Willison, Anthropic's "Claude Code in Action"). The practical consequence: ask a lot of questions.
+- Ask the room what AI courses they've taken and recommend
+- The six sessions in one slide
+- **Responsibility stays with the person, not the AI** — the idea we most want them to leave with
+- Core mental model: managing a smart intern. Today is deliberately the absent boss.
+- The five-level spectrum as a map (revisited in Session 4's closing)
+
+**Part 3 — Who they are (~15 min)**
+- Quick round of introductions, and: do they use AI, and for what?
+- This is the calibration instrument — the answers decide how much of Part 4 gets compressed
+
+**Part 4 — Fundamentals (~35 min)**
+- Generative AI; next-token prediction and why hallucinations are the mechanism, not a bug
+- The model landscape (Claude, GPT, GLM, Kimi) — **read the model pages live**: modalities, context window, price. OpenAI's comparison page to explain the base concepts in one pass.
+- Tokens; multimodality (images and audio are tokens too); pricing per-token vs subscription
+- Context window as finite working memory, and the **50% rule of thumb**
+- Chat vs agent; short timeline from tab completion to terminal coding agents
+- What a coding agent is; the three words: LLM + tool + harness. **Pi is a harness.** Opened up in Session 3.
+- The catalogue by environment: web / desktop / terminal
+- **Pi intro + live demo (Agus)** — including `AGENTS.md`, since that's the centre of the hands-on
+
+**Part 5 — Vibecoding: theory + demo (~35 min)**
+- Definition: *programar sin pensar que el código existe*
+- The four takes: Karpathy (origin), Naval (vibecoding as a video game), kids vibecoding with Lovable, vibe coding in prod
+- Vibe coding is not an insult — present it honestly before critiquing it. Live demo.
+- Then the critique, framed as predictions for the hands-on:
+  - Comprehension debt: you shipped code you don't understand
+  - The productivity illusion: METR (19% slower despite feeling 20% faster), CodeRabbit (1.7x more issues)
+  - The 80% problem: the remaining rough edges are where the real effort lives — and where understanding the code matters
+  - Agent failure modes: cascading errors, false success reporting ("tests pass" after editing the assertions), scope creep
+
+**Hands-on (~47 min)**
+- Install Pi (official quickstart), create the project + git repo, try the base commands
+- Write an `AGENTS.md` from the provided template, then **have the agent edit it**; restart/`/reload` and look at the loaded context
+- Then vibe code, with the rules: talk to the agent, don't open the files, describe symptoms not diagnoses, judge only by the output
+- Nobody should leave the room without Pi working
+
+**Reality check (~12 min, closes the hands-on)**
+- Now open the files — what did the AI actually produce? Checklist: tests, secrets, dead code, duplication, unvalidated input
+- Collect from the room; show one concrete security hole if it appears (permission asked in advance)
+- Key question: "Would you ship this? Would you maintain this?" — left unresolved; Session 2 opens on it
+- **Homework**: keep vibe coding with the same rules until it gets away from you. That's the material for Session 2's recap, which is where the deeper debrief now happens.
 
 ### Session 2: Planning & Review
 
@@ -245,16 +287,19 @@ Owner: Diego. Guest: **Ale Silva (CCAD)**. Goes last because it depends on Sessi
 **Guest: intro to CCAD (~20-25 min)**
 - Ale Silva on the Centro de Computación de Alto Desempeño: what it is, who it serves, what hardware exists, how a student gets an account, what HPC is normally used for at UNC. Scope to be agreed with him.
 
-**Theory: "The Model Is a Component" (~25 min, split around the hands-on)**
+**Theory: "The Model Is a Component" (~35-40 min, split around the hands-on)**
+- **Open source vs. open weights**: the binary, not the recipe. Nearly everything marketed as open-source AI is open weights.
+- **Licences**: Apache 2.0/MIT vs. bespoke licences with usage and scale restrictions vs. restrictions on the output. Can I use it commercially, redistribute a fine-tune, and who owns the generations?
 - Open weights vs. hosted APIs: the control spectrum.
 - What it takes to run one: VRAM arithmetic, quantization, local vs. serving runtimes, the OpenAI-compatible endpoint.
+- **Demo: Agus's portable GPU** serving a small model live — the "your own hardware" column made physical, and the session's fallback endpoint.
 - HPC mechanics: login vs. compute node, the scheduler, port forwarding, shared-resource etiquette.
 - Security sidebar: model supply chain, self-hosting as operator responsibility.
-- *After* the hands-on: when open source is the right call — deliberately placed once students have felt the ops burden.
+- *After* the hands-on: **is it good enough to be the engine of a serious project?** — answered from their own measurements (schema-respecting tool calls, 20-step tasks, context window, latency in the loop), then when open source is the right call. Both deliberately placed once students have felt the ops burden.
 
 **Hands-on (~60-75 min)**
 - Get onto a cluster, request a GPU allocation, serve a small open-weights model with an OpenAI-compatible endpoint, forward the port, change the base URL in the Session 5 agent, and compare both models on the same multi-step task.
-- A fallback endpoint is provided: the comparison is the lesson, not beating the queue.
+- A fallback endpoint is provided (Agus's GPU in the room): the comparison is the lesson, not beating the queue.
 
 **Course Closing (~15-20 min)**
 - Full retrospective across all six sessions: open the repo, look at the first commit.
@@ -296,8 +341,9 @@ For students who don't bring their own:
 
 ## Open Questions
 
-- Exact session duration (2h vs 3h)
-- Claude Code vs alternatives (CC requires terminal comfort, but matches the agentic depth we want)
+- Exact session duration (2h vs 3h) — **Session 1 is 3 h**, the rest are 2 h. Confirm the room allows it.
+- ~~Claude Code vs alternatives~~ → **decided: Pi is the course tool.** Terminal-based, minimal, standard `AGENTS.md`.
+- **⚠️ Session 2 is written against Claude Code** (plan mode via `Shift+Tab`, plannotator, `git diff`) and is now misaligned with the Pi decision. Coordinate with Agus: either Session 2 moves to Pi, or the course knowingly uses two harnesses and says so out loud in Session 1.
 - API keys: provide them or have students set up their own?
 - Pre-work: should students come to Session 1 with a project idea already?
 - Do we want a final deliverable (repo + reflection) or is the journey enough?
@@ -316,7 +362,7 @@ For students who don't bring their own:
 - [Simon Willison: "Vibe Engineering"](https://simonwillison.net/2025/Oct/7/vibe-engineering/) — analysis of vibe coding and the case for discipline (search for "vibe coding" posts)
 - [OWASP Top 10 for Agentic Applications (2025)](https://genai.owasp.org/resource-center/security-guides/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/) — ASI01-ASI10: goal hijack, tool misuse, rogue agents, cascading failures
 - [OWASP GenAI Security Project](https://genai.owasp.org/) — broader LLM security resources, supply chain risks, prompt injection
-- Karpathy's progression from coining "vibe coding" to proposing "agentic engineering" — [original vibe coding tweet/thread (Feb 2025)](https://x.com/karpathy/status/1889105372806840545)
+- Karpathy's progression from coining "vibe coding" to proposing "agentic engineering" — [original vibe coding tweet/thread (Feb 2025)](https://x.com/i/status/1886192184808149383) (same link as "The Spectrum" above; the two IDs previously disagreed)
 - METR: "Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity" — [metr.org](https://metr.org/) (devs 19% slower with AI despite feeling 20% faster)
 - CodeRabbit: AI co-authored code has 1.7x more major issues — [coderabbit.ai](https://coderabbit.ai/)
 - Udemy: "The Complete Course on Coding Agents" by Nikolai Schuler & Jagger Bellagarda — [Udemy search](https://www.udemy.com/courses/search/?q=coding+agents+claude+code)

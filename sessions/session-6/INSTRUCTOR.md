@@ -45,6 +45,24 @@ Hand the room over. Suggested scope to propose to him (confirm against the email
 
 Ask him what he'd rather cover; don't over-specify a guest's talk. Confirm whether he wants slides, a live tour of the dashboard, or just to talk.
 
+### Open source vs. open weights, and licences (~10 min) — opens the theory
+
+The distinction almost nobody makes correctly, and it has to come before the spectrum table or the rest of the block is imprecise.
+
+- **Open weights**: you can download the weights and run them. That's it.
+- **Open source** in the strong sense: you also have the training code and enough information about the data to reproduce the model.
+- Nearly everything marketed as "open source AI" is **open weights** — you get the binary, not the recipe. The honest analogy is a free executable, not source code. Use "pesos abiertos" in class where it's accurate; the sloppiness is in the industry's marketing, not in the students.
+
+**Then licences**, because this is where the distinction acquires consequences:
+
+- **Standard software licences** (Apache 2.0, MIT): free commercial use, derivatives, redistribution.
+- **Bespoke licences with restrictions** (Llama's community licence, Gemma's terms): usage limits, scale clauses, naming obligations, acceptable-use policies attached.
+- **Restrictions on the output** — some licences forbid using generations to train other models.
+
+The three questions a student should be able to answer before putting a model in a project: can I use it commercially? can I redistribute a fine-tune? who owns what it generates?
+
+**Verify each named model's licence the week of class** — licences change between versions of the same model family, and this is the kind of claim that's embarrassing to get wrong in front of a room.
+
 ### Open weights vs. hosted APIs (~10 min)
 
 Frame as a **spectrum of control**, not open-vs-closed tribalism:
@@ -70,6 +88,10 @@ Practical mechanics, because this is where the exercise will fail if it's hand-w
 - **Two families of runtime**: local/single-user (llama.cpp, Ollama) vs. serving (vLLM, SGLang — batching, throughput, an HTTP server). The exercise needs the second.
 - **The OpenAI-compatible endpoint is the interoperability story.** Nearly every serving runtime exposes one, which is why a harness can point at it with a base-URL change. This is the entire technical bridge from Session 5.
 
+**Live demo — Agus's portable GPU (~5-8 min).** Agus brings his own portable GPU and serves a small model in the room. This is the third column of the spectrum table made physical: no queue, no tunnel, no account, and the data never leaves the room. Show the actual VRAM usage against the arithmetic we did two slides earlier, plus tokens/second so the latency is felt rather than described.
+
+It also doubles as **the session's insurance policy**: if the CCAD queue is impossible, this is a real fallback endpoint sitting at the front of the room. **Confirm with Agus that he's bringing it, and test it beforehand.**
+
 ### HPC mechanics: how a cluster is not a laptop (~10 min)
 
 - **Login node vs. compute node.** Do not run the model on the login node. Say it twice; someone will do it anyway.
@@ -88,6 +110,21 @@ Rounds out the course's cross-cutting thread:
 - **The privacy argument cuts both ways**: self-hosting removes a third party but adds you as the operator, with logs, disk, and a shared filesystem you may not have thought about.
 - **Prompt injection doesn't care which model you run.** A weaker model may be *easier* to hijack.
 
+### Is it good enough to be the engine of a serious project? (~10 min)
+
+**The question the room actually wants answered**, and the right place to answer it: after the hands-on, with their own measurements in hand. Run it as a discussion, not a verdict — make them argue from what they just measured.
+
+The axes that decide it, all of them things they tested in step 6 of the exercise:
+
+- Does it call tools respecting the schema — *every* time, not most of the time?
+- Does it survive a 20-step task without losing the thread?
+- Is the context window enough for a real repo?
+- Is the latency tolerable inside an agent loop, where every step is another round trip?
+
+Our honest answer today — **re-verify the week of class, this moves fast**: for bounded tasks, reviews, high-volume repetitive work, and anything with sensitive data, yes. As the primary engine of a coding agent on a serious, long-lived project, not quite yet — and the bottleneck is usually **reliable tool calling, not the model's ability to write code**. Say that plainly; it's more useful to them than either enthusiasm or dismissal.
+
+This block leads directly into the next one: the answer isn't yes/no, it's "for which job".
+
 ### When open source is the right call (~8 min)
 
 Close the session (and the course) on judgment rather than tooling:
@@ -102,15 +139,20 @@ Close the session (and the course) on judgment rather than tooling:
 |---|---|
 | Recap & sharing from Session 5 | 10-15 min |
 | **Guest: Ale Silva — intro to CCAD** | **20-25 min** |
+| Theory: open source vs. open weights + licences | 10 min |
 | Theory: open weights vs. hosted (spectrum) | 10 min |
 | Theory: what it takes to run one (VRAM, quantization, runtimes) | 10 min |
+| Demo: Agus's portable GPU | 5-8 min |
 | Theory: HPC mechanics (login vs. compute, scheduler, forwarding) | 10 min |
 | Theory: security & trust sidebar | 5 min |
 | **Hands-on: serve a model on CCAD, point your agent at it** | **60-75 min** |
+| Discussion: is it good enough for a serious project? | 10 min |
 | Theory: when open source is the right call | 8 min |
 | Course closing & retrospective | 15-20 min |
 
-Note the ordering: the "when is this the right call" block sits *after* the hands-on deliberately — the judgment discussion is better once they've felt the ops burden firsthand. If the schedule slips, that block compresses to five minutes and folds into the closing.
+Note the ordering: the "is it good enough" and "when is this the right call" blocks sit *after* the hands-on deliberately — judgment discussions are better once they've felt the ops burden firsthand. If the schedule slips, the two fold into one ~10-minute block at the closing.
+
+**This now overflows a 3-hour session** (~2 h of non-hands-on content plus 60-75 min of hands-on). Something has to give on the day: the licence block compresses to 5 minutes if the room isn't interested, Agus's demo can happen *during* the hands-on rather than as its own slot, and the HPC-mechanics block can move into the exercise as written instructions. **Protect the guest slot, the hands-on, and the closing retrospective.**
 
 ## Hands-on notes
 
@@ -118,7 +160,7 @@ Expected shape: get onto a cluster → request a GPU allocation → serve a smal
 
 **Realistic expectation: a meaningful fraction of the room will not reach the last step.** Getting a model serving on shared HPC hardware in one sitting is genuinely hard. Plan for it:
 
-- **Have a fallback endpoint.** Pre-launch a served model yourself (on CCAD, or locally on the instructor machine with a small quantized model) and hand out the base URL. Students who lose the fight with the scheduler still get to do the comparison, which is the actual lesson.
+- **Have a fallback endpoint.** The primary one is **Agus's portable GPU serving a small model in the room** — hand out the base URL at the start of the block. Back that up with a pre-launched model on CCAD or on the instructor machine. Students who lose the fight with the scheduler still get to do the comparison, which is the actual lesson.
 - **Queue waits can exceed the class.** If the GPU partition is busy, nobody serves anything. This is the single biggest risk to the session — ask Ale whether a reservation is possible for the class window.
 - **Pair up on accounts.** If some students' accounts aren't provisioned, they work with someone whose is.
 - Emphasize using a **small** model. The goal is a working request, not benchmark scores. Nobody needs a frontier-sized model to see that the loop doesn't care who answers.
@@ -143,7 +185,7 @@ Once the thread is read, fold the answers into this file and rewrite the exercis
 
 ## Cross-session bridges
 
-- **Session 5** → this session's whole hands-on is "the agent you wrote, pointed somewhere else." **Session 5 is still TBD** — coordinate with Agus on whether his hands-on actually produces a client, and have him set up the handoff in his closing.
+- **Session 5** → this session's whole hands-on is "the agent you wrote, pointed somewhere else." **Session 5 is still TBD** — coordinate with Agus on whether his hands-on actually produces a client, and have him set up the handoff in his closing. Agus is also in the room for this session with his portable GPU, so the coordination is cheap.
 - **Session 1**'s LLM + tool + harness → today we swap the L. Nice symmetry for the course closing: the vocabulary from day one still holds when you replace its first term.
 - **Session 4**'s cost/token awareness → this is the other cost model (per-hour, not per-token).
 - **Cross-cutting security thread** → closes here on supply chain and self-hosting risk.
@@ -157,6 +199,8 @@ Once the thread is read, fold the answers into this file and rewrite the exercis
 - [Account requests](https://supercomputo.unc.edu.ar/servicios/pedido-de-cuentas/) · [intensive-use requests](https://supercomputo.unc.edu.ar/servicios/pedido-de-uso-intensivo-ventanilla-permanente/) · [user support](https://supercomputo.unc.edu.ar/servicios/soporte-usuarios/)
 - [Service status](https://stats.uptimerobot.com/eLhTV5CMni) · [dashboard](https://stats.ccad.unc.edu.ar/) — worth checking before class
 - Serving runtime — vLLM or equivalent; pick one and pin the version in the exercise once the cluster is confirmed.
+- **Agus's portable GPU** — live demo of the "your own hardware" column, and the session's primary fallback endpoint.
+- Licence sources: the model cards on Hugging Face (the licence field and the LICENSE file in the repo), plus the OSI's Open Source AI Definition for the open-source-vs-open-weights distinction. Read the actual licence text for anything we name, not a summary.
 - The client for the hands-on — Session 5's agent if that session produces one (TBD, Agus), otherwise a small pre-written client to hand out.
 
 ## What we explicitly skipped (and why)
@@ -170,6 +214,8 @@ Once the thread is read, fold the answers into this file and rewrite the exercis
 ## Open items (for future iterations)
 
 - **Read the email thread with Ale and resolve everything under Pending from Ale.** Blocking for the exercise.
+- **Confirm Agus is bringing his portable GPU**, which model he'll serve on it, and test the whole thing (including handing its endpoint to a student laptop over the room's network) before class. It's both a demo slot and the session's main fallback, so it can't be a maybe.
+- **Verify the licence of every model named in the slides**, the week of class. Licences differ between versions of the same family, and the licence block is worthless if the examples are stale.
 - **Confirm Ale's participation, date, and format** — and have a plan if he can't make it (his intro becomes a 10-minute instructor-delivered version plus a link to the wiki).
 - **Account pre-work**: send students the account instructions weeks ahead. Provisioning is not same-day, so this cannot be handled in class.
 - **Pre-stage weights** on shared storage if CCAD allows it.
