@@ -3,7 +3,7 @@
 <!--
 Template mínimo para la Sesión 1. Copialo a la raíz de tu proyecto como AGENTS.md
 y completá los TODO. Pi lo carga al arrancar (o con /reload).
-Esto es contexto: cada línea que agregás acá se la come la ventana de contexto.
+Esto es contexto: cada línea que agregás acá será parte de la ventana de contexto.
 Corto y concreto le sirve más al agente que largo y prolijo.
 -->
 

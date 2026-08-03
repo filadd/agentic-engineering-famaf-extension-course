@@ -1,12 +1,10 @@
-# Sesión 1 — Ejercicio práctico: tu primer coding agent + vibe coding
-
-> 🟡 Los pasos vienen del outline de Diego; la redacción todavía puede cambiar.
+# Sesión 1 — Ejercicio práctico: Pi (agent harness) + vibe coding
 
 ## Objetivo
 
 Dejar **Pi funcionando sobre un proyecto tuyo**, con un `AGENTS.md` propio, y arrancar a construir hablándole al agente **sin abrir el código**.
 
-El objetivo no es que el código sea bueno. Es que salgas de la clase con la herramienta andando y con algo hecho **que no sepas qué tiene adentro** — para que la lección de las próximas sesiones no sea una opinión del docente, sino algo que ya te pasó.
+El objetivo no es que el código sea bueno. Es que salgas de la clase con la herramienta andando y con algo hecho **que no sepas qué tiene adentro**.
 
 Este es el proyecto que vas a usar durante las 6 sesiones. Elegí algo que te dé ganas de seguir.
 
@@ -15,7 +13,6 @@ Este es el proyecto que vas a usar durante las 6 sesiones. Elegí algo que te d�
 - Tené **node y npm** instalados (`node --version` tiene que responder).
 - Tené una cuenta de **GitHub** y `git` configurado con tu nombre y mail.
 - Elegí tu proyecto: uno propio, o uno de los briefs del final de este documento.
-- Cerrá el editor. En serio. Hoy no lo vas a necesitar.
 
 ## Las reglas de hoy
 
@@ -26,7 +23,7 @@ Estas cuatro reglas son el ejercicio. Van a incomodar, y esa incomodidad es inte
 3. **Si algo se rompe, describí el síntoma, no lo diagnostiques.** "El botón no hace nada" está bien. "Falta el event listener en `App.jsx`" está prohibido — para saber eso tendrías que haber leído el código.
 4. **Juzgá solo por el output.** ¿Se ve bien? ¿Corre? ¿Hace lo que pediste? Con eso decidís si seguís o iterás.
 
-Si el agente te pregunta algo, contestale. Si te propone opciones, elegí. Todo eso es parte del juego. Lo único vedado es leer.
+Si el agente te pregunta algo, contestale. Si te propone opciones, elegí. Todo eso es parte del juego. Lo único vedado es leer el código.
 
 > Las reglas aplican desde el paso 6. Los pasos 1 a 5 son setup: ahí sí mirás lo que hacés.
 
