@@ -6,9 +6,6 @@ title: Sesión 1 — La Experiencia Vibe Coding
 ---
 
 <!--
-🟡 La ESTRUCTURA de esta sesión viene del outline escrito a mano por Diego.
-Lo que está TO REVIEW es la redacción de las notas, no el orden de los bloques.
-
 Skeleton de la presentación de la Sesión 1.
 Cada slide tiene un título + una nota de oradora/orador (HTML comment).
 El contenido del cuerpo de cada slide está pendiente.

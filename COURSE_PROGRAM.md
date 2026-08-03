@@ -79,9 +79,12 @@ These are the concepts to cover, roughly ordered by complexity:
 - Git workflow with AI (branching, reviewing diffs, reverting)
 
 ### [Diego] Tier 3: Tooling & Skills
-- Tools deep dive: what tools are, how the LLM calls them, examples in Claude Code (Read, Bash, Edit, Grep). Why tools are the unit of capability.
-- Harness deep dive: what Claude Code provides as a harness — context management, tool dispatch, permissions, hooks, slash commands. Comparison with other harnesses (Cursor, Aider, OpenCode). Why the harness matters as much as the model.
-- Custom instructions (CLAUDE.md basics, rules files)
+
+> Prerequisite, not content: **Pi is installed in Session 1** and students already wrote a first `AGENTS.md` there. Tier 3 goes deeper on both — it does not introduce them.
+
+- Tools deep dive: what tools are, how the LLM calls them, examples from Pi's toolbelt (read, write, edit, bash, grep, find, ls). Why tools are the unit of capability.
+- Harness deep dive: what Pi provides as a harness — context management, tool dispatch, permissions, extension points. Comparison with other harnesses (Claude Code, Cursor, Aider, OpenCode). Why the harness matters as much as the model.
+- Custom instructions beyond the basics: `AGENTS.md` in depth (the one they wrote in Session 1 becomes the starting point), the loading order across directories, rules files
 - Skills / slash commands: teaching AI reusable behaviors
 - MCP / external tools: extending the harness — the LLM gains new tools at runtime
 - Documentation tools (e.g. [context7](https://context7.com/), [context-hub](https://github.com/andrewyng/context-hub)): fetching up-to-date library docs so the AI works with accurate references instead of guessing
@@ -103,8 +106,6 @@ These are the concepts to cover, roughly ordered by complexity:
 - **TBD** — topics to be defined by the owner. See `harness_internals.md` and `sessions/session-5/`.
 
 ### [Diego] Tier 6: Open Source Models & HPC
-
-> 🔴 **TO REVIEW** — Claude-generated, not yet reviewed by Diego.
 
 - **Open source vs. open weights**: open weights means you can download and run them; open source in the strong sense means you could reproduce the model (training code + data information). Nearly everything marketed as "open source AI" is open weights — the binary, not the recipe.
 - **Licences**, where that distinction gets consequences: standard software licences (Apache 2.0, MIT) vs. bespoke licences with usage restrictions and scale clauses (Llama community licence, Gemma terms) vs. restrictions on the output itself. The three questions to answer before shipping: commercial use? redistribute a fine-tune? who owns the generations?
@@ -213,10 +214,12 @@ Not a dedicated session, but surfaced where relevant:
 **Recap & Sharing (~15-20 min)**
 - Show-and-tell: how did planning and review change the work?
 
+> Students arrive with **Pi already installed and a first `AGENTS.md` written in Session 1**. No setup block here; this session deepens what they already have.
+
 **Theory: "Teaching The Agent" + "Parallel Execution" (~20-30 min)**
-- Tools: the unit of agent capability. What a tool definition looks like (name + schema + handler), how the LLM decides which to call, examples from Claude Code's built-in toolbelt. Why a smarter tool often beats a smarter model.
-- Harness: the program that wraps the LLM. Claude Code's responsibilities — context window management, tool execution, permissions, hooks, slash commands, plan mode. Quick comparison with Cursor / Aider / OpenCode so students see that "harness" is a real design space, not just "the UI."
-- Custom instructions: CLAUDE.md as the agent's persistent memory
+- Tools: the unit of agent capability. What a tool definition looks like (name + schema + handler), how the LLM decides which to call, examples from Pi's built-in toolbelt. Why a smarter tool often beats a smarter model.
+- Harness: the program that wraps the LLM. Pi's responsibilities — context window management, tool execution, permissions, extension points. Quick comparison with Claude Code / Cursor / Aider / OpenCode so students see that "harness" is a real design space, not just "the UI."
+- Custom instructions: `AGENTS.md` as the agent's persistent memory — from the ten-line version they wrote in Session 1 to one that actually shapes behaviour
 - Skills and slash commands: building reusable capabilities
 - MCP and external tools: how external services plug into the harness as new tools — the agent's capabilities grow at runtime
 - Documentation tools (e.g. context7, context-hub): why accurate docs matter — the AI hallucinates APIs, context7, context-hub fixes that
@@ -225,7 +228,7 @@ Not a dedicated session, but surfaced where relevant:
 - Security sidebar: sandboxing, permissions, allowlists
 
 **Hands-on (~1.5 hours)**
-- Write a CLAUDE.md for your project (coding style, patterns, constraints)
+- Take the `AGENTS.md` you wrote in Session 1 and make it real: coding style, patterns, constraints, verification commands
 - Create a custom skill or command for a repeated task
 - Set up an MCP tool or external integration
 - Try a documentation tool (context7, context-hub): ask the agent to look up a library you're using — compare the output with and without it
@@ -277,8 +280,6 @@ Owner: **Agus**. **TBD** — session design to be written by the owner in `sessi
 Known dependency: **Session 6 currently assumes** students leave this session with an agent of their own that they can point at a different model. If the hands-on takes a different shape, Session 6's hands-on needs rework — sync between owners.
 
 ### Session 6: Open Source Models & Running on CCAD
-
-> 🔴 **TO REVIEW** — Claude-generated, not yet reviewed by Diego.
 
 Owner: Diego. Guest: **Ale Silva (CCAD)**. Goes last because it depends on Session 5 — students who wrote their own loop already believe the model is swappable.
 

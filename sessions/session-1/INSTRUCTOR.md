@@ -1,8 +1,5 @@
 # Session 1 — The Vibe Coding Experience (Instructor Notes)
 
-> 🟡 **Structure is Diego's** — the block order, timings and topics come from Diego's hand-written outline.
-> The *wording* of these notes is still a proposal.
-
 > Owner: Diego, with Agus on the Pi intro and demo. Status: shaping. Audience-facing materials live alongside this file (slides.md, exercise/README.md) and are in Spanish. These notes are for the instructor in English.
 
 ## Session goal (in one sentence)
