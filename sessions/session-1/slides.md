@@ -56,7 +56,7 @@ Diego Piloni · con Agustín Carrasco
 
 # Parte 2 — De qué va el curso
 
-<!-- Sección. ~20 min. Objetivo: fijar la expectativa correcta antes de empezar. -->
+<!-- Sección. ~10 min. Objetivo: fijar la expectativa correcta antes de empezar. -->
 
 ---
 
@@ -104,7 +104,7 @@ Diego Piloni · con Agustín Carrasco
 
 # Parte 3 — Quiénes son ustedes
 
-<!-- Sección. ~15 min. Objetivo real: calibrar el nivel de la sala antes del bloque de fundamentals. -->
+<!-- Sección. ~30 min. Objetivo real: calibrar el nivel de la sala antes del bloque de fundamentals. -->
 
 ---
 
@@ -180,9 +180,9 @@ Diego Piloni · con Agustín Carrasco
 
 ---
 
-## Regla práctica: no pasarse del 50%
+## Context rot: la calidad se degrada antes de lo que pensás
 
-<!-- Rule of thumb que usamos nosotros: no pasarse del 50% de la ventana que soporta el modelo. Más allá de eso la calidad se degrada bastante antes de que el harness te avise. Consecuencia práctica: sesiones cortas, contexto limpio, empezar de nuevo cuando la conversación se ensució. Hoy en la práctica van a poder ver cuánto contexto tienen cargado. -->
+<!-- No es un límite duro: a medida que se llena la ventana de contexto la calidad se degrada, bastante antes de que el harness te avise o de que se acabe el espacio. Consecuencia práctica: sesiones cortas, contexto limpio, empezar de nuevo cuando la conversación se ensució. Hoy en la práctica van a poder ver cuánto contexto tienen cargado. -->
 
 ---
 
@@ -218,7 +218,7 @@ Diego Piloni · con Agustín Carrasco
 
 ## Pi
 
-<!-- Agus. Intro breve: qué es Pi, por qué lo elegimos para el curso, cómo se instala y cómo se arranca (mandarlos a la quickstart oficial: pi.dev/docs/latest/quickstart). Mencionar AGENTS.md — el archivo con el que le explicás el proyecto — porque es el centro de la práctica de hoy. -->
+<!-- Agus. Intro breve: qué es Pi, por qué lo elegimos para el curso, cómo se instala y cómo se arranca (mandarlos a la quickstart oficial: pi.dev/docs/latest/quickstart). -->
 
 ---
 
@@ -266,7 +266,7 @@ Diego Piloni · con Agustín Carrasco
 
 ## Entonces, ¿cuál es el problema?
 
-<!-- El giro. El software profesional exige accountability: seguridad, mantenibilidad, correctitud. Ahí el vibecoding se cae, y no por culpa del modelo. Las próximas 4 slides son las formas concretas en que se cae — y en la práctica de hoy las van a ver en su propio código. -->
+<!-- El giro. El software profesional exige accountability: seguridad, mantenibilidad, correctitud. Ahí el vibecoding se cae, y no por culpa del modelo. Las próximas 3 slides son las formas concretas en que se cae — y en la práctica de hoy las van a ver en su propio código. -->
 
 ---
 
@@ -288,12 +288,6 @@ Diego Piloni · con Agustín Carrasco
 
 ---
 
-## Modos de falla del agente
-
-<!-- Los tres para tener el ojo entrenado hoy. Cascading errors: una suposición mala se propaga en silencio. False success reporting: "los tests pasan" — después de que el agente editó los asserts. Scope creep: resolvió tres problemas que nadie pidió. Pedirles que los cacen durante la práctica; los levantamos en el reality check. -->
-
----
-
 ## Pausa
 
 <!-- Última pausa antes de la práctica. Dudas. Aprovechar para pedir que abran una terminal y se sienten cerca de alguien que ya tenga Pi funcionando. -->
@@ -302,13 +296,13 @@ Diego Piloni · con Agustín Carrasco
 
 # Práctica (1 hora)
 
-<!-- Transición al bloque práctico. Objetivo: Pi instalado y funcionando, un AGENTS.md propio, y arrancar a vibecodear. Recorremos la sala con los profes de práctico. -->
+<!-- Transición al bloque práctico. Objetivo: Pi instalado y funcionando, y arrancar a vibecodear. Recorremos la sala con los profes de práctico. -->
 
 ---
 
 ## Elegí tu proyecto
 
-<!-- Proyecto propio o uno de los briefs por defecto (ver exercise/README.md). Requisito: que sea alcanzable como prototipo y con suficiente sustancia para aguantar las 6 sesiones. Es el MISMO proyecto todo el curso — elegir algo que les dé ganas de seguir. -->
+<!-- Proyecto propio o uno de los briefs por defecto (ver exercise/README.md). Requisito: que corra en el navegador, que sea alcanzable como prototipo y con suficiente sustancia para aguantar las 6 sesiones. Es el MISMO proyecto todo el curso — elegir algo que les dé ganas de seguir. -->
 
 ---
 
@@ -326,7 +320,7 @@ Diego Piloni · con Agustín Carrasco
 
 ## Los pasos
 
-<!-- Ver exercise/README.md. No leerlos desde la slide: dejarlos leer el ejercicio y arrancar. Los primeros pasos son setup (instalar Pi, crear el repo, probar comandos, AGENTS.md); recién el paso 6 es vibecodear. -->
+<!-- Ver exercise/README.md. No leerlos desde la slide: dejarlos leer el ejercicio y arrancar. Los primeros dos pasos son setup (instalar Pi, crear el repo); recién el paso 3 es vibecodear. -->
 
 ---
 

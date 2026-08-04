@@ -221,7 +221,7 @@ Agustín Carrasco
 
 ## Próxima sesión: Tooling & Skills (Diego)
 
-<!-- Foreshadow: el subagente que mencioné, el AGENTS.md en serio (el que escribieron en la Sesión 1 es el punto de partida), MCP, skills personalizadas — todo eso es Sesión 3. -->
+<!-- Foreshadow: el subagente que mencioné, el AGENTS.md en serio, MCP, skills personalizadas — todo eso es Sesión 3. -->
 
 ---
 
