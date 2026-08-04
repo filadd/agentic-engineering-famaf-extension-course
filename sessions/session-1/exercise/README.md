@@ -93,13 +93,6 @@ No hay nada formal para entregar. Guardá el repo: lo seguimos usando las próxi
 
 Seguí vibecodeando tu proyecto **con las mismas reglas** (sin abrir los archivos) hasta que sientas que se te va de las manos. Anotá cuándo pasa. La Sesión 2 abre con eso.
 
-## Preguntas para la discusión final
-
-1. ¿En qué momento sentiste que dejaste de tener el control del proyecto?
-2. ¿Qué te sorprendió más al abrir los archivos?
-3. Si mañana tuvieras que agregarle una feature, ¿por dónde empezarías? ¿Cuánto tardarías en entender lo que ya hay?
-4. ¿Lo subirías a producción? ¿Lo mantendrías por un año?
-
 ---
 
 ## Anexo: proyectos por defecto
