@@ -51,6 +51,10 @@ Creá también el repo en GitHub y conectalo (`git remote add origin ...`). Desd
 
 **Desde acá aplican las 4 reglas.** Cerrá el editor.
 
+0. Empezá instalando el paquete de Pi para poder correr background processes: **https://pi.dev/packages/@aliou/pi-processes** (te va a servir para levantar, si hace falta, el server local del proyecto en background).
+
+1. Para ir viendo el proyecto en el navegador mientras lo vas modificando, tené el servidor corriendo en background (pedile al agente que lo ejecute usando el paquete `pi-processes` para que corra en background).
+
 Contale al agente qué querés construir, en una o dos frases. Dejalo empezar. No le des estructura, no le digas qué stack usar salvo que tengas una preferencia fuerte.
 
 Ciclo: pedí algo → mirá el resultado corriendo → describí lo que falta o lo que está mal → repetí.
