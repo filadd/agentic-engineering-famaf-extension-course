@@ -10,9 +10,9 @@ Skeleton de la presentación de la Sesión 2.
 Cada slide tiene un título + una nota de oradora/orador (HTML comment).
 El contenido del cuerpo de cada slide está pendiente.
 
-Sesión de 2 horas: ~20 min de recap, ~35 min de teoría, 50 min de práctica, 10 de cierre.
+Sesión de 2 horas: 15 recap, 5 setup, 45 teoría (con demo de 20), 5 pausa, 40 práctica, 10 cierre.
 Dicta: Agus.
-Herramienta: Pi + la extensión de Plannotator. NO se instala un segundo harness.
+Herramienta: Pi + las extensiones de Plannotator y pi-subagents. NO se instala un segundo harness.
 -->
 
 # Sesión 2
@@ -27,13 +27,13 @@ Agustín Carrasco
 
 ## Hoy
 
-<!-- Agenda en una slide: arrancamos charlando de cómo les fue en la semana, después ~35 min de teoría, y 50 min de práctica. Avisar que hoy la práctica es más corta que la teoría sugiere y que el diff review del final NO se saltea. -->
+<!-- Agenda en una slide: arrancamos charlando de cómo les fue en la semana, instalamos dos extensiones, ~45 min de teoría con una demo larga en el medio, y 40 min de práctica. Avisar que el diff review del final NO se saltea. -->
 
 ---
 
 # Parte 0 — ¿Cómo les fue?
 
-<!-- Sección de recap. ~20 min. Es discusión, no slides: las 4 que siguen son disparadores, no contenido. Sincronizar con Diego ANTES de la clase: qué recolectó él en sus 12 min al final de la Sesión 1, para no repetir. -->
+<!-- Sección de recap. ~15 min. Es discusión, no slides: las 4 que siguen son disparadores, no contenido. Sincronizar con Diego ANTES de la clase: qué recolectó él en sus 12 min al final de la Sesión 1, para no repetir. Si la demo después sale fluida, devolverle minutos a este bloque. -->
 
 ---
 
@@ -63,7 +63,13 @@ Agustín Carrasco
 
 ## Hoy no vamos a escribir menos código
 
-<!-- La frase que hace la transición: "hoy no vamos a escribir menos código, vamos a saber qué código escribimos". Objetivo de la sesión en una línea: salir sabiendo externalizar un plan y revisar un diff antes de aceptar. Mostrar el flujo del día: plan → anotar → test → ejecutar → revisar. -->
+<!-- La frase que hace la transición: "hoy no vamos a escribir menos código, vamos a saber qué código escribimos". Objetivo de la sesión en una línea: salir sabiendo externalizar un plan y revisar un diff antes de aceptar. Mostrar el flujo del día: contexto → plan → anotar → test → ejecutar → revisar. -->
+
+---
+
+## Antes de arrancar: dos extensiones
+
+<!-- 5 min, todos juntos, ANTES de la teoría. `pi install npm:@plannotator/pi-extension` y `pi install npm:pi-subagents`. Es el único setup del día y está en el camino crítico de la práctica: si alguien se traba, hay una hora de teoría por delante para destrabarlo. Se pidió como pre-work, pero no asumir que lo hicieron. -->
 
 ---
 
@@ -91,15 +97,45 @@ Agustín Carrasco
 
 ---
 
-# Parte 2 — Planificar
+# Parte 2 — `AGENTS.md`
 
-<!-- Sección. ~15 min contando la demo. -->
+<!-- Sección. ~5 min. Segundo cimiento. Conecta directo con lo que trajeron del recap. -->
+
+---
+
+## Le explicaste lo mismo toda la semana
+
+<!-- Arrancar por el síntoma que ya nombraron ellos en el recap: cada conversación nueva arranca de cero. El stack, cómo se corre, dónde va cada cosa, qué no tocar. Conectar con la ventana de contexto que Diego explicó la Sesión 1: el contexto NO persiste entre conversaciones. -->
+
+---
+
+## `AGENTS.md`: el contexto que no querés repetir
+
+<!-- Un archivo en la raíz del repo que el agente lee al arrancar. Qué poner: stack y versiones, cómo se levanta, cómo se corren los tests, dos o tres convenciones, qué no tocar. Diez líneas alcanzan para que se note la diferencia. Mostrar uno real, corto. -->
+
+---
+
+## Es un estándar, no una cosa de Pi
+
+<!-- El mismo archivo lo levantan otros agentes. No es lock-in. Mención de una línea. -->
+
+---
+
+## Y hace que el plan salga mejor
+
+<!-- El puente al bloque que sigue: un plan escrito por un agente que ya sabe cómo es el proyecto arranca mucho más cerca de lo que querías. AGENTS.md no es un tema suelto — es lo que hace que el paso siguiente funcione. Decir explícitamente que hoy vemos la versión de diez líneas y que la Sesión 3 (Diego) lo abre en serio: orden de carga, rules files, skills. -->
+
+---
+
+# Parte 3 — Planificar y revisar
+
+<!-- Sección. ~30 min, con la demo de 20 adentro. Se dicta como UNA sola cosa: el plan que aprobás es la especificación contra la que revisás el diff. -->
 
 ---
 
 ## El plan siempre existe
 
-<!-- La idea central del bloque: cuando le tirás un prompt en frío, el agente planifica igual — en silencio, adentro de su contexto, y vos te enterás de lo que decidió mirando el destrozo. El plan siempre existe. La única pregunta es si lo podés leer. -->
+<!-- La idea central: cuando le tirás un prompt en frío, el agente planifica igual — en silencio, adentro de su contexto, y vos te enterás de lo que decidió mirando el destrozo. El plan siempre existe. La única pregunta es si lo podés leer. -->
 
 ---
 
@@ -109,15 +145,9 @@ Agustín Carrasco
 
 ---
 
-## Pi no tiene plan mode
+## Pi no tiene plan mode — y eso nos sirve
 
-<!-- Decirlo derecho: Pi es un harness mínimo, no trae plan mode. Se lo agregamos con una extensión: `pi install npm:@plannotator/pi-extension`. Y entonces: `pi --plan`, o `/plannotator`, o Ctrl+Alt+P. -->
-
----
-
-## Y entonces el plan es un archivo desde el minuto cero
-
-<!-- El punto que en otro harness habría que argumentar, acá viene gratis: no existe la versión donde el plan vive solo en la cabeza del agente. Aside de UNA línea: Claude Code lo trae built-in, Pi lo resuelve con una extensión — esa diferencia es el espacio de diseño de los harnesses, y es la Sesión 3. Decirlo y seguir. -->
+<!-- Pi es un harness mínimo, no trae plan mode; se lo agregamos con la extensión. Consecuencia: el plan es un archivo desde el minuto cero, no existe la versión donde vive solo en la cabeza del agente. Aside de UNA línea: hay harnesses que lo traen incorporado y otros que lo resuelven con extensiones — ese es el espacio de diseño de los harnesses, y es la Sesión 3. Decirlo y seguir. -->
 
 ---
 
@@ -127,93 +157,75 @@ Agustín Carrasco
 
 ---
 
-## Demo: planificar en vivo
+## El espectro de superficies de revisión
 
-<!-- ~7 min sobre el proyecto del instructor. Entrar en plan mode, señalar el toolset restringido, describir una feature, dejarlo explorar y escribir el checklist. Cuando llama a plannotator_submit_plan se abre el navegador. Narrar mientras corre: el plan es un archivo en disco, en una ruta que elegiste vos. -->
-
----
-
-## Rechazá el primer plan
-
-<!-- EL beat de la sesión. En la demo, NO aprobar en la primera pasada aunque el plan esté bien. Anotar un paso vago, una decisión que dos personas implementarían distinto, un paso que falta. "Deny with annotations". Tener a mano un plan malo pre-escrito por si el agente escribe uno demasiado prolijo. -->
+<!-- Antes de la demo, dar el mapa de la parte de revisión: no hay una manera correcta, hay varias superficies, y cuál usás depende del tamaño del cambio y de cuánto confiás en él. Listar las cinco: mirar mientras escribe, leer en el editor, diff tools (git diff / hunk), /plannotator-review, delegarlo a un subagente. Rápido — se ven en vivo en la demo. -->
 
 ---
 
-## Plan Diff: ¿te entendió?
+## Demo: el loop completo
 
-<!-- Al reenviar, Plannotator marca qué cambió respecto de la versión anterior. Ahí se ve si procesó las anotaciones o si te contestó cualquier cosa. Mostrarlo. Recién después, aprobar: el agente recupera todas sus herramientas y ejecuta. -->
+<!-- ~20 min sobre el proyecto del instructor. UN solo recorrido de punta a punta, narrado en voz alta. Los pasos están detallados en INSTRUCTOR.md. Esta es la slide donde se apaga el proyector de slides y se prende la terminal. -->
 
 ---
 
-## También podés delegar el review del plan
+## Demo — 1. Entrar en plan mode
 
-<!-- ~1 min. Podés tener un agente cuyo único trabajo es leer el plan y reportar dónde está flojo, qué falta, qué dos personas implementarían distinto. En Pi es un paquete (pi-subagents), no viene built-in. Mencionar, NO instalar: la profundidad de subagentes es la Sesión 3 (Diego). -->
+<!-- Señalar el `⏸ plan` y el toolset restringido. "El harness me está obligando. Aunque quisiera, no puedo saltear esto." -->
+
+---
+
+## Demo — 2. El agente escribe el plan
+
+<!-- Describir una feature, dejarlo explorar y escribir el checklist. Mientras corre, narrar: el plan es un archivo en disco, en una ruta que elegiste vos. -->
+
+---
+
+## Demo — 3. Rechazá el primer plan
+
+<!-- EL beat de la sesión. NO aprobar en la primera pasada aunque el plan esté bien. Anotar un paso vago, una decisión que dos personas implementarían distinto, un paso que falta. "Deny with annotations". Tener a mano un plan malo pre-escrito por si el agente escribe uno demasiado prolijo. -->
+
+---
+
+## Demo — 4. Plan Diff: ¿te entendió?
+
+<!-- Al reenviar, Plannotator marca qué cambió respecto de la versión anterior. Ahí se ve si procesó las anotaciones o si contestó cualquier cosa. -->
+
+---
+
+## Demo — 5. Delegar el review del plan
+
+<!-- ~2 min. Con pi-subagents, un agente cuyo único trabajo es leer el plan y reportar dónde está flojo, qué falta, qué dos personas implementarían distinto. Mención corta: la profundidad de subagentes es la Sesión 3 (Diego). -->
+
+---
+
+## Demo — 6. Aprobar y ejecutar
+
+<!-- Recupera todas las herramientas y arranca. Mientras avanza, frenarlo UNA vez a propósito para mostrar en vivo el "mirar mientras escribe". -->
+
+---
+
+## Demo — 7. `/plannotator-review` sobre el diff
+
+<!-- Abre los cambios del working tree en la UI de review. Anotar una línea concreta y mandarla de vuelta al agente. Cierra el loop sobre la misma feature: el plan que aprobamos hace 15 minutos es contra lo que estamos revisando ahora. -->
+
+---
+
+## Demo — 8. Sidebar de seguridad
+
+<!-- 30 segundos, adentro de la revisión del diff. Apuntar UN smell concreto (input sin validar, secret expuesto, falta de auth). No dar clase de OWASP. El punto es que lo noten MIENTRAS revisan. Si en el reality check de la Sesión 1 salió un ejemplo real de la sala, reusarlo. -->
+
+---
+
+## La pregunta que solo podés hacer si escribiste el plan
+
+<!-- Cerrar la demo con el through-line: "¿esto coincide con el plan que aprobaste?". Es la pregunta más útil de la revisión y solo existe porque el plan está escrito. El plan aprobado es la especificación contra la que revisás el diff. -->
 
 ---
 
 ## ¿Y la descomposición de tareas?
 
 <!-- No es un tema aparte: el plan ya salió descompuesto en un checklist. Apuntar al plan de la demo y decir "esto es descomposición". Recorrerlo estilo "entrypoint": arrancar por el archivo principal que toca y ramificar. La descomposición es leer el flujo, no aplicar una rúbrica. -->
-
----
-
-# Parte 3 — Revisar
-
-<!-- Sección. ~10 min contando la demo. -->
-
----
-
-## El espectro de superficies de revisión
-
-<!-- No hay una manera correcta de revisar, hay varias superficies. Cuál usás depende del tamaño del cambio y de cuánto confiás en él. Las 5 que siguen, rápido. -->
-
----
-
-## Estrategia 1: Mirar mientras escribe
-
-<!-- Watch + steer. Frenar al agente en medio del stream cuando ves que va por mal camino. La más barata, agarra la dirección equivocada temprano, se le escapa el detalle. -->
-
----
-
-## Estrategia 2: Leer en el editor
-
-<!-- Abrir los archivos modificados en el IDE. La más directa; no escala más allá de unos pocos archivos. -->
-
----
-
-## Estrategia 3: Diff tools
-
-<!-- git diff, y hunk para revisión interactiva hunk por hunk. Cuando el cambio es grande, el diff te da la forma. -->
-
----
-
-## Estrategia 4: `/plannotator-review`
-
-<!-- Abre los cambios del working tree en la UI de review. Anotás líneas concretas y el feedback vuelve directo al agente. Sirve cuando querés que la revisión SE CONVIERTA en la próxima instrucción, no solo aceptar o rechazar. Demo acá, sobre el diff que produjo el plan de la Parte 2 — cierra el loop. -->
-
----
-
-## Estrategia 5: Delegar el code review a un subagente
-
-<!-- ~1 min. Igual que con el plan, podés delegar la lectura del diff. Reporta issues, smells, divergencias respecto del plan. Segunda vez que aparece "esto se puede delegar" — profundidad en la Sesión 3. -->
-
----
-
-## Sidebar de seguridad
-
-<!-- 30 segundos, adentro de la demo de review. Apuntar UN smell concreto en el diff (input sin validar, secret expuesto, falta de auth). No dar clase de OWASP. El punto es que lo noten MIENTRAS revisan. Si en el reality check de la Sesión 1 salió un ejemplo real de la sala, reusarlo. -->
-
----
-
-## La pregunta que solo podés hacer si escribiste el plan
-
-<!-- El through-line del día: "¿esto coincide con el plan que aprobaste?". Es la pregunta más útil de la revisión y solo existe porque el plan está escrito. El plan aprobado es la especificación contra la que revisás el diff. -->
-
----
-
-## Bonus: Annai (en construcción)
-
-<!-- Mencionar Annai (案内, "guía") como alternativa con un modelo distinto: interactividad mid-session, submission a GitHub. Contraste con el modelo bloqueante de plannotator. Mostrar que el espacio de herramientas está vivo y que se puede construir en él. -->
 
 ---
 
@@ -241,7 +253,7 @@ Agustín Carrasco
 
 ---
 
-# Hands-on (50 min)
+# Hands-on (40 min)
 
 <!-- Transición al bloque práctico. -->
 
@@ -255,7 +267,7 @@ Agustín Carrasco
 
 ## Los pasos
 
-<!-- Ver exercise/README.md, no leerlos desde la slide. Los 6: elegir feature, entrar en plan mode, planificar y rechazar, test primero, ejecutar, revisar el diff. Insistir en el scope: si toca más de 4-5 archivos, no llegan. -->
+<!-- Ver exercise/README.md, no leerlos desde la slide. Los 7: elegir feature, AGENTS.md de diez líneas, entrar en plan mode, planificar y rechazar, test primero, ejecutar, revisar el diff. Insistir en dos cosas: si la feature toca más de 4-5 archivos no llegan, y el AGENTS.md son DIEZ LÍNEAS, no un documento. -->
 
 ---
 
@@ -285,13 +297,13 @@ Agustín Carrasco
 
 ## Para la semana
 
-<!-- Tarea: seguir con este flujo. Anotar dos cosas: dónde el flujo sobró (cambios donde planificar es puro trámite), y qué le tuvieron que explicar al agente más de una vez. Lo segundo es exactamente el material de la Sesión 3. -->
+<!-- Tarea: seguir con este flujo. Anotar dos cosas: dónde el flujo sobró (cambios donde planificar es puro trámite), y qué le siguieron explicando al agente aunque estuviera en el AGENTS.md. Lo segundo es exactamente el material de la Sesión 3. -->
 
 ---
 
 ## Próxima sesión: Tooling & Skills (Diego)
 
-<!-- Foreshadow: el subagente que mencioné dos veces hoy, cómo se le escribe documentación al agente para no repetirle lo mismo, MCP, skills propias, y por qué el harness restringía las herramientas en plan mode. OJO: NO prometer AGENTS.md como algo que ya escribieron — ese paso se sacó de la Sesión 1, lo introduce Diego desde cero. -->
+<!-- Foreshadow: el AGENTS.md de diez líneas de hoy convertido en uno que de verdad cambia el comportamiento, los subagentes que usamos de a poco, MCP, skills propias, y por qué el harness restringía las herramientas en plan mode. -->
 
 ---
 
