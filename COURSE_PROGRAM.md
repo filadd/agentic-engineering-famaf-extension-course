@@ -67,7 +67,7 @@ These are the concepts to cover, roughly ordered by complexity:
   - Coding agent: an LLM that takes actions on a codebase via tools, not just suggests text
   - Harness: the program wrapping the LLM (context management, tool dispatch, permissions). Pi is a harness.
   - The catalogue by environment: web (Lovable, v0, Bolt, Claude Code web), desktop (Claude Code desktop), terminal (Claude Code, Codex, Pi, opencode)
-- First contact with project context: `AGENTS.md` as the file where you explain the project to the agent (opened up properly in Tier 3).
+> `AGENTS.md` used to sit here as "first contact with project context". The step was dropped from Session 1 — it is introduced from scratch in Tier 3.
 
 ### [Agus] Tier 2: Planning & Review
 - Code review of AI output (reading diffs, understanding changes)
@@ -80,11 +80,11 @@ These are the concepts to cover, roughly ordered by complexity:
 
 ### [Diego] Tier 3: Tooling & Skills
 
-> Prerequisite, not content: **Pi is installed in Session 1** and students already wrote a first `AGENTS.md` there. Tier 3 goes deeper on both — it does not introduce them.
+> Prerequisite, not content: **Pi is installed in Session 1**. Tier 3 goes deeper on the harness — it does not introduce Pi. `AGENTS.md` **is** introduced here from scratch: the Session 1 step that had students write one was dropped.
 
 - Tools deep dive: what tools are, how the LLM calls them, examples from Pi's toolbelt (read, write, edit, bash, grep, find, ls). Why tools are the unit of capability.
 - Harness deep dive: what Pi provides as a harness — context management, tool dispatch, permissions, extension points. Comparison with other harnesses (Claude Code, Cursor, Aider, OpenCode). Why the harness matters as much as the model.
-- Custom instructions beyond the basics: `AGENTS.md` in depth (the one they wrote in Session 1 becomes the starting point), the loading order across directories, rules files
+- Custom instructions: `AGENTS.md` from scratch — what it is, the loading order across directories, rules files
 - Skills / slash commands: teaching AI reusable behaviors
 - MCP / external tools: extending the harness — the LLM gains new tools at runtime
 - Documentation tools (e.g. [context7](https://context7.com/), [context-hub](https://github.com/andrewyng/context-hub)): fetching up-to-date library docs so the AI works with accurate references instead of guessing
@@ -160,7 +160,7 @@ Not a dedicated session, but surfaced where relevant:
 - Chat vs agent; short timeline from tab completion to terminal coding agents
 - What a coding agent is; the three words: LLM + tool + harness. **Pi is a harness.** Opened up in Session 3.
 - The catalogue by environment: web / desktop / terminal
-- **Pi intro + live demo (Agus)** — including `AGENTS.md`, since that's the centre of the hands-on
+- **Pi intro + live demo (Agus)** — what Pi is, why we picked it, install pointer, and one prompt narrating the agent loop out loud
 
 **Part 5 — Vibecoding: theory + demo (~35 min)**
 - Definition: *programar sin pensar que el código existe*
@@ -172,9 +172,8 @@ Not a dedicated session, but surfaced where relevant:
   - The 80% problem: the remaining rough edges are where the real effort lives — and where understanding the code matters
   - Agent failure modes: cascading errors, false success reporting ("tests pass" after editing the assertions), scope creep
 
-**Hands-on (~47 min)**
-- Install Pi (official quickstart), create the project + git repo, try the base commands
-- Write an `AGENTS.md` from the provided template, then **have the agent edit it**; restart/`/reload` and look at the loaded context
+**Hands-on (~27 min)**
+- Install Pi (official quickstart), create the project + git repo, add the `pi-processes` package so the dev server can run in the background
 - Then vibe code, with the rules: talk to the agent, don't open the files, describe symptoms not diagnoses, judge only by the output
 - Nobody should leave the room without Pi working
 
@@ -216,12 +215,12 @@ Not a dedicated session, but surfaced where relevant:
 **Recap & Sharing (~15-20 min)**
 - Show-and-tell: how did planning and review change the work?
 
-> Students arrive with **Pi already installed and a first `AGENTS.md` written in Session 1**. No setup block here; this session deepens what they already have.
+> Students arrive with **Pi already installed** (Session 1). No setup block here. `AGENTS.md` is introduced here from scratch — the Session 1 step that had students write one was dropped.
 
 **Theory: "Teaching The Agent" + "Parallel Execution" (~20-30 min)**
 - Tools: the unit of agent capability. What a tool definition looks like (name + schema + handler), how the LLM decides which to call, examples from Pi's built-in toolbelt. Why a smarter tool often beats a smarter model.
 - Harness: the program that wraps the LLM. Pi's responsibilities — context window management, tool execution, permissions, extension points. Quick comparison with Claude Code / Cursor / Aider / OpenCode so students see that "harness" is a real design space, not just "the UI."
-- Custom instructions: `AGENTS.md` as the agent's persistent memory — from the ten-line version they wrote in Session 1 to one that actually shapes behaviour
+- Custom instructions: `AGENTS.md` as the agent's persistent memory — introduced from scratch, built up to one that actually shapes behaviour
 - Skills and slash commands: building reusable capabilities
 - MCP and external tools: how external services plug into the harness as new tools — the agent's capabilities grow at runtime
 - Documentation tools (e.g. context7, context-hub): why accurate docs matter — the AI hallucinates APIs, context7, context-hub fixes that
@@ -230,7 +229,7 @@ Not a dedicated session, but surfaced where relevant:
 - Security sidebar: sandboxing, permissions, allowlists
 
 **Hands-on (~1.5 hours)**
-- Take the `AGENTS.md` you wrote in Session 1 and make it real: coding style, patterns, constraints, verification commands
+- Write your first `AGENTS.md` and make it real: coding style, patterns, constraints, verification commands
 - Create a custom skill or command for a repeated task
 - Set up an MCP tool or external integration
 - Try a documentation tool (context7, context-hub): ask the agent to look up a library you're using — compare the output with and without it
