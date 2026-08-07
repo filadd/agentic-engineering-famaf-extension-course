@@ -31,9 +31,9 @@ La regla 2 va a dar ganas de saltearla. Es la que más importa.
 
 ## Pasos
 
-Son 40 minutos y siete pasos. Van justos: si te trabás en uno, seguí.
+Son 40 minutos y seis pasos. Van justos: si te trabás en uno, seguí.
 
-### 1. Elegí una feature (~3 min)
+### 1. Elegí una feature (~4 min)
 
 Algo chico que puedas terminar en ~35 minutos *incluyendo* la planificación y la revisión.
 
@@ -45,23 +45,7 @@ Buenos ejemplos:
 
 Malos ejemplos: cualquier cosa que toque autenticación de cero, refactors grandes, o features que tocan más de 4-5 archivos. Si dudás, elegí lo más chico: el ejercicio es el flujo, no la feature.
 
-### 2. Escribí un `AGENTS.md` mínimo (~4 min)
-
-En la raíz de tu proyecto, creá un archivo `AGENTS.md`. **Diez líneas, no más** — si te ponés a escribir un documento, no terminás el ejercicio.
-
-Poné lo que te cansaste de repetirle al agente durante la semana:
-
-- Qué stack usa el proyecto y con qué versiones.
-- Cómo se levanta (el comando exacto).
-- Cómo se corren los tests, si ya tenés.
-- Dos o tres convenciones que te importan.
-- Qué no tiene que tocar.
-
-Es el archivo que el agente lee al arrancar. A partir de ahora no arranca de cero cada vez.
-
-> Es un estándar, no algo de Pi: el mismo archivo lo levantan otros agentes. En la Sesión 3 lo van a abrir en serio.
-
-### 3. Entrá en plan mode (~3 min)
+### 2. Entrá en plan mode (~3 min)
 
 ```
 pi --plan
@@ -73,7 +57,7 @@ pi --plan
 
 Eso no es decoración. **Aunque quieras, no podés saltear la planificación.** El harness te lo impide.
 
-### 4. Planificá — y rechazá el primer plan (~10 min)
+### 3. Planificá — y rechazá el primer plan (~11 min)
 
 Describile la feature. Dejá que explore el proyecto y escriba el plan como checklist.
 
@@ -92,7 +76,7 @@ Iterá hasta que el plan **te sirva a vos**. Recién ahí, aprobá.
 
 > Si el primer plan te salió genial y no encontrás nada que anotar, no aprobás: buscá más. Siempre hay una decisión implícita.
 
-### 5. El test primero (~5 min)
+### 4. El test primero (~6 min)
 
 Antes de ejecutar, escribí **al menos un test** que describa lo que la feature tiene que hacer. Va a fallar — todavía no hay código. Está bien.
 
@@ -100,7 +84,7 @@ Antes de ejecutar, escribí **al menos un test** que describa lo que la feature 
 
 **Lo que no delegás es el assert.** Esa línea la escribís vos. La idea: el test es **el contrato que el agente no puede falsear**. Si lo escribe él después de implementar, puede aflojar el assert hasta que pase. Si lo escribiste vos antes, tiene que cumplirlo.
 
-### 6. Ejecutá el plan (~9 min)
+### 5. Ejecutá el plan (~9 min)
 
 Aprobado el plan, el agente recupera todas sus herramientas y arranca.
 
@@ -108,7 +92,7 @@ Andá siguiendo la checklist mientras avanza. Si ves que se va del plan, **frena
 
 Si algo se rompe: **leé el código vos antes de pedirle que lo arregle.** Es la trampa más común — pedirle que arregle algo que no entendiste te deja exactamente donde estabas la semana pasada.
 
-### 7. Revisá el diff (~6 min)
+### 6. Revisá el diff (~7 min)
 
 Antes de dar la feature por terminada:
 
@@ -129,14 +113,13 @@ Buscá:
 
 Si encontrás algo, **no le tires un "arreglá esto" sin pensar**. Decidí si querés que lo arregle, lo arreglás vos, o si el cambio quedaba mejor sin esa parte.
 
-Cuando estés conforme, commiteá. **Commiteá también el archivo del plan y el `AGENTS.md`** — son parte del historial del proyecto.
+Cuando estés conforme, commiteá. **Commiteá también el archivo del plan** — es parte del historial del proyecto.
 
 ## Resultado esperado
 
 Al final del ejercicio deberías tener:
 
 - La feature andando, con al menos un test que escribiste vos.
-- Un `AGENTS.md` de diez líneas en la raíz.
 - Un archivo de plan commiteado, con las anotaciones que le hiciste.
 - Un diff que leíste entero antes de aceptarlo.
 - Una idea concreta de cuánto tarda esto comparado con la Sesión 1.
@@ -148,4 +131,4 @@ Seguí agregando features a tu proyecto **con este flujo**: plan escrito, plan a
 Anotá dos cosas para la Sesión 3:
 
 1. **Dónde el flujo te sobró.** Va a haber cambios donde planificar es puro trámite. Cuáles.
-2. **Qué le seguiste explicando al agente aunque estuviera en el `AGENTS.md`** — o qué le tuviste que agregar al archivo sobre la marcha. Ese es exactamente el material de la próxima sesión.
+2. **Qué le tuviste que explicar al agente más de una vez.** Cada conversación nueva arranca de cero y te vas a cansar de repetir lo mismo. Anotá qué. Ese es exactamente el material de la próxima sesión.
