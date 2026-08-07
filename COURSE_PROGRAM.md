@@ -67,24 +67,26 @@ These are the concepts to cover, roughly ordered by complexity:
   - Coding agent: an LLM that takes actions on a codebase via tools, not just suggests text
   - Harness: the program wrapping the LLM (context management, tool dispatch, permissions). Pi is a harness.
   - The catalogue by environment: web (Lovable, v0, Bolt, Claude Code web), desktop (Claude Code desktop), terminal (Claude Code, Codex, Pi, opencode)
+
 > `AGENTS.md` used to sit here as "first contact with project context". The step was dropped from Session 1 — it is introduced from scratch in Tier 3.
 
 ### [Agus] Tier 2: Planning & Review
 - Code review of AI output (reading diffs, understanding changes)
 - Task decomposition: breaking work into reviewable units
-- Plan mode: planning before executing
-- Structured planning & review (plannotator): externalizing, annotating, and reviewing plans and generated code as first-class artifacts
+- Planning before executing: the plan always exists — the question is whether you can read it
+- Structured planning & review (`@plannotator/pi-extension`): file-based plan mode for Pi. Externalize, annotate, deny-with-annotations, Plan Diff, then `/plannotator-review` on the resulting diff. Plans and reviews as first-class artifacts
+- The harness enforces the discipline: planning mode restricts the toolset to read/search and blocks writes outside the plan file (seeds Tier 3's permissions/extension-points material)
 - Testing: test-first development, tests as guardrails
 - Debugging AI-generated code
 - Git workflow with AI (branching, reviewing diffs, reverting)
 
 ### [Diego] Tier 3: Tooling & Skills
 
-> Prerequisite, not content: **Pi is installed in Session 1**. Tier 3 goes deeper on the harness — it does not introduce Pi. `AGENTS.md` **is** introduced here from scratch: the Session 1 step that had students write one was dropped.
+> Prerequisite, not content: **Pi is installed in Session 1**, and Session 2 adds the Plannotator extension. Tier 3 goes deeper on the harness — it does not introduce Pi. `AGENTS.md` **is** introduced here from scratch: the Session 1 step that had students write one was dropped.
 
 - Tools deep dive: what tools are, how the LLM calls them, examples from Pi's toolbelt (read, write, edit, bash, grep, find, ls). Why tools are the unit of capability.
 - Harness deep dive: what Pi provides as a harness — context management, tool dispatch, permissions, extension points. Comparison with other harnesses (Claude Code, Cursor, Aider, OpenCode). Why the harness matters as much as the model.
-- Custom instructions: `AGENTS.md` from scratch — what it is, the loading order across directories, rules files
+- Custom instructions: `AGENTS.md` from scratch — what it is, the loading order across directories, rules files. Students arrive with the *motivation* for it from Session 2's homework ("what did you have to explain to the agent more than once?"), not with a file.
 - Skills / slash commands: teaching AI reusable behaviors
 - MCP / external tools: extending the harness — the LLM gains new tools at runtime
 - Documentation tools (e.g. [context7](https://context7.com/), [context-hub](https://github.com/andrewyng/context-hub)): fetching up-to-date library docs so the AI works with accurate references instead of guessing
@@ -185,37 +187,42 @@ Not a dedicated session, but surfaced where relevant:
 
 ### Session 2: Planning & Review
 
-**Recap & Sharing (~15-20 min)**
-- Show-and-tell: what happened since last session? Anyone explore their code more?
+> Runs on **Pi + `@plannotator/pi-extension`** — the only student install of the session. Session duration is 2 h.
 
-**Theory: "Working With Intent" (~20-30 min)**
-- Why code review matters more with AI (verification bottleneck, comprehension debt)
-- Task decomposition: breaking work into reviewable units
-- Plan mode: think before you execute — the agent plans, but the plan lives inside the agent's context
-- Structured planning & review (plannotator): externalizing the plan — annotate, review, refine before executing. Also works for reviewing generated code: walk through the output step by step, annotate issues, approve or request changes. The plan (and the review) become first-class artifacts you can read, edit, and sign off on
-- Test-first development: tests as guardrails for AI output
-- Git as your safety net: branching, reviewing diffs, reverting
+**Recap & debrief from Session 1 (~20 min)**
+- This is the course's real reality check. Session 1's in-class version was only ~12 min on 15 min of building; the material comes from the homework ("keep vibe coding until it gets away from you, and write down when")
+- Collect the moments it got away from them. Ask who broke the no-reading rule, and what made them
+- Cash in the predictions Diego framed as predictions: METR (19% slower while feeling 20% faster) and the 80% problem. Don't argue with students who were genuinely faster
+- Name comprehension debt again and give it its mechanism: the bottleneck moved from writing code to verifying it
 
-**Hands-on (~1.5 hours)**
-- New rules: plan your work, break it into tasks, review every change
-- Use plan mode to decompose the next feature — feel the difference vs. Session 1
-- Try structured planning (plannotator): create an externalized plan, annotate it, review it — compare with the built-in plan mode experience
-- Use plannotator to review generated code: walk through the output, annotate issues, approve or iterate
-- Write tests first, have the AI implement to pass them
-- Review diffs, use git to track changes
-- Debug when things break — understand *why*, not just fix it
+**Theory (~35 min)**
+- Git as your safety net: branching, reviewing diffs, reverting. Goes first — everything after assumes you can back out
+- Planning: the plan always exists; the only question is whether you can read it. Pi has no built-in plan mode, so the extension *is* plan mode and the plan is a file from the first moment
+- The harness enforces the discipline: planning mode swaps the toolset to read/search, blocks destructive commands, restricts writes to the plan file. You cannot skip ahead
+- Live demo: `pi --plan` → agent writes a checklist → `plannotator_submit_plan` → **deny with annotations** → Plan Diff → approve
+- Review: the spectrum of surfaces — watch+steer, read in editor, `git diff`/hunk, `/plannotator-review`, delegate to a subagent, Annai. Demo `/plannotator-review` on the diff the plan produced
+- Subagents appear twice as ~1-min subtopics (plan review, code review). Mentioned, not installed — depth is Session 3
+- Test-first development: tests as guardrails. Delegate the runner setup, never the assertion
+- Security sidebar woven into the review demo (~30 sec)
 
-**Reflection & Discussion (~15-20 min)**
-- Compare experience with Session 1: what changed?
-- What was the overhead? Was it worth it?
-- Security sidebar: what vulnerabilities did you catch (or miss) during review?
+**Hands-on (~50 min)**
+- Rules invert from Session 1: nothing executes without a written plan; **reject the first plan**; read every diff; read broken code yourself before asking for a fix
+- Pick a small feature (4-5 files max), enter plan mode, iterate the plan through deny-with-annotations
+- Write one test yourself before executing; have the agent set up the runner if there isn't one
+- Execute the plan step by step, steering when it drifts
+- Review the diff via `/plannotator-review`; commit the plan file alongside the code
+
+**Reflection & Discussion (~10 min)**
+- Compare with Session 1: what changed? Did the annotated plan surface something you'd missed?
+- What was the overhead? Was it worth it? (For a small feature, honestly: maybe not. Let them say so.)
+- Homework for Session 3: where did the flow feel like pure ceremony, and what did you have to explain to the agent more than once? The second question is Session 3's material.
 
 ### Session 3: Tooling & Skills
 
 **Recap & Sharing (~15-20 min)**
 - Show-and-tell: how did planning and review change the work?
 
-> Students arrive with **Pi already installed** (Session 1). No setup block here. `AGENTS.md` is introduced here from scratch — the Session 1 step that had students write one was dropped.
+> Students arrive with **Pi and the Plannotator extension already installed** (Sessions 1 and 2). No setup block here. `AGENTS.md` is introduced here from scratch — the Session 1 step that had students write one was dropped.
 
 **Theory: "Teaching The Agent" + "Parallel Execution" (~20-30 min)**
 - Tools: the unit of agent capability. What a tool definition looks like (name + schema + handler), how the LLM decides which to call, examples from Pi's built-in toolbelt. Why a smarter tool often beats a smarter model.
@@ -229,7 +236,7 @@ Not a dedicated session, but surfaced where relevant:
 - Security sidebar: sandboxing, permissions, allowlists
 
 **Hands-on (~1.5 hours)**
-- Write your first `AGENTS.md` and make it real: coding style, patterns, constraints, verification commands
+- Write your first `AGENTS.md` and make it real: coding style, patterns, constraints, verification commands. Start from what you had to repeat to the agent during Session 2's homework
 - Create a custom skill or command for a repeated task
 - Set up an MCP tool or external integration
 - Try a documentation tool (context7, context-hub): ask the agent to look up a library you're using — compare the output with and without it
@@ -347,7 +354,8 @@ For students who don't bring their own:
 
 - Exact session duration (2h vs 3h) — **Session 1 is 3 h**, the rest are 2 h. Confirm the room allows it.
 - ~~Claude Code vs alternatives~~ → **decided: Pi is the course tool.** Terminal-based, minimal, standard `AGENTS.md`.
-- **⚠️ Session 2 is written against Claude Code** (plan mode via `Shift+Tab`, plannotator, `git diff`) and is now misaligned with the Pi decision. Coordinate with Agus: either Session 2 moves to Pi, or the course knowingly uses two harnesses and says so out loud in Session 1.
+- ~~Session 2 is written against Claude Code and misaligned with the Pi decision~~ → **resolved: Session 2 runs on Pi.** Planning and review go through `@plannotator/pi-extension`, which adds file-based plan mode (`pi --plan`) and `/plannotator-review` to Pi. One harness for the whole course; students install one extension in Session 2.
+- **`pi-subagents` package is unpinned.** At least six forks on npm (`pi-subagents`, `@tintinweb/`, `@gotgenes/`, `@yassimba/`, `@nklisch/`, plus bridges) — the same ambiguity the Pi package names had. Session 2 only *mentions* subagents, so nothing blocks on it; **Diego picks one for Session 3**, where students actually install it.
 - API keys: provide them or have students set up their own?
 - Pre-work: should students come to Session 1 with a project idea already?
 - Do we want a final deliverable (repo + reflection) or is the journey enough?

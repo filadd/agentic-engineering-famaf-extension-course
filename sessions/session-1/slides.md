@@ -368,7 +368,7 @@ Diego Piloni · con Agustín Carrasco
 
 ## Próxima sesión: Planificar y Revisar (Agus)
 
-<!-- Foreshadow: la primera capa de estructura. Plan antes de ejecutar, review antes de aceptar, tests como guardrails, git como red de seguridad. Traigan el mismo proyecto. -->
+<!-- Foreshadow: la primera capa de estructura. Plan antes de ejecutar, review antes de aceptar, tests como guardrails, git como red de seguridad. Traigan el mismo proyecto. Pedirles como pre-work que instalen la extensión: `pi install npm:@plannotator/pi-extension` — es el único setup de la Sesión 2 y está en el camino crítico de la práctica. -->
 
 ---
 

@@ -150,7 +150,8 @@ That adds to ~3 h, so it's tight but should fit. **If the room runs long, cut fr
 - **Comprehension debt** → Session 2's verification bottleneck. Same problem, named twice.
 - **The spectrum** → Session 4's closing revisits it. Use the same five labels.
 - **Open-weights models (GLM, Kimi) named in fundamentals** → Session 6. Just planting the names.
-- **⚠️ Tooling mismatch**: the course tool is **Pi**, but Session 2's material is written against Claude Code (plan mode via `Shift+Tab`, plannotator, `git diff`). Session 2 was not touched. **Coordinate with Agus** — either Session 2 moves to Pi or the course accepts two harnesses. Tracked in `COURSE_PROGRAM.md` open questions.
+- **✅ Tooling mismatch resolved**: Session 2 now runs on Pi. It adds `@plannotator/pi-extension` (file-based plan mode + `/plannotator-review`) — one extension, no second harness. Nothing to warn students about; **Pi is the tool for all six sessions, full stop.**
+- **The harness restricts the toolset** → Session 2 shows this concretely (planning mode allows only read/search) and hands it to Session 3 as permissions and extension points. Worth knowing when you plant "harness" as vocabulary in Part 4.
 
 ## Tools/assets referenced
 
