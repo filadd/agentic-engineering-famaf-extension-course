@@ -6,7 +6,7 @@
 
 Que salgan sabiendo **convertir lo que le explican al agente una y otra vez en configuración que el agente lee solo** — con la idea internalizada de "lo que le explicaste dos veces, escribilo una".
 
-Y con una segunda idea abajo, más difícil y más valiosa que la primera: **todo lo que le agregás al agente se paga en contexto.** Elegir qué está siempre cargado y qué se carga on demand es una decisión de ingeniería, no un detalle de configuración. Esa idea aparece tres veces hoy, con tres tecnologías distintas. La tercera vez hay que nombrarla.
+Y con una segunda idea abajo, más difícil y más valiosa que la primera: **todo lo que le agregás al agente se paga en contexto.** Elegir qué está siempre cargado y qué se carga on demand es una decisión de ingeniería, no un detalle de configuración.
 
 ## Audiencia y supuestos
 
@@ -16,19 +16,16 @@ Y con una segunda idea abajo, más difícil y más valiosa que la primera: **tod
 - **`AGENTS.md` se introduce hoy desde cero.** Nadie escribió uno. El paso que lo pedía en la Sesión 1 se sacó y la Sesión 2 no lo tocó a propósito. No dar por sentado que saben qué es, ni siquiera los que ya usaron otro agente.
 - **La materia prima de hoy son sus notas de la tarea** ("¿qué le tuviste que explicar más de una vez?"). Es el único insumo que no podemos generar nosotros. Si el pizarrón sale flojo, la práctica se queda sin combustible — tener cuatro o cinco ejemplos genéricos listos: el comando de los tests, el package manager, dónde van los archivos, el estilo de código.
 - **Las extensions de Pi son TypeScript.** No asumir TS en la sala. Hoy *instalamos y configuramos* extensions; escribir una es otra cosa y no es de esta sesión.
-- Es la primera sesión donde el trabajo que hacen **queda**: el `AGENTS.md` y el skill los siguen usando en las Sesiones 4, 5 y 6. Decirlo, ayuda a justificar los 45 minutos.
 
 ## La decisión de herramientas
 
 Sigue **Pi**, y esta vez la arquitectura de Pi *es* el contenido de la sesión.
 
-Se agrega una sola extensión, **[`pi-mcp-adapter`](https://pi.dev/packages/pi-mcp-adapter)**, y va **pedida como pre-work**:
+Se agrega una sola extensión, **[`pi-mcp-adapter`](https://pi.dev/packages/pi-mcp-adapter)**:
 
 ```
 pi install npm:pi-mcp-adapter
 ```
-
-Esto contradice el programa, que dice que la Sesión 3 no tiene setup. Es cierto y hay que asumirlo: sin el adapter no hay paso 4 de la práctica. Mitigación: pedirlo por adelantado, tener el comando en una slide, y aceptar que va a haber rezagados que lo instalan durante el primer bloque de teoría.
 
 **El regalo que nos hace Pi, otra vez.** Pi es deliberadamente mínimo: el toolbelt de base es `read`, `write`, `edit`, `bash`, `grep`, `find`, `ls`, y **casi todo lo demás es un extension point**. Eso hace visible algo que en otros harnesses está tapado:
 
