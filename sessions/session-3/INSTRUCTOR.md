@@ -10,7 +10,7 @@ Y con una segunda idea abajo, más difícil y más valiosa que la primera: **tod
 
 ## Audiencia y supuestos
 
-- **Esta sesión dura 2 horas.** No hay bloque de setup: llegan con Pi (Sesión 1) y con `@plannotator/pi-extension` y `pi-subagents` (Sesión 2). La única instalación nueva es `pi-mcp-adapter`, y **va como pre-work** — ver "La decisión de herramientas".
+- **Esta sesión dura 2 horas.** No hay bloque de setup: llegan con Pi (Sesión 1) y con `@plannotator/pi-extension` y `pi-subagents` (Sesión 2). La única instalación nueva es `pi-mcp-adapter`, y **se instala al empezar la práctica, no antes** — es el primer movimiento del paso 4, con la sala entera haciéndolo junta y nosotros caminando. Ver "La decisión de herramientas".
 - Grupo heterogéneo — de primer año a graduados. Enseñar al medio.
 - **Con qué llegan**: su proyecto, un plan y un diff de la Sesión 2, y las notas de la tarea. Nada más.
 - **`AGENTS.md` se introduce hoy desde cero.** Nadie escribió uno. El paso que lo pedía en la Sesión 1 se sacó y la Sesión 2 no lo tocó a propósito. No dar por sentado que saben qué es, ni siquiera los que ya usaron otro agente.
@@ -26,6 +26,8 @@ Se agrega una sola extensión, **[`pi-mcp-adapter`](https://pi.dev/packages/pi-m
 ```
 pi install npm:pi-mcp-adapter
 ```
+
+**No va como pre-work: se instala en clase, al arrancar el paso 4 de la práctica.** El razonamiento es que un pre-work opcional lo hace la mitad de la sala y arrancamos el paso 4 con dos poblaciones distintas; instalándolo todos juntos, con nosotros caminando, los problemas de red y de permisos aparecen cuando los podemos resolver. Es un comando, no un setup. Sí conviene tenerlo instalado y probado en la máquina de la demo desde antes.
 
 **El regalo que nos hace Pi, otra vez.** Pi es deliberadamente mínimo: el toolbelt de base es `read`, `write`, `edit`, `bash`, `grep`, `find`, `ls`, y **casi todo lo demás es un extension point**. Eso hace visible algo que en otros harnesses está tapado:
 
@@ -103,6 +105,36 @@ De ahí sale la idea que vale la pena que se lleven: **una tool mejor suele gana
 4. **Extension points** — dejar que otros agreguen cosas
 
 **El reveal (~2 min).** El punto 4 explica el punto 3, y explica la semana pasada. Una extensión de Pi puede escuchar `tool_call` y devolver `{ block: true, reason: "..." }`. Eso es todo lo que era el plan mode: una extensión interceptando tool calls. Decir la frase de arriba y dejar que caiga.
+
+**Qué significa exactamente `{ block: true, reason: "..." }`.** Lo que sigue es material de fondo para el instructor: hay que entenderlo entero, pero **en la sala son el snippet y dos frases**, y el bloque sigue durando 2 minutos. No convertirlo en una clase de TypeScript.
+
+El hook `tool_call` es una función que la extensión registra y que **Pi llama justo antes de ejecutar cada tool call**, pasándole el nombre de la tool y sus argumentos. Lo que esa función devuelve decide qué pasa después:
+
+- **No devolver nada** (o devolver un objeto sin `block`) → Pi ejecuta la tool normalmente. Este es el caso del 99% de las tool calls.
+- **Devolver `{ block: true, reason: "..." }`** → Pi **no ejecuta la tool**. El `edit` no toca el archivo, el `bash` no corre. En lugar del resultado real, Pi le devuelve al modelo el string de `reason` como si fuera el resultado de la tool.
+
+Los dos campos:
+
+| Campo | Qué hace |
+|---|---|
+| `block: true` | la orden: *no ejecutes esto*. Es lo que convierte al hook en un veto. |
+| `reason: "..."` | el texto que el modelo recibe **en lugar** del resultado |
+
+**La parte que no es obvia y que hay que decir explícitamente: `reason` no es un mensaje de error para el usuario, es un mensaje para el modelo.** Es la única información que el modelo va a tener sobre por qué su acción no pasó, y de ahí decide qué hace a continuación. Por eso el `reason` importa tanto: `"bloqueado"` deja al modelo reintentando a ciegas; `"estás en plan mode, no podés editar archivos — proponé el plan y esperá aprobación"` lo hace cambiar de estrategia solo. Un buen `reason` es, literalmente, prompt engineering.
+
+El ejemplo que ya vivieron, completo:
+
+```ts
+// lo que hacía Plannotator en plan mode, en pseudocódigo
+onToolCall(({ name }) => {
+  if (planMode && !["grep", "find", "ls"].includes(name)) {
+    return { block: true, reason: "Estás en plan mode: solo podés leer. Proponé un plan." }
+  }
+  // sin return → la tool se ejecuta
+})
+```
+
+Y el cierre del reveal: **el diálogo de permisos es este mismo hook con un humano en el medio.** En lugar de decidir con un `if`, para y te pregunta; si decís que no, lo que el modelo recibe es exactamente un `{ block: true, reason }`. Permisos, plan mode y sandboxing son todos la misma pieza.
 
 **Sidebar de seguridad (~3 min), acá y no en un bloque aparte.** Los permisos *son* un extension point, así que esto es el mismo material, no una digresión:
 
@@ -211,14 +243,14 @@ La economía que hace que cinco entren en 45 minutos: **context7 se consume como
 1. Releé tus notas y escribí el `AGENTS.md` del proyecto (~12 min)
 2. Probalo: la misma tarea, en una sesión nueva — el antes y después (~5 min)
 3. Un skill para el procedimiento que repetís (~10 min)
-4. MCP + context7 en un movimiento (~10 min)
+4. Instalar `pi-mcp-adapter` + apuntarlo a context7, en un movimiento (~10 min)
 5. Un subagente sobre tu propio código (~8 min)
 
 **Lo que hay que vigilar caminando la sala:**
 
 - **El paso 1 tiene que salir de sus notas, no de una plantilla.** El que escribe un `AGENTS.md` genérico ("escribí código limpio, usá buenas prácticas") hizo el ejercicio al revés y no va a ver ningún cambio en el paso 2. Mandarlo al pizarrón.
 - **El paso 2 es el que no se recorta.** Es donde aterriza la sesión: sesión nueva, misma tarea, y que vean al agente hacer solo lo que antes le tenían que decir. Sin ese contraste, el `AGENTS.md` es un archivo que escribieron porque se lo pedimos.
-- **El paso 4 es el que se come el reloj** (instalación, config, capaz `/mcp-auth`). Tener el snippet de `.mcp.json` en una slide, listo para copiar: cero descubrimiento.
+- **El paso 4 es el que se come el reloj**, y ahora incluye la instalación del adapter (más config, y capaz `/mcp-auth`). Arrancarlo **frenando la práctica un minuto y haciendo el `pi install` todos juntos**, en voz alta, antes de soltarlos: es un comando y conviene que nadie se quede atrás en él. Tener el snippet de `.mcp.json` en una slide, listo para copiar: cero descubrimiento.
 - **Decir en voz alta que no terminar el paso 5 está bien.** Ocho minutos son ocho minutos.
 - Y el callback a la teoría, para tirarlo mientras caminás: *"fijate cuánto contexto te comió el server que acabás de instalar"*. El costo deja de ser abstracto cuando está en su propia ventana.
 
@@ -278,8 +310,8 @@ Son 52 minutos de teoría en cinco bloques, que es mucho seguido. Están ordenad
 
 ## Pendientes (para próximas iteraciones)
 
-- **Pedir `pi install npm:pi-mcp-adapter` como pre-work**, y aun así esperar rezagados. Sin el adapter no hay paso 4.
-- **Probar la instalación en una máquina limpia**, y probar context7 **en la red del aula con 20-30 personas**. Definir si hace falta API key y, si hace falta, resolverlo antes de la clase y no en el momento.
+- **Probar `pi install npm:pi-mcp-adapter` en una máquina limpia** y cronometrarlo. Se instala en clase (paso 4), así que 20-30 instalaciones simultáneas pasan por la red del aula: si tarda más de un par de minutos, el paso 4 no cierra en 10 y hay que reconsiderar el pre-work.
+- **Probar context7 en la red del aula con 20-30 personas.** Definir si hace falta API key y, si hace falta, resolverlo antes de la clase y no en el momento.
 - **Verificar los números de Zechner el día de la clase** — son específicos de versiones de Playwright MCP y Chrome DevTools MCP y pueden haber cambiado. Si cambiaron, el argumento sigue en pie; actualizar la tabla.
 - **Confirmar `pi-subagents`** como el paquete del curso (`COURSE_PROGRAM.md:373`). Hay al menos seis forks en npm.
 - **Elegir el proyecto de la demo.** Tiene que tener suficiente forma como para que un `AGENTS.md` no sea trivial, y ser seguro de mostrar en el proyector.
