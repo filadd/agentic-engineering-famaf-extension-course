@@ -245,14 +245,14 @@ Y el límite, dicho explícitamente porque el programa lo marca: **hoy vemos el 
 
 ## Práctica (~45 min)
 
-Cinco pasos en `exercise/README.md`. **Los cinco atacan la misma repetición que el estudiante escribió en el recap**, así que es un hilo, no cinco mandados.
+Cinco pasos en `exercise/README.md`, más un paso 0 de un minuto: **el `pi install npm:pi-mcp-adapter`, todos juntos, antes de soltarlos.** Los cinco pasos atacan la misma repetición que el estudiante puso en el menti, así que es un hilo, no cinco mandados.
 
 La economía que hace que cinco entren en 45 minutos: **context7 se consume como servidor MCP**, así que instalar el adapter y apuntarlo a context7 es *un* paso que cubre dos temas.
 
 1. Releé tus notas y escribí el `AGENTS.md` del proyecto (~12 min)
 2. Probalo: la misma tarea, en una sesión nueva — el antes y después (~5 min)
 3. Un skill para el procedimiento que repetís (~10 min)
-4. Instalar `pi-mcp-adapter` + apuntarlo a context7, en un movimiento (~10 min)
+4. Apuntar el adapter a context7 — MCP y docs tools en un movimiento (~10 min)
 5. Un subagente sobre tu propio código (~8 min)
 
 **Lo que hay que vigilar caminando la sala:**
@@ -322,6 +322,7 @@ Son 52 minutos de teoría en cinco bloques, que es mucho seguido. Están ordenad
 - **Armar el Mentimeter antes de la clase** con la pregunta *"¿qué le tuviste que explicar más de una vez?"* y los cuatro o cinco ejemplos concretos listos para sembrar si la nube sale floja. Probar que la pantalla se pueda dejar proyectada mientras seguimos con las slides — vamos a volver a ella cuatro veces.
 - **Probar `pi install npm:pi-mcp-adapter` en una máquina limpia** y cronometrarlo. Se instala en clase (paso 4), así que 20-30 instalaciones simultáneas pasan por la red del aula: si tarda más de un par de minutos, el paso 4 no cierra en 10 y hay que reconsiderar el pre-work.
 - **Probar context7 en la red del aula con 20-30 personas.** Definir si hace falta API key y, si hace falta, resolverlo antes de la clase y no en el momento.
+- **Correr `npx ctx7 setup` en una máquina limpia** y ver **qué archivo de config deja escrito y dónde**. Es el comando que 30 personas van a copiar textual en el paso 4, y el ejercicio les pide después abrir esa config para reconocer el `mcpServers` de la teoría. Si el instalador la deja en un lugar que no es `.mcp.json` en la raíz, ajustar la redacción del paso 4.
 - **Verificar los números de Zechner el día de la clase** — son específicos de versiones de Playwright MCP y Chrome DevTools MCP y pueden haber cambiado. Si cambiaron, el argumento sigue en pie; actualizar la tabla.
 - **Confirmar `pi-subagents`** como el paquete del curso (`COURSE_PROGRAM.md:373`). Hay al menos seis forks en npm.
 - **Elegir el proyecto de la demo.** Tiene que tener suficiente forma como para que un `AGENTS.md` no sea trivial, y ser seguro de mostrar en el proyector.
