@@ -6,7 +6,7 @@
 
 Que salgan sabiendo **convertir lo que le explican al agente una y otra vez en configuración que el agente lee solo** — con la idea internalizada de "lo que le explicaste dos veces, escribilo una".
 
-Y con una segunda idea abajo, más difícil y más valiosa que la primera: **todo lo que le agregás al agente se paga en contexto.** Elegir qué está siempre cargado y qué se carga on demand es una decisión de ingeniería, no un detalle de configuración.
+Y con una segunda idea abajo: **todo lo que le agregás al agente se paga en contexto.** Elegir qué está siempre cargado y qué se carga on demand es una decisión de ingeniería, no un detalle de configuración.
 
 ## Audiencia y supuestos
 
@@ -14,7 +14,12 @@ Y con una segunda idea abajo, más difícil y más valiosa que la primera: **tod
 - Grupo heterogéneo — de primer año a graduados. Enseñar al medio.
 - **Con qué llegan**: su proyecto, un plan y un diff de la Sesión 2, y las notas de la tarea. Nada más.
 - **`AGENTS.md` se introduce hoy desde cero.** Nadie escribió uno. El paso que lo pedía en la Sesión 1 se sacó y la Sesión 2 no lo tocó a propósito. No dar por sentado que saben qué es, ni siquiera los que ya usaron otro agente.
-- **La materia prima de hoy son sus notas de la tarea** ("¿qué le tuviste que explicar más de una vez?"). Es el único insumo que no podemos generar nosotros. Si el pizarrón sale flojo, la práctica se queda sin combustible — tener cuatro o cinco ejemplos genéricos listos: el comando de los tests, el package manager, dónde van los archivos, el estilo de código.
+- **La materia prima de hoy son sus notas de la tarea** ("¿qué le tuviste que explicar más de una vez?"). Es el único insumo que no podemos generar nosotros. **Se recolecta con Mentimeter** — pregunta abierta, respuestas en pantalla, y quedan proyectadas toda la clase. Si la nube sale floja, la práctica se queda sin combustible: tener cuatro o cinco ejemplos concretos listos para sembrarlos nosotros mismos, redactados como los diría un estudiante y no como categorías:
+  - *"Los tests se corren con `pnpm test`, no con `npm test`."*
+  - *"Usamos pnpm. Cada vez que me instalaba algo con npm me rompía el lockfile."*
+  - *"Los componentes van en `src/components/`, uno por archivo."*
+  - *"No me toques los archivos de migraciones."*
+  - *"No me pongas comentarios que repiten lo que dice la línea de abajo."*
 - **Las extensions de Pi son TypeScript.** No asumir TS en la sala. Hoy *instalamos y configuramos* extensions; escribir una es otra cosa y no es de esta sesión.
 
 ## La decisión de herramientas
@@ -45,7 +50,7 @@ Los permisos, el plan mode, los subagentes y MCP **son todos el mismo mecanismo*
 
 > *"Lo que Plannotator les hizo la semana pasada era `tool_call` → `{block: true}`. El mismo hook que van a usar ustedes hoy."*
 
-**Y la línea que hay que decir en voz alta**: que en Pi MCP venga como extensión y en Claude Code venga de fábrica no es un accidente ni un defecto — es el espacio de diseño de los harnesses. Un harness mínimo te muestra las costuras; uno con baterías incluidas te las esconde. Ninguno de los dos está mal. Esa es la comparación con Claude Code / Cursor / Aider / OpenCode, y con eso alcanza: **no hay bloque de comparación de harnesses.** Es una línea, no una tabla.
+**Y la línea que hay que decir en voz alta**: que en Pi MCP venga como extensión y en Claude Code venga de fábrica no es un accidente ni un defecto — es el espacio de diseño de los harnesses. Un harness mínimo te muestra las costuras; uno con baterías incluidas te las esconde. Ninguno de los dos está mal. Esa es la comparación con Claude Code / Codex / OpenCode, y con eso alcanza: **no hay bloque de comparación de harnesses.** Es una línea, no una tabla.
 
 ## Plan tema por tema
 
@@ -61,7 +66,9 @@ Esto arma el día mejor que una ronda de quejas, porque la respuesta de hoy a "p
 
 **2. *"¿Qué le tuviste que explicar más de una vez?"***
 
-**Este va al pizarrón.** Es literalmente el insumo de todos los bloques que siguen y de los cinco pasos de la práctica. Recolectar seis o siete y dejarlos escritos toda la clase; vamos a volver a apuntar al pizarrón cuatro veces.
+**Este va a Mentimeter.** Es literalmente el insumo de todos los bloques que siguen y de los cinco pasos de la práctica. Pregunta abierta, seis o siete respuestas, y **la pantalla queda proyectada toda la clase**: vamos a volver a apuntar a esas respuestas cuatro veces.
+
+Por qué Mentimeter y no levantar la mano: responden todos a la vez y en anónimo, así que aparece lo que nadie diría en voz alta, y queda un artefacto escrito que no hay que transcribir. **Tener el menti armado y la pregunta cargada antes de entrar al aula** — no se arma en vivo. Y un plan B por si la red del aula falla: la misma pregunta a mano alzada y las respuestas al pizarrón.
 
 **Coordinar con Agus antes de la clase**: cómo cerró realmente la Sesión 2, qué juntó él en su bloque de reflexión, y si la tarea se pidió como estaba escrita. No volver a recolectar lo que él ya juntó.
 
@@ -69,7 +76,7 @@ Este es el bloque elástico: **si el día se estira, se recorta de acá** (mismo
 
 ### Qué vamos a ver hoy (~5 min)
 
-Toma el pizarrón y lo ordena. Cada cosa que le explicaron dos veces es un tipo distinto de repetición, y cada tipo tiene un lugar distinto donde vivir:
+Toma las respuestas del menti y las ordena. Cada cosa que le explicaron dos veces es un tipo distinto de repetición, y cada tipo tiene un lugar distinto donde vivir:
 
 | Lo que repetís | Dónde vive | Costo de contexto |
 |---|---|---|
@@ -79,7 +86,7 @@ Toma el pizarrón y lo ordena. Cada cosa que le explicaron dos veces es un tipo 
 | una capacidad que falta | tool / MCP | la definición siempre, el resultado on demand |
 | un subtask entero | subagente | contexto aparte |
 
-Ir marcando en el pizarrón a qué fila cae cada cosa que dijeron. Algunas van a caer en dos filas y está bien: elegir es el tema de hoy.
+Ir tomando respuestas del menti en voz alta y diciendo a qué fila cae cada una. Algunas van a caer en dos filas y está bien: elegir es el tema de hoy.
 
 En la metáfora del curso: la Sesión 2 fue **vos poniendo el criterio a mano, cada vez**. Hoy lo escribís una vez y el agente lo lee solo. Es lo que hace un manager cuando deja de repetir la misma corrección en cada 1:1 y escribe el onboarding.
 
@@ -178,13 +185,13 @@ Es decir: tenés veinte skills instalados y pagás veinte descripciones, no vein
 
 **La consecuencia práctica**: la `description` es lo único que decide si el skill se usa. Un skill perfecto con una descripción vaga no se carga nunca. Decirlo así: *"la descripción no es documentación, es el trigger"*.
 
-**La regla de dedo de la sesión**, y conviene que quede escrita en el pizarrón:
+**La regla de dedo de la sesión**, y conviene que quede escrita a la vista (esta sí al pizarrón, o en una slide fija):
 
 > **Datos → `AGENTS.md`. Procedimientos → skill.**
 
 **Prompt templates (~1 min)**: la versión liviana. Un texto que expandís con `/nombre`. Cuando lo que repetís es un prompt y no un procedimiento, no hace falta un skill. Mención y seguir. También existe `/skill:nombre` para invocarlo a mano.
 
-### MCP, y cuánto cuesta (~9 min)
+### MCP, y cuánto cuesta (~8 min)
 
 El bloque donde la tesis de la sesión consigue su número más duro. Cuatro tiempos.
 
@@ -203,21 +210,13 @@ Decirlo sin vueltas: **eso es contexto gastado antes de que el estudiante escrib
 
 **No presentarlo como la respuesta correcta.** Presentarlo como dos ingenieros con criterio que no están de acuerdo — y dejar que vean que "instalá el MCP server" es una decisión con precio, no un default. Que el autor del harness que están usando piense esto le da un peso que no tendría un blog cualquiera; decir quién es.
 
-**4. La respuesta de ingeniería (~2 min).** `pi-mcp-adapter` no expone las tools del servidor: expone **una sola tool proxy de ~200 tokens** y va a buscar el resto cuando hace falta.
+**4. La respuesta de ingeniería (~1 min).** `pi-mcp-adapter` no expone las tools del servidor: expone **una sola tool proxy de ~200 tokens** y va a buscar el resto cuando hace falta.
 
-Ahí es donde hay que frenar y nombrar la idea del día, porque es **la tercera vez** que aparece en la misma sesión:
-
-| | Siempre cargado | On demand |
-|---|---|---|
-| Contexto del proyecto | `AGENTS.md` | skill |
-| Tools externas | todas las definiciones | la tool proxy |
-| Trabajo | tu sesión | subagente |
-
-*Tres tecnologías distintas, el mismo movimiento.* Si se llevan una sola cosa de la clase, que sea esta tabla.
+Nombrarlo al pasar —*"es exactamente el truco de los skills, aplicado a tools: pagás el nombre, no el cuerpo"*— y **no cerrar acá**. La tabla que sintetiza esto va al final del bloque siguiente, cuando ya estén nombrados los subagentes.
 
 **Y las docs tools acá**, porque son el arreglo a una falla que ya sintieron: el agente inventa una API. [context7](https://context7.com/) sirve docs actualizadas de librerías — y se consume **como servidor MCP**, así que en la práctica MCP y context7 son un solo paso. [context-hub](https://github.com/andrewyng/context-hub) existe y hace algo parecido; mención al pasar.
 
-### Subagentes y worktrees (~6 min)
+### Subagentes y worktrees (~7 min)
 
 Profundidad sobre lo que la Sesión 2 usó dos veces como subtema (revisar el plan, revisar el diff). Ya tienen `pi-subagents` instalado.
 
@@ -231,6 +230,16 @@ De ahí se deduce cuándo sirve y cuándo no:
 Tipos de agente: research, exploración, code review. Que vean que son el mismo mecanismo con distinto prompt y distinto toolset — **otra vez, extension points**.
 
 **Worktrees, una línea**: ejecución paralela aislada, cada agente en su propio checkout, sin pisarse. Mención y puntero.
+
+**El cierre de la teoría, y acá sí frenar.** Con el subagente ya nombrado, la tercera fila de la tabla se puede escribir. Es la síntesis de los tres bloques anteriores y el momento de decirlo:
+
+| | Siempre cargado | On demand |
+|---|---|---|
+| Contexto del proyecto | `AGENTS.md` | skill |
+| Tools externas | todas las definiciones | la tool proxy |
+| Trabajo | tu sesión | subagente |
+
+*Tres tecnologías distintas, el mismo movimiento.* Si se llevan una sola cosa de la clase, que sea esta tabla. Que quede proyectada mientras arranca la práctica.
 
 Y el límite, dicho explícitamente porque el programa lo marca: **hoy vemos el primitivo. Orquestar varios agentes es la Sesión 4 (Agus).** No abrir eso.
 
@@ -248,7 +257,7 @@ La economía que hace que cinco entren en 45 minutos: **context7 se consume como
 
 **Lo que hay que vigilar caminando la sala:**
 
-- **El paso 1 tiene que salir de sus notas, no de una plantilla.** El que escribe un `AGENTS.md` genérico ("escribí código limpio, usá buenas prácticas") hizo el ejercicio al revés y no va a ver ningún cambio en el paso 2. Mandarlo al pizarrón.
+- **El paso 1 tiene que salir de sus notas, no de una plantilla.** El que escribe un `AGENTS.md` genérico ("escribí código limpio, usá buenas prácticas") hizo el ejercicio al revés y no va a ver ningún cambio en el paso 2. Mandarlo de vuelta a las respuestas del menti.
 - **El paso 2 es el que no se recorta.** Es donde aterriza la sesión: sesión nueva, misma tarea, y que vean al agente hacer solo lo que antes le tenían que decir. Sin ese contraste, el `AGENTS.md` es un archivo que escribieron porque se lo pedimos.
 - **El paso 4 es el que se come el reloj**, y ahora incluye la instalación del adapter (más config, y capaz `/mcp-auth`). Arrancarlo **frenando la práctica un minuto y haciendo el `pi install` todos juntos**, en voz alta, antes de soltarlos: es un comando y conviene que nadie se quede atrás en él. Tener el snippet de `.mcp.json` en una slide, listo para copiar: cero descubrimiento.
 - **Decir en voz alta que no terminar el paso 5 está bien.** Ocho minutos son ocho minutos.
@@ -263,15 +272,15 @@ La economía que hace que cinco entren en 45 minutos: **context7 se consume como
 | Anatomía: tool, harness y extension points (+ seguridad) | 13 min |
 | `AGENTS.md` | 11 min |
 | Skills y prompt templates | 8 min |
-| MCP, y cuánto cuesta (+ docs tools) | 9 min |
-| Subagentes y worktrees | 6 min |
+| MCP, y cuánto cuesta (+ docs tools) | 8 min |
+| Subagentes y worktrees (+ la tabla de cierre) | 7 min |
 | Pausa | 5 min |
 | **Práctica** | **45 min** |
 | Cierre: discusión + qué viene | 8 min |
 
 Da 120 justos, así que no hay colchón. **Si se estira, recortar del recap** — es el bloque más elástico. No recortar de la práctica, y nunca del paso 2, que es donde aterriza la sesión.
 
-Son 52 minutos de teoría en cinco bloques, que es mucho seguido. Están ordenados para que cada uno le deje una pregunta abierta al siguiente (`AGENTS.md` cuesta → skills; los skills cargan on demand → MCP; MCP cuesta → la tool proxy). **Si se cae ese encadenado, el día se convierte en un tour de herramientas.** Ensayar las transiciones, no solo los bloques.
+Son 52 minutos de teoría en cinco bloques, que es mucho seguido. Están ordenados para que cada uno le deje una pregunta abierta al siguiente (`AGENTS.md` cuesta → skills; los skills cargan on demand → MCP; MCP cuesta → la tool proxy; la tool proxy → subagentes, y ahí recién cierra la tabla). **Si se cae ese encadenado, el día se convierte en un tour de herramientas.** Ensayar las transiciones, no solo los bloques.
 
 ## Cierre (~8 min)
 
@@ -302,7 +311,7 @@ Son 52 minutos de teoría en cinco bloques, que es mucho seguido. Están ordenad
 
 - **Orquestación de agentes**: es la Sesión 4 (Agus). Hoy el primitivo, nada más. El programa marca ese límite explícitamente.
 - **Escribir una extensión de TypeScript**: es territorio de la Sesión 5. Hoy las instalamos y las configuramos. Además no podemos asumir TS en la sala.
-- **La tabla comparativa de harnesses** (Claude Code / Cursor / Aider / OpenCode): reducida a una línea dentro del bloque de anatomía. Comparar harnesses en abstracto no le sirve a nadie que solo usó uno; lo que sí sirve es entender que "viene de fábrica" vs. "viene como extensión" es una decisión de diseño.
+- **La tabla comparativa de harnesses** (Claude Code / Codex / OpenCode): reducida a una línea dentro del bloque de anatomía. Comparar harnesses en abstracto no le sirve a nadie que solo usó uno; lo que sí sirve es entender que "viene de fábrica" vs. "viene como extensión" es una decisión de diseño.
 - **Worktrees más allá de una mención**: la práctica ya tiene cinco pasos y ninguno los necesita.
 - **Profundidad en comandos de verificación / tests**: los tests fueron la Sesión 2. Acá aparecen solo como lo mejor que le podés poner al `AGENTS.md`.
 - **Un bloque propio de seguridad**: plegado dentro de anatomía, donde corresponde, porque los permisos *son* un extension point.
@@ -310,6 +319,7 @@ Son 52 minutos de teoría en cinco bloques, que es mucho seguido. Están ordenad
 
 ## Pendientes (para próximas iteraciones)
 
+- **Armar el Mentimeter antes de la clase** con la pregunta *"¿qué le tuviste que explicar más de una vez?"* y los cuatro o cinco ejemplos concretos listos para sembrar si la nube sale floja. Probar que la pantalla se pueda dejar proyectada mientras seguimos con las slides — vamos a volver a ella cuatro veces.
 - **Probar `pi install npm:pi-mcp-adapter` en una máquina limpia** y cronometrarlo. Se instala en clase (paso 4), así que 20-30 instalaciones simultáneas pasan por la red del aula: si tarda más de un par de minutos, el paso 4 no cierra en 10 y hay que reconsiderar el pre-work.
 - **Probar context7 en la red del aula con 20-30 personas.** Definir si hace falta API key y, si hace falta, resolverlo antes de la clase y no en el momento.
 - **Verificar los números de Zechner el día de la clase** — son específicos de versiones de Playwright MCP y Chrome DevTools MCP y pueden haber cambiado. Si cambiaron, el argumento sigue en pie; actualizar la tabla.
