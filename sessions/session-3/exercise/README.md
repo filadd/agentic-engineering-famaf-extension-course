@@ -19,26 +19,64 @@ pi install npm:pi-mcp-adapter
 
 ## Las reglas de hoy
 
-1. **Todo lo que escribas tiene que salir de tus notas.** Si escribís algo que no le explicaste nunca al agente, lo estás inventando.
-2. **Escribí lo mínimo.** Cada línea que agregás se paga en contexto, en todos los turnos, para siempre.
+1. **El agente escribe el borrador, vos decidís qué sobrevive.** Igual que con el plan de la semana pasada.
+2. **Que quede lo mínimo.** Cada línea que dejás se paga en contexto, en todos los turnos, para siempre. Borrar es la parte difícil.
 3. **El paso 2 no se saltea.** Es el único paso que te dice si lo que escribiste sirvió.
 
 ## Pasos
 
 Son 45 minutos y cinco pasos. **Terminar los cinco no es el objetivo** — si llegás hasta el 3 con los tres bien hechos, la clase te sirvió.
 
-### 1. Escribí el `AGENTS.md` de tu proyecto (~12 min)
+### 1. Que el agente escriba el `AGENTS.md`, y vos lo podés (~12 min)
 
-Creá un archivo `AGENTS.md` en la raíz del proyecto. El agente lo lee al arrancar, todas las veces, sin que se lo pidas.
+`AGENTS.md` va en la raíz del proyecto y el agente lo lee al arrancar, todas las veces, sin que se lo pidas.
 
-Releé tus notas y pasá al archivo **solo lo que no cambia entre tareas**:
+**No lo escribas a mano.** Lo normal —y lo que vas a hacer siempre de acá en adelante— es pedírselo al agente: él ya puede leer tu `package.json`, tus scripts, tu estructura de directorios y tu historial de commits, y saca de ahí los datos duros más rápido y con menos errores que vos de memoria.
 
-- **Cómo se corre el proyecto y cómo se corren los tests.** Es lo más valioso que le podés poner: son los comandos que le permiten al agente saber si lo que hizo funciona, sin preguntarte.
+Lo que el agente **no** tiene es lo único que importa de verdad: **tus notas de la semana**. Eso se lo das vos en el prompt.
+
+**Pedíselo más o menos así**, con tus notas pegadas adentro:
+
+```
+Escribime un AGENTS.md para este proyecto.
+
+Explorá el repo y sacá de ahí los comandos reales: cómo se levanta,
+cómo se corren los tests, cómo se lintea. Verificá que existan, no los
+adivines.
+
+Además, estas son las cosas que te tuve que explicar más de una vez
+esta semana y que quiero que queden escritas:
+
+- <tu nota 1>
+- <tu nota 2>
+- <tu nota 3>
+
+Reglas: menos de 40 líneas. Solo lo que NO cambia entre tareas. Nada de
+consejos genéricos de programación. Si algo no lo pudiste verificar en
+el repo, no lo pongas: preguntámelo.
+```
+
+**Ahora viene tu parte, que es el ejercicio de verdad: podarlo.**
+
+Leelo línea por línea y borrá sin culpa. La pregunta para cada línea es una sola: *¿esto le sirve al agente en la próxima tarea, o es relleno que voy a pagar en todos los turnos para siempre?*
+
+Buscá específicamente:
+
+- **Lo que inventó.** ¿El comando de tests existe de verdad? Corrélo. Es el error más común y el más caro: un `AGENTS.md` que miente es peor que no tener ninguno.
+- **Lo genérico.** "Escribí código limpio", "seguí las buenas prácticas", "usá nombres descriptivos". No le dicen nada que no sepa. Fuera.
+- **Lo que ya está en el código.** Si el linter se lo puede decir, no va acá.
+- **Lo que le falta**, que es lo que solo vos sabés: ¿están tus tres notas, escritas de manera que se entiendan sin vos al lado?
+
+Esto es lo mismo que hicieron la semana pasada con el plan: el agente produce el borrador, vos ponés el criterio.
+
+Lo que tiene que quedar:
+
+- **Cómo se corre el proyecto y cómo se corren los tests.** Es lo más valioso del archivo: son los comandos que le permiten al agente saber si lo que hizo funciona, sin preguntarte.
 - **El stack y las decisiones ya tomadas.** "Usamos pnpm." "No agregues dependencias sin preguntar."
 - **Dónde van las cosas.** "Los componentes van en `src/components/`, uno por archivo."
 - **El estilo, pero solo lo que un linter no puede decirle.**
 
-Un ejemplo de la forma que tiene que tener:
+Más o menos esto, y de este tamaño:
 
 ```markdown
 # Proyecto
@@ -59,13 +97,13 @@ App de todos en React + Vite. Backend en Express, SQLite.
 - No agregues dependencias sin preguntarme.
 ```
 
-**Lo que NO va:**
+**Lo que NO va, y que el agente te va a querer meter igual:**
 
 - Documentación del dominio que cambia todo el tiempo.
 - Cosas que valen para una sola tarea — eso es el prompt, no el archivo.
-- **Una wiki.** Si escribís 400 líneas, estás pagando 400 líneas en cada turno.
+- **Una wiki.** Si le dejás escribir 400 líneas, estás pagando 400 líneas en cada turno.
 
-> Si tu `AGENTS.md` podría estar en el proyecto de cualquier otra persona de la sala, lo hiciste al revés. "Escribí código limpio" y "usá buenas prácticas" no le dicen nada al agente que no sepa. Volvé a tus notas.
+> Si tu `AGENTS.md` podría estar en el proyecto de cualquier otra persona de la sala, no lo podaste. Es la salida cruda del agente y todavía no hiciste el ejercicio. Volvé a tus notas.
 
 **Proyecto o global.** Lo que vale para todos tus proyectos va en `~/.pi/agent/AGENTS.md` (por ejemplo "prefiero tabs"). Lo que vale para este repo va en el repo, y le sirve a quien lo clone — incluido vos dentro de dos años.
 

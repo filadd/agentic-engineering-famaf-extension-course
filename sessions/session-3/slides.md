@@ -305,7 +305,7 @@ pi install npm:pi-mcp-adapter
 
 ## Los cinco pasos
 
-<!-- Ver exercise/README.md, no leerlos desde la slide. (1) Escribí el AGENTS.md de tu proyecto, a partir de tus notas ~12 min. (2) Probalo: la misma tarea en una sesión nueva ~5 min. (3) Un skill para el procedimiento que repetís ~10 min. (4) Apuntá el adapter a context7 ~10 min. (5) Un subagente sobre tu propio código ~8 min. INSISTIR: el paso 1 sale de sus notas, NO de una plantilla; y EL PASO 2 ES EL QUE NO SE SALTEA. Decir en voz alta que no terminar el paso 5 está bien. -->
+<!-- Ver exercise/README.md, no leerlos desde la slide. (1) Que el AGENTE escriba el AGENTS.md, con tus notas en el prompt, y podarlo ~12 min. (2) Probalo: la misma tarea en una sesión nueva ~5 min. (3) Un skill para el procedimiento que repetís ~10 min. (4) Apuntá el adapter a context7 ~10 min. (5) Un subagente sobre tu propio código ~8 min. INSISTIR EN DOS COSAS: el paso 1 no se escribe a mano —el agente lee el repo mejor que vos— pero LA PODA ES EL EJERCICIO, y las notas del menti las pone el estudiante en el prompt. Y EL PASO 2 NO SE SALTEA. Decir en voz alta que no terminar el paso 5 está bien. -->
 
 ---
 

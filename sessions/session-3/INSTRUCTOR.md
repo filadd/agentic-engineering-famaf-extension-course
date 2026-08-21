@@ -249,7 +249,7 @@ Cinco pasos en `exercise/README.md`, más un paso 0 de un minuto: **el `pi insta
 
 La economía que hace que cinco entren en 45 minutos: **context7 se consume como servidor MCP**, así que instalar el adapter y apuntarlo a context7 es *un* paso que cubre dos temas.
 
-1. Releé tus notas y escribí el `AGENTS.md` del proyecto (~12 min)
+1. Pedirle al agente que escriba el `AGENTS.md`, con tus notas en el prompt, y **podarlo** (~12 min)
 2. Probalo: la misma tarea, en una sesión nueva — el antes y después (~5 min)
 3. Un skill para el procedimiento que repetís (~10 min)
 4. Apuntar el adapter a context7 — MCP y docs tools en un movimiento (~10 min)
@@ -257,7 +257,8 @@ La economía que hace que cinco entren en 45 minutos: **context7 se consume como
 
 **Lo que hay que vigilar caminando la sala:**
 
-- **El paso 1 tiene que salir de sus notas, no de una plantilla.** El que escribe un `AGENTS.md` genérico ("escribí código limpio, usá buenas prácticas") hizo el ejercicio al revés y no va a ver ningún cambio en el paso 2. Mandarlo de vuelta a las respuestas del menti.
+- **El paso 1 lo escribe el agente, no el estudiante** — que es como se hace en la vida real: el agente lee el `package.json`, los scripts y el árbol de directorios, y saca los datos duros mejor y más rápido. **Lo que el estudiante aporta son sus notas, en el prompt, y la poda después.** El ejercicio de la sesión no es redactar, es *decidir qué se queda*.
+- **Y por eso hay que vigilar la poda, que es donde se cae el paso.** El que se queda con la salida cruda tiene un `AGENTS.md` genérico de 200 líneas y no va a ver ningún cambio en el paso 2. Dos cosas para gritar caminando: *"¿el comando de tests que te escribió existe? corrélo"* —un `AGENTS.md` que miente es peor que ninguno— y *"¿están tus notas del menti ahí adentro?"*. Es el mismo movimiento que hicieron con el plan en la Sesión 2: el agente produce, ellos ponen el criterio.
 - **El paso 2 es el que no se recorta.** Es donde aterriza la sesión: sesión nueva, misma tarea, y que vean al agente hacer solo lo que antes le tenían que decir. Sin ese contraste, el `AGENTS.md` es un archivo que escribieron porque se lo pedimos.
 - **El paso 4 es el que se come el reloj**, y ahora incluye la instalación del adapter (más config, y capaz `/mcp-auth`). Arrancarlo **frenando la práctica un minuto y haciendo el `pi install` todos juntos**, en voz alta, antes de soltarlos: es un comando y conviene que nadie se quede atrás en él. Tener el snippet de `.mcp.json` en una slide, listo para copiar: cero descubrimiento.
 - **Decir en voz alta que no terminar el paso 5 está bien.** Ocho minutos son ocho minutos.
@@ -326,7 +327,7 @@ Son 52 minutos de teoría en cinco bloques, que es mucho seguido. Están ordenad
 - **Verificar los números de Zechner el día de la clase** — son específicos de versiones de Playwright MCP y Chrome DevTools MCP y pueden haber cambiado. Si cambiaron, el argumento sigue en pie; actualizar la tabla.
 - **Confirmar `pi-subagents`** como el paquete del curso (`COURSE_PROGRAM.md:373`). Hay al menos seis forks en npm.
 - **Elegir el proyecto de la demo.** Tiene que tener suficiente forma como para que un `AGENTS.md` no sea trivial, y ser seguro de mostrar en el proyector.
-- **Tener un `AGENTS.md` malo escrito de antemano** — genérico, de 300 líneas, del tipo "escribí código limpio". Sirve para mostrar el antipatrón sin depender de que alguien lo produzca en vivo.
+- **Tener un `AGENTS.md` malo guardado de antemano**, y la mejor manera de conseguirlo es **pedírselo al agente sin darle nada**: sale genérico, largo y con algún comando inventado. Guardar esa salida cruda tal cual. Es exactamente lo que van a ver en el paso 1 antes de podar, así que sirve para el antipatrón sin depender de producirlo en vivo. Si tiene un comando que no existe, mejor: es el punto.
 - **Ensayar el bloque de anatomía con reloj**, sobre todo el reveal. Son 13 minutos con la herramienta abierta y el JSON de una tool call en pantalla.
 - **Coordinar con Agus** el cierre real de la Sesión 2 y el límite con la Sesión 5.
 - **Corregir `COURSE_PROGRAM.md:245`**, que todavía dice que los estudiantes llegan con un `AGENTS.md` de diez líneas escrito en la Sesión 2. Es residuo de antes de que se sacara ese paso.
