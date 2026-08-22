@@ -7,7 +7,7 @@
 > 1. **Al CCAD se llega por un gateway LiteLLM**, y Pi se apunta ahí con un provider propio en `~/.pi/agent/models.json`. No hay SSH, no hay scheduler, no hay túnel. Decisión de Diego.
 > 2. **La práctica tiene dos vías**: el gateway para todos (Vía A) y `llama.cpp` local opcional (Vía B). Todo lo que sigue baja de esas dos cosas.
 
-> A cargo: Diego. Estado: en armado. Todo el material de la sesión (estas notas, `slides.md`, `exercise/README.md`) está en español.
+> A cargo: Diego. Estado: en armado. Este archivo es **todo lo que hay** de la sesión: las slides y el ejercicio se borraron porque estaban escritos contra el diseño viejo (SSH + cola de GPU + túnel), y hay que escribirlos de nuevo desde acá. Material en español.
 >
 > Invitado: **Ale Silva (CCAD)** — invitado a abrir la sesión con una intro al centro. Confirmar alcance, fecha y duración.
 
@@ -304,7 +304,7 @@ Si la sesión es de 2 horas —el caso más probable— este es el recorte, ya r
 | ¿Está a la altura? + cuándo conviene (fusionados) | 10 min |
 | Cierre del curso y retrospectiva | 12 min |
 
-Da 117 minutos. Los movimientos: **la Vía B pasa a ser un apéndice escrito** en el `exercise/README.md` para hacer en casa, y **la demo de Agus pasa a suceder durante la práctica** en vez de tener slot propio — el que la quiere ver, se acerca. Se pierde el momento en que toda la sala ve la VRAM y los tokens por segundo a la vez, y eso es una pérdida real; es el precio.
+Da 117 minutos. Los movimientos: **la Vía B pasa a ser un apéndice escrito en el ejercicio** para hacer en casa, y **la demo de Agus pasa a suceder durante la práctica** en vez de tener slot propio — el que la quiere ver, se acerca. Se pierde el momento en que toda la sala ve la VRAM y los tokens por segundo a la vez, y eso es una pérdida real; es el precio.
 
 **Proteger, en este orden: el slot del invitado, la Vía A completa con la comparación, y la retrospectiva de cierre.** Si algo de esos tres se recorta, la sesión pierde lo que la justifica.
 
@@ -332,7 +332,7 @@ Lo que hay que preguntar ahora, en orden de prioridad:
 6. **¿Sigue haciendo falta una cuenta del CCAD para esto?** Si la key alcanza, la cuenta deja de ser requisito bloqueante — seguimos recomendándola por su propio valor, pero cambia lo que les pedimos como pre-work.
 7. **El slot de Ale**: alcance, duración, presencial o remoto, si quiere slides. Y si el CCAD quiere algún reconocimiento o tiene materiales/branding que prefiera que usemos.
 
-Cuando el hilo esté leído, bajar las respuestas a este archivo y reescribir los pasos del ejercicio contra los comandos reales.
+Cuando el hilo esté leído, bajar las respuestas a este archivo y recién entonces escribir el ejercicio contra los valores reales.
 
 ## Puentes entre sesiones
 
@@ -381,11 +381,14 @@ Cuando el hilo esté leído, bajar las respuestas a este archivo y reescribir lo
 - **Decidir si la retrospectiva del curso la cierra la Sesión 6 o la Sesión 5.** Con seis sesiones, el cierre necesita un solo dueño (hoy está duplicado con el cierre de la Sesión 4 en el programa).
 - **Coordinar con Agus el recap de la Sesión 5**, que todavía está en `TBD`.
 
-### Archivos que quedaron desactualizados por este cambio
+### Las slides y el ejercicio hay que escribirlos de nuevo
 
-Este archivo se reescribió solo, a pedido. Lo que sigue **contradice** lo que dice acá y hay que arreglarlo antes de la clase:
+**`slides.md` y `exercise/README.md` se borraron**, no se parchearon. Estaban escritos contra el diseño anterior —entrar por SSH, ganarle a la cola, servir el modelo, forwardear el puerto, cambiar la base URL del agente de la Sesión 5— y no quedaba casi nada rescatable: el ejercicio era literalmente ese flujo paso por paso. Están en el historial de git si hace falta mirarlos: `git log --diff-filter=D -- sessions/session-6/slides.md` te da el commit que los borró, y `git show <commit>^:sessions/session-6/slides.md` el contenido.
 
-- **`sessions/session-6/slides.md`** — todavía dice que el ejercicio necesita un runtime de serving, y dos slides puentean a "cambiar la base URL del agente de la Sesión 5". Falta la slide de `models.json`, que es el centro de la sesión ahora.
-- **`sessions/session-6/exercise/README.md`** — los pasos 1 a 5 son el flujo de SSH / cola / túnel, y el objetivo nombra el agente de la Sesión 5. Hay que reescribirlo como Vía A + Vía B (apéndice).
-- **`COURSE_PROGRAM.md`** — la sección de la Sesión 6 sigue describiendo la práctica vieja y sigue declarando la dependencia con la Sesión 5. El Tier 6 nombra vLLM y SGLang sin mencionar el gateway.
-- **`sessions/session-5/INSTRUCTOR.md`** — su `## Cross-session bridges` avisa que la Sesión 6 depende de que su práctica produzca un agente. Ya no es cierto; sacarle la presión a Agus.
+Lo que hay que tener presente al escribirlos:
+
+- **Las slides** necesitan una que no existía y que ahora es el centro de la sesión: el `models.json` completo, para copiar textual. Igual que en la Sesión 3, la mayoría de las slides son título + nota de orador, pero las que la sala tiene que copiar o leer llevan cuerpo: el JSON del provider, la tabla del espectro, el comando de `llama-server`, y la cuenta de VRAM. Lo que se puede reusar del esqueleto viejo son los bloques de teoría que no cambiaron (licencias, espectro, cuantización, seguridad, cierre del curso).
+- **El ejercicio** se estructura como Vía A + Vía B, no como pasos numerados de uno a seis. La Vía A tiene que poder resolverse sin descubrir nada: el JSON listo para copiar, la key a mano, y todo el esfuerzo del estudiante puesto en la tarea que le da al agente y en anotar la comparación. La Vía B va como apéndice, con la advertencia de que no terminarla no es no haber hecho el ejercicio.
+- **No escribir el ejercicio antes de leer el hilo con Ale.** La `baseUrl` exacta, el `contextWindow` y la forma de las keys son datos que van textuales en el material y que hoy no tenemos.
+
+El resto de las dependencias ya está arreglado: `COURSE_PROGRAM.md` (Tier 6, sección de la Sesión 6, preguntas abiertas y recursos), `sessions/session-5/INSTRUCTOR.md`, `open_source_models.md` y el `README.md` de la raíz.

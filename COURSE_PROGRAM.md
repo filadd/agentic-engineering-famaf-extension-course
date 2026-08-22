@@ -133,9 +133,10 @@ These are the concepts to cover, roughly ordered by complexity:
 - Open weights vs. hosted APIs as a **spectrum of control**: capability, where your data lives, cost shape (per-token vs. per-hour vs. capex), ops burden, offline capability. Honest about the capability gap on long-horizon agentic work and reliable tool calling.
 - **Is an open model good enough to be the engine of a serious project?** Answered from the hands-on measurements, on concrete axes: schema-respecting tool calls every time, surviving a 20-step task, context window against a real repo, latency inside an agent loop. The bottleneck is usually reliable tool calling, not the ability to write code.
 - **Running one on your own hardware**, made concrete: Agus brings a portable GPU and serves a small model in the room — no queue, no tunnel, no account, data never leaves the room.
-- What it takes to run one: the VRAM arithmetic (parameters × bytes-per-parameter, before context), quantization and its cost to structured output (i.e. to tool calling), and the two families of runtime — local/single-user (llama.cpp, Ollama) vs. serving (vLLM, SGLang).
-- The OpenAI-compatible endpoint as the interoperability story: why a harness can point at a different model with a base-URL change. This is the technical bridge from Tier 5.
-- HPC mechanics: login node vs. compute node, the job scheduler (you describe a job and wait your turn), modules/environments, reaching a service on a node with no public address, shared-resource etiquette.
+- What it takes to run one: the VRAM arithmetic (parameters × bytes-per-parameter, before context), quantization and its cost to structured output (i.e. to tool calling), and the two families of runtime — local/single-user (llama.cpp, Ollama) vs. serving (vLLM, SGLang). The distinction has a real referent rather than being hypothetical: CCAD runs **vLLM** behind its gateway because it serves many users and needs batching, while the optional local track runs **llama.cpp** because one student is one user.
+- The OpenAI-compatible endpoint as the interoperability story: why a harness can point at a different model by adding a provider to its config. This is the technical bridge from Tier 5.
+- **The inference gateway.** CCAD is reached through a **LiteLLM** proxy exposing an OpenAI-compatible endpoint, and Pi gets there with a provider entry in `~/.pi/agent/models.json` — no SSH, no scheduler, no tunnel. Swapping the model is a config file. Two things that fall out of it and are worth teaching: the context window turns out to be a startup parameter somebody chose (server-side here, chosen by the student with `-c` in the local track), and **a gateway is also a third party** — "runs on UNC hardware" is not the same as "nobody sees my prompts".
+- HPC mechanics, framed as **what the gateway abstracts away**: login node vs. compute node, the job scheduler (you describe a job and wait your turn), modules/environments, reaching a service on a node with no public address, shared-resource etiquette. The ops burden didn't disappear — it just wasn't the student's.
 - **CCAD (Centro de Computación de Alto Desempeño, UNC)**: what it is, what hardware exists, and how a student gets an account. Guest intro by Ale Silva. Most students don't know UNC runs an HPC center they can use — arguably the highest-value practical takeaway of the course, independent of AI.
 - Supply chain and self-hosting risk: what you trust when you download multi-gigabyte binary weights; how self-hosting removes a third party and adds you as the operator.
 - When open source is the right call: sensitive data, cost-dominated volume, research reproducibility, offline work, studying the model itself — versus wanting the best coding agent today with no ops capacity.
@@ -382,26 +383,32 @@ Not a dedicated session, but surfaced where relevant:
 
 > 🔴 **TO REVIEW** — Claude-generated, not yet reviewed by Diego.
 
-Owner: Diego. Guest: **Ale Silva (CCAD)**. Goes last because it depends on Session 5 — students who wrote their own loop already believe the model is swappable.
+Owner: Diego. Guest: **Ale Silva (CCAD)**. Goes last because it lands better after Session 5 — students who wrote their own loop already believe the model is swappable — but it no longer *depends* on it.
 
-**Recap & Sharing (~10-15 min)**
+> **The vehicle is a gateway, not a cluster login.** CCAD is exposed as a **LiteLLM** proxy with an OpenAI-compatible endpoint (`vllm/gemma4-26b`), and Pi reaches it with a provider entry in `~/.pi/agent/models.json`. The GPU queue — previously flagged here as the session's biggest risk — is out of the picture entirely.
+
+**Recap & Sharing (~10 min)**
 
 **Guest: intro to CCAD (~20-25 min)**
-- Ale Silva on the Centro de Computación de Alto Desempeño: what it is, who it serves, what hardware exists, how a student gets an account, what HPC is normally used for at UNC. Scope to be agreed with him.
+- Ale Silva on the Centro de Computación de Alto Desempeño: what it is, who it serves, what hardware exists, how a student gets an account, what HPC is normally used for at UNC. Scope to be agreed with him. If he's willing, the gateway from the inside: why CCAD put a proxy in front of the cluster and what it solves.
 
-**Theory: "The Model Is a Component" (~35-40 min, split around the hands-on)**
+**Theory: "The Model Is a Component" (~45 min, split around the hands-on)**
 - **Open source vs. open weights**: the binary, not the recipe. Nearly everything marketed as open-source AI is open weights.
-- **Licences**: Apache 2.0/MIT vs. bespoke licences with usage and scale restrictions vs. restrictions on the output. Can I use it commercially, redistribute a fine-tune, and who owns the generations?
-- Open weights vs. hosted APIs: the control spectrum.
-- What it takes to run one: VRAM arithmetic, quantization, local vs. serving runtimes, the OpenAI-compatible endpoint.
-- **Demo: Agus's portable GPU** serving a small model live — the "your own hardware" column made physical, and the session's fallback endpoint.
-- HPC mechanics: login vs. compute node, the scheduler, port forwarding, shared-resource etiquette.
-- Security sidebar: model supply chain, self-hosting as operator responsibility.
+- **Licences**: Apache 2.0/MIT vs. bespoke licences with usage and scale restrictions vs. restrictions on the output. Can I use it commercially, redistribute a fine-tune, and who owns the generations? Concrete rather than hypothetical: the model they'll use is a Gemma, so a bespoke Google licence.
+- Open weights vs. hosted APIs: the control spectrum. The **middle column** — open weights on someone else's GPU — is what the gateway is, and it's the day's default.
+- What it takes to run one: VRAM arithmetic (26B × 2 bytes ≈ 52 GB explains by itself why it lives at CCAD), quantization, local vs. serving runtimes, the OpenAI-compatible endpoint.
+- **`models.json`: the model as config** — the block the session turns on. Walk the provider entry field by field: `api: openai-completions` as the interoperability story typed out, `apiKey` as an env var and never a literal, and `contextWindow` as a number somebody chose.
+- **Demo: Agus's portable GPU** serving a small model live — the "your own hardware" column made physical, and the visible face of the optional local track. No longer the fallback endpoint: the gateway is more reliable than a laptop.
+- HPC mechanics, as what the gateway abstracts away: login vs. compute node, the scheduler, why an inference gateway exists at all, shared-resource etiquette.
+- Security sidebar: model supply chain, self-hosting as operator responsibility, and **the gateway as a third party** — ask in the room whether it logs prompts, even without the answer.
 - *After* the hands-on: **is it good enough to be the engine of a serious project?** — answered from their own measurements (schema-respecting tool calls, 20-step tasks, context window, latency in the loop), then when open source is the right call. Both deliberately placed once students have felt the ops burden.
 
-**Hands-on (~60-75 min)**
-- Get onto a cluster, request a GPU allocation, serve a small open-weights model with an OpenAI-compatible endpoint, forward the port, change the base URL in the Session 5 agent, and compare both models on the same multi-step task.
-- A fallback endpoint is provided (Agus's GPU in the room): the comparison is the lesson, not beating the queue.
+**Hands-on (~50-55 min), in two tracks**
+- **Track A, everyone (~25-30 min)**: add the CCAD provider to `models.json`, pick the model with `/model`, and run a multi-step task **in their own repo with their own `AGENTS.md` and skills from Session 3** — then the same task on the hosted model, and compare tool-call validity, turns taken, hallucinated names, latency. Nothing here can be lost to a queue, so everyone finishes.
+- **Track B, optional (~20-25 min)**: serve a small quantized model locally with `llama.cpp` and compare three ways. This is where the ops burden gets felt, and nobody's outcome depends on finishing it.
+- **Extension** for whoever finished Session 5: point their own loop at the same endpoint. One base URL, no tunnel.
+
+> **Timing doesn't fit.** The full plan runs ~2 h 50 against a 2 h slot. `sessions/session-6/INSTRUCTOR.md` carries a worked 117-minute variant (Track B becomes a written appendix, Agus's demo moves inside the hands-on) and a protect-list: the guest slot, Track A with its comparison, and the closing retrospective.
 
 **Course Closing (~15-20 min)**
 - Full retrospective across all six sessions: open the repo, look at the first commit.
@@ -453,8 +460,9 @@ For students who don't bring their own:
 - LLM fundamentals block: include or skip depending on group assessment?
 - Does the extension-course format actually allow 6 weeks? Confirm before announcing.
 - ~~**Session 5 tooling prerequisites**~~ → **resolved: nothing.** The hands-on runs on Pi as they already have it, and its material (docs and example extensions) ships with the install. No new package, no raw API access, no keys to provision. It is the only session in the course with no setup risk.
-- **Session 6 needs CCAD accounts provisioned in advance** (form + email, not same-day). Send instructions weeks ahead; confirm whether bulk/expedited provisioning is possible and whether a sponsoring researcher is required.
-- **Session 6 hands-on is hostage to the GPU queue** unless CCAD can reserve a window for the class. Fallback endpoint needed either way.
+- ~~Session 6 needs CCAD accounts provisioned in advance~~ → **no longer blocking.** The hands-on authenticates with an API key against the gateway. Keep recommending accounts weeks ahead — it's a takeaway that outlives the course and the door to real cluster work — but confirm with Ale whether the key is independent of an account.
+- ~~Session 6 hands-on is hostage to the GPU queue~~ → **resolved by the gateway.** The replacement risk is **concurrency**: 25-30 students hitting one LiteLLM endpoint for an hour. Confirm rate limits, and decide how keys are handed out (one shared course key, or one per student?).
+- **Session 6 needs slides and an exercise written from scratch.** The originals were built against the cluster hands-on and were deleted rather than patched; only `INSTRUCTOR.md` exists.
 - Which session owns the full-course retrospective now that there are six? (Currently duplicated between Session 4's closing and Session 6.)
 
 ## References & Inspiration
@@ -481,10 +489,14 @@ For students who don't bring their own:
 - The BeerJS talk *"Pi, the self-building agent"* (2026-06-25, Agus) — the source of the layer diagram, the loop diagram, the package diagram and the subagents extension shown in class.
 
 ### Session 6 — Open source models & HPC
+- **CCAD's inference gateway** — `https://litellm.ccad.unc.edu.ar`, OpenAI-compatible, model `vllm/gemma4-26b`. The vehicle for the hands-on. The API key is handed out in class and **never committed**; course material uses `$CCAD_API_KEY`.
+- [Pi — models & custom providers](https://pi.dev/docs/latest/models) — `~/.pi/agent/models.json`, re-read every time `/model` opens. `api` accepts `openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai`. `apiKey` accepts `$VAR` / `${VAR}` and `!command`. Defaults: `contextWindow` 128000, `maxTokens` 16384.
+- [Pi + llama.cpp](https://pi.dev/docs/latest/llama-cpp) — the optional local track. `/login llama.cpp` → `/llama` → `/model`.
+- [LiteLLM](https://github.com/BerriAI/litellm) — the gateway/proxy pattern for inference, and what the `vllm/` prefix in the model id comes from.
 - [CCAD — Centro de Computación de Alto Desempeño, UNC](https://supercomputo.unc.edu.ar/ccad/) — created by Ordenanza HCS 18/2010; serves UNC faculties, the Astronomical Observatory, and external research organizations
 - [CCAD wiki / documentation](https://wiki.ccad.unc.edu.ar/) — the reference for cluster usage
 - [Opening a CCAD account](https://wiki.ccad.unc.edu.ar/empezar/abrir-cuenta.html) — SSH keys → request form → credentials by email
 - [CCAD equipment](https://supercomputo.unc.edu.ar/equipamiento/) — active clusters: Boogie (2025), Gordito (2025/2026), Mendieta Fase 2 (2022), Serafín (2021), Eulogia (2018/2021), Mulatona (2018). Per-cluster specs live on the individual pages and the wiki
 - [CCAD services](https://supercomputo.unc.edu.ar/servicios/pedido-de-cuentas/) — account requests, intensive-use requests, user support
 - [CCAD status](https://stats.uptimerobot.com/eLhTV5CMni) · [dashboard](https://stats.ccad.unc.edu.ar/) — check before class
-- Guest: **Ale Silva** (CCAD) — intro to the center. Details in the email thread; see `sessions/session-6/INSTRUCTOR.md` → Pending from Ale
+- Guest: **Ale Silva** (CCAD) — intro to the center. Details in the email thread; see `sessions/session-6/INSTRUCTOR.md` → *Pendiente de Ale*

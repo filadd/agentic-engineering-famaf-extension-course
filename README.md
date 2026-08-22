@@ -9,7 +9,7 @@ A 6-session extension course at FaMAF (Universidad Nacional de Cordoba) that wal
 3. **Tooling & Skills** — tools and harness deep dive, AGENTS.md in depth, custom skills, MCP, documentation tools
 4. **Context Engineering** — spec-driven development, subagents, agent orchestration (Teams pattern), full workflow integration
 5. **Coding Harness (internals)** — the agent loop and its extension points, the session tree, compaction, three ways to give a model a tool, subagents as mechanism, run modes, and agent security
-6. **Open Source Models & CCAD** — open weights vs. hosted APIs, serving a model on UNC's HPC clusters, pointing your own agent at it
+6. **Open Source Models & CCAD** — open weights vs. hosted APIs, pointing your agent at an open-weights model running on UNC's HPC hardware, and what it takes to serve one yourself
 
 ## Structure
 
