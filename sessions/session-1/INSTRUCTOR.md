@@ -43,12 +43,13 @@ Diego and Agus: academic background, industry background, what we do now, **and 
 
 ### Part 2 — What this course is (~10 min)
 
-The expectation-setting block. Four moves:
+The expectation-setting block. Five moves:
 
 1. **This course is built on our own experience, not on theory.** For theory there are excellent online courses — many made by the same companies selling the AI services. Say it plainly, because the practical consequence is *ask a lot of questions*: the value of being in the room is access to people who already ate the problems.
 2. **Recommend the courses and ask for theirs.** DeepLearning.AI (Andrew Ng), Karpathy, Simon Willison, "Claude Code in Action" (Anthropic), plus Agus's picks. Then ask the room what AI courses they've taken and would recommend — write it on the board, it seeds `resources/`.
-3. **The six sessions in one slide**, and right after it: **Session 5 opens with an hour of demos** — the project they start today gets shown to the room in the second-to-last class. Say what it is not: no deliverable, no grading, volunteers only, 5-7 minutes each, and what matters is *how* they built it. Announcing it now is the point — it changes how they work for six weeks. One slide, ~1 min; it absorbs into this block, and Session 4's closing reminds them.
-4. **The two ideas that carry the course**: **responsibility is yours** and **managing a smart intern**. Close the block with the five-level spectrum as a map (vibe coding → AI-assisted → directed → agentic coding → agentic engineering) — one slide, no depth. Revisited in Session 4's closing.
+3. **The six sessions in one slide — as two blocks, and say so.** Four base sessions (*how do I work well with this thing?*, closed by Session 4) plus two advanced ones (*what is this thing made of, and what if I swap its parts?*, closed by Session 6). This is the only time in the course the whole shape is visible at once, so it's worth thirty extra seconds. Two things to state plainly, because both are easy to get wrong: **it's the same six sessions for everyone** — "advanced" is register, not a separate enrolment — and **the advanced two are not an optional appendix**, they're where the base material gets proven.
+4. **Announce the Session 5 demo hour**, on the slide right after that one: the project they start today gets shown to the room in the second-to-last class. Say what it is not: no deliverable, no grading, volunteers only, 5-7 minutes each, and what matters is *how* they built it. Announcing it now is the point — it changes how they work for six weeks. One slide, ~1 min; it absorbs into this block, and Session 4's closing reminds them.
+5. **The two ideas that carry the course**: **responsibility is yours** and **managing a smart intern**. Close the block with the five-level spectrum as a map (vibe coding → AI-assisted → directed → agentic coding → agentic engineering) — one slide, no depth. **Revisited once, in Session 6's closing**, as the course's ending. Keep the slide file intact and reusable: Session 6 returns to this exact slide, unretouched.
 
 ### Part 3 — Who they are (~30 min)
 
@@ -149,7 +150,7 @@ That adds to ~3 h, so it's tight but should fit. **If the room runs long, cut fr
 - **Context window + context rot** → Session 4 (Agus). Today it's a constraint to respect; there it becomes something you engineer.
 - **The reality-check debrief** → Session 2's recap (Agus). `sessions/session-2/slides.md` already opens on *"¿Qué pasó con su código durante la semana? ¿Alguien lo abrió?"* — that's where the real debrief happens now, so **sync with Agus before class**: tell him what state students actually ended in, and that today's in-class reality check was only ~12 minutes.
 - **Comprehension debt** → Session 2's verification bottleneck. Same problem, named twice.
-- **The spectrum** → Session 4's closing revisits it. Use the same five labels.
+- **The spectrum** → **Session 6's closing** revisits it, as the course's ending. Use the same five labels, and keep the slide reusable — Session 6 shows this one, not a redrawn version. (Session 4 used to revisit it too; that was a leftover from when the course was 4 sessions and Session 4 was the finale.)
 - **Open-weights models (GLM, Kimi) named in fundamentals** → Session 6. Just planting the names.
 - **✅ Tooling mismatch resolved**: Session 2 now runs on Pi. It adds `@plannotator/pi-extension` (file-based plan mode + `/plannotator-review`) — one extension, no second harness. Nothing to warn students about; **Pi is the tool for all six sessions, full stop.**
 - **The harness restricts the toolset** → Session 2 shows this concretely (planning mode allows only read/search) and hands it to Session 3 as permissions and extension points. Worth knowing when you plant "harness" as vocabulary in Part 4.

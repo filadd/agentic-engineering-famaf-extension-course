@@ -78,9 +78,15 @@ Diego Piloni · con Agustín Carrasco
 
 ---
 
-## Las 6 sesiones
+## Las 6 sesiones: 4 de base + 2 avanzadas
 
-<!-- Recorrer el arco: 1) vibe coding y fundamentos, 2) planificar y revisar (Agus), 3) tooling y skills, 4) context engineering (Agus), 5) internals del harness (Agus), 6) modelos open source y CCAD. Cada sesión agrega una capa de estructura. Y van a sentir *por qué* cada capa importa porque antes van a vivir el problema que resuelve. -->
+<!-- Recorrer el arco en DOS BLOQUES, y decir en voz alta que son dos bloques: es la primera vez que lo escuchan y es la que ordena todo el curso.
+
+BASE (1 a 4) — "¿cómo trabajo bien con esta cosa?": 1) vibe coding y fundamentos, 2) planificar y revisar (Agus), 3) tooling y skills, 4) context engineering (Agus). Cada una agrega una capa de estructura, y van a sentir *por qué* cada capa importa porque antes van a vivir el problema que resuelve. La Sesión 4 cierra este arco: el que llegó hasta ahí tiene el curso base completo.
+
+AVANZADAS (5 y 6) — acá cambia la pregunta: de "¿cómo trabajo bien con esta cosa?" a "¿de qué está hecha, y qué pasa si le cambio las partes?". 5) internals del harness (Agus), 6) modelos open source y CCAD. No agregan capas: abren la máquina y muestran que todo lo del curso base sigue en pie.
+
+Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 6 sesiones para todos —"avanzado" es el registro, no una inscripción aparte— y no son un apéndice opcional, son donde se entiende por qué funcionó todo lo anterior. -->
 
 ---
 
@@ -104,7 +110,7 @@ Diego Piloni · con Agustín Carrasco
 
 ## Los 5 niveles
 
-<!-- Vibe coding → AI-assisted → asistencia dirigida → agentic coding → agentic engineering. Una slide, sin profundidad: es un mapa, no un temario. Ubicar dónde cae cada sesión. Volvemos a esta slide en el cierre de la Sesión 4. -->
+<!-- Vibe coding → AI-assisted → asistencia dirigida → agentic coding → agentic engineering. Una slide, sin profundidad: es un mapa, no un temario. Ubicar dónde cae cada sesión. Volvemos a esta slide una sola vez: en el cierre de la Sesión 6, que es el cierre del curso. Mantener el archivo reusable — allá se muestra esta slide, no una redibujada. -->
 
 ---
 

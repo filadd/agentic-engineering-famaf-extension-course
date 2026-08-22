@@ -11,7 +11,7 @@ tags:
 
 # From Vibe Coding to Agentic Engineering
 
-Short course for university CS students with some project experience but little/no professional training. The goal is to walk them through the full spectrum of AI-assisted development — from pure "vibe coding" to structured agentic engineering — building concepts progressively over 4 weeks.
+Short course for university CS students with some project experience but little/no professional training. The goal is to walk them through the full spectrum of AI-assisted development — from pure "vibe coding" to structured agentic engineering — building concepts progressively over 6 weeks.
 
 ## The Spectrum
 
@@ -35,9 +35,15 @@ Vibe coding is a great on-ramp — fast, fun, empowering. But professional softw
 
 ## Format
 
-- **6 sessions**, 1 per week, ~2-3 hours each (originally 4; sessions 5-6 added as a deeper technical arc — see below). **Sessions 1 and 5 are the long ones**: Session 1 needs 3 h for introductions plus the install, Session 5 needs 2 h 30 because it opens with an hour of student demos.
+- **6 sessions**, 1 per week, ~2-3 hours each, in two blocks:
+  - **Sessions 1 and 5 are the long ones**: Session 1 needs 3 h for introductions plus the install, Session 5 needs 2 h 30 because it opens with an hour of student demos.
+  - **Base — sessions 1-4.** The fundamentals arc: *how do I work well with this thing?* Complete on its own terms, and **Session 4 closes it.**
+  - **Advanced — sessions 5-6.** The internals arc: *what is this thing made of, and what if I swap its parts?* **Session 6 closes the course.**
+  - **Same cohort throughout** — "advanced" describes depth and register, not enrollment. Everyone attends all six.
+  - **The split is announced to students in Session 1**, on the six-sessions slide, so they know where the base material ends and what changes after it.
+  - The shape is not an accident of numbering: the course was originally 4 sessions, and 5-6 were added as a deeper technical arc rather than as more of the same.
 - Each session: theory → hands-on → show-and-tell discussion
-- **Same project across all 4 sessions** — students see their codebase evolve
+- **Same project across all 6 sessions** — students see their codebase evolve
 - Students bring their own project idea; default fallback is a small web app
 - Tool: **Pi** (`pi.dev`) — decided; installed by students in Session 1
 - Class size: ~20-30 students
@@ -107,6 +113,7 @@ These are the concepts to cover, roughly ordered by complexity:
 - When to delegate vs. intervene (developing intuition)
 - Professional accountability: you sign off on what the AI produces
 - Orchestration, in passing: shared docs as the ground truth that lets several agents work in parallel
+- Cost and limits: tokens as a budget, model tiering, when NOT to use AI, skill atrophy, and what skills matter in an AI-augmented world. This tier closes the *"how do I work well with this thing?"* arc, so the judgment material lives here. The spectrum revisit and the full-course retrospective belong to Tier 6.
 
 ### [Agus] Tier 5: Harness Internals
 
@@ -152,6 +159,10 @@ Not a dedicated session, but surfaced where relevant:
 
 ## Proposed Sessions
 
+> ### Base course — sessions 1-4
+>
+> The fundamentals arc: *how do I work well with this thing?* Each session adds a layer of structure, and Session 4 closes the arc.
+
 ### Session 1: The Vibe Coding Experience
 
 > **This session runs 3 hours** (every other session is 2): ~2 h of introductions + theory, ~1 h of hands-on. It carries all the shared vocabulary for the course *and* the tool install, which is why the usual theory/hands-on ratio is inverted here.
@@ -167,7 +178,7 @@ Not a dedicated session, but surfaced where relevant:
 - **Announce the Session 5 demo hour**: the project they start today gets shown to the room in the second-to-last class. Volunteers, 5-7 min each, no deliverable and no grading. Announcing it on day one is the point — it changes how they work for six weeks. Reminded in Session 4's closing.
 - **Responsibility stays with the person, not the AI** — the idea we most want them to leave with
 - Core mental model: managing a smart intern. Today is deliberately the absent boss.
-- The five-level spectrum as a map (revisited in Session 4's closing)
+- The five-level spectrum as a map (revisited in Session 6's closing, the course's ending)
 
 **Part 3 — Who they are (~15 min)**
 - Quick round of introductions, and: do they use AI, and for what?
@@ -312,14 +323,28 @@ Not a dedicated session, but surfaced where relevant:
 - The chain: doc → plan (Plannotator) → implement → review against both the plan and the doc
 - Optional aside for fast students: parallel agents (subagents, worktrees) with the docs as shared ground truth
 
-**Closing (~15 min)**
+**Closing (~15 min) — the end of the base course**
+
+> **This is the milestone block.** Sessions 1-4 are a complete arc and this closes it: a student who has followed to here has the whole base course. Give it the weight of an ending, then point forward — *there are two more, and they take the machine apart.*
+>
+> **The two closings split by kind, not by rank.** Session 4 owns the human-judgment material: cost, limits, career, atrophy. Session 6 owns the artifact material: the repo from first commit to today, the spectrum, and the transfer thesis. Neither repeats the other, and both are real endings — one of the base arc, one of the course.
+>
+> The duplication that used to be here was a fossil: the course was originally 4 sessions and this was the finale — hence the old "compare your codebase across all 4 sessions".
+
 - What changed when the agent had the doc?
 - Cognitive debt and surrender, revisited with the class's own experience
+- Cost and limits: tokens as a budget, model tiering, and why context engineering saves money too, not just quality — this is the session that earns the point, since context engineering *is* budget management. (Session 6 later adds the other cost model: per-GPU-hour instead of per-token.)
 - When NOT to use AI: skill atrophy, "don't use AI as a crutch" (MIT Missing Semester)
+- Career implications: what skills matter in an AI-augmented world? Pairs with ownership below — you sign off on what the AI produces, and that is the skill that keeps mattering
 - Ownership: understand, decide, discuss, maintain
-- Name the transition: the next two sessions take the machine apart
+- **Name the transition explicitly**, since Session 1 announced it and this is where it arrives: the base course ends here. The next two are the advanced arc, and they stop asking how to work well with the tool and start asking what it's made of.
 - Remind them of the demo hour that opens Session 5 — this is the last class before it
+- **Deliberately not here**: the full-course retrospective and the spectrum revisit. Both are Session 6's, and doing them here would spend the course's ending two sessions early.
 - Homework: keep the docs alive during the week; note when they helped and when they went stale against the code
+
+> ### Advanced arc — sessions 5-6
+>
+> The question changes: *what is this thing made of, and what if I swap its parts?* Same cohort, higher register, no new layers of structure — these two take the machine apart and show that everything from the base course survives it. Session 6 closes the course.
 
 ### Session 5: Coding Harness (internals)
 
@@ -410,11 +435,12 @@ Owner: Diego. Guest: **Ale Silva (CCAD)**. Goes last because it lands better aft
 
 > **Timing doesn't fit.** The full plan runs ~2 h 50 against a 2 h slot. `sessions/session-6/INSTRUCTOR.md` carries a worked 117-minute variant (Track B becomes a written appendix, Agus's demo moves inside the hands-on) and a protect-list: the guest slot, Track A with its comparison, and the closing retrospective.
 
-**Course Closing (~15-20 min)**
+**Course Closing (~15 min) — the end of the advanced arc, and of the course**
 - Full retrospective across all six sessions: open the repo, look at the first commit.
-- The spectrum revisited (Session 1's slide, returned to).
-- When NOT to use AI; skill atrophy; AI amplifies expertise.
-- Key takeaway: everything from Sessions 2-5 — planning, review, tests, context, tools, harness — transfers across models. That's why the course taught structure instead of a product.
+- The spectrum revisited (Session 1's slide, returned to, unretouched).
+- Key takeaway: everything from Sessions 2-5 — planning, review, tests, context, tools, harness — transfers across models. That's why the course taught structure instead of a product, and they proved it by hand half an hour earlier.
+- Close where it opened: Session 1 gave them LLM + tool + harness. Today they swapped the first and everything else held.
+- **Not here**: cost/limits, career, and skill atrophy — those are Session 4's closing, which ends the base course. Keeping them out is what makes this fit 15 minutes.
 
 ## Progression Arc
 
@@ -425,12 +451,14 @@ The arc follows a clear logic (and mirrors growing from a hands-off boss to an e
 3. **Tool leverage** → use the tool's capabilities to scale your judgment ("give the intern better tools and clear documentation")
 4. **Context shaping** → engineer the AI's environment (specs, project context, documentation) so it produces better output by default ("build a team culture where good work happens by default")
 
-Sessions 5-6 change the question. The first four ask *how do I work well with this thing?*; the last two ask *what is this thing made of, and what if I swap its parts?*
+Steps 1-4 are the **base course**, and they're one question asked four times: *how do I work well with this thing?* Session 4 closes that arc.
+
+**Sessions 5-6 are the advanced arc, and they change the question** — from *how do I work well with this thing?* to *what is this thing made of, and what if I swap its parts?* That's why they're framed as advanced rather than as two more layers of structure: the move isn't deeper management, it's opening the machine.
 
 5. **Open the box** → TBD (Agus)
 6. **Swap the model** → the model is one replaceable component; everything you learned survives the swap
 
-Each session adds a layer of structure. Students feel *why* each layer matters because they've experienced the problems it solves.
+Each session in the base arc adds a layer of structure, and students feel *why* each layer matters because they've experienced the problems it solves. The advanced arc adds no layers — it takes the thing apart and shows that the layers survive.
 
 ## Session Flow Template
 
@@ -446,7 +474,7 @@ Each session follows roughly the same structure:
 For students who don't bring their own:
 - Small web app (todo with auth, simple dashboard, chat app)
 - Must be achievable as a basic vibe-coded prototype in ~2 hours
-- Complex enough to reveal problems across all 4 weeks (security, architecture, testing, state management)
+- Complex enough to reveal problems across all 6 weeks (security, architecture, testing, state management)
 
 ## Open Questions
 
@@ -463,7 +491,7 @@ For students who don't bring their own:
 - ~~Session 6 needs CCAD accounts provisioned in advance~~ → **no longer blocking.** The hands-on authenticates with an API key against the gateway. Keep recommending accounts weeks ahead — it's a takeaway that outlives the course and the door to real cluster work — but confirm with Ale whether the key is independent of an account.
 - ~~Session 6 hands-on is hostage to the GPU queue~~ → **resolved by the gateway.** The replacement risk is **concurrency**: 25-30 students hitting one LiteLLM endpoint for an hour. Confirm rate limits, and decide how keys are handed out (one shared course key, or one per student?).
 - **Session 6 needs slides and an exercise written from scratch.** The originals were built against the cluster hands-on and were deleted rather than patched; only `INSTRUCTOR.md` exists.
-- Which session owns the full-course retrospective now that there are six? (Currently duplicated between Session 4's closing and Session 6.)
+- ~~Which session owns the full-course retrospective now that there are six?~~ → **decided: they split by kind.** Session 4 closes the base course (cost, limits, career, atrophy); Session 6 closes the advanced arc and the course (the repo from first commit to today, the spectrum, the transfer thesis). The overlap was a leftover from the 4-session version, where Session 4 *was* the finale.
 
 ## References & Inspiration
 
