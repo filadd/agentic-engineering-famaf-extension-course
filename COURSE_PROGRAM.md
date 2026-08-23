@@ -97,16 +97,16 @@ These are the concepts to cover, roughly ordered by complexity:
 - Subagents: **named only, as the third row of the always-loaded vs. on-demand table** — the work itself can also go to a separate context. The block itself is Tier 4.
 
 ### [Agus] Tier 4: Context Engineering
-- Spec-driven development: defining WHAT before prompting HOW — specs as context for the AI
-- Research-driven development: using documentation tools (context7, context-hub) to ground the AI in accurate, current docs before implementing
-- Subagents, the primitive: delegating a subtask to a separate context and the available agent types (research, exploration, review). **Agus opens this with a documentation use case** — research-driven development is where the delegation pays for itself, so the primitive and its best motivation land together. Moved here from Tier 3.
-- Agent orchestration: the *pattern* of coordinating multiple agents on a task — distinct from the subagent primitive above. Orchestration is about dispatch and coordination (who plans, who works, how results merge); subagents are one substrate to implement it on, alongside separate Claude sessions, the Task tool, or MCP-mediated handoffs. The "Teams" pattern is a common form: a planner agent dispatches to specialized worker agents (research, review, exploration, implementation), often running in parallel.
-- Framework vs. roll-your-own orchestration: a real design decision when you start coordinating agents. Example of an opinionated framework — `oh-my-openagent` (https://github.com/code-yeongyu/oh-my-openagent), with named discipline agents (Sisyphus planner, Hephaestus worker, Prometheus interviewer), automatic model routing, and parallel team mode. Useful to *learn from* — it shows what orchestration looks like at scale — but worth discussing the tradeoff: adopt a framework's opinions, or design your own orchestration on top of Claude Code's primitives (subagents, worktrees, Task tool). Neither is universally better; the choice depends on how much control vs. convention the team wants.
-- Deep context engineering: shaping AI behavior through project structure and documentation
-- Full workflow integration: spec → research → tests → implementation → review
+- Problem domain vs. solution domain: the same feature described as a need (actors, data and relations, processes, in problem terms) and as a system (data diagrams, breadboards/page sketches, flows). Starting from the solution means deciding without having considered the problem in depth, and inheriting the agent's average answer for every decision left open.
+- Living project documentation as context: `docs/PROJECT.md` (what the project is, main goal, constraints) plus one doc per feature (the problem it solves, then a design section with the model and one flow per interaction — each flow carries its screens, steps, rules and decisions with their reasons). Committed to the repo; `AGENTS.md` points to them.
+- Writing docs with the agent: interrogation before drafting — the agent asks, the student decides (e.g. Matt Pocock's grill-me skill). Delegating the writing is fine; delegating the thinking is the failure mode.
+- Research feeds the docs at high level: documentation tools (context7) to understand a library, while implementation details belong to the plan, not the doc
+- Subagents, the primitive: delegating a subtask to a separate context, and the available agent types (research, exploration, review). Moved here from Tier 3, and **opened through the research above** — sending the library research to its own context is where the delegation pays for itself, so the primitive and its best motivation land together.
+- The chain: doc → plan → implementation → review (the review checks against both the plan and the doc)
+- Cognitive debt and cognitive surrender: the cost of repeatedly delegating reasoning to the AI, and adopting its decisions as your own opinions
 - When to delegate vs. intervene (developing intuition)
 - Professional accountability: you sign off on what the AI produces
-- The spectrum revisited: when is each approach appropriate?
+- Orchestration, in passing: shared docs as the ground truth that lets several agents work in parallel
 
 ### [Agus] Tier 5: Harness Internals
 - **TBD** — topics to be defined by the owner. See `harness_internals.md` and `sessions/session-5/`.
@@ -132,7 +132,7 @@ Not a dedicated session, but surfaced where relevant:
 - **Session 1**: security issues found during code analysis (common vulnerabilities in AI output)
 - **Session 2**: reviewing code with a security lens, what to look for
 - **Session 3**: sandboxing, permission models, why tools have allowlists/denylists
-- **Session 4**: trust boundaries, prompt injection awareness, supply chain risks with agents
+- **Session 4**: none dedicated — trust boundaries, prompt injection and supply chain moved out of this session; the natural landing spot is Session 5 (TBD, confirm with its owner)
 - **Session 5**: TBD
 - **Session 6**: model supply chain (binary weights from a hub), self-hosting as an operator responsibility, weaker models as easier injection targets
 
@@ -265,39 +265,45 @@ Not a dedicated session, but surfaced where relevant:
 
 ### Session 4: Context Engineering
 
-**Recap & Sharing (~15-20 min)**
-- Show-and-tell: what did the tooling enable that wasn't possible before?
+> Materials in `sessions/session-4/` (instructor notes, deck, exercise), all in Spanish. The session interleaves explanation and practice per block instead of one long hands-on. Documentation replaces spec-driven development as the spine.
 
-**Theory: "Shaping The Input" + "The Full Loop" (~20-30 min)**
-- Spec-driven development: define WHAT before prompting HOW
-- Research before implementation: use documentation tools (context7, context-hub) to ground the AI — "look it up, don't guess"
-- Subagents, the primitive (moved here from Session 3): delegating a subtask to a separate context — the honest reason is context economy, not "more AI" — plus agent types. **Introduced through a documentation use case**, which doubles as the research-driven development block.
-- Agent orchestration as a coordination pattern: distinct from the subagent primitive above. Orchestration = *how* multiple agents share work (dispatch, planning, result merging); subagents are one substrate to run it on, alongside separate sessions, the Task tool, or MCP-mediated handoffs. The "Teams" pattern is the canonical form: a planner agent dispatches to specialized worker agents (research, review, exploration, implementation), often in parallel. Why orchestration is the natural next step from single-agent context engineering.
-- A design decision: framework vs. roll-your-own orchestration. Walk through oh-my-openagent (https://github.com/code-yeongyu/oh-my-openagent) as a concrete example of an opinionated orchestration framework — discipline agents (Sisyphus, Hephaestus, Prometheus), automatic model routing, parallel team mode. Open the discussion: do you adopt those opinions, or design your own orchestration on Claude Code's primitives? Frame it as a real choice the student will face, not a recommended path.
-- Context engineering: the AI's output is only as good as what you feed it
-- The full workflow: spec → research → tests → implementation → review
-- Developing delegation intuition: what to hand off vs. what requires your judgment
-- Professional accountability: you sign off on what the AI produces
-- Security sidebar: trust boundaries, prompt injection, supply chain awareness
+**Recap (~10 min)**
+- Skills show-and-tell: new skills built or found during the week
+- Open questions left from Session 3
 
-**Hands-on (~1.5 hours)**
-- Write a spec for a feature, then have the AI implement it
-- Research before coding: use context7/context-hub to look up the libraries/APIs you need — compare how the AI's output changes when it has accurate docs
-- Use subagents for non-implementation tasks: have a research agent explore your codebase, a review agent check your last change
-- Practice the full loop: spec → research → plan → test → implement → review
-- Experiment with delegation: what can you safely hand off? What benefits do specialized agents bring beyond just "more AI"?
-- (Optional) Compare two paths: (a) read through oh-my-openagent's discipline agents and try `ultrawork` on a small task, vs. (b) sketch a minimal roll-your-own orchestrator on top of Claude Code's subagents + Task tool. Discuss which approach feels right for your project — and why.
+**Framing (~5 min)**
+- Building on planning (Session 2) and configuration (Session 3): project documents that feed the plans and record the decisions for the long run
+- Cognitive debt and cognitive surrender, introduced here and returned to in the closing
+- The session's phrase: "documentar es pensar antes de construir"
 
-**Closing Discussion (~20-30 min)**
+**Two domains (~15 min)**
+- One feature described twice: adding multi-user support to the task list (the Session 1 brief, same project as Session 3's demo)
+- Problem domain: the need, detailed with actors, data and relations, and processes, in problem terms
+- Solution domain: the system, detailed with data diagrams, breadboards or page sketches, and flows — one of many possible solutions
+- Same problem, many solutions; starting from the solution means deciding shallowly and inheriting the agent's average answer
+- The distinction matters with or without AI (requirements vs. design)
 
-> With 6 sessions, the full-course retrospective moves to Session 6. Session 4 keeps the spectrum revisit and the cost/limits discussion as a checkpoint, not a farewell — decide which session owns the closing before the course runs.
+**Document what you already built (~30 min: ~5 templates + ~25 work)**
+- Two templates, committed to the repo: `docs/PROJECT.md` (what the project is, main goal, constraints) and `docs/features/<name>.md`, one per feature (the problem it solves, then a design section with the model and one flow per interaction — each flow carries its screens, steps, rules and decisions with their reasons)
+- Templates, not forms: each project adapts them. `AGENTS.md` points to these docs
+- Interactive drafting: the agent explores code, commits and past plans, shows a draft, and asks what it can't know — the problem and the whys; the student answers
 
-- Retrospective: compare your codebase across all 4 sessions
-- The spectrum revisited: when is each approach appropriate?
-- Cost and token awareness (brief): AI tools aren't free — model tiering (fast/cheap vs slow/powerful), why context engineering saves money too, not just quality. Think of tokens as a budget, not an infinite resource
-- When NOT to use AI: recognizing limitations, avoiding overreliance, the skill atrophy risk. AI amplifies expertise — if you don't have the fundamentals, it amplifies confusion. "Don't use AI as a crutch" (MIT Missing Semester)
-- Career implications: what skills matter in an AI-augmented world?
-- Key takeaway: AI tools amplify expertise — invest in fundamentals
+**Break (~5 min)**
+
+**Document the next feature and implement it (~40 min: ~5 explanation + ~35 work)**
+- The feature from Session 3's homework, the one that doesn't fit in one sentence — a new feature, or a change to an existing one (extending that feature's doc)
+- Interrogation before drafting: ask the agent to question you (Matt Pocock's grill-me skill); the doc gets written once the decisions are made
+- The doc stays high-level: context7 to understand libraries, implementation details go to the plan
+- The chain: doc → plan (Plannotator) → implement → review against both the plan and the doc
+- Optional aside for fast students: parallel agents (subagents, worktrees) with the docs as shared ground truth
+
+**Closing (~15 min)**
+- What changed when the agent had the doc?
+- Cognitive debt and surrender, revisited with the class's own experience
+- When NOT to use AI: skill atrophy, "don't use AI as a crutch" (MIT Missing Semester)
+- Ownership: understand, decide, discuss, maintain
+- Name the transition: the next two sessions take the machine apart
+- Homework: keep the docs alive during the week; note when they helped and when they went stale against the code
 
 ### Session 5: Coding Harness (internals)
 
