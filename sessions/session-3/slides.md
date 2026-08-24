@@ -184,13 +184,13 @@ onToolCall(({ name }) => {
 
 ## El skill es la respuesta a ese impuesto
 
-<!-- Un directorio con un SKILL.md y frontmatter (name, description, y opcionalmente allowed-tools). Vive en .pi/skills/ o .agents/skills/ en el proyecto, o en ~/.pi/agent/skills/ global — el MISMO par proyecto/global que AGENTS.md. -->
+<!-- Un directorio con un SKILL.md y frontmatter (name, description, y opcionalmente allowed-tools). Vive en .pi/skills/ o .agents/skills/ en el proyecto, o en ~/.pi/agent/skills/ global — el MISMO par proyecto/global que AGENTS.md. Y ESTO NO ES DE PI: el formato es un estándar abierto (agentskills.io), publicado por Anthropic y adoptado por Claude Code, Cursor, Copilot, Codex, Gemini CLI, OpenCode y Pi, entre otros. Señalar que .agents/skills/ es justamente el path que no nombra ninguna herramienta. TREINTA SEGUNDOS, no abrir el sitio: el link va en resources/. -->
 
 ---
 
 ## Cómo se carga: tres etapas
 
-<!-- El artefacto concreto de toda la sesión. (1) Al arrancar, Pi escanea los skills y se queda con EL NOMBRE Y LA DESCRIPCIÓN de cada uno. (2) En el system prompt entra solo eso: la lista de nombres y descripciones. (3) EL CUERPO DEL SKILL.MD SE CARGA RECIÉN CUANDO LA TAREA LO AMERITA. Es decir: tenés veinte skills instalados y pagás veinte descripciones, no veinte procedimientos. Ese es el truco, y vuelve a aparecer en el bloque de MCP. -->
+<!-- El artefacto concreto de toda la sesión. (1) Al arrancar, Pi escanea los skills y se queda con EL NOMBRE Y LA DESCRIPCIÓN de cada uno. (2) En el system prompt entra solo eso: la lista de nombres y descripciones. (3) EL CUERPO DEL SKILL.MD SE CARGA RECIÉN CUANDO LA TAREA LO AMERITA. Es decir: tenés veinte skills instalados y pagás veinte descripciones, no veinte procedimientos. Ese es el truco, y vuelve a aparecer en el bloque de MCP. El estándar abierto llama a esto PROGRESSIVE DISCLOSURE y son literalmente estas tres etapas (discovery → activation → execution): no es una optimización de Pi, es cómo está diseñado el formato. Y la consecuencia que importa: EL SKILL QUE ESCRIBEN HOY NO ESTÁ ATADO A PI — se lo llevan a la herramienta que usen en el trabajo. -->
 
 ---
 

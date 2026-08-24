@@ -97,7 +97,7 @@ These are the concepts to cover, roughly ordered by complexity:
 - Tools deep dive: what tools are, how the LLM calls them, examples from Pi's toolbelt (read, write, edit, bash, grep, find, ls). Why tools are the unit of capability.
 - Harness deep dive: what Pi provides as a harness — context management, tool dispatch, permissions, extension points. Comparison with other harnesses (Claude Code, Cursor, Aider, OpenCode). Why the harness matters as much as the model.
 - Custom instructions: `AGENTS.md` from scratch — what it is, the loading order across directories, rules files. Students arrive with the *motivation* for it from Session 2's homework ("what did you have to explain to the agent more than once?"), not with a file.
-- Skills / slash commands: teaching AI reusable behaviors
+- Skills / slash commands: teaching AI reusable behaviors. **[Agent Skills](https://agentskills.io/) is an open standard**, not a Pi feature — a folder with a `SKILL.md`, published by Anthropic and adopted across Claude Code, Cursor, Copilot/VS Code, Codex, Gemini CLI, OpenCode and Pi. The three-stage loading taught here is the standard's *progressive disclosure*. Worth one sentence in class: it's the first artefact of the course that transfers to whatever tool the student uses next — and a small rehearsal of the transfer thesis Session 6 closes on.
 - MCP / external tools: extending the harness — the LLM gains new tools at runtime
 - Documentation tools (e.g. [context7](https://context7.com/), [context-hub](https://github.com/andrewyng/context-hub)): fetching up-to-date library docs so the AI works with accurate references instead of guessing
 - Subagents: **named only, as the third row of the always-loaded vs. on-demand table** — the work itself can also go to a separate context. The block itself is Tier 4.
@@ -273,7 +273,7 @@ Not a dedicated session, but surfaced where relevant:
 - Tools: the unit of agent capability. What a tool definition looks like (name + schema + handler), how the LLM decides which to call, examples from Pi's built-in toolbelt. Why a smarter tool often beats a smarter model.
 - Harness: the program that wraps the LLM. Pi's responsibilities — context window management, tool execution, permissions, extension points. Quick comparison with Claude Code / Cursor / Aider / OpenCode so students see that "harness" is a real design space, not just "the UI."
 - Custom instructions: `AGENTS.md` as the agent's persistent memory — from the ten-line version they wrote in Session 2 to one that actually shapes behaviour, plus loading order across directories and rules files
-- Skills and slash commands: building reusable capabilities
+- Skills and slash commands: building reusable capabilities — and that the `SKILL.md` format is the open [Agent Skills](https://agentskills.io/) standard, so what they write today isn't tied to Pi
 - MCP and external tools: how external services plug into the harness as new tools — the agent's capabilities grow at runtime
 - Documentation tools (e.g. context7, context-hub): why accurate docs matter — the AI hallucinates APIs, context7, context-hub fixes that
 - Subagents: **named, not taught** — the third row of the always-loaded vs. on-demand table is left open and handed to Session 4
