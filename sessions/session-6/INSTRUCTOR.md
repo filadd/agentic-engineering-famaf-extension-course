@@ -6,10 +6,11 @@
 > **Excepciones, y estas sí son decisiones tomadas:**
 > 1. **Al CCAD se llega por un gateway LiteLLM**, y Pi se apunta ahí con un provider propio en `~/.pi/agent/models.json`. No hay SSH, no hay scheduler, no hay túnel. Decisión de Diego.
 > 2. **La práctica tiene dos vías**: el gateway para todos (Vía A) y `llama.cpp` local opcional (Vía B). Todo lo que sigue baja de esas dos cosas.
+> 3. **El slot de Ale Silva son seis puntos**: qué es el CCAD, qué hardware tiene, cómo accede un estudiante de la UNC para correr un LLM ahí, cómo se corre un LLM ahí, **LiteLLM** (el gateway desde adentro) y **vLLM** (qué corre atrás). Decisión de Diego.
 
 > A cargo: Diego. Estado: en armado. Este archivo es **todo lo que hay** de la sesión: las slides y el ejercicio se borraron porque estaban escritos contra el diseño viejo (SSH + cola de GPU + túnel), y hay que escribirlos de nuevo desde acá. Material en español.
 >
-> Invitado: **Ale Silva (CCAD)** — invitado a abrir la sesión con una intro al centro. Confirmar alcance, fecha y duración.
+> Invitado: **Ale Silva (CCAD)** — abre la sesión con seis puntos: qué es el CCAD, qué hardware tiene, cómo accede un estudiante de la UNC para correr un LLM ahí, cómo se corre un LLM ahí, y la infraestructura de inferencia por dentro: **LiteLLM** adelante y **vLLM** atrás. El alcance está definido; falta confirmar con él fecha, duración y formato.
 
 ## Objetivo de la sesión (en una frase)
 
@@ -56,7 +57,7 @@ Sigue **Pi**, sin instalar nada nuevo. Lo único que se agrega es un archivo de 
 - **Esta sesión ya no es la más terminal-heavy de las seis.** La versión anterior de este archivo avisaba de SSH, claves, scheduler y port forwarding. Para la Vía A, todo eso desapareció: editar un JSON y correr `/model`. La Vía B es más técnica, y es opcional a propósito.
 - **Pi es el vehículo** — el mismo harness de todas las sesiones, ahora apuntado a otro modelo. Nada de la Sesión 5 es requisito. Lo que sí hace falta es que Pi siga andando en su máquina, que después de cinco sesiones es una apuesta segura.
 - **Llegan con su repo, su `AGENTS.md` y sus skills de la Sesión 3.** Ese es el insumo de la práctica y no lo podemos generar nosotros. Avisarlo la semana anterior.
-- **La cuenta del CCAD dejó de ser requisito bloqueante.** Si la API key alcanza, la práctica no depende de que la cuenta esté aprobada. **Igual hay que seguir recomendándola con semanas de anticipación**, por dos razones: es un aprendizaje que les sobrevive al curso, y es la puerta a correr algo en hardware real después. Pero ya no puede voltear la clase. **Confirmar con Ale si la key es independiente de la cuenta** (ver Pendiente de Ale).
+- **La cuenta del CCAD dejó de ser requisito bloqueante.** Si la API key alcanza, la práctica no depende de que la cuenta esté aprobada. **Igual hay que seguir recomendándola con semanas de anticipación**, por dos razones: es un aprendizaje que les sobrevive al curso, y es la puerta a correr algo en hardware real después. Pero ya no puede voltear la clase. **Confirmar con Ale si la key es independiente de la cuenta** (ver Pendiente de Ale). **Y ahora hay una tercera razón para insistir con la cuenta**: los puntos 3 y 4 del slot de Ale son cómo pedirla y qué hacer con ella, así que el que llegue con la cuenta aprobada escucha instrucciones y no anécdotas.
 - **Nadie tuvo exposición previa a HPC.** El bloque de mecánica de cluster ahora es cultura general y no instrucciones de uso, lo que lo hace más corto y más fácil de dar.
 - **No asumir que entienden qué es una API key** ni qué implica pegarla en un archivo. Es la primera vez en el curso que manejan una credencial propia y hay que decir en voz alta que no se commitea.
 
@@ -70,18 +71,32 @@ Discusión, no slides. Qué hicieron, qué se les rompió, qué les sorprendió 
 
 Este es el bloque elástico: **si el día se estira, se recorta de acá** (mismo criterio que las Sesiones 2 y 3).
 
-### Invitado: Ale Silva — intro al CCAD (~20-25 min)
+### Invitado: Ale Silva — el CCAD y cómo correr un LLM ahí (~30-35 min)
 
-Entregar la sala. Alcance sugerido para proponerle (confirmar contra el hilo de mail):
+Entregar la sala. **El alcance está definido y son seis puntos** (confirmar con Ale que le cierra y que le entra en el tiempo — son seis, no es poco):
 
-- Qué es el CCAD y a quién le sirve (facultades de la UNC, el Observatorio, organismos externos; creado por Ordenanza HCS 18/2010).
-- Cómo es el hardware de verdad, y qué clusters tienen GPU.
-- Quién puede pedir cuenta y cómo funciona el trámite en la práctica.
-- Para qué se usa normalmente el HPC en la UNC — el punto es que la inferencia de LLMs es una recién llegada a máquinas construidas para simulación, y ese contraste le interesa genuinamente a estudiantes de computación.
-- **Si quiere, el gateway visto desde adentro**: por qué el CCAD decidió poner un LiteLLM adelante, qué hay atrás, y qué problemas les resuelve. Es un regalo pedagógico si él tiene ganas de contarlo, porque es exactamente lo que los estudiantes van a usar veinte minutos después.
-- Clusters Latam (Argentina / Chile / Colombia / Uruguay) si quiere ir más ancho.
+1. **Qué es el CCAD** — qué es el centro y a quién le sirve (facultades de la UNC, el Observatorio, organismos externos; creado por Ordenanza HCS 18/2010).
+2. **Qué hardware tiene** — los clusters de verdad, cuáles tienen GPU y de qué tipo. La cuenta de VRAM de un bloque posterior se apoya en esto: conviene que los números de él y los nuestros no se contradigan.
+3. **Cómo accede un estudiante de la UNC** para correr un LLM ahí — el trámite real: quién puede pedir cuenta, qué hay que presentar, cuánto tarda, y qué te habilita cuando la tenés.
+4. **Cómo se corre un LLM ahí** — la mecánica concreta: nodo de login vs. nodo de cómputo, pedirle GPU al scheduler, levantar el servidor de inferencia, llegarle. Con los comandos que él usaría, no en abstracto.
+5. **LiteLLM: el gateway visto desde adentro** — por qué el CCAD decidió poner un proxy adelante del cluster, qué le resuelve (un endpoint estable, auth por key, routing a varios modelos, límites por usuario), y qué se ve desde el lado del operador. Es literalmente la URL a la que la sala le va a pegar veinte minutos después.
+6. **vLLM: qué corre atrás** — por qué vLLM y no llama.cpp ni otra cosa, qué es el batching y por qué un servidor con muchos usuarios lo necesita, y qué pasa cuando 25 personas le pegan al mismo tiempo. Que es exactamente lo que va a pasar durante la práctica.
 
-Preguntarle qué prefiere cubrir; no sobre-especificar la charla de un invitado. Confirmar si quiere slides, un tour en vivo del dashboard, o solo hablar.
+**Los puntos 3 y 4 son el precio que el gateway esconde.** La práctica de hoy no toca nada de eso: entra por el gateway y se saltea el cluster entero. Que el que opera la máquina cuente cómo se hace de verdad, dicho por quien lo paga, es el contrapeso honesto a que la Vía A ande en dos minutos, y le deja a la sala un camino para volver después del curso.
+
+**Los puntos 5 y 6 son el mismo movimiento al revés, y cierran el círculo.** `https://litellm.ccad.unc.edu.ar` y el prefijo `vllm/` del nombre del modelo dejan de ser strings que copian de una slide: son dos cosas que les explicó el que las eligió, media hora antes de tipearlas. Es la mejor versión posible del bloque de `models.json` y no la podemos comprar de otra manera. **Pedirle explícitamente que nombre los dos con nombre y apellido** — "LiteLLM", "vLLM" — porque después esas dos palabras aparecen en la config, en la teoría y en la comparación con la Vía B.
+
+**Consecuencias directas en el plan, y hay que respetarlas o se dice todo dos veces:**
+
+- El bloque *"Un cluster no es tu notebook"* se queda casi sin contenido propio: la mecánica del cluster la dio él (punto 4) y por qué existe el gateway también (punto 5). Sobrevive como puente de dos minutos, y la etiqueta de recurso compartido se puede decir ahí o al soltar la práctica. En la variante de 2 horas desaparece como bloque.
+- En *"Qué hace falta para correr uno"*, el bullet de **familias de runtime** deja de ser una explicación y pasa a ser un callback de una línea: *"local vs. serving — el serving lo acaban de ver, es lo que Ale llamó vLLM"*. El contraste con `llama.cpp` de la Vía B sigue siendo nuestro.
+- En *`models.json`*, el prefijo `vllm/` y la `baseUrl` se leen como reconocimiento, no como novedad. Apoyarse en eso: cuesta menos tiempo y se entiende mejor.
+
+**Lo que se cayó del alcance, y no es olvido**: para qué se usa normalmente el HPC en la UNC, y los clusters de Latam. Si él quiere meterlos, bienvenido, pero no los pedimos: seis puntos en media hora ya es un slot lleno.
+
+**Y porque son seis, hay que darle una prioridad y no dejársela a él.** Si se va de tiempo, lo que se recorta es el punto 1 (podemos abrirlo nosotros en dos minutos) y el 2 se puede hacer con una sola slide de equipamiento. **Lo que no se recorta es 3, 4, 5 y 6** — son los cuatro que nadie más en la sala puede dar. Decírselo así, con esas palabras, cuando le confirmemos el slot.
+
+Más allá de eso, no sobre-especificar la charla de un invitado. Confirmar si quiere slides, un tour en vivo del dashboard, una sesión real en el cluster proyectada, o solo hablar.
 
 ### Open source vs. pesos abiertos, y licencias (~8 min)
 
@@ -127,7 +142,7 @@ Mecánica práctica. Es el bloque que le da sentido a la Vía B y que explica po
 
 - **Los pesos son grandes.** Cantidad de parámetros × bytes por parámetro ≈ piso de VRAM, antes del contexto. **Hacer la cuenta en vivo con el modelo de hoy**: 26 mil millones de parámetros × 2 bytes ≈ **52 GB**, sin contar el contexto. Ese número explica solo por qué el modelo está en el CCAD y no en su notebook, y por qué la Vía B usa algo mucho más chico. Es el mejor minuto del bloque.
 - **La cuantización** cambia precisión por VRAM. Mencionar que los modelos muy cuantizados se degradan en salida estructurada — que es exactamente tool calling. Esto vuelve en la discusión del final.
-- **Dos familias de runtime**: local/mono-usuario (**llama.cpp**, Ollama) vs. serving (**vLLM**, SGLang — batching, throughput, muchos usuarios concurrentes). Y ahora la distinción tiene un referente: **el CCAD corre vLLM**, ustedes en la Vía B corren llama.cpp, y la razón es cuántos usuarios tiene cada uno.
+- **Dos familias de runtime**: local/mono-usuario (**llama.cpp**, Ollama) vs. serving (**vLLM**, SGLang — batching, throughput, muchos usuarios concurrentes). **Este bullet lo dio Ale en el punto 6 de su slot, así que acá es un callback de una línea y no una explicación**: el serving ya lo vieron con nombre propio, lo que agregamos es la otra mitad — ustedes en la Vía B corren llama.cpp, y la razón es cuántos usuarios tiene cada uno. Un usuario no necesita batching.
 - **El endpoint compatible con OpenAI es toda la historia de interoperabilidad.** Casi cualquier runtime expone uno, y por eso cualquier harness se le puede apuntar. Es el principio general — y es la razón de que el bloque siguiente sean cinco líneas de JSON y no una tarde de trabajo.
 
 ### `models.json`: el modelo como config (~8 min)
@@ -155,7 +170,7 @@ Cuatro cosas para frenar, y cada una es un concepto que ya tienen:
 
 - **`api: "openai-completions"`** es la historia de interoperabilidad del bloque anterior convertida en un string que tipean. Los valores posibles son `openai-completions`, `openai-responses`, `anthropic-messages` y `google-generative-ai`: cuatro formas de API para todo el ecosistema. El CCAD no expone una API "del CCAD": expone la misma que expondría Ollama en su notebook, o LM Studio, o vLLM crudo. **Por eso el swap cuesta cinco líneas.**
 - **`apiKey: "$CCAD_API_KEY"`** — el campo acepta interpolación de variables de entorno (`$VAR`, `${VAR}`) y también ejecutar un comando si arranca con `!`. **Usar la variable, no la key literal**, y decir en voz alta por qué: la key literal en un archivo es la key literal en un backup, en un screenshot del proyector y —el día que a alguien se le ocurra versionar su dotfiles— en un repo público. Es la primera credencial propia del curso y es el momento de enseñar el reflejo.
-- **`{ "id": "vllm/gemma4-26b" }`** — el `id` es lo que se manda a la API y es lo que van a ver en el picker de `/model`. El prefijo `vllm/` es routing de LiteLLM y de paso les cuenta qué hay atrás.
+- **`{ "id": "vllm/gemma4-26b" }`** — el `id` es lo que se manda a la API y es lo que van a ver en el picker de `/model`. El prefijo `vllm/` es routing de LiteLLM y de paso les cuenta qué hay atrás. **Acá se cobra el slot de Ale**: LiteLLM y vLLM ya tienen cara, así que el bullet se da como reconocimiento y no como dato nuevo — *"eso que les contó Ale hace media hora, acá está, en un string"*. Y lo mismo con la `baseUrl`.
 - **Lo que *no* está en el JSON, y es la mejor parte.** `contextWindow` tiene default **128000** y `maxTokens` default **16384**. O sea: la ventana de contexto es un número que alguien eligió, y hoy lo eligió el CCAD del lado del servidor. Después de cinco sesiones tratando la ventana de contexto como una propiedad del producto que compraron, resulta ser un parámetro de arranque. **Si el default no coincide con lo que el servidor tiene configurado, los requests van a fallar** — fijar `contextWindow` explícitamente con el valor que confirme Ale, y usar esa corrección como la demostración de que el número es una decisión y no una ley.
 
 Y el detalle operativo que hace fácil la práctica: **el archivo se relee cada vez que abrís `/model`**, sin reiniciar nada. Cambiar de modelo cuesta dos segundos.
@@ -188,14 +203,11 @@ Y del lado de Pi: `/login llama.cpp` (o `LLAMA_BASE_URL`, que por default ya es 
 
 **Confirmar con Agus que la trae, y probarlo antes.**
 
-### Un cluster no es tu notebook — qué hay detrás de esa URL (~8 min)
+### Un cluster no es tu notebook — qué hay detrás de esa URL (~2 min, es un puente)
 
-El bloque cambió de función: ya no son instrucciones de uso, es **explicar qué hizo el CCAD para que ellos no tengan que hacerlo**. Se da más rápido y se entiende mejor.
+**Este bloque ya casi no tiene contenido propio: los puntos 4 y 5 del slot de Ale se lo comieron**, y está bien que sea así — él lo da primero y con autoridad. Lo que queda es la bisagra, en una frase: *"todo eso que les contó Ale es lo que hoy no van a tener que hacer"*. **No repetirlo.** En la variante de 2 horas, este bloque no existe.
 
-- **Nodo de login vs. nodo de cómputo.** El modelo no corre donde te conectás.
-- **El scheduler.** Describís un trabajo (cuántas GPU, cuánto tiempo) y esperás tu turno. Es el salto mental más grande respecto de una notebook: en un cluster, "correr algo" es pedir permiso y hacer fila.
-- **Módulos y entornos** para el software.
-- **Por qué existe un gateway de inferencia.** Si cada usuario tuviera que pedir una GPU, cargar los pesos y armar un túnel para hacer una pregunta, nadie usaría el cluster para esto. Un servidor de inferencia levantado una vez, compartido, con batching y detrás de una URL con auth, convierte una hora de trabajo en un request. **Eso es lo que le compraron a ustedes hoy.**
+- **Red de contención, no contenido planificado.** Si el slot de Ale se corrió de tiempo o se fue por otro lado, acá se recupera lo que falte: nodo de login vs. nodo de cómputo, el scheduler (describís un trabajo y hacés fila), módulos y entornos, y por qué un servidor de inferencia levantado una vez y compartido convierte una hora de trabajo en un request. **Con Ale habiendo cubierto sus puntos, esto son treinta segundos; sin eso, el bloque vuelve a durar 8 minutos.** Tenerlo preparado igual.
 - **Etiqueta de recurso compartido**: hay gente corriendo su tesis en esas máquinas. Hoy no piden GPU, pero comparten un modelo servido: rate limits y no dejar corriendo tareas absurdas por curiosidad.
 
 La frase para cerrar el bloque, y es la que conecta con la Vía B: *"nada de esto se volvió gratis. Alguien lo paga. Hoy no fueron ustedes — y en la Vía B, por un rato, sí."*
@@ -206,7 +218,7 @@ La frase para cerrar el bloque, y es la que conecta con la Vía B: *"nada de est
 
 Cierra el hilo transversal de seguridad del curso, y el gateway le regaló el mejor punto:
 
-- **Un gateway también es un tercero.** "Corre en hardware de la UNC" no es lo mismo que "nadie ve mis prompts". Entre su terminal y el modelo hay un proxy que puede loguear, y eso es una pregunta legítima que hay que hacerle al operador. **Hacerla en clase, incluso sin la respuesta**: modelar la pregunta vale más que contestarla. Y de paso desarma el reflejo fácil de "self-hosted = privado".
+- **Un gateway también es un tercero.** "Corre en hardware de la UNC" no es lo mismo que "nadie ve mis prompts". Entre su terminal y el modelo hay un proxy que puede loguear, y eso es una pregunta legítima que hay que hacerle al operador. **Y hoy el operador está en el aula**, así que la pregunta deja de ser retórica: con LiteLLM ya explicado en el punto 5, *"Ale, ¿esto loguea los prompts?"* es una pregunta que se puede hacer en voz alta y que tiene respuesta. **Preguntársela igual antes por mail** (ver Pendiente de Ale) para no dejarlo pagando frente a la sala, y después hacerla en clase de todos modos: modelar la pregunta es la mitad de la lección, y ahora la otra mitad también está disponible. Y de paso desarma el reflejo fácil de "self-hosted = privado".
 - **Cadena de suministro**: cuando bajás pesos de un hub estás bajando gigabytes de binario. ¿A quién le estás confiando eso? Según el formato, los archivos de modelo históricamente fueron vector de ejecución de código.
 - **El argumento de privacidad corta para los dos lados**: self-hostear saca a un tercero pero te agrega como operador, con logs, disco y un filesystem compartido que capaz no pensaste.
 - **A prompt injection no le importa qué modelo corras.** Un modelo más débil puede ser *más fácil* de secuestrar. Callback directo a la Sesión 4.
@@ -269,13 +281,13 @@ Apuntar su propio loop a la misma base URL de LiteLLM. Mismo endpoint, dos clien
 | Bloque | Tiempo |
 |---|---|
 | Recap y compartir de la Sesión 5 | 10 min |
-| **Invitado: Ale Silva — intro al CCAD** | **20-25 min** |
+| **Invitado: Ale Silva — el CCAD, LiteLLM y vLLM** | **30-35 min** |
 | Open source vs. pesos abiertos, y licencias | 8 min |
 | Pesos abiertos vs. API hosteada (el espectro) | 8 min |
-| Qué hace falta para correr uno (VRAM, cuantización, runtimes) | 10 min |
+| Qué hace falta para correr uno (VRAM, cuantización, runtimes) | 8 min |
 | **`models.json`: el modelo como config** | **8 min** |
 | Demo: la GPU portátil de Agus | 6 min |
-| Un cluster no es tu notebook | 8 min |
+| Un cluster no es tu notebook (puente) | 2 min |
 | Sidebar de seguridad y confianza | 5 min |
 | Pausa | 5 min |
 | **Práctica: Vía A (todos) + Vía B (opcional)** | **50-55 min** |
@@ -283,7 +295,7 @@ Apuntar su propio loop a la misma base URL de LiteLLM. Mismo endpoint, dos clien
 | Cuándo conviene open source | 8 min |
 | Cierre del curso y retrospectiva | 15 min |
 
-Da entre **2 h 51 y 3 h 01**. El resto de las sesiones son de 2 horas, así que **este plan no entra** y hay que decidir antes de la clase, no en el momento.
+Da entre **2 h 53 y 3 h 03**. El resto de las sesiones son de 2 horas, así que **este plan no entra** y hay que decidir antes de la clase, no en el momento.
 
 Notar el orden: "¿está a la altura?" y "cuándo conviene" van *después* de la práctica a propósito. Las discusiones de criterio salen mejor cuando ya midieron algo propio.
 
@@ -293,18 +305,21 @@ Si la sesión es de 2 horas —el caso más probable— este es el recorte, ya r
 
 | Bloque | Tiempo |
 |---|---|
-| Recap | 8 min |
-| **Invitado: Ale Silva** | **20 min** |
+| Recap | 6 min |
+| **Invitado: Ale Silva** | **30 min** |
 | Open source vs. pesos abiertos + licencias | 6 min |
-| El espectro + qué hace falta para correr uno (fusionados) | 10 min |
+| El espectro + qué hace falta para correr uno (fusionados) | 8 min |
 | **`models.json`: el modelo como config** | **6 min** |
-| Un cluster no es tu notebook | 6 min |
 | Sidebar de seguridad | 4 min |
 | **Práctica: solo Vía A** | **35 min** |
 | ¿Está a la altura? + cuándo conviene (fusionados) | 10 min |
 | Cierre del curso y retrospectiva | 12 min |
 
 Da 117 minutos. Los movimientos: **la Vía B pasa a ser un apéndice escrito en el ejercicio** para hacer en casa, y **la demo de Agus pasa a suceder durante la práctica** en vez de tener slot propio — el que la quiere ver, se acerca. Se pierde el momento en que toda la sala ve la VRAM y los tokens por segundo a la vez, y eso es una pérdida real; es el precio.
+
+Los 10 minutos que pide el slot de Ale con los seis puntos salen enteros de los bloques que él ahora cubre, y por eso no hay que pagarlos con la práctica: **2 del recap** (es el bloque elástico declarado), **3 del bloque de cluster** —que desaparece: los puntos 4 y 5 lo dejaron sin contenido, y la etiqueta de recurso compartido se dice al soltar la práctica— y **2 del bloque de runtimes**, donde vLLM pasa a ser un callback. Los otros 3 salen de la fusión del espectro con "qué hace falta", que ya era generosa.
+
+En 2 horas, **media hora para seis puntos es justo y hay que decírselo con ese número**, no con "unos veinte". Y con la prioridad: si algo se cae, que sean los puntos 1 y 2.
 
 **Proteger, en este orden: el slot del invitado, la Vía A completa con la comparación, y la retrospectiva de cierre.** Si algo de esos tres se recorta, la sesión pierde lo que la justifica.
 
@@ -327,13 +342,15 @@ Vale tener presente la estructura, porque cambia qué hay que decir acá: las se
 
 Lo que hay que preguntar ahora, en orden de prioridad:
 
-1. **Concurrencia y rate limits** con 25-30 estudiantes pegándole al gateway a la vez durante una hora. **Este es el nuevo riesgo más grande de la sesión** y ocupa el lugar que tenía la cola de GPU. Si hay límite por key, saberlo antes cambia el diseño de la práctica.
+1. **Concurrencia y rate limits** con 25-30 estudiantes pegándole al gateway a la vez durante una hora. **Este es el nuevo riesgo más grande de la sesión** y ocupa el lugar que tenía la cola de GPU. Si hay límite por key, saberlo antes cambia el diseño de la práctica. **Lo necesitamos por mail igual**, aunque el punto 6 de su slot toque el tema: la respuesta define cómo se escribe la práctica, y eso hay que hacerlo antes de la clase, no durante.
 2. **Las keys**: ¿una key del curso compartida o una por estudiante? ¿Quién las emite, con cuánta anticipación, y siguen andando después del curso? (Que sigan andando sería un cierre lindísimo del curso; que no, hay que avisarlo.)
-3. **¿El gateway loguea prompts?** Necesario para que el sidebar de seguridad sea honesto. Es la pregunta que vamos a hacer en voz alta en clase.
-4. **Qué modelos hay en el gateway** además de `vllm/gemma4-26b`, y **con qué ventana de contexto está configurado el servidor**, para pinear `contextWindow` con el número correcto en vez del default de 128k.
+3. **¿El gateway loguea prompts?** Necesario para que el sidebar de seguridad sea honesto. Es la pregunta que vamos a hacer en voz alta en clase — y con él explicando LiteLLM en el punto 5, se la vamos a hacer *a él*. **Preguntarla por mail primero**: la idea es que la conteste, no que lo agarre desprevenido frente a la sala.
+4. **Qué modelos hay en el gateway** además de `vllm/gemma4-26b`, y **con qué ventana de contexto está configurado el servidor**, para pinear `contextWindow` con el número correcto en vez del default de 128k. Cae dentro del punto 5 de su charla, pero el número lo necesitamos antes para la slide de config.
 5. **¿La `baseUrl` es correcta sin `/v1`?** LiteLLM sirve las dos formas y Pi construye el path; hay que probar el string exacto. Es un detalle de dos minutos que puede voltear la práctica entera.
 6. **¿Sigue haciendo falta una cuenta del CCAD para esto?** Si la key alcanza, la cuenta deja de ser requisito bloqueante — seguimos recomendándola por su propio valor, pero cambia lo que les pedimos como pre-work.
-7. **El slot de Ale**: alcance, duración, presencial o remoto, si quiere slides. Y si el CCAD quiere algún reconocimiento o tiene materiales/branding que prefiera que usemos.
+7. **El slot de Ale**: el alcance ya está definido (los seis puntos), así que lo que falta es **confirmar que le cierra y que le entra en 30 minutos**. Mandarle los seis por escrito, con la prioridad explícita: **3, 4, 5 y 6 son los que nadie más en la sala puede dar**; 1 y 2 los abrimos nosotros si se va de tiempo. Y pedirle que nombre **LiteLLM** y **vLLM** con nombre propio, porque esas dos palabras vuelven después en la config y en la teoría. Además: presencial o remoto, si quiere slides o proyectar una sesión real en el cluster, y si el CCAD quiere algún reconocimiento o tiene materiales/branding que prefiera que usemos.
+8. **Para el punto 4, ¿necesita algo del aula?** Si va a mostrar una sesión real en el cluster, hace falta red que le sirva y saber si va a pedir GPU en vivo (y si eso puede quedar esperando en la cola frente a la sala). Un fallback grabado o un screenshot lo cubre.
+9. **¿El trámite que va a describir es el mismo que les mandamos en el pre-work?** Le pasamos el link de abrir cuenta semanas antes y él explica el trámite en la última sesión: si lo que cuenta no coincide con lo que les dijimos, queda raro. Vale mandarle nuestro texto de pre-work para que lo corrija.
 
 Cuando el hilo esté leído, bajar las respuestas a este archivo y recién entonces escribir el ejercicio contra los valores reales.
 
@@ -379,7 +396,7 @@ Cuando el hilo esté leído, bajar las respuestas a este archivo y recién enton
 - **Fijar `contextWindow`** con el valor real del servidor, apenas Ale lo confirme.
 - **Verificar la licencia de Gemma para la versión exacta**, la semana de la clase.
 - **Confirmar que Agus trae la GPU portátil**, qué modelo va a servir, y probarlo. Ya no es el respaldo de la sesión, así que si no llega no se cae nada — pero es el mejor momento visual del día.
-- **Confirmar la participación de Ale, fecha y formato**, y tener plan B: su intro pasa a ser una versión de 10 minutos dada por nosotros más el link a la wiki.
+- **Confirmar la participación de Ale, fecha y formato.** El plan B ya no es equivalente y hay que saberlo: los puntos 1 y 2 los podemos dar nosotros en 10 minutos con la wiki y la página de equipamiento, y de LiteLLM y vLLM podemos explicar *qué son* — pero **cómo se pide la cuenta, cómo se corre un LLM en el cluster y por qué el CCAD eligió esta arquitectura no lo podemos dar con autoridad**. Sin él, los puntos 3 a 6 se degradan a "acá están los links". Si su participación queda en duda, pedirle igual algo grabado o un walkthrough escrito de esos cuatro puntos.
 - **Decidir la duración real de la sesión** y, si son 2 horas, adoptar la variante de arriba de entrada en vez de improvisar recortes.
 - ~~Decidir quién cierra el curso~~ → **decidido: se reparte por tipo.** La Sesión 4 cierra el primer arco (costo, límites, carrera, atrofia); esta sesión cierra el curso (el repo, el espectro, la tesis de la transferencia). La duplicación era un resto de cuando el curso tenía 4 sesiones y la 4 era el final. **Avisarle a Agus**, porque le cambia el cierre de una sesión que todavía no escribió.
 - **Coordinar con Agus el recap de la Sesión 5**, que todavía está en `TBD`.
