@@ -25,7 +25,7 @@ pi install npm:pi-mcp-adapter
 
 ## Pasos
 
-Son 45 minutos y cinco pasos. **Terminar los cinco no es el objetivo** — si llegás hasta el 3 con los tres bien hechos, la clase te sirvió.
+Son 45 minutos y cuatro pasos. **Terminar los cuatro no es el objetivo** — si llegás hasta el 3 con los tres bien hechos, la clase te sirvió.
 
 ### 1. Que el agente escriba el `AGENTS.md`, y vos lo podés (~12 min)
 
@@ -123,7 +123,7 @@ Mirá qué hace:
 
 Anotá en una línea qué hizo solo. Es lo que vamos a compartir en el cierre.
 
-### 3. Un skill para el procedimiento que repetís (~10 min)
+### 3. Un skill: el plan de una feature (~10 min)
 
 El `AGENTS.md` se paga en cada turno. Por eso no todo va ahí.
 
@@ -131,33 +131,54 @@ El `AGENTS.md` se paga en cada turno. Por eso no todo va ahí.
 
 Un skill es un directorio con un `SKILL.md` adentro. Se carga en tres etapas: al arrancar, Pi solo lee **el nombre y la descripción**; el cuerpo se carga recién cuando la tarea lo amerita. Podés tener veinte skills instalados y pagar veinte descripciones, no veinte procedimientos.
 
-Buscá en tus notas algo que sea **una secuencia de pasos** y no un dato: cómo agregás un endpoint nuevo, cómo creás una migración, cómo se hace un release, cómo se agrega un componente con su test.
+**El procedimiento que vas a escribir hoy es el de la semana pasada: planificar una feature.**
+
+Acordate de cómo te fue en la Sesión 2. Le describiste la feature, leíste el plan, y lo mandaste de vuelta anotado — probablemente por las mismas cosas de siempre: no preguntó lo que le faltaba, no dijo en qué archivos iba a caer cada paso, no dijo cómo se verifica, o se inventó una decisión que vos nunca le diste.
+
+**Todo eso que le anotaste a mano es el skill.** Escribilo una vez y dejá de anotarlo cada vez.
 
 ```
-.pi/skills/nuevo-endpoint/SKILL.md
+.pi/skills/planear-feature/SKILL.md
 ```
 
 ```markdown
 ---
-name: nuevo-endpoint
-description: Agregar un endpoint nuevo a la API. Usar cuando haya que exponer una ruta nueva en Express, incluyendo su validación y su test.
+name: planear-feature
+description: Escribir el plan de una feature antes de implementarla. Usar cuando la tarea sea agregar o cambiar funcionalidad y todavía no haya un plan escrito.
 ---
 
-# Agregar un endpoint
+# Planificar una feature
 
-1. Definí la ruta en `src/api/routes/`, un archivo por recurso.
-2. Validá el body con zod antes de tocar la base.
-3. El handler no habla con SQLite directo: pasa por `src/db/queries/`.
-4. Agregá un test en `tests/api/` que cubra el caso feliz y un 400.
-5. Corré `pnpm test` antes de dar por terminado.
+Antes de escribir el plan, preguntame lo que no esté en la consigna. No lo adivines:
+
+- ¿Qué pasa en el caso de error, y qué ve el usuario?
+- ¿Hace falta tocar la base? ¿Va migración nueva o alcanza con lo que hay?
+- ¿Esto cambia algo que ya funciona? ¿Qué no se puede romper?
+
+Después sí, el plan: una checklist, un paso por vez. Cada paso dice
+
+1. **Qué archivos toca**, con la ruta.
+2. **Cómo se verifica**: qué test lo cubre y dónde vive. Si un paso no se puede testear, decilo.
+3. El orden: primero el test que falla, después el código.
+
+Cerrá el plan con **las decisiones que tomaste vos y yo no te di**. Son las que quiero revisar primero.
 ```
+
+Ese es el ejemplo, no la plantilla. **El tuyo va a ser distinto**, porque tu stack y tu forma de planificar son otros: las preguntas que a vos te faltan no son las mismas que a la persona de al lado. Sacalas de tus notas y del plan que rechazaste la semana pasada.
+
+Dos cosas para no meter adentro:
+
+- **Lo que ya está en el `AGENTS.md`.** Si ahí dice dónde van los componentes, no lo repitas acá: lo estarías pagando dos veces.
+- **La feature de hoy.** El skill vale para todas las features, no para una. Lo que vale para una sola es el prompt.
 
 **Lo más importante del skill es la `description`.** Es lo único que Pi tiene en contexto para decidir si lo carga o no. Un skill perfecto con una descripción vaga **no se usa nunca**.
 
-- Mala: `description: Cosas de la API`
+- Mala: `description: Ayuda a planificar`
 - Buena: la de arriba — dice **qué hace** y **cuándo usarlo**.
 
-Probalo: en una sesión nueva, pedile algo que debería dispararlo y fijate si lo carga. Si no lo carga, el problema casi siempre está en la descripción. También podés forzarlo con `/skill:nuevo-endpoint`.
+Probalo: en una sesión nueva, entrá en plan mode y pedile una feature cualquiera de tu proyecto. Fijate si lo carga solo, y sobre todo **si el plan que sale ya trae lo que antes le tenías que anotar**. Si no lo carga, el problema casi siempre está en la descripción. También podés forzarlo con `/skill:planear-feature`.
+
+> El mismo molde sirve para cualquier otra secuencia de pasos que repitas: cómo se hace un release, cómo se agrega una migración, cómo se agrega un componente con su test. Hoy escribimos uno; los otros salen igual.
 
 ### 4. Apuntá el adapter a context7 (~10 min)
 
@@ -185,23 +206,13 @@ Ahora pedile algo sobre una librería que estés usando de verdad — algo donde
 
 > Si te trabás con la instalación o con la autenticación, **levantá la mano en vez de pelearla sola/o**. Este paso es el que más se cuelga y no es donde está el aprendizaje.
 
-### 5. Un subagente sobre tu propio código (~8 min)
-
-**Si no llegás, está bien.** Es lo primero que se recorta.
-
-Pedile a un subagente que explore algo de tu proyecto y te devuelva un resumen. Por ejemplo: *"¿dónde se maneja el estado de los todos?"*, o *"revisá el diff de hoy y decime si hay algo que no coincide con el AGENTS.md"*.
-
-Lo que tenés que mirar no es el resultado, es **dónde quedó el laburo**: el subagente se comió diez archivos en *su* contexto y te devolvió tres párrafos al *tuyo*. Esa es la razón para usarlo. No es "más IA": es basura que quedó afuera de tu ventana.
-
-Cuándo **no** sirve: cuando necesitás el detalle en tu propio contexto para seguir trabajando, o cuando la tarea es corta. Delegar cuesta un round-trip.
-
 ## Resultado esperado
 
 Al final del ejercicio deberías tener:
 
 - Un `AGENTS.md` **que solo sirve para tu proyecto**, corto, salido de tus notas.
 - Un caso concreto de algo que el agente hizo solo en el paso 2.
-- Un skill con una descripción que efectivamente lo dispara.
+- Un skill de planificación con una descripción que efectivamente lo dispara.
 - Una idea de cuánto contexto cuesta cada cosa que le enchufaste.
 
 Commiteá el `AGENTS.md`, el skill y el `.mcp.json`. Son parte del proyecto, igual que el código.
@@ -209,6 +220,8 @@ Commiteá el `AGENTS.md`, el skill y el `.mcp.json`. Son parte del proyecto, igu
 ## Para la semana
 
 Seguí trabajando con este `AGENTS.md` y **hacelo crecer**. Cada vez que te encuentres explicando algo por segunda vez, decidí dónde vive: ¿dato o procedimiento?
+
+Y la próxima vez que planifiques una feature, **usá el skill y mirá qué le seguís anotando a mano**. Eso que anotaste va al skill.
 
 Anotá dos cosas para la Sesión 4:
 

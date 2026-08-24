@@ -174,4 +174,4 @@ Agustín Carrasco
 
 ## Para la semana · Próxima sesión
 
-<!-- Tarea: seguir con este flujo (plan escrito, plan anotado, test primero, diff revisado). Anotar dos cosas: dónde el flujo sobró, y qué le tuvieron que explicar al agente más de una vez. Lo segundo es exactamente el material de la Sesión 3 (Diego): AGENTS.md, skills, MCP, subagentes en serio, y por qué el harness restringía las herramientas en plan mode. -->
+<!-- Tarea: seguir con este flujo (plan escrito, plan anotado, test primero, diff revisado). Anotar dos cosas: dónde el flujo sobró, y qué le tuvieron que explicar al agente más de una vez. Lo segundo es exactamente el material de la Sesión 3 (Diego): AGENTS.md, skills, MCP, y por qué el harness restringía las herramientas en plan mode. Subagentes en serio es la Sesión 4 (Agus). -->

@@ -16,9 +16,11 @@ o lo lea — el hook `{ block: true, reason }`, la tabla de costos de MCP,
 el snippet de `.mcp.json` y la tabla de siempre-cargado vs. on-demand.
 
 Sesión de 2 h: 10 recap, 5 intro, 13 anatomía, 11 AGENTS.md, 8 skills,
-8 MCP, 7 subagentes, 5 pausa, 45 práctica, 8 cierre.
+10 MCP (cierra con la tabla), 5 pausa, 45 práctica, 8 cierre.
 
-Da 120 justos, no hay colchón. Si se estira, se recorta del recap.
+Da 115: quedan ~5 min de colchón, que se los come la práctica si hace
+falta. Si igual se estira, se recorta del recap. Subagentes NO se dan
+hoy: los abre Agus en la Sesión 4. Worktrees quedan afuera del curso.
 El material del recap se recolecta con MENTIMETER y la pantalla queda
 proyectada toda la clase: se apunta a ella cuatro veces.
 -->
@@ -35,7 +37,7 @@ Diego Piloni
 
 ## Hoy
 
-<!-- Agenda en una slide: cómo les fue, dónde vive cada cosa que repetís, anatomía del harness, AGENTS.md, skills, MCP, subagentes, y 45 min de práctica. Avisar que NO hay bloque de setup: la única instalación nueva la hacemos juntos al arrancar la práctica. -->
+<!-- Agenda en una slide: cómo les fue, dónde vive cada cosa que repetís, anatomía del harness, AGENTS.md, skills, MCP, y 45 min de práctica. Avisar que NO hay bloque de setup: la única instalación nueva la hacemos juntos al arrancar la práctica. -->
 
 ---
 
@@ -53,7 +55,7 @@ Diego Piloni
 
 ## ¿Qué le tuviste que explicar más de una vez?
 
-<!-- EL disparador. Va a MENTIMETER: pregunta abierta, todos responden a la vez y en anónimo, y la pantalla queda proyectada toda la clase. Es el insumo de los cinco bloques que siguen y de los cinco pasos de la práctica — sin esto la práctica se queda sin combustible. Juntar seis o siete. Si sale flojo, sembrar ejemplos concretos, redactados como los diría un estudiante: "los tests se corren con pnpm test", "usamos pnpm y npm me rompe el lockfile", "los componentes van en src/components/", "no me toques las migraciones", "no me pongas comentarios que repiten la línea de abajo". Tener el menti armado ANTES de entrar al aula; plan B si falla la red: mano alzada y pizarrón. -->
+<!-- EL disparador. Va a MENTIMETER: pregunta abierta, todos responden a la vez y en anónimo, y la pantalla queda proyectada toda la clase. Es el insumo de los cuatro bloques que siguen y de los cuatro pasos de la práctica — sin esto la práctica se queda sin combustible. Juntar seis o siete. Si sale flojo, sembrar ejemplos concretos, redactados como los diría un estudiante: "los tests se corren con pnpm test", "usamos pnpm y npm me rompe el lockfile", "los componentes van en src/components/", "no me toques las migraciones", "no me pongas comentarios que repiten la línea de abajo". Tener el menti armado ANTES de entrar al aula; plan B si falla la red: mano alzada y pizarrón. -->
 
 ---
 
@@ -65,7 +67,7 @@ Diego Piloni
 
 ## Dónde vive cada cosa que repetís
 
-<!-- La tabla que ordena el día: datos del proyecto → AGENTS.md (siempre cargado); un procedimiento → skill (on demand); un prompt que retipeás → prompt template (on demand); una capacidad que falta → tool/MCP (la definición siempre, el resultado on demand); un subtask entero → subagente (contexto aparte). Ir tomando respuestas del menti en voz alta y diciendo a qué fila cae cada una. Algunas caen en dos filas y está bien: ELEGIR ES EL TEMA DE HOY. La metáfora del curso: la Sesión 2 fue vos poniendo el criterio a mano cada vez; hoy lo escribís una vez y el agente lo lee solo. Es lo que hace un manager cuando deja de repetir la misma corrección en cada 1:1 y escribe el onboarding. -->
+<!-- La tabla que ordena el día: datos del proyecto → AGENTS.md (siempre cargado); un procedimiento → skill (on demand); un prompt que retipeás → prompt template (on demand); una capacidad que falta → tool/MCP (la definición siempre, el resultado on demand); un subtask entero → subagente, contexto aparte (SE NOMBRA Y SE DEJA PASAR: es la Sesión 4 de Agus). Ir tomando respuestas del menti en voz alta y diciendo a qué fila cae cada una. Algunas caen en dos filas y está bien: ELEGIR ES EL TEMA DE HOY. La metáfora del curso: la Sesión 2 fue vos poniendo el criterio a mano cada vez; hoy lo escribís una vez y el agente lo lee solo. Es lo que hace un manager cuando deja de repetir la misma corrección en cada 1:1 y escribe el onboarding. -->
 
 ---
 
@@ -107,7 +109,7 @@ Diego Piloni
 
 ## Pi es casi todo extension points
 
-<!-- El regalo de Pi: toolbelt mínimo built-in, y casi todo lo demás enchufado. AGENTS.md = archivos de contexto al arrancar. Skills = SKILL.md con frontmatter. Prompt templates = expansión /nombre. Permisos y plan mode = UN HOOK. MCP = no viene, es una extensión. Subagentes = pi-subagents. Y LA LÍNEA QUE HAY QUE DECIR EN VOZ ALTA: que en Pi MCP venga como extensión y en Claude Code venga de fábrica no es un accidente ni un defecto — es el espacio de diseño de los harnesses. Un harness mínimo te muestra las costuras; uno con baterías incluidas te las esconde. Ninguno está mal. Esa es toda la comparación con Claude Code / Codex / OpenCode: UNA LÍNEA, NO UNA TABLA. -->
+<!-- El regalo de Pi: toolbelt mínimo built-in, y casi todo lo demás enchufado. AGENTS.md = archivos de contexto al arrancar. Skills = SKILL.md con frontmatter. Prompt templates = expansión /nombre. Permisos y plan mode = UN HOOK. MCP = no viene, es una extensión. Subagentes = pi-subagents, y ahí SOLO NOMBRARLOS: el bloque de subagentes lo da Agus en la Sesión 4. Y LA LÍNEA QUE HAY QUE DECIR EN VOZ ALTA: que en Pi MCP venga como extensión y en Claude Code venga de fábrica no es un accidente ni un defecto — es el espacio de diseño de los harnesses. Un harness mínimo te muestra las costuras; uno con baterías incluidas te las esconde. Ninguno está mal. Esa es toda la comparación con Claude Code / Codex / OpenCode: UNA LÍNEA, NO UNA TABLA. -->
 
 ---
 
@@ -241,7 +243,7 @@ onToolCall(({ name }) => {
 
 ## La respuesta de ingeniería: una tool proxy
 
-<!-- ~1 min. pi-mcp-adapter NO expone las tools del servidor: expone UNA SOLA TOOL PROXY DE ~200 TOKENS y va a buscar el resto cuando hace falta. Nombrarlo al pasar — "es exactamente el truco de los skills, aplicado a tools: pagás el nombre, no el cuerpo" — y NO CERRAR ACÁ. La tabla que sintetiza esto va al final del bloque siguiente, cuando ya estén nombrados los subagentes. -->
+<!-- ~1 min. pi-mcp-adapter NO expone las tools del servidor: expone UNA SOLA TOOL PROXY DE ~200 TOKENS y va a buscar el resto cuando hace falta. Nombrarlo al pasar — "es exactamente el truco de los skills, aplicado a tools: pagás el nombre, no el cuerpo" — y NO CERRAR ACÁ: quedan las docs tools y después sí la tabla, que es el cierre de la teoría. -->
 
 ---
 
@@ -251,33 +253,15 @@ onToolCall(({ name }) => {
 
 ---
 
-# Subagentes y worktrees
-
-<!-- Sección. ~7 min. Profundidad sobre lo que la Sesión 2 usó dos veces como subtema (revisar el plan, revisar el diff). Ya tienen pi-subagents instalado. -->
-
----
-
-## La razón honesta: un contexto aparte
-
-<!-- NO ES "MÁS IA". Cuando le pedís a un subagente que explore el repo y te diga dónde está el manejo de sesiones, el subagente se come veinte archivos en SU ventana y te devuelve tres párrafos a LA TUYA. Lo que ganás es que la basura quedó afuera. Es la misma economía de todo el día. -->
-
----
-
-## Cuándo sirve y cuándo no
-
-<!-- SIRVE cuando la tarea genera mucho material intermedio y poco resultado: explorar, buscar, revisar, resumir. NO SIRVE cuando necesitás el detalle en tu propio contexto para seguir trabajando, o cuando la tarea es corta — delegar cuesta un round-trip. Tipos de agente: research, exploración, code review; que vean que son el mismo mecanismo con distinto prompt y distinto toolset — OTRA VEZ, EXTENSION POINTS. Worktrees en una línea: ejecución paralela aislada, cada agente en su propio checkout, sin pisarse; mención y puntero. Y el límite, explícito porque el programa lo marca: HOY VEMOS EL PRIMITIVO, ORQUESTAR VARIOS AGENTES ES LA SESIÓN 4 (AGUS). No abrir eso. -->
-
----
-
 ## Siempre cargado vs. on demand
 
 | | Siempre cargado | On demand |
 |---|---|---|
 | Contexto del proyecto | `AGENTS.md` | skill |
 | Tools externas | todas las definiciones | la tool proxy |
-| Trabajo | tu sesión | subagente |
+| Trabajo | tu sesión | *(Sesión 4)* |
 
-<!-- EL CIERRE DE LA TEORÍA, y acá sí frenar. Con el subagente ya nombrado, la tercera fila se puede escribir. Tres tecnologías distintas, el mismo movimiento. Si se llevan una sola cosa de la clase, que sea esta tabla. DEJARLA PROYECTADA MIENTRAS ARRANCA LA PRÁCTICA. -->
+<!-- EL CIERRE DE LA TEORÍA, y acá sí frenar. Dos tecnologías distintas, el mismo movimiento. Si se llevan una sola cosa de la clase, que sea esta tabla. LA TERCERA FILA SE DEJA ABIERTA A PROPÓSITO: el trabajo mismo también se puede delegar a un contexto aparte, eso son los subagentes, Y LO ABRE AGUS LA SEMANA QUE VIENE con un caso de uso de documentación. Una línea y seguir — no dar el bloque hoy. DEJAR LA TABLA PROYECTADA MIENTRAS ARRANCA LA PRÁCTICA. -->
 
 ---
 
@@ -289,7 +273,7 @@ onToolCall(({ name }) => {
 
 # Práctica (45 min)
 
-<!-- Sección. Cinco pasos, y LOS CINCO ATACAN LA MISMA REPETICIÓN que el estudiante puso en el menti: es un hilo, no cinco mandados. -->
+<!-- Sección. Cuatro pasos, y LOS CUATRO ATACAN LA MISMA REPETICIÓN que el estudiante puso en el menti: es un hilo, no cinco mandados. -->
 
 ---
 
@@ -303,9 +287,9 @@ pi install npm:pi-mcp-adapter
 
 ---
 
-## Los cinco pasos
+## Los cuatro pasos
 
-<!-- Ver exercise/README.md, no leerlos desde la slide. (1) Que el AGENTE escriba el AGENTS.md, con tus notas en el prompt, y podarlo ~12 min. (2) Probalo: la misma tarea en una sesión nueva ~5 min. (3) Un skill para el procedimiento que repetís ~10 min. (4) Apuntá el adapter a context7 ~10 min. (5) Un subagente sobre tu propio código ~8 min. INSISTIR EN DOS COSAS: el paso 1 no se escribe a mano —el agente lee el repo mejor que vos— pero LA PODA ES EL EJERCICIO, y las notas del menti las pone el estudiante en el prompt. Y EL PASO 2 NO SE SALTEA. Decir en voz alta que no terminar el paso 5 está bien. -->
+<!-- Ver exercise/README.md, no leerlos desde la slide. (1) Que el AGENTE escriba el AGENTS.md, con tus notas en el prompt, y podarlo ~12 min. (2) Probalo: la misma tarea en una sesión nueva ~5 min. (3) Un skill para planificar una feature ~10 min. (4) Apuntá el adapter a context7 ~10 min. INSISTIR EN DOS COSAS: el paso 1 no se escribe a mano —el agente lee el repo mejor que vos— pero LA PODA ES EL EJERCICIO, y las notas del menti las pone el estudiante en el prompt. Y EL PASO 2 NO SE SALTEA. Con cuatro pasos hay aire: el que sobra va al paso 4, que es el que se cuelga. -->
 
 ---
 

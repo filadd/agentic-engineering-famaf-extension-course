@@ -82,7 +82,11 @@ These are the concepts to cover, roughly ordered by complexity:
 
 ### [Diego] Tier 3: Tooling & Skills
 
-> Prerequisite, not content: **Pi is installed in Session 1**, and Session 2 adds the Plannotator and `pi-subagents` extensions. Tier 3 goes deeper on the harness and on subagents — it does not introduce them. `AGENTS.md` **is** introduced here from scratch: the Session 1 step that had students write one was dropped, and Session 2 does not touch it.
+> Prerequisite, not content: **Pi is installed in Session 1**, and Session 2 adds the Plannotator and `pi-subagents` extensions. Tier 3 goes deeper on the harness — it does not introduce it. `AGENTS.md` **is** introduced here from scratch: the Session 1 step that had students write one was dropped, and Session 2 does not touch it.
+>
+> **Subagents moved to Tier 4** (decided while building Session 3): Agus opens them there with a documentation use case, so Tier 3 only names them — one row in the always-loaded vs. on-demand table, one row in the extension-points table. Session 2's "depth on subagents is Session 3" promise moves with them.
+>
+> **Worktrees are out of the course**, not relocated. They were only ever a one-line mention riding along with subagents, no session's hands-on needs them, and git-level parallel work is already named in Session 2's git block. Cut rather than parked.
 
 - Tools deep dive: what tools are, how the LLM calls them, examples from Pi's toolbelt (read, write, edit, bash, grep, find, ls). Why tools are the unit of capability.
 - Harness deep dive: what Pi provides as a harness — context management, tool dispatch, permissions, extension points. Comparison with other harnesses (Claude Code, Cursor, Aider, OpenCode). Why the harness matters as much as the model.
@@ -90,13 +94,13 @@ These are the concepts to cover, roughly ordered by complexity:
 - Skills / slash commands: teaching AI reusable behaviors
 - MCP / external tools: extending the harness — the LLM gains new tools at runtime
 - Documentation tools (e.g. [context7](https://context7.com/), [context-hub](https://github.com/andrewyng/context-hub)): fetching up-to-date library docs so the AI works with accurate references instead of guessing
-- Subagents: delegating subtasks to specialized agents — intro to the concept and available agent types
-- Worktrees: isolated parallel execution
+- Subagents: **named only, as the third row of the always-loaded vs. on-demand table** — the work itself can also go to a separate context. The block itself is Tier 4.
 
 ### [Agus] Tier 4: Context Engineering
 - Spec-driven development: defining WHAT before prompting HOW — specs as context for the AI
 - Research-driven development: using documentation tools (context7, context-hub) to ground the AI in accurate, current docs before implementing
-- Agent orchestration: the *pattern* of coordinating multiple agents on a task — distinct from the subagent primitive introduced in Tier 3. Orchestration is about dispatch and coordination (who plans, who works, how results merge); subagents are one substrate to implement it on, alongside separate Claude sessions, the Task tool, or MCP-mediated handoffs. The "Teams" pattern is a common form: a planner agent dispatches to specialized worker agents (research, review, exploration, implementation), often running in parallel.
+- Subagents, the primitive: delegating a subtask to a separate context and the available agent types (research, exploration, review). **Agus opens this with a documentation use case** — research-driven development is where the delegation pays for itself, so the primitive and its best motivation land together. Moved here from Tier 3.
+- Agent orchestration: the *pattern* of coordinating multiple agents on a task — distinct from the subagent primitive above. Orchestration is about dispatch and coordination (who plans, who works, how results merge); subagents are one substrate to implement it on, alongside separate Claude sessions, the Task tool, or MCP-mediated handoffs. The "Teams" pattern is a common form: a planner agent dispatches to specialized worker agents (research, review, exploration, implementation), often running in parallel.
 - Framework vs. roll-your-own orchestration: a real design decision when you start coordinating agents. Example of an opinionated framework — `oh-my-openagent` (https://github.com/code-yeongyu/oh-my-openagent), with named discipline agents (Sisyphus planner, Hephaestus worker, Prometheus interviewer), automatic model routing, and parallel team mode. Useful to *learn from* — it shows what orchestration looks like at scale — but worth discussing the tradeoff: adopt a framework's opinions, or design your own orchestration on top of Claude Code's primitives (subagents, worktrees, Task tool). Neither is universally better; the choice depends on how much control vs. convention the team wants.
 - Deep context engineering: shaping AI behavior through project structure and documentation
 - Full workflow integration: spec → research → tests → implementation → review
@@ -239,15 +243,14 @@ Not a dedicated session, but surfaced where relevant:
 
 > Students arrive with **Pi plus the Plannotator and `pi-subagents` extensions** (Sessions 1 and 2). No setup block here. `AGENTS.md` is introduced here from scratch — neither Session 1 nor Session 2 touches it.
 
-**Theory: "Teaching The Agent" + "Parallel Execution" (~20-30 min)**
+**Theory: "Teaching The Agent" (~20-30 min)**
 - Tools: the unit of agent capability. What a tool definition looks like (name + schema + handler), how the LLM decides which to call, examples from Pi's built-in toolbelt. Why a smarter tool often beats a smarter model.
 - Harness: the program that wraps the LLM. Pi's responsibilities — context window management, tool execution, permissions, extension points. Quick comparison with Claude Code / Cursor / Aider / OpenCode so students see that "harness" is a real design space, not just "the UI."
 - Custom instructions: `AGENTS.md` as the agent's persistent memory — from the ten-line version they wrote in Session 2 to one that actually shapes behaviour, plus loading order across directories and rules files
 - Skills and slash commands: building reusable capabilities
 - MCP and external tools: how external services plug into the harness as new tools — the agent's capabilities grow at runtime
 - Documentation tools (e.g. context7, context-hub): why accurate docs matter — the AI hallucinates APIs, context7, context-hub fixes that
-- Subagents: intro to the concept — different agent types for different tasks (research, exploration, code review). Not deep usage yet, just "these exist and here's what they do"
-- Worktrees: delegating and parallelizing work
+- Subagents: **named, not taught** — the third row of the always-loaded vs. on-demand table is left open and handed to Session 4
 - Security sidebar: sandboxing, permissions, allowlists
 
 **Hands-on (~1.5 hours)**
@@ -255,7 +258,6 @@ Not a dedicated session, but surfaced where relevant:
 - Create a custom skill or command for a repeated task
 - Set up an MCP tool or external integration
 - Try a documentation tool (context7, context-hub): ask the agent to look up a library you're using — compare the output with and without it
-- Try subagents or worktrees for parallel work
 
 **Reflection & Discussion (~15-20 min)**
 - How did the agent's behavior change with instructions?
@@ -269,7 +271,8 @@ Not a dedicated session, but surfaced where relevant:
 **Theory: "Shaping The Input" + "The Full Loop" (~20-30 min)**
 - Spec-driven development: define WHAT before prompting HOW
 - Research before implementation: use documentation tools (context7, context-hub) to ground the AI — "look it up, don't guess"
-- Agent orchestration as a coordination pattern: distinct from the subagent primitive (Session 3). Orchestration = *how* multiple agents share work (dispatch, planning, result merging); subagents are one substrate to run it on, alongside separate sessions, the Task tool, or MCP-mediated handoffs. The "Teams" pattern is the canonical form: a planner agent dispatches to specialized worker agents (research, review, exploration, implementation), often in parallel. Why orchestration is the natural next step from single-agent context engineering.
+- Subagents, the primitive (moved here from Session 3): delegating a subtask to a separate context — the honest reason is context economy, not "more AI" — plus agent types. **Introduced through a documentation use case**, which doubles as the research-driven development block.
+- Agent orchestration as a coordination pattern: distinct from the subagent primitive above. Orchestration = *how* multiple agents share work (dispatch, planning, result merging); subagents are one substrate to run it on, alongside separate sessions, the Task tool, or MCP-mediated handoffs. The "Teams" pattern is the canonical form: a planner agent dispatches to specialized worker agents (research, review, exploration, implementation), often in parallel. Why orchestration is the natural next step from single-agent context engineering.
 - A design decision: framework vs. roll-your-own orchestration. Walk through oh-my-openagent (https://github.com/code-yeongyu/oh-my-openagent) as a concrete example of an opinionated orchestration framework — discipline agents (Sisyphus, Hephaestus, Prometheus), automatic model routing, parallel team mode. Open the discussion: do you adopt those opinions, or design your own orchestration on Claude Code's primitives? Frame it as a real choice the student will face, not a recommended path.
 - Context engineering: the AI's output is only as good as what you feed it
 - The full workflow: spec → research → tests → implementation → review
@@ -370,7 +373,7 @@ For students who don't bring their own:
 - Exact session duration (2h vs 3h) — **Session 1 is 3 h**, the rest are 2 h. Confirm the room allows it.
 - ~~Claude Code vs alternatives~~ → **decided: Pi is the course tool.** Terminal-based, minimal, standard `AGENTS.md`.
 - ~~Session 2 is written against Claude Code and misaligned with the Pi decision~~ → **resolved: Session 2 runs on Pi.** Planning and review go through `@plannotator/pi-extension`, which adds file-based plan mode (`pi --plan`) and `/plannotator-review` to Pi. One harness for the whole course; students install two extensions at the start of Session 2.
-- ~~`pi-subagents` package is unpinned~~ → **decided: the unscoped `pi-subagents`** (`pi install npm:pi-subagents`), installed by students at the start of Session 2. There are at least six forks on npm (`@tintinweb/`, `@gotgenes/`, `@yassimba/`, `@nklisch/`, plus bridges) — the course standardizes on one. **Confirm with Diego** before Session 3 builds on it.
+- ~~`pi-subagents` package is unpinned~~ → **decided: the unscoped `pi-subagents`** (`pi install npm:pi-subagents`), installed by students at the start of Session 2. There are at least six forks on npm (`@tintinweb/`, `@gotgenes/`, `@yassimba/`, `@nklisch/`, plus bridges) — the course standardizes on one. **Confirm with Agus** before Session 4 builds on it — the subagents block is his now, so it stays installed from Session 2 and unused until then.
 - API keys: provide them or have students set up their own?
 - Pre-work: should students come to Session 1 with a project idea already?
 - Do we want a final deliverable (repo + reflection) or is the journey enough?

@@ -23,7 +23,7 @@ La Sesión 2 corre sobre **Pi**. No se instala un segundo harness.
 Sobre Pi se agregan dos extensiones, al principio de la clase (ver "Setup" abajo):
 
 - **`@plannotator/pi-extension`** — le agrega a Pi un plan mode basado en archivos: `pi --plan`, `/plannotator`, `Ctrl+Alt+P`, y `/plannotator-review` para revisar el diff del working tree.
-- **`pi-subagents`** — delegación a subagentes, que hoy se usa dos veces como subtema (revisar el plan, revisar el diff).
+- **`pi-subagents`** — delegación a subagentes, que hoy se usa dos veces como subtema (revisar el plan, revisar el diff). La profundidad es la Sesión 4 (Agus), no la 3.
 
 **Pi no trae plan mode propio, así que la extensión *es* el plan mode — y el plan es un archivo desde el minuto cero.** No existe la versión del flujo de hoy donde el plan vive solamente en la cabeza del agente. La tesis de la sesión deja de ser una recomendación y pasa a ser el único camino disponible.
 
@@ -105,7 +105,7 @@ Ponerlo acá fija la expectativa: "todo lo que viene asume que tenés cómo volv
 2. **Describir una feature.** Dejarlo explorar el proyecto y escribir el plan como checklist. Mientras corre, narrar: el plan es un archivo en disco, en una ruta que elegiste vos.
 3. **Rechazar el plan con anotaciones.** *Este es el beat que importa.* No aprobar en la primera pasada aunque el plan esté bien. Anotar un paso vago, una decisión que dos personas implementarían distinto, un paso que falta. Mandarlo de vuelta.
 4. **Mostrar el Plan Diff** en el reenvío — qué cambió respecto de la versión anterior. Ahí se ve si procesó las anotaciones o si contestó cualquier cosa.
-5. **Delegar la revisión del plan a un subagente** (~2 min). Que lo lea y reporte huecos: qué está flojo, qué falta, qué dos personas implementarían distinto. Mención corta — la profundidad de subagentes es la Sesión 3.
+5. **Delegar la revisión del plan a un subagente** (~2 min). Que lo lea y reporte huecos: qué está flojo, qué falta, qué dos personas implementarían distinto. Mención corta — la profundidad de subagentes es la Sesión 4.
 6. **Aprobar y dejarlo ejecutar.** Recupera todas las herramientas. Dejar que avance mientras seguís hablando; el diff que produzca es el material de la demo siguiente.
 
 **Sobre la descomposición**: no es un tema aparte. El plan ya salió descompuesto en un checklist. Apuntar a la estructura del plan y decir "esto es descomposición", recorriéndolo estilo *entrypoint* (arrancar por el archivo principal que toca y ramificar). Es leer el flujo, no aplicar una rúbrica.
@@ -118,7 +118,7 @@ Ponerlo acá fija la expectativa: "todo lo que viene asume que tenés cómo volv
 2. **Leer en el editor**: abrir los archivos modificados. La más directa; no escala más allá de unos pocos archivos.
 3. **Diff tools**: `git diff`, o [hunk](https://github.com/anthropics/hunk) para ir hunk por hunk. Cuando el cambio es grande, el diff te da la forma.
 4. **`/plannotator-review`**: abre los cambios del working tree en la UI de review. Anotás líneas concretas y el feedback vuelve directo al agente. Sirve cuando querés que la revisión *se convierta en la próxima instrucción*, no solo aceptar o rechazar.
-5. **Delegarlo a un subagente**: que un agente lea el diff y reporte issues, smells y desvíos respecto del plan. Segunda vez que aparece "esto se puede delegar" — profundidad en la Sesión 3.
+5. **Delegarlo a un subagente**: que un agente lea el diff y reporte issues, smells y desvíos respecto del plan. Segunda vez que aparece "esto se puede delegar" — profundidad en la Sesión 4.
 
 **Demo (~8 min)**, sobre el diff que dejó la demo anterior:
 
@@ -167,7 +167,7 @@ Entre las dos demos hay ~20 minutos de herramienta en vivo. Es lo más frágil d
 
 - **Desde la Sesión 1**: el debrief de la tarea es el bloque que abre esta sesión. **Coordinar con Diego antes de la clase.** Comprehension debt se plantó allá; acá recibe su mecanismo en la intro.
 - **El harness restringe el toolset durante la planificación** → Sesión 3 (Diego). Hoy es algo que *notan*; allá se convierte en permisos y extension points. Plantarlo, no explicarlo.
-- **Subagentes** → Sesión 3 (Diego). Hoy aparecen dos veces como subtema (revisar el plan, revisar el diff), instalados pero usados de a poco, para que lleguen con "esto se puede delegar" ya visto. **Coordinar con Diego**: la sesión de hoy fija `pi-subagents` como el paquete del curso.
+- **Subagentes** → Sesión 4 (Agus), que los abre con un caso de uso de documentación. Hoy aparecen dos veces como subtema (revisar el plan, revisar el diff), instalados pero usados de a poco, para que lleguen con "esto se puede delegar" ya visto. La Sesión 3 solo los nombra. **Coordinar con Agus y Diego**: la sesión de hoy fija `pi-subagents` como el paquete del curso.
 - **`AGENTS.md`** → Sesión 3 (Diego). **No se toca hoy.** La tarea de la semana ("¿qué le tuviste que explicar más de una vez?") es la que le arma el terreno.
 - **El plan como contexto para la AI** → Sesión 4 (Agus). El plan que externalizamos hoy es la especificación que trabajamos allá. Anticiparlo en el cierre.
 
