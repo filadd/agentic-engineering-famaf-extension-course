@@ -108,6 +108,7 @@ Instructor and TAs walk the room. Your job here is **not** to help them write go
 
 - Unblock installs fast. This is real friction, not pedagogy.
 - **Enforce the no-reading rule** gently from step 3 on. Students drift into the editor out of habit.
+- **Say the context-hygiene commands out loud while walking** — a mention, not a block, and it's where the *context rot* slide from Part 4 gets paid: there we promise they'll see their own context today. Four Pi commands, all four in the exercise: `/session` (tokens and cost so far), `/new` (clean context for an unrelated task), `/compact` (summarize the old part of a long task — automatic when Pi runs out of room, manual before that, and it takes instructions), `/tree` (jump back to an earlier point and continue from there). **The one to push is `/tree`**: the third failed fix is the moment to rewind, not to keep digging — every failed attempt is still in the context making the next one worse. It's the first antidote to cascading errors the course offers and it costs one command. Depth is Session 5's; today they just need the four names. Worth saying explicitly that none of this breaks rule 2 — these are agent commands, not the code.
 - **Take notes for the reality check.** Walk with a list: who has no tests, who has a hardcoded secret, who has three copies of the same function. Named examples from the room beat generic slides — **get permission before showing anyone's code.**
 
 **The four rules** (read them aloud, they're on a slide and in the exercise):
@@ -148,6 +149,7 @@ That adds to ~3 h, so it's tight but should fit. **If the room runs long, cut fr
 
 - **Tool / harness / LLM** → Session 3 (Diego). Vocabulary planted today, opened up there. Whatever wording lands in class, keep it identical in Session 3's slides.
 - **Context window + context rot** → Session 4 (Agus). Today it's a constraint to respect; there it becomes something you engineer.
+- **Context hygiene (`/session`, `/new`, `/compact`, `/tree`)** → Session 5 (Agus). Named in today's práctica as four commands to use; the harness session explains what compaction actually does to the transcript. Today is operations, not mechanism.
 - **The reality-check debrief** → Session 2's recap (Agus). `sessions/session-2/slides.md` already opens on *"¿Qué pasó con su código durante la semana? ¿Alguien lo abrió?"* — that's where the real debrief happens now, so **sync with Agus before class**: tell him what state students actually ended in, and that today's in-class reality check was only ~12 minutes.
 - **Comprehension debt** → Session 2's verification bottleneck. Same problem, named twice.
 - **The spectrum** → **Session 6's closing** revisits it, as the course's ending. Use the same five labels, and keep the slide reusable — Session 6 shows this one, not a redrawn version. (Session 4 used to revisit it too; that was a leftover from when the course was 4 sessions and Session 4 was the finale.)
@@ -158,6 +160,7 @@ That adds to ~3 h, so it's tight but should fit. **If the room runs long, cut fr
 ## Tools/assets referenced
 
 - [Pi](https://pi.dev/docs/latest/quickstart) — the coding agent for the whole course. Quickstart covers install and `/login`; [source](https://github.com/earendil-works/pi).
+- [Pi — sessions](https://pi.dev/docs/latest/sessions) and [compaction](https://pi.dev/docs/latest/compaction) — the reference behind the four hygiene commands. Auto-compaction fires when `contextTokens > contextWindow - reserveTokens` (16384 by default) and keeps the most recent ~20k tokens; `/tree` is branch navigation, and Pi offers to summarize the branch you leave.
 - Model/pricing pages of Anthropic, OpenAI, Z.ai and Moonshot AI — opened live in Part 4. **Verify before class.**
 - OpenAI's model-comparison page — used to explain the base concepts in one pass.
 - The four vibecoding references — see `COURSE_PROGRAM.md` "The Spectrum": Karpathy (origin), Naval (as a video game), kids vibecoding with Lovable, vibe coding in prod.

@@ -65,6 +65,25 @@ Cosas que van a pasar y son parte del ejercicio:
 - Te vas a tentar con abrir un archivo para entender qué pasó. No lo hagas.
 - Vas a querer decirle *cómo* arreglarlo. Limitate a decirle *qué* está mal.
 
+### Higiene de contexto: cuatro comandos
+
+La ventana de contexto es finita —la regla del 50% de la teoría— y en una sesión larga de vibecoding la vas a llenar (hoy quizás no; esta semana en casa, seguro). Un agente con el contexto lleno empieza a olvidarse de cosas que le dijiste veinte minutos antes, y vos lo vas a leer como "se puso tonto".
+
+Cuatro comandos de Pi, para usar hoy mismo:
+
+| Comando | Cuándo lo usás |
+|---|---|
+| `/session` | Cada tanto. Te dice cuántos tokens llevás y cuánto costó. Es el velocímetro. |
+| `/new` | Terminaste una tarea y arrancás otra que no tiene nada que ver. Sesión nueva, contexto limpio. Arrastrar la conversación anterior no es gratis: la pagás en cada turno. |
+| `/compact` | Estás en el medio de algo largo y no querés perder el hilo. Resume lo viejo y libera espacio. Pi lo hace solo cuando te quedás sin lugar; pedilo antes. Acepta instrucciones: `/compact` conservá el esquema de la base. |
+| `/tree` | El agente se hundió. Volvés a un punto anterior de la conversación y seguís desde ahí. |
+
+**El que más te va a servir hoy es `/tree`.** Cuando el agente rompe algo y ya lleva tres intentos de arreglarlo, cada intento suma basura al contexto y hace que el siguiente sea peor. Volver a antes del pozo y pedirlo de otra manera sale más barato que seguir cavando.
+
+Nada de esto rompe la regla 2: son comandos del agente, no el código.
+
+> Hoy es una mención, no el tema. La Sesión 5 abre el harness y explica qué hace la compactación por dentro.
+
 Anotá en un papel (o en un archivo aparte, no en el código) los momentos en que sentiste que perdiste el control.
 
 ### 4. Reality check: abrí los archivos (en clase)

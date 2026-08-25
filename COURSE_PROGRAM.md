@@ -61,6 +61,7 @@ These are the concepts to cover, roughly ordered by complexity:
 - Tokens as the unit of everything: input, output, and price. Multimodality — images and audio become tokens too.
 - Pricing shapes: per-token (API) vs subscription, and when each makes sense.
 - Context window as finite working memory — and the rule of thumb we actually use: **don't go past 50%** of what the model supports. Nothing persists between conversations.
+- **Context hygiene as operations**, named in the Session 1 hands-on and used from day one: `/session` (tokens and cost so far), `/new` (clean context for an unrelated task), `/compact` (summarize the old part of a long task), `/tree` (rewind to before the agent dug the hole). Four commands, not a topic — the mechanism is Session 5's.
 - Chat vs agent: a chat returns text and you execute; an agent executes in a loop (reads, runs, edits, checks, retries).
 - A short timeline: tab completion (Copilot) → chat beside the editor → Cursor → terminal coding agents (Claude Code, Codex, Pi).
 - Vibe coding: prompt-and-accept workflow. Talk with the agent, don't open files — focus entirely on the output. Working definition: *programar sin pensar que el código existe*.
@@ -207,6 +208,7 @@ Not a dedicated session, but surfaced where relevant:
 **Hands-on (~27 min)**
 - Install Pi (official quickstart), create the project + git repo, add the `pi-processes` package so the dev server can run in the background
 - Then vibe code, with the rules: talk to the agent, don't open the files, describe symptoms not diagnoses, judge only by the output
+- Context hygiene while they build: `/session`, `/new`, `/compact`, `/tree` — read aloud before they start, then repeated while walking the room. `/tree` is the one to push: rewinding beats a fourth failed fix
 - Nobody should leave the room without Pi working
 
 **Reality check (~12 min, closes the hands-on)**

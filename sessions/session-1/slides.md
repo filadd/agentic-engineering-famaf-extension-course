@@ -10,6 +10,10 @@ Skeleton de la presentación de la Sesión 1.
 Cada slide tiene un título + una nota de oradora/orador (HTML comment).
 El contenido del cuerpo de cada slide está pendiente.
 
+Excepción deliberada: la slide de higiene de contexto SÍ trae cuerpo escrito
+—son cuatro comandos que la sala tiene que tipear— y por eso están en pantalla
+además de en el ejercicio.
+
 Sesión de 3 horas (las demás son de 2): ~2 h de intro + teoría, ~1 h de práctica.
 Reparto: Diego dicta Partes 1-3 y 5; Agus dicta la intro a Pi y la demo de la Parte 4.
 -->
@@ -326,7 +330,7 @@ Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 
 
 ## Sí, es raro a propósito
 
-<!-- Esperar resistencia de los más experimentados — es buena señal. Pedirles que jueguen el juego los 45 minutos de construcción. El pago es el reality check del final: sin la experiencia vivida, la lección de las próximas sesiones es una opinión nuestra. -->
+<!-- Esperar resistencia de los más experimentados — es buena señal. Pedirles que jueguen el juego los 15 minutos de construcción — son 15, no una tarde: es poco tiempo para aguantar sin abrir un archivo. El pago es el reality check del final: sin la experiencia vivida, la lección de las próximas sesiones es una opinión nuestra. -->
 
 ---
 
@@ -339,6 +343,17 @@ Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 
 ## Lo que vas a sentir
 
 <!-- Aviso honesto de la curva, ajustado a que hoy son 15 minutos de construcción y no dos horas: euforia primero, fricción después. La frustración grande aparece a la hora y media — o sea, esta semana en casa. Avisarles que eso también es parte del ejercicio y que lo traigan a la Sesión 2. -->
+
+---
+
+## Higiene de contexto: cuatro comandos
+
+- `/session` — cuántos tokens llevás y cuánto costó
+- `/new` — tarea nueva, contexto limpio
+- `/compact` — resumí lo viejo sin perder el hilo
+- `/tree` — volvé a antes de que se hundiera
+
+<!-- ~2 min, ANTES de soltarlos a construir, y es el pago de la slide de context rot de la Parte 4: ahí les prometimos que hoy iban a ver su propio contexto. Los cuatro están en el ejercicio, así que acá es leerlos en voz alta y seguir. El que hay que vender es `/tree`: cuando el agente rompió algo y ya lleva tres intentos de arreglarlo, cada intento suma basura y hace peor al siguiente — volver a antes del pozo sale más barato que seguir cavando. Es el primer antídoto del curso contra los errores en cascada y cuesta un comando. Aclarar que nada de esto rompe la regla 2: son comandos del agente, no el código. Y decir en voz alta que la compactación por dentro es la Sesión 5. -->
 
 ---
 
