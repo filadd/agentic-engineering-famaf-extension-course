@@ -5,13 +5,23 @@
 >
 > **Excepciones, y estas sí son decisiones tomadas:**
 > 1. **Al CCAD se llega por un gateway LiteLLM**, y Pi se apunta ahí con un provider propio en `~/.pi/agent/models.json`. Decisión de Diego. **Y los internals de ese servidor —scheduler, SSH, cómo se orquesta la inferencia para muchos usuarios— quedan fuera del curso**: son internals de un servicio de IA multiusuario. Ale los puede tocar como parte de qué es el CCAD, con poco detalle.
-> 2. **La práctica tiene dos vías**: el gateway para todos (Vía A) y `llama.cpp` local opcional (Vía B). Todo lo que sigue baja de esas dos cosas.
+> 2. **La práctica tiene dos vías, y las dos son conectarse a un endpoint**: el gateway del CCAD para todos (Vía A) y **la GPU de Agus, servida en el aula**, como pista avanzada opcional (Vía B). Nadie instala un runtime: las dos vías son una entrada más en `models.json`. Decisión de Diego.
 > 3. **Hay dos modelos en juego y el material tiene que funcionar con cualquiera de los dos.** **Gemma 4 26B** es lo que el gateway sirve hoy. El segundo es un **Qwen**, y no es un pedido a ciegas: Ale nos dio acceso al CCAD y **probamos Qwen3.6 ahí, andando** — hoy está bajado. Lo que le vamos a pedir para el curso es que **vuelva a levantarlo**, ahora en **Qwen3.8-27B**, que es la versión que existe hoy. Escribir todo contra "el modelo de hoy" y tener los dos números a mano. Si están los dos, mejor — abajo se explica por qué la comparación entre ellos es contenido y no lujo.
 > 4. **El slot de Ale Silva son seis puntos**: qué es el CCAD, qué hardware tiene, cómo accede un estudiante de la UNC para correr un LLM ahí, cómo se corre un LLM ahí, **LiteLLM** (el gateway desde adentro) y **vLLM** (qué corre atrás). Decisión de Diego.
 
 > A cargo: Diego. Estado: en armado. Este archivo es **todo lo que hay** de la sesión: las slides y el ejercicio se borraron porque estaban escritos contra el diseño viejo (SSH + cola de GPU + túnel), y hay que escribirlos de nuevo desde acá. Material en español.
 >
 > Invitado: **Ale Silva (CCAD)** — abre la sesión con seis puntos: qué es el CCAD, qué hardware tiene, cómo accede un estudiante de la UNC para correr un LLM ahí, cómo se corre un LLM ahí, y la infraestructura de inferencia por dentro: **LiteLLM** adelante y **vLLM** atrás. El alcance está definido; falta confirmar con él fecha, duración y formato.
+
+> 🟢 **La forma de la sesión está decidida y son 2 h 30** (las otras son de 2 h; la Sesión 1 es de 3, así que hay precedente). Tres bloques grandes:
+>
+> | | |
+> |---|---|
+> | **Ale Silva — el CCAD** | **30 min** |
+> | **Modelos de pesos abiertos — Diego** | **30 min** |
+> | **Práctica — conectarse al CCAD + pista avanzada** | **60 min** |
+>
+> Los 30 minutos restantes son recap, pausa, puesta en común y el cierre del curso. La tabla completa está más abajo.
 
 ## Objetivo de la sesión (en una frase)
 
@@ -40,14 +50,14 @@ Sigue **Pi**, sin instalar nada nuevo. Lo único que se agrega es un archivo de 
 
 | Vía | Quién la hace | Qué necesita | Qué enseña |
 |---|---|---|---|
-| **A — el gateway** | todos | un archivo de config y una API key | el modelo es un componente: el swap es una línea |
-| **B — avanzada: servirlo vos** | opcional, quien tenga GPU (o de a dos) | `llama.cpp` local y un modelo chico cuantizado | VRAM, cuantización, flags y latencia, de primera mano |
+| **A — el gateway del CCAD** | todos | una entrada en `models.json` y una API key | el modelo es un componente: el swap es una línea |
+| **B — la GPU de Agus, en el aula** | opcional | otra entrada en `models.json`, apuntada a la IP de Agus | qué cambia cuando el modelo es chico y la máquina está a tres metros |
 
-> 🟡 **La Vía B es la vía avanzada y está TBD: hay que verla con Agus.** Lo que sigue es la forma que tiene hoy, no una decisión cerrada. Definir con él alcance, si va en clase o como apéndice, qué modelo se sirve y **con qué runtime**.
->
-> **La referencia para el setup es [el post de Sebastian Raschka](https://magazine.sebastianraschka.com/p/using-local-coding-agents)**, y usa **Ollama**, no `llama-server` crudo. Para 25 personas con Mac, Linux y Windows en la misma aula, eso es probablemente la decisión correcta: se instala igual en los tres y expone el mismo endpoint compatible con OpenAI en `http://127.0.0.1:11434/v1`. El costo es que esconde los flags —`-ngl`, `-c`, `--jinja`— que son justamente el contenido de esta vía. **Es el tradeoff a resolver con Agus**: `llama.cpp` enseña más y se rompe más; Ollama arranca en todas las máquinas.
+**El cambio grande respecto del borrador anterior: nadie instala un runtime.** La Vía B era servirse el modelo uno mismo con `llama.cpp` u Ollama, y eso significaba 25 instalaciones, 25 descargas de pesos por la red del aula y 25 formas distintas de romperse. **Ahora Agus sirve un modelo en su GPU y la sala se conecta**, que es exactamente el mismo movimiento de la Vía A contra otro endpoint. El que quiera montarlo en su máquina tiene el apéndice y [la guía de Raschka](https://magazine.sebastianraschka.com/p/using-local-coding-agents) para hacerlo en casa.
 
-**Por qué las dos y no una.** La Vía A es la que carga la tesis y es la que **todos van a terminar**: no hay cola, no hay red del aula, no hay nada que se pueda romper más allá de un typo en un JSON. La Vía B es la que hace que la columna "tu propio hardware" de la tabla del espectro deje de ser abstracta. Si dejamos solo B, media sala se va sin haber hecho el swap.
+**Y las dos vías juntas enseñan algo que ninguna sola:** el archivo de config termina con **tres providers** —el hosteado que vienen usando hace cinco sesiones, el CCAD y la notebook de Agus— y el modelo activo se elige con `/model`. La tesis de la sesión deja de ser una afirmación y pasa a ser una lista de tres entradas en un JSON.
+
+> ⚠️ **El riesgo de la Vía B es la concurrencia, y hay que resolverlo con Agus antes de la clase.** Una GPU sirviendo a 25 personas a la vez es exactamente el problema que Ale va a explicar media hora antes cuando cuente por qué el CCAD usa vLLM y no otra cosa. Si se encola, **se encola en vivo y delante de todos** — y eso puede ser el mejor momento de la clase o un desastre, según si estaba previsto. Decidir con él: si sirve con un runtime que batchee, si la sala entra por tandas, o si se asume la cola y se la usa como contenido. **Lo que no puede pasar es que nos agarre de sorpresa.**
 
 **El resultado de la sesión depende únicamente de la Vía A.** Decirlo explícitamente cuando se sueltan a la práctica: nadie se va con la sensación de no haber terminado por no haber hecho la B.
 
@@ -64,7 +74,7 @@ Sigue **Pi**, sin instalar nada nuevo. Lo único que se agrega es un archivo de 
 
 ## Plan tema por tema
 
-### Recap y compartir de la Sesión 5 (~10 min)
+### Recap y compartir de la Sesión 5 (~5 min)
 
 Discusión, no slides. Qué hicieron, qué se les rompió, qué les sorprendió del loop por dentro.
 
@@ -72,9 +82,9 @@ Discusión, no slides. Qué hicieron, qué se les rompió, qué les sorprendió 
 
 Este es el bloque elástico: **si el día se estira, se recorta de acá** (mismo criterio que las Sesiones 2 y 3).
 
-### Invitado: Ale Silva — el CCAD y cómo correr un LLM ahí (~45 min)
+### Invitado: Ale Silva — el CCAD y cómo correr un LLM ahí (~30 min)
 
-Entregar la sala. **El alcance está definido y son seis puntos**, y el slot es de **~45 minutos** (confirmar con Ale que le cierra):
+Entregar la sala. **El alcance está definido y son seis puntos**, y el slot es de **30 minutos** (confirmar con Ale que le cierra; son seis puntos y no es poco):
 
 1. **Qué es el CCAD** — qué es el centro y a quién le sirve (facultades de la UNC, el Observatorio, organismos externos; creado por Ordenanza HCS 18/2010).
 2. **Qué hardware tiene** — los clusters de verdad, cuáles tienen GPU y de qué tipo. La cuenta de VRAM de un bloque posterior se apoya en esto: conviene que los números de él y los nuestros no se contradigan.
@@ -99,13 +109,34 @@ Entregar la sala. **El alcance está definido y son seis puntos**, y el slot es 
 
 Más allá de eso, no sobre-especificar la charla de un invitado. Confirmar si quiere slides, un tour en vivo del dashboard, una sesión real en el cluster proyectada, o solo hablar.
 
-### Open source vs. pesos abiertos, y licencias (~8 min)
+### Modelos de pesos abiertos — el bloque de Diego (30 min)
+
+> 📖 **La base de este bloque es [*A Deep Dive into Open-Weight AI Models*, de Flavio Copes](https://flaviocopes.com/open-weight-models/).** Recorre en orden lo que necesitamos: qué son los pesos, arquitectura vs. pesos, qué significa "open weight", la diferencia con open source, cómo se baja un modelo, cuantización, beneficios, límites y criterios para elegir uno. Nuestro material ya cubría casi todo eso disperso en cuatro bloques; lo que hace el post es **darle un orden y un cierre**, y aportar dos frases que valen la clase entera (están marcadas abajo).
+>
+> **Lo que sí hay que cambiarle**: el post trabaja sus ejemplos sobre un modelo suyo. Nosotros los hacemos **sobre el modelo que el gateway esté sirviendo ese día**, que es al que van a apuntar su repo veinte minutos después. Los números en vivo sobre el modelo propio valen más que los del post.
+
+Los cuatro sub-bloques y su reparto de los 30 minutos:
+
+| Sub-bloque | Tiempo |
+|---|---|
+| Open source vs. pesos abiertos, y licencias | 8 min |
+| Pesos abiertos vs. API hosteada: el espectro de control | 6 min |
+| Qué hace falta para correr uno: VRAM, cuantización, runtimes | 10 min |
+| Seguridad y confianza | 6 min |
+
+**`models.json` ya no vive acá**: se camina al arrancar la práctica, con la sala tipeando al mismo tiempo. Es setup, y se da cuando se usa.
+
+#### Open source vs. pesos abiertos, y licencias (~8 min)
 
 La distinción que casi nadie hace bien, y tiene que ir antes de la tabla del espectro o el resto del bloque queda impreciso.
 
 - **Pesos abiertos**: podés descargar los pesos y correrlos. Eso es todo.
 - **Open source** en sentido fuerte: además tenés el código de entrenamiento y suficiente información sobre los datos para reproducir el modelo.
 - Casi todo lo que se vende como "IA open source" es **pesos abiertos** — te dan el binario, no la receta. La analogía honesta es un ejecutable gratis, no código fuente. Usar "pesos abiertos" en clase donde corresponde; la sloppiness está en el marketing de la industria, no en los estudiantes.
+
+**La formulación del post, que es la más precisa que encontramos y conviene decirla casi textual**: *"«pesos abiertos» te dice que podés obtener los parámetros aprendidos. La IA open source debería además darte los materiales y las libertades para estudiar, modificar y compartir el sistema entero."* La diferencia no es el archivo: es qué podés hacer con lo que te dieron.
+
+**Y un paso previo que el post da y nosotros salteábamos**: separar **arquitectura** de **pesos**. La arquitectura suele estar publicada en un paper; los pesos son lo que la entrenó y lo que cuesta millones. Bajarse un modelo es bajarse los pesos, no la receta con la que se hicieron. Es medio minuto y hace que "pesos abiertos" deje de ser una etiqueta y pase a nombrar algo.
 
 **Y después las licencias**, porque es donde la distinción tiene consecuencias:
 
@@ -127,7 +158,7 @@ La frase del bloque: *"«pesos abiertos» no te dice nada sobre lo que podés ha
 
 **Verificar la licencia de las versiones exactas la semana de la clase** — es justamente el error que este bloque enseña a no cometer, así que cometerlo en el material sería vergonzoso dos veces. Chequear también **si el repo está gateado en Hugging Face**: Qwen3.8-27B hoy no lo está, los de Google históricamente sí incluso siendo Apache, y de eso depende la fricción de la Vía B.
 
-### Pesos abiertos vs. API hosteada (~8 min)
+#### Pesos abiertos vs. API hosteada: el espectro de control (~6 min)
 
 Plantearlo como **espectro de control**, no como tribalismo abierto-vs-cerrado:
 
@@ -145,7 +176,7 @@ Honestidad sobre la brecha: los mejores modelos de pesos abiertos son genuinamen
 
 **Verificar nombres de modelos y afirmaciones de capacidad la semana de la clase.** Este tema se mueve más rápido que cualquier otro del curso.
 
-### Qué hace falta para correr uno (~10 min)
+#### Qué hace falta para correr uno (~10 min)
 
 Mecánica práctica. Es el bloque que le da sentido a la Vía B y que explica por qué el CCAD existe.
 
@@ -160,13 +191,64 @@ Mecánica práctica. Es el bloque que le da sentido a la Vía B y que explica po
 
   **La VRAM la paga el total; la latencia la paga lo activo.** En un MoE tenés que tener los 26B residentes igual —por eso sigue sin entrar en su notebook— pero cada token solo pasa por una fracción, así que responde como un modelo mucho más chico. Es el bullet que rompe la intuición de que "más parámetros" significa a la vez más memoria y más lento: son dos cosas distintas y las paga distinta gente. **Si el gateway termina sirviendo los dos, esto se mide en la práctica en lugar de explicarse**, y es la mejor cosa que puede pasarle a este bloque.
 - **Nota al pie honesta**: los dos son multimodales (imagen + texto), así que arriba de los parámetros de texto hay una torre de visión. **En el curso no la usamos** — se nombra solo para que nadie se desoriente si abre el model card y ve `image-text-to-text`.
-- **La cuantización** cambia precisión por VRAM. Mencionar que los modelos muy cuantizados se degradan en salida estructurada — que es exactamente tool calling. Esto vuelve en la discusión del final.
+- **La cuantización** cambia precisión por VRAM, y el post da la magnitud que hace falta para que se entienda: bajar de 16 bits a 4 lleva un modelo de ~60 GB a ~15 GB. **Es la diferencia entre "no entra en ninguna máquina de esta sala" y "entra en varias"**, y encadena directo con la cuenta de VRAM de dos bullets arriba. Mencionar que los modelos muy cuantizados se degradan en salida estructurada — que es exactamente tool calling. Esto vuelve en la discusión del final.
 - **Dos familias de runtime**: local/mono-usuario (**llama.cpp**, **Ollama**) vs. serving (**vLLM**, SGLang — batching, throughput, muchos usuarios concurrentes). **Este bullet lo dio Ale en el punto 6 de su slot, así que acá es un callback de una línea y no una explicación**: el serving ya lo vieron con nombre propio, lo que agregamos es la otra mitad — ustedes en la Vía B corren llama.cpp, y la razón es cuántos usuarios tiene cada uno. Un usuario no necesita batching.
+- **Por qué le importaría a alguien, en cinco razones** (del post, y vale darlas como lista porque la sala va a preguntar "¿y para qué?"): **la versión no se te mueve abajo de los pies** —el modelo hosteado que usás hoy puede cambiar mañana sin avisarte, y el que te bajaste no—, los datos no salen, lo podés adaptar, no quedás atado a un proveedor, y los modelos chicos empiezan a servir como **componentes** de un sistema y no como el sistema entero.
+- **Y los límites, en la misma lista y con el mismo peso**: pesos abiertos no garantiza calidad de salida, ni datos de entrenamiento sin sesgo, ni uso seguro de tools, ni hardware barato. **Lo que sí garantiza es que el operador pasás a ser vos**, con todo lo que eso implica. Esa frase es la bisagra con el sub-bloque de seguridad.
 - **El endpoint compatible con OpenAI es toda la historia de interoperabilidad.** Casi cualquier runtime expone uno, y por eso cualquier harness se le puede apuntar. Es el principio general — y es la razón de que el bloque siguiente sean cinco líneas de JSON y no una tarde de trabajo.
 
-### `models.json`: el modelo como config (~8 min)
+#### Seguridad y confianza (~6 min)
 
-**El bloque nuevo, y el corazón de la sesión.** Es el setup de la Vía A, así que se camina una vez en pantalla y queda proyectado cuando arranca la práctica.
+Cierra el hilo transversal de seguridad del curso, y el gateway le regaló el mejor punto:
+
+- **Un gateway también es un tercero.** "Corre en hardware de la UNC" no es lo mismo que "nadie ve mis prompts". Entre su terminal y el modelo hay un proxy que puede loguear, y eso es una pregunta legítima que hay que hacerle al operador. **Y hoy el operador está en el aula**, así que la pregunta deja de ser retórica: con LiteLLM ya explicado en el punto 5, *"Ale, ¿esto loguea los prompts?"* es una pregunta que se puede hacer en voz alta y que tiene respuesta. **Preguntársela igual antes por mail** (ver Pendiente de Ale) para no dejarlo pagando frente a la sala, y después hacerla en clase de todos modos: modelar la pregunta es la mitad de la lección, y ahora la otra mitad también está disponible. Y de paso desarma el reflejo fácil de "self-hosted = privado".
+- **Cadena de suministro**: cuando bajás pesos de un hub estás bajando gigabytes de binario. ¿A quién le estás confiando eso? Según el formato, los archivos de modelo históricamente fueron vector de ejecución de código.
+- **"Local no significa privado automáticamente."** Es la mejor frase del post y desarma el reflejo más común de la sala. Un agente corriendo contra un modelo local sigue llamando APIs externas, sigue leyendo cosas de internet y sigue mandando lo que lee a algún lado. El modelo dejó de ser el tercero; el resto del sistema sigue estando. **Dicho justo después del punto del gateway, cierra la idea**: no hay una configuración que te haga privado, hay decisiones que tomás sobre cada pieza.
+- **El argumento de privacidad corta para los dos lados**: self-hostear saca a un tercero pero te agrega como operador, con logs, disco y un filesystem compartido que capaz no pensaste.
+- **A prompt injection no le importa qué modelo corras.** Un modelo más débil puede ser *más fácil* de secuestrar. Callback directo a la Sesión 4.
+
+### Puesta en común: ¿está a la altura de un proyecto serio? (~5 min)
+
+**La pregunta que la sala realmente quiere contestada**, y este es el lugar: apenas terminan la práctica, con sus propias mediciones en la mano. **Son cinco minutos, así que es cosecha y no debate**: que cada uno tire una línea de lo que midió, se anota en el pizarrón, y el criterio se cierra en la retrospectiva. Que argumenten desde lo que acabaron de medir, no desde lo que leyeron.
+
+Los ejes que lo deciden, todos cosas que midieron en el último paso de la práctica:
+
+- ¿Llama las tools respetando el schema — *siempre*, no casi siempre?
+- ¿Sobrevive una tarea de veinte pasos sin perder el hilo?
+- ¿Alcanza la ventana de contexto para un repo real?
+- ¿La latencia es tolerable dentro de un loop, donde cada paso es otro round trip?
+
+Nuestra respuesta honesta hoy — **re-verificar la semana de la clase, esto se mueve rápido**: para tareas acotadas, reviews, trabajo repetitivo de alto volumen y cualquier cosa con datos sensibles, sí. Como motor principal de un coding agent en un proyecto serio y de vida larga, todavía no del todo — y el cuello de botella suele ser **el tool calling confiable, no la capacidad de escribir código**. Decirlo así, plano: les sirve más que el entusiasmo o el desprecio.
+
+**Y hay un dato externo que conviene tener a mano, porque alguien lo va a preguntar**: Sebastian Raschka corrió [esta misma pregunta con agentes locales](https://magazine.sebastianraschka.com/p/using-local-coding-agents) y midió 4-5 sobre 5 en tareas de razonamiento agéntico con un Qwen3.6 MoE, concluyendo que los MoE nuevos alcanzan para mucho trabajo real. **Es más optimista que nuestra respuesta de arriba y vale decirlo así**, con la diferencia que lo explica: él mide tareas acotadas, y nosotros hablamos de sostener un proyecto largo. No es una contradicción, son dos preguntas distintas — y distinguirlas es exactamente el criterio que este bloque quiere dejar.
+
+Y el matiz que la Vía B habilita, si alguien la hizo: parte de lo que van a haber medido no es el modelo, es **la cuantización**. El mismo modelo a 4 bits y a 16 bits no falla igual en salida estructurada. Que la sala distinga "el modelo abierto es peor" de "esta versión cuantizada de este modelo es peor" es un salto de madurez técnica y sale gratis acá.
+
+Este bloque desemboca en el siguiente: la respuesta no es sí o no, es "para qué trabajo".
+
+### Cuándo conviene open source — **se pliega dentro del cierre del curso**
+
+> Ya no es un bloque propio: con la sesión repartida en tres bloques grandes no hay lugar, y el contenido siempre fue la rampa del cierre. **Se da adentro de la retrospectiva**, en dos minutos, justo antes de la frase final. Lo que sigue es el material.
+
+- **Encaja bien**: datos sensibles o regulados, tareas repetitivas de alto volumen donde el costo domina, investigación que necesita reproducibilidad y un modelo pineado, trabajo offline o air-gapped, y *estudiar la cosa en sí* — no podés inspeccionar logits que no tenés.
+- **Encaja mal**: querés el mejor coding agent disponible hoy; no tenés capacidad operativa; el volumen es bajo (una API hosteada va a salir más barata que tu tiempo).
+- Y ensanchar al cierre real del curso: **el modelo es un componente.** Todo lo de las Sesiones 2 a 5 — planificación, review, tests, contexto, tools, harness — se transfiere entre modelos. Ese es el pago de haber enseñado estructura en vez de un producto.
+
+## Práctica (60 min)
+
+**El bloque más largo de la sesión y el que no se recorta.** Dos vías, y las dos son la misma operación contra endpoints distintos: agregar un provider y elegir el modelo con `/model`. **Nadie instala un runtime.**
+
+| | Quién | Tiempo |
+|---|---|---|
+| Paso 0 — `models.json` | todos, juntos y en voz alta | 8 min |
+| Vía A — conectarse al CCAD y comparar | todos | 32 min |
+| Vía B — conectarse a la GPU de Agus | opcional | 20 min |
+
+**Decir en voz alta al soltarlos**: el resultado de la sesión depende solo de la Vía A. Y la etiqueta de recurso compartido, que es lo único que sobrevive del bloque de cluster: hay gente corriendo su tesis en esas máquinas, así que respetar los rate limits y no dejar tareas absurdas corriendo por curiosidad.
+
+### Paso 0 — `models.json`, todos juntos (~8 min)
+
+**El corazón de la sesión, y se da acá y no en la teoría**: es setup, así que se camina en pantalla **con la sala tipeando al mismo tiempo**, y queda proyectado el resto de la hora. Frenar la práctica hasta que el archivo le funcione a todo el mundo — el que arranca tarde acá pierde la comparación, que es lo único que no se puede recuperar en casa.
 
 El archivo va en **`~/.pi/agent/models.json`** — y vale frenar un segundo acá, porque es el mismo directorio donde vive el **`AGENTS.md` global que escribieron en la Sesión 3**. La configuración global del agente y el catálogo de modelos son vecinos. Buen momento para el callback.
 
@@ -206,9 +288,36 @@ Cuatro cosas para frenar, y cada una es un concepto que ya tienen:
 
 Y el detalle operativo que hace fácil la práctica: **el archivo se relee cada vez que abrís `/model`**, sin reiniciar nada. Cambiar de modelo cuesta dos segundos.
 
-### Demo: la GPU portátil de Agus (~6 min)
+### Vía A — el gateway del CCAD (todos, ~32 min)
 
-> 🟡 **TBD — lo prepara Agus.** Lo que sigue es la forma que tenía en el borrador, para que él tenga de dónde partir; el contenido y la duración los define él.
+El flujo entero: exportar la key → abrir `/model` → elegir **el modelo abierto que esté en el picker** (`vllm/gemma4-26b`, o `vllm/qwen3.8-27b` si el CCAD lo levantó) → darle una tarea **en su propio repo** → repetir la misma tarea con el modelo hosteado → anotar.
+
+**Lo que hay que vigilar caminando la sala:**
+
+- **La tarea va en su repo, con su `AGENTS.md` y sus skills de la Sesión 3. No en un directorio de prueba.** Es el paso que hace aterrizar la sesión y no cuesta nada: todo el punto es que el andamiaje sobrevive al cambio de modelo. El que lo hace en `/tmp` hizo un ejercicio de configuración, no la clase.
+- **La tarea tiene que ser multi-paso y con al menos dos llamadas a tools.** Si le piden algo de un solo turno, los dos modelos van a parecer iguales y la comparación no dice nada. El ejemplo que funciona: *"leé estos dos archivos y arreglá la inconsistencia entre ellos"*.
+- **Dos sesiones limpias, no una sesión con `/model` en el medio.** Para que la comparación sea justa los dos modelos tienen que arrancar del mismo contexto. Es más prolijo y además les enseña algo sobre metodología.
+- **Que anoten mientras pasa, no después.** Cuatro cosas: ¿respetó el schema de las tools?, ¿cuántos turnos necesitó?, ¿inventó nombres de archivos o funciones?, ¿cómo se sintió la latencia? Esos apuntes son el insumo de la puesta en común, que dura cinco minutos: sin ellos no hay nada que poner en común.
+- **Si el gateway terminó sirviendo los dos modelos abiertos, ofrecer la tercera corrida como extra** — mismo prompt, mismo repo, MoE contra denso. **No como paso obligatorio**: el que llega mide la tabla de denso vs. MoE con su propio cronómetro. El que no llega no se perdió nada de la tesis.
+- **El error más probable no es conceptual, es un typo en el JSON o la key sin exportar.** Por eso el paso 0 se hace en conjunto.
+
+### Vía B — la GPU de Agus, en el aula (opcional, ~20 min)
+
+**Agus sirve un modelo chico en su GPU y la sala se conecta.** Del lado del estudiante es *otra entrada más* en el mismo `models.json` —`baseUrl` apuntando a la IP de Agus en la red del aula— y otra vez `/model`. Cero instalación, cero descarga de pesos, cero pelea con drivers.
+
+**Qué enseña, y no es lo mismo que enseñaba servirlo uno mismo:**
+
+- **La tercera corrida de la comparación.** Modelo grande en hardware de la UNC, modelo hosteado, y ahora modelo chico a tres metros. Es el punto donde se separa *"los modelos abiertos son peores"* de *"este modelo chico y cuantizado es peor"*, que es un salto de madurez técnica y sale casi gratis.
+- **La columna "tu propio hardware" de la tabla del espectro, hecha física.** Los datos no salen del aula. Sin cuenta, sin key, sin nadie en el medio. Mostrar la VRAM real contra la cuenta que hicimos en la teoría, y los tokens por segundo, para que la latencia se sienta en vez de describirse.
+- **El swap por segunda vez en veinte minutos.** Que el archivo termine con tres providers y que cambiar entre ellos cueste `/model` es la tesis de la sesión, demostrada dos veces en la misma hora.
+
+> ⚠️ **La concurrencia es el riesgo, y es también el contenido.** Una GPU atendiendo a la sala entera se encola — que es exactamente lo que Ale explicó media hora antes al contar por qué el CCAD corre vLLM. **Acordarlo con Agus antes de la clase**: runtime que batchee, tandas, o asumir la cola y usarla como demostración en vivo. Cualquiera de las tres sirve; lo que no sirve es descubrirlo en el momento.
+
+**Nadie tiene que terminar esto.** Repetirlo al soltarlos y otra vez a los quince minutos. El que quiera además servirlo en su propia máquina tiene el apéndice del ejercicio y [la guía de Raschka](https://magazine.sebastianraschka.com/p/using-local-coding-agents) para hacerlo en casa.
+
+#### El setup de Agus, para referencia
+
+> 🟡 **Lo prepara Agus.** Lo que sigue es lo que había en el borrador cuando la demo era un bloque aparte; le sirve de punto de partida, pero **el setup lo define él** — sobre todo el runtime, que ahora tiene que aguantar a varias personas a la vez.
 
 Agus trae su GPU portátil y sirve un modelo chico en el aula. **Dejó de ser el endpoint de respaldo** — el gateway del CCAD es más confiable que una notebook — así que ahora su trabajo es puramente pedagógico: es la tercera columna de la tabla del espectro, hecha física. Sin cola, sin túnel, sin cuenta, y los datos no salen del aula.
 
@@ -240,132 +349,38 @@ Y del lado de Pi: `/login llama.cpp` (o `LLAMA_BASE_URL`, que por default ya es 
 >
 > Lo único que sobrevive es **la etiqueta de recurso compartido**, y se dice en una frase al soltar la práctica: hay gente corriendo su tesis en esas máquinas y hoy comparten un modelo servido — respetar los rate limits y no dejar tareas absurdas corriendo por curiosidad.
 
-### Sidebar de seguridad y confianza (~5 min)
-
-Cierra el hilo transversal de seguridad del curso, y el gateway le regaló el mejor punto:
-
-- **Un gateway también es un tercero.** "Corre en hardware de la UNC" no es lo mismo que "nadie ve mis prompts". Entre su terminal y el modelo hay un proxy que puede loguear, y eso es una pregunta legítima que hay que hacerle al operador. **Y hoy el operador está en el aula**, así que la pregunta deja de ser retórica: con LiteLLM ya explicado en el punto 5, *"Ale, ¿esto loguea los prompts?"* es una pregunta que se puede hacer en voz alta y que tiene respuesta. **Preguntársela igual antes por mail** (ver Pendiente de Ale) para no dejarlo pagando frente a la sala, y después hacerla en clase de todos modos: modelar la pregunta es la mitad de la lección, y ahora la otra mitad también está disponible. Y de paso desarma el reflejo fácil de "self-hosted = privado".
-- **Cadena de suministro**: cuando bajás pesos de un hub estás bajando gigabytes de binario. ¿A quién le estás confiando eso? Según el formato, los archivos de modelo históricamente fueron vector de ejecución de código.
-- **El argumento de privacidad corta para los dos lados**: self-hostear saca a un tercero pero te agrega como operador, con logs, disco y un filesystem compartido que capaz no pensaste.
-- **A prompt injection no le importa qué modelo corras.** Un modelo más débil puede ser *más fácil* de secuestrar. Callback directo a la Sesión 4.
-
-### ¿Está a la altura de un proyecto serio? (~10 min)
-
-**La pregunta que la sala realmente quiere contestada**, y este es el lugar: después de la práctica, con sus propias mediciones en la mano. Discusión, no veredicto — que argumenten desde lo que acabaron de medir.
-
-Los ejes que lo deciden, todos cosas que midieron en el último paso de la práctica:
-
-- ¿Llama las tools respetando el schema — *siempre*, no casi siempre?
-- ¿Sobrevive una tarea de veinte pasos sin perder el hilo?
-- ¿Alcanza la ventana de contexto para un repo real?
-- ¿La latencia es tolerable dentro de un loop, donde cada paso es otro round trip?
-
-Nuestra respuesta honesta hoy — **re-verificar la semana de la clase, esto se mueve rápido**: para tareas acotadas, reviews, trabajo repetitivo de alto volumen y cualquier cosa con datos sensibles, sí. Como motor principal de un coding agent en un proyecto serio y de vida larga, todavía no del todo — y el cuello de botella suele ser **el tool calling confiable, no la capacidad de escribir código**. Decirlo así, plano: les sirve más que el entusiasmo o el desprecio.
-
-**Y hay un dato externo que conviene tener a mano, porque alguien lo va a preguntar**: Sebastian Raschka corrió [esta misma pregunta con agentes locales](https://magazine.sebastianraschka.com/p/using-local-coding-agents) y midió 4-5 sobre 5 en tareas de razonamiento agéntico con un Qwen3.6 MoE, concluyendo que los MoE nuevos alcanzan para mucho trabajo real. **Es más optimista que nuestra respuesta de arriba y vale decirlo así**, con la diferencia que lo explica: él mide tareas acotadas, y nosotros hablamos de sostener un proyecto largo. No es una contradicción, son dos preguntas distintas — y distinguirlas es exactamente el criterio que este bloque quiere dejar.
-
-Y el matiz que la Vía B habilita, si alguien la hizo: parte de lo que van a haber medido no es el modelo, es **la cuantización**. El mismo modelo a 4 bits y a 16 bits no falla igual en salida estructurada. Que la sala distinga "el modelo abierto es peor" de "esta versión cuantizada de este modelo es peor" es un salto de madurez técnica y sale gratis acá.
-
-Este bloque desemboca en el siguiente: la respuesta no es sí o no, es "para qué trabajo".
-
-### Cuándo conviene open source (~8 min)
-
-Cerrar la sesión (y el curso) en criterio y no en herramientas:
-
-- **Encaja bien**: datos sensibles o regulados, tareas repetitivas de alto volumen donde el costo domina, investigación que necesita reproducibilidad y un modelo pineado, trabajo offline o air-gapped, y *estudiar la cosa en sí* — no podés inspeccionar logits que no tenés.
-- **Encaja mal**: querés el mejor coding agent disponible hoy; no tenés capacidad operativa; el volumen es bajo (una API hosteada va a salir más barata que tu tiempo).
-- Y ensanchar al cierre real del curso: **el modelo es un componente.** Todo lo de las Sesiones 2 a 5 — planificación, review, tests, contexto, tools, harness — se transfiere entre modelos. Ese es el pago de haber enseñado estructura en vez de un producto.
-
-## Práctica (~50-55 min)
-
-Dos vías. **La A la hacen todos; la B es opcional y hay que decirlo en voz alta al soltarlos.**
-
-### Vía A — el gateway (todos, ~25-30 min)
-
-El flujo entero: pegar `models.json` → exportar la key → abrir `/model` → elegir **el modelo abierto que esté en el picker** (`vllm/gemma4-26b`, o `vllm/qwen3.8-27b` si el CCAD lo levantó) → darle una tarea **en su propio repo** → repetir la misma tarea con el modelo hosteado → anotar.
-
-**Lo que hay que vigilar caminando la sala:**
-
-- **La tarea va en su repo, con su `AGENTS.md` y sus skills de la Sesión 3. No en un directorio de prueba.** Es el paso que hace aterrizar la sesión y no cuesta nada: todo el punto es que el andamiaje sobrevive al cambio de modelo. El que lo hace en `/tmp` hizo un ejercicio de configuración, no la clase.
-- **La tarea tiene que ser multi-paso y con al menos dos llamadas a tools.** Si le piden algo de un solo turno, los dos modelos van a parecer iguales y la comparación no dice nada. El ejemplo que funciona: *"leé estos dos archivos y arreglá la inconsistencia entre ellos"*.
-- **Dos sesiones limpias, no una sesión con `/model` en el medio.** Para que la comparación sea justa los dos modelos tienen que arrancar del mismo contexto. Es más prolijo y además les enseña algo sobre metodología.
-- **Que anoten mientras pasa, no después.** Cuatro cosas: ¿respetó el schema de las tools?, ¿cuántos turnos necesitó?, ¿inventó nombres de archivos o funciones?, ¿cómo se sintió la latencia? Esos apuntes son el insumo de la discusión posterior; sin ellos la discusión se contesta con opiniones.
-- **Si el gateway terminó sirviendo los dos modelos abiertos, ofrecer la tercera corrida como extra** — mismo prompt, mismo repo, MoE contra denso. **No como paso obligatorio**: el que llega, mide la tabla de denso vs. MoE con su propio cronómetro, y esa medición es el mejor insumo posible para la discusión de "¿está a la altura?". El que no llega no se perdió nada de la tesis.
-- **El error más probable no es conceptual, es un typo en el JSON o la key sin exportar.** Tener el snippet en una slide, listo para copiar, y la key en pantalla o en un papel. Cero descubrimiento en este paso: el descubrimiento es lo que viene después.
-
-### Vía B — servirlo vos (opcional, ~20-25 min)
-
-Para quien tenga GPU local, o de a dos con alguien que tenga. `llama-server` con un modelo **chico y cuantizado** (no los 27B: la cuenta de VRAM ya explicó por qué), después `/login llama.cpp` → `/llama` → `/model`, y la misma tarea otra vez.
-
-**Elegir el modelo de la Vía B dentro de la misma familia que el del gateway** — mismo tokenizer, misma plantilla de chat — así la comparación aísla el tamaño y la cuantización en vez de mezclar todo. Gemma 4 tiene E2B y E4B, que es exactamente para lo que existen; Qwen tiene hermanos chicos de sobra.
-
-**Y chequear el gate antes de la clase, porque no es lo mismo según la familia**: Apache 2.0 no implica descarga libre. El repo de Qwen3.8-27B hoy no está gateado; los de Google históricamente piden aceptar términos en Hugging Face incluso siendo Apache. Un gate significa **un click de aceptación por persona con su propia cuenta de HF**, y con 25 personas en la red del aula eso es exactamente el tipo de fricción que hunde una vía opcional. Si el modelo elegido está gateado, **decirlo en el pre-work** con el link, o directamente elegir uno que no lo esté.
-
-- **En CPU también anda, y va lento. Eso también es el dato** — decirlo, así el que no tiene GPU igual lo intenta.
-- El entregable no es un modelo mejor: es la comparación a tres puntas.
-- **Nadie tiene que terminar esto.** Repetirlo al soltarlos y otra vez a los quince minutos.
-
 ### Extensión — para quien haya terminado la Sesión 5
 
 Apuntar su propio loop a la misma base URL de LiteLLM. Mismo endpoint, dos clientes. Es una oferta genuina y no un premio consuelo: con el gateway es una línea de config, no una tarde.
 
-## Timing de la sesión (~2 h 50 — **no entra en 2 h**, ver la variante de abajo)
+## Timing de la sesión (2 h 30)
+
+**La sesión dura 2 h 30**, decidido. Las otras cinco son de 2 h y la Sesión 1 es de 3, así que no es un caso raro: es la sesión que cierra el curso y tiene un invitado. **Confirmar el aula por esos 30 minutos extra.**
 
 | Bloque | Tiempo |
 |---|---|
-| Recap y compartir de la Sesión 5 | 10 min |
-| **Invitado: Ale Silva — el CCAD, LiteLLM y vLLM** | **45 min** |
-| Open source vs. pesos abiertos, y licencias | 8 min |
-| Pesos abiertos vs. API hosteada (el espectro) | 8 min |
-| Qué hace falta para correr uno (VRAM, cuantización, runtimes) | 8 min |
-| **`models.json`: el modelo como config** | **8 min** |
-| Demo: la GPU portátil de Agus | 6 min |
-| Sidebar de seguridad y confianza | 5 min |
+| Recap y compartir de la Sesión 5 | 5 min |
+| **Invitado: Ale Silva — el CCAD, LiteLLM y vLLM** | **30 min** |
+| **Modelos de pesos abiertos (Diego)** | **30 min** |
 | Pausa | 5 min |
-| **Práctica: Vía A (todos) + Vía B (opcional)** | **50-55 min** |
-| ¿Está a la altura de un proyecto serio? | 10 min |
-| Cuándo conviene open source | 8 min |
+| **Práctica: CCAD (todos) + GPU de Agus (opcional)** | **60 min** |
+| Puesta en común: ¿está a la altura? | 5 min |
 | Cierre del curso y retrospectiva | 15 min |
 
-Da entre **3 h 06 y 3 h 11**. El resto de las sesiones son de 2 horas, así que **este plan no entra** y hay que decidir antes de la clase, no en el momento.
+Da **150 minutos exactos**, o sea que **no hay colchón**. Dos consecuencias prácticas:
 
-Notar el orden: "¿está a la altura?" y "cuándo conviene" van *después* de la práctica a propósito. Las discusiones de criterio salen mejor cuando ya midieron algo propio.
+- **El bloque elástico es el recap**, con 5 minutos ya al mínimo. Si algo se estira, lo que se sacrifica primero es la pausa; después, la puesta en común. **La práctica y el cierre no se tocan.**
+- **Los dos bloques de 30 hay que ensayarlos con reloj.** Un invitado que se va a 40 y un bloque propio que se va a 38 se comen la puesta en común y la mitad del cierre del curso. A Ale hay que decirle **30** con ese número, y con la prioridad: si algo se cae, que sean sus puntos 1 y 2.
 
-### La variante de 2 horas
+Notar el orden: la puesta en común va *después* de la práctica a propósito, y "cuándo conviene open source" se da adentro del cierre. Las discusiones de criterio salen mejor cuando ya midieron algo propio.
 
-> 🔴 **Con el slot de Ale en 45 minutos, la variante de 2 horas ya no cierra sola.** Hay que tomar una decisión antes de la clase; abajo está la cuenta para tomarla con números y no de memoria.
-
-Ésta es la versión más apretada que se puede armar respetando la lista de protegidos:
-
-| Bloque | Tiempo |
-|---|---|
-| Recap | 3 min |
-| **Invitado: Ale Silva** | **45 min** |
-| Open source vs. pesos abiertos + licencias | 4 min |
-| El espectro + qué hace falta para correr uno (fusionados) | 5 min |
-| **`models.json`: el modelo como config** | **6 min** |
-| Sidebar de seguridad | 3 min |
-| **Práctica: solo Vía A** | **35 min** |
-| ¿Está a la altura? + cuándo conviene (fusionados) | 8 min |
-| Cierre del curso y retrospectiva | 12 min |
-
-**Da 121 minutos, sin pausa y con toda la teoría al hueso.** O sea que entra raspando y sin margen: cualquier cosa que se estire sale de la práctica o del cierre, que son justamente los dos que no queremos tocar.
-
-**La aritmética, para que la decisión sea informada.** El invitado se lleva **45 de 120 minutos**, y la práctica y el cierre —protegidos— se llevan otros 47. Quedan **28 minutos para toda la teoría de la sesión**, que en la tabla de arriba ya están repartidos al límite. No hay de dónde sacar más sin romper algo de la lista de protegidos.
-
-**Las tres salidas, y la decisión es de Diego:**
-
-1. **La sesión dura más de 2 horas.** Es la salida limpia y hay precedente: la Sesión 1 dura 3. Está como pregunta abierta en `COURSE_PROGRAM.md` y conviene resolverla ya, porque de esto depende.
-2. **El slot vuelve a ~30-35 min.** Entonces sirve la variante de antes, con la teoría respirando. Cuesta profundidad en los puntos 5 y 6, que son los que le dan cara a LiteLLM y vLLM antes de que aparezcan en la config.
-3. **La práctica baja de 35 min.** **Ésta es la peor**: abajo de 35 no entra la comparación modelo abierto vs. hosteado, que es literalmente lo que la sesión existe para hacer. Si se toma este camino, mejor asumirlo en voz alta y no descubrirlo en el aula.
-
-Los otros dos movimientos de la variante corta siguen valiendo: **la Vía B pasa a ser un apéndice escrito en el ejercicio** para hacer en casa, y **la demo de Agus sucede durante la práctica** en vez de tener slot propio — el que la quiere ver, se acerca. Se pierde el momento en que toda la sala ve la VRAM y los tokens por segundo a la vez, y eso es una pérdida real; es el precio.
-
-**Proteger, en este orden: el slot del invitado, la Vía A completa con la comparación, y la retrospectiva de cierre.** Si algo de esos tres se recorta, la sesión pierde lo que la justifica — y con 45 minutos de invitado, los tres juntos ya no entran en 120. Ésa es exactamente la decisión.
+**Proteger, en este orden: la Vía A completa con la comparación, la retrospectiva de cierre, y el slot del invitado.**
 
 ## Cierre del curso (~15 min)
 
 No es el cierre de la sesión, es el cierre de las seis. Merece que no lo agarre el reloj.
+
+**Arranca con dos minutos de *cuándo conviene open source*** —el material está más arriba, plegado acá— porque es la rampa natural: la pregunta deja de ser "¿es bueno?" y pasa a ser "¿para qué trabajo?", y de ahí se sale directo a la retrospectiva.
 
 Vale tener presente la estructura, porque cambia qué hay que decir acá: las sesiones 1 a 4 son el **curso base** y **la Sesión 4 ya cerró ese arco** (costo, límites, carrera, atrofia). Las 5 y 6 son el **arco avanzado**, y los estudiantes lo saben desde la Sesión 1. Así que este cierre no tiene que volver a cerrar los fundamentos: cierra el arco avanzado y, con él, el curso.
 
@@ -412,7 +427,8 @@ Cuando el hilo esté leído, bajar las respuestas a este archivo y recién enton
 - **Los dos son el dato más perecedero del archivo** — re-verificar tamaños, licencias y gates la semana de la clase.
 - [Pi — modelos y providers custom](https://pi.dev/docs/latest/models) — la doc en la que se apoya el bloque de `models.json`. Config en `~/.pi/agent/models.json`, se relee al abrir `/model`. `api` acepta `openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai`. `apiKey` acepta `$VAR` / `${VAR}` e `!comando`. Defaults: `contextWindow` 128000, `maxTokens` 16384.
 - [Pi + llama.cpp](https://pi.dev/docs/latest/llama-cpp) — la Vía B. `llama-server --models-dir ~/models --no-models-autoload --jinja --host 127.0.0.1 --port 8080 -ngl 999 -c 32768`, después `/login llama.cpp` (o `LLAMA_BASE_URL`, default `http://127.0.0.1:8080`), `/llama` para cargar o buscar en Hugging Face, `/model` para seleccionar.
-- [llama.cpp](https://github.com/ggml-org/llama.cpp) — el runtime de la Vía B tal como está escrita hoy.
+- [**Flavio Copes — *A Deep Dive into Open-Weight AI Models***](https://flaviocopes.com/open-weight-models/) — **la base del bloque de 30 minutos de Diego.** Recorre en orden: pesos, arquitectura vs. pesos, qué es open weight, la diferencia con open source, cómo se baja un modelo, cuantización, beneficios, límites y criterios de elección. Las dos frases que valen la clase: la definición de open source como *"los materiales y las libertades para estudiar, modificar y compartir el sistema entero"*, y **"local no significa privado automáticamente"**, que es la que desarma el reflejo más común de la sala. Números útiles: de 16 a 4 bits lleva un modelo de ~60 GB a ~15 GB. Sus ejemplos van sobre un modelo propio — nosotros los hacemos sobre el que sirva el gateway ese día.
+- [llama.cpp](https://github.com/ggml-org/llama.cpp) — el runtime del que Agus sirve en la Vía B, si elige ése. Ya no lo instala la sala.
 - [**Sebastian Raschka — "Using Local Coding Agents"**](https://magazine.sebastianraschka.com/p/using-local-coding-agents) — **la referencia para el setup de la Vía B**, y el walkthrough más completo que hay de la vía local de punta a punta. Sirve tres veces: (1) **el setup con Ollama**, que se instala igual en Mac, Linux y Windows y expone el endpoint compatible con OpenAI en `http://127.0.0.1:11434/v1`; (2) **apunta harnesses open source a ese endpoint** —Qwen-Code, Codex, Claude Code— que es el mismo movimiento que hace nuestro `models.json`, hecho por otro y contra otro runtime: la tesis de interoperabilidad verificada por un tercero; (3) **mide** — 4-5/5 en tareas de razonamiento agéntico con Qwen3.6 MoE, 40 tok/s en una Mac Mini, y hasta 30 GB de RAM con contextos de 50k. Esos números son insumo directo del bloque *"¿está a la altura?"*. Detalle lindo: el modelo que mide es de la familia **Qwen3.6**, la misma que probamos en el CCAD.
 - [LiteLLM](https://github.com/BerriAI/litellm) — lo que el CCAD tiene adelante. Vale nombrarlo: es el patrón de gateway/proxy para inferencia, y explica el prefijo `vllm/` en el nombre del modelo.
 - vLLM / SGLang — **lo que corre el CCAD atrás**, y la otra familia de runtime en la teoría. Ya no es un ejemplo hipotético.
