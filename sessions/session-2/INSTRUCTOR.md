@@ -184,7 +184,7 @@ Entre las dos demos hay ~20 minutos de herramienta en vivo. Es lo más frágil d
 - **Checklist de code review**: reemplazada por el "espectro de superficies de revisión" — estrategias, no rúbrica.
 - **Bloque dedicado a debugging**: no hay teoría. Se dice caminando la sala cuando algo se rompe.
 - **Sidebar de seguridad**: se sacó. Si aparece un smell concreto durante la demo del diff, nombrarlo al pasar y seguir; no hay bloque reservado.
-- **Los números de METR / CodeRabbit**: Diego ya los presentó en la Sesión 1 como predicciones. Acá no se cobran con datos — el diagnóstico de la intro es cualitativo y sale del pizarrón del recap.
+- **Los números de METR**: Diego ya los presentó en la Sesión 1 como predicciones. Acá no se cobran con datos — el diagnóstico de la intro es cualitativo y sale del pizarrón del recap.
 - **`AGENTS.md`**: es de la Sesión 3 (Diego). No se toca hoy.
 - **Un segundo harness**: se evaluó y se descartó. Una herramienta, un proyecto, seis sesiones.
 - **Las capas de configuración de Plannotator** (`plannotator.json`, modelos por fase, `executionMode`): existen y son irrelevantes para un primer contacto. Saltear salvo que alguien pregunte.

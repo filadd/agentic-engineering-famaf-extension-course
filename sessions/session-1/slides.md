@@ -294,7 +294,7 @@ Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 
 
 ## La ilusión de productividad
 
-<!-- METR: devs experimentados 19% MÁS LENTOS con IA, sintiéndose 20% más rápidos. CodeRabbit: 1.7x más issues graves en código co-escrito con IA. Presentarlos como dato, no como sermón — y avisar que en la práctica de hoy van a poder chequear el número contra su propia sensación. -->
+<!-- METR: devs experimentados 19% MÁS LENTOS con IA, sintiéndose 20% más rápidos. Presentarlo como dato, no como sermón — y avisar que en la práctica de hoy van a poder chequear el número contra su propia sensación. -->
 
 ---
 

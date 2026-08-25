@@ -71,7 +71,7 @@ These are the concepts to cover, roughly ordered by complexity:
 - Analyzing AI output: what did it actually produce?
 - Code quality awareness: dead code, inconsistent patterns, missing tests
 - Comprehension debt: you shipped code you don't understand
-- The productivity illusion (METR study, CodeRabbit data)
+- The productivity illusion (METR study)
 - Anatomy of a coding agent (brief intro): LLM + tools + harness — just enough vocabulary to use these terms in later sessions
   - Tool: a function the LLM can invoke (read file, run shell, edit code)
   - Coding agent: an LLM that takes actions on a codebase via tools, not just suggests text
@@ -204,7 +204,7 @@ Not a dedicated session, but surfaced where relevant:
 - Vibe coding is not an insult — present it honestly before critiquing it. Live demo.
 - Then the critique, framed as predictions for the hands-on:
   - Comprehension debt: you shipped code you don't understand
-  - The productivity illusion: METR (19% slower despite feeling 20% faster), CodeRabbit (1.7x more issues)
+  - The productivity illusion: METR (19% slower despite feeling 20% faster)
   - The 80% problem: the remaining rough edges are where the real effort lives — and where understanding the code matters
   - Agent failure modes: cascading errors, false success reporting ("tests pass" after editing the assertions), scope creep
 
@@ -510,10 +510,6 @@ For students who don't bring their own:
 - [OWASP GenAI Security Project](https://genai.owasp.org/) — broader LLM security resources, supply chain risks, prompt injection
 - Karpathy's progression from coining "vibe coding" to proposing "agentic engineering" — [original vibe coding tweet/thread (Feb 2025)](https://x.com/i/status/1886192184808149383) (same link as "The Spectrum" above; the two IDs previously disagreed)
 - METR: "Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity" — [metr.org](https://metr.org/) (devs 19% slower with AI despite feeling 20% faster)
-- CodeRabbit: AI co-authored code has 1.7x more major issues — [coderabbit.ai](https://coderabbit.ai/)
-- Udemy: "The Complete Course on Coding Agents" by Nikolai Schuler & Jagger Bellagarda — [Udemy search](https://www.udemy.com/courses/search/?q=coding+agents+claude+code)
-- ICSE 2026 AGENT Workshop — academic research on agentic software engineering
-- The 80% Problem in Agentic Coding (vault: Reading_List/Queue)
 
 ### Session 1 — Vibecoding
 
