@@ -53,7 +53,7 @@ Sigue **Pi**, sin instalar nada nuevo. Lo único que se agrega es un archivo de 
 | **A — el gateway del CCAD** | todos | una entrada en `models.json` y una API key | el modelo es un componente: el swap es una línea |
 | **B — la GPU de Agus, en el aula** | opcional | otra entrada en `models.json`, apuntada a la IP de Agus | qué cambia cuando el modelo es chico y la máquina está a tres metros |
 
-**El cambio grande respecto del borrador anterior: nadie instala un runtime.** La Vía B era servirse el modelo uno mismo con `llama.cpp` u Ollama, y eso significaba 25 instalaciones, 25 descargas de pesos por la red del aula y 25 formas distintas de romperse. **Ahora Agus sirve un modelo en su GPU y la sala se conecta**, que es exactamente el mismo movimiento de la Vía A contra otro endpoint. El que quiera montarlo en su máquina tiene el apéndice y [la guía de Raschka](https://magazine.sebastianraschka.com/p/using-local-coding-agents) para hacerlo en casa.
+**El cambio grande respecto del borrador anterior: nadie instala un runtime.** La Vía B era que cada uno se sirviera el modelo, y eso significaba 25 instalaciones, 25 descargas de pesos por la red del aula y 25 formas distintas de romperse. **Ahora Agus sirve un modelo en su GPU y la sala se conecta**, que es exactamente el mismo movimiento de la Vía A contra otro endpoint. El que quiera montarlo en su máquina tiene el apéndice y [la guía de Raschka](https://magazine.sebastianraschka.com/p/using-local-coding-agents) para hacerlo en casa.
 
 **Y las dos vías juntas enseñan algo que ninguna sola:** el archivo de config termina con **tres providers** —el hosteado que vienen usando hace cinco sesiones, el CCAD y la notebook de Agus— y el modelo activo se elige con `/model`. La tesis de la sesión deja de ser una afirmación y pasa a ser una lista de tres entradas en un JSON.
 
@@ -61,7 +61,7 @@ Sigue **Pi**, sin instalar nada nuevo. Lo único que se agrega es un archivo de 
 
 **El resultado de la sesión depende únicamente de la Vía A.** Decirlo explícitamente cuando se sueltan a la práctica: nadie se va con la sensación de no haber terminado por no haber hecho la B.
 
-**Por qué `llama.cpp` y no vLLM en la Vía B**, y esta vez el contraste tiene un referente real en la sala: **el CCAD corre vLLM** detrás del gateway (el prefijo `vllm/` en el nombre del modelo lo delata) porque tiene muchos usuarios y necesita batching. El estudiante en su notebook tiene un usuario. `llama.cpp` resuelve ese problema; vLLM resuelve un problema que nadie en el aula tiene. Es la misma distinción de siempre entre runtimes, pero hoy se puede señalar con el dedo en vez de explicarla en abstracto.
+**Por qué Ollama y no vLLM en la Vía B**, y esta vez el contraste tiene un referente real en la sala: **el CCAD corre vLLM** detrás del gateway (el prefijo `vllm/` en el nombre del modelo lo delata) porque sirve a muchos usuarios y necesita batching de verdad. La notebook de Agus atiende a un aula durante veinte minutos. Ollama resuelve ese problema y arranca en cualquier sistema operativo; vLLM resuelve un problema de otra escala. Es la misma distinción de siempre entre runtimes, pero hoy se puede señalar con el dedo en vez de explicarla en abstracto.
 
 ## Audiencia y supuestos
 
@@ -91,7 +91,7 @@ Entregar la sala. **El alcance está definido y son seis puntos**, y el slot es 
 3. **Cómo accede un estudiante de la UNC** para correr un LLM ahí — el trámite real: quién puede pedir cuenta, qué hay que presentar, cuánto tarda, y qué te habilita cuando la tenés.
 4. **Cómo se corre un LLM ahí** — **a grandes rasgos y sin entrar en detalle**: qué hacés una vez que tenés la cuenta, sin convertirlo en un tutorial de scheduler. Es el punto que le da un camino de vuelta al que quiera seguir después del curso; los internals del servidor quedan afuera.
 5. **LiteLLM: el gateway visto desde adentro** — por qué el CCAD decidió poner un proxy adelante del cluster, qué le resuelve (un endpoint estable, auth por key, routing a varios modelos, límites por usuario), y qué se ve desde el lado del operador. Es literalmente la URL a la que la sala le va a pegar veinte minutos después.
-6. **vLLM: qué corre atrás** — por qué vLLM y no llama.cpp ni otra cosa, qué es el batching y por qué un servidor con muchos usuarios lo necesita, y qué pasa cuando 25 personas le pegan al mismo tiempo. Que es exactamente lo que va a pasar durante la práctica.
+6. **vLLM: qué corre atrás** — por qué vLLM y no Ollama ni otra cosa, qué es el batching y por qué un servidor con muchos usuarios lo necesita, y qué pasa cuando 25 personas le pegan al mismo tiempo. Que es exactamente lo que va a pasar durante la práctica.
 
 **Los puntos 3 y 4 son el camino de vuelta.** La práctica entra por el gateway, así que nada de esto hace falta para la clase de hoy — pero el que quiera correr algo en hardware real después del curso necesita saber cómo se pide la cuenta y qué se hace con ella. Dicho por el que opera la máquina, vale más que cualquier link que les pasemos. **El punto 4 va con poco detalle**: la mecánica fina del cluster es internals de un servicio multiusuario y queda fuera del curso.
 
@@ -100,7 +100,7 @@ Entregar la sala. **El alcance está definido y son seis puntos**, y el slot es 
 **Consecuencias directas en el plan, y hay que respetarlas o se dice todo dos veces:**
 
 - El bloque *"Un cluster no es tu notebook"* **se eliminó**: era mecánica de cluster, que ahora está fuera del curso. La etiqueta de recurso compartido se dice al soltar la práctica.
-- En *"Qué hace falta para correr uno"*, el bullet de **familias de runtime** deja de ser una explicación y pasa a ser un callback de una línea: *"local vs. serving — el serving lo acaban de ver, es lo que Ale llamó vLLM"*. El contraste con `llama.cpp` de la Vía B sigue siendo nuestro.
+- **El bloque de familias de runtime ya no existe**: se fue cuando la teoría pasó a seguir el arco del post, que nombra runtimes pero no los divide en local vs. serving. Así que su punto 6 **no se pisa con nada nuestro** — es el único lugar de la sesión donde se explica el batching, y el contraste con Ollama queda del lado de la práctica, donde Agus sirve el suyo.
 - En *`models.json`*, el prefijo `vllm/` y la `baseUrl` se leen como reconocimiento, no como novedad. Apoyarse en eso: cuesta menos tiempo y se entiende mejor.
 
 **Lo que se cayó del alcance, y no es olvido**: para qué se usa normalmente el HPC en la UNC, y los clusters de Latam. Si él quiere meterlos, bienvenido, pero no los pedimos: seis puntos en media hora ya es un slot lleno.
@@ -314,7 +314,7 @@ Cuatro cosas para frenar, y cada una es un concepto que ya tienen:
   | Pi, si no le decís nada | **128.000** |
   | El CCAD, al levantar vLLM (`--max-model-len`) | **el que manda** |
 
-  El modelo puede 256K, Pi asume 128K, y lo que realmente tienen es lo que el servidor arrancó. **Que los dos candidatos coincidan en ~256K es una suerte para la slide**: la tabla no cambia según qué modelo esté levantado. **Si el server arrancó con menos que el default de Pi, los requests van a fallar** — fijar `contextWindow` explícitamente con el valor que confirme Ale. Y usar esas tres filas como la demostración de que el número es una decisión de alguien y no una ley de la naturaleza. Es el mismo `-c` de la Vía B, visto desde el otro lado.
+  El modelo puede 256K, Pi asume 128K, y lo que realmente tienen es lo que el servidor arrancó. **Que los dos candidatos coincidan en ~256K es una suerte para la slide**: la tabla no cambia según qué modelo esté levantado. **Si el server arrancó con menos que el default de Pi, los requests van a fallar** — fijar `contextWindow` explícitamente con el valor que confirme Ale. Y usar esas tres filas como la demostración de que el número es una decisión de alguien y no una ley de la naturaleza. Es la misma perilla que Agus fija de su lado en la Vía B, vista desde la otra punta.
 
 Y el detalle operativo que hace fácil la práctica: **el archivo se relee cada vez que abrís `/model`**, sin reiniciar nada. Cambiar de modelo cuesta dos segundos.
 
@@ -349,31 +349,28 @@ El flujo entero: exportar la key → abrir `/model` → elegir **el modelo abier
 
 > 🟡 **Lo prepara Agus.** Lo que sigue es lo que había en el borrador cuando la demo era un bloque aparte; le sirve de punto de partida, pero **el setup lo define él** — sobre todo el runtime, que ahora tiene que aguantar a varias personas a la vez.
 
-Agus trae su GPU portátil y sirve un modelo chico en el aula. **Dejó de ser el endpoint de respaldo** — el gateway del CCAD es más confiable que una notebook — así que ahora su trabajo es puramente pedagógico: es la tercera columna de la tabla del espectro, hecha física. Sin cola, sin túnel, sin cuenta, y los datos no salen del aula.
+Agus trae su GPU portátil y sirve un modelo chico en el aula, **con Ollama**. Sin cola, sin túnel, sin cuenta, y los datos no salen del aula.
 
-Mostrar la VRAM real contra la cuenta que hicimos dos bloques antes, y los tokens por segundo, para que la latencia se sienta en vez de describirse.
+Mostrar la VRAM real contra la cuenta de cuantización que hicimos dos bloques antes, y los tokens por segundo, para que la latencia se sienta en vez de describirse.
 
-Es también la cara visible de la Vía B, así que conviene mostrar el comando entero:
+**Por qué Ollama**: se instala igual en Mac, Linux y Windows, resuelve solo cuántas capas manda a la GPU, y **expone un endpoint compatible con la API de OpenAI en `/v1`** — que es exactamente lo que la Vía B necesita, porque así la sala le entra con *otra entrada más* en `models.json`, igual que al CCAD. Un solo mecanismo para los dos endpoints, y nada específico del runtime del lado del estudiante.
+
+Del lado de Agus, dos comandos:
 
 ```
-llama-server \
-  --models-dir ~/models \
-  --no-models-autoload \
-  --jinja \
-  --host 127.0.0.1 --port 8080 \
-  -ngl 999 \
-  -c 32768
+ollama pull <modelo>
+OLLAMA_HOST=0.0.0.0:11434 ollama serve
 ```
 
-Tres flags que valen la pena:
+- **`OLLAMA_HOST=0.0.0.0`** es lo único que no es obvio, y **sin eso la Vía B no existe**: por default Ollama escucha solo en `127.0.0.1` y nadie del aula le llega. Hace falta además su IP en la red del aula, que es la que va en la slide.
+- **La ventana de contexto la elige él** (`OLLAMA_CONTEXT_LENGTH`, o `num_ctx` según cómo lo levante), y **ese número hay que decirlo en voz alta**: es el mismo parámetro que del lado del CCAD eligió Ale. Ver la misma perilla desde las dos puntas en la misma clase es lo que hace que la ventana de contexto deje de ser magia.
+- **El modelo tiene que soportar tool calling.** Uno sin plantilla de tools deja al agente sin poder hacer nada: no es que ande peor, es que no anda. **Probarlo con Pi antes de la clase**, sin confiar en lo que diga la tarjeta del modelo.
 
-- **`-ngl 999`** manda todas las capas posibles a la GPU. Es el otro lado de la cuenta de VRAM: es la perilla que decide si el modelo corre en la GPU o se arrastra en el CPU.
-- **`-c 32768`** es la ventana de contexto — **acá la eligen ellos**. Es el mismo número que en la Vía A eligió el CCAD del lado del servidor. Ver el mismo parámetro desde los dos lados en la misma clase es la mejor manera de que la ventana de contexto deje de ser magia.
-- **`--jinja`** habilita los chat templates y por lo tanto **el tool calling**. Sin eso el agente no puede llamar tools, o sea que Pi no puede hacer nada. Es un flag entre "un coding agent que funciona" y "un chatbot".
+**Lo que Ollama esconde, y conviene saberlo aunque no se enseñe**: reparte solo las capas entre GPU y CPU, así que la perilla que en otros runtimes es explícita acá no se ve. Es el precio de que arranque en las tres plataformas — y con la Vía B siendo *conectarse a un endpoint* y no *servirlo vos*, **ese precio ya no se paga con contenido**: esa perilla no era de esta clase.
 
-Y del lado de Pi: `/login llama.cpp` (o `LLAMA_BASE_URL`, que por default ya es `http://127.0.0.1:8080`), `/llama` para cargar el modelo, `/model` para seleccionarlo.
+> ⚠️ **La concurrencia se configura, no se reza.** 25 personas contra una GPU se encolan, y en Ollama el parámetro que decide cuántos pedidos atiende en paralelo es **`OLLAMA_NUM_PARALLEL`**. **Verificar el default y fijarlo explícitamente antes de la clase**, y aun así medirlo con varias máquinas a la vez, porque el techo real lo pone la VRAM. Es la misma decisión que Ale explica media hora antes al contar por qué el CCAD corre vLLM: batching, pero en chiquito.
 
-**Confirmar con Agus que la trae, y probarlo antes.**
+**Confirmar con Agus que la trae, y probar el flujo entero antes**: `ollama serve` alcanzable desde otra máquina del aula, un provider en `models.json` apuntándole, y un tool call que funcione.
 
 > **El bloque de mecánica de cluster se eliminó.** Nodo de login vs. nodo de cómputo, el scheduler, módulos y entornos son internals de un servicio de inferencia multiusuario y **quedan fuera del curso**. Lo poco que valga la pena lo dice Ale en su slot, con poco detalle.
 >
@@ -456,9 +453,9 @@ Cuando el hilo esté leído, bajar las respuestas a este archivo y recién enton
 - [**Qwen3.8-27B**](https://huggingface.co/Qwen/Qwen3.8-27B) — **el modelo que le pedimos a Ale, todavía no disponible.** 27B **densos**, **Apache 2.0**, `bfloat16`, contexto nativo de **262.144**, multimodal (no usamos esa parte), plantilla de chat con soporte de tools, repo **sin gate**. Verificado el 2026-08-24 contra el model card; el repo se actualizó el 2026-08-14. **Denso contra el MoE de Gemma es el motivo del pedido**: con los dos servidos, la tabla de VRAM se mide en vez de explicarse.
 - **Los dos son el dato más perecedero del archivo** — re-verificar tamaños, licencias y gates la semana de la clase.
 - [Pi — modelos y providers custom](https://pi.dev/docs/latest/models) — la doc en la que se apoya el bloque de `models.json`. Config en `~/.pi/agent/models.json`, se relee al abrir `/model`. `api` acepta `openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai`. `apiKey` acepta `$VAR` / `${VAR}` e `!comando`. Defaults: `contextWindow` 128000, `maxTokens` 16384.
-- [Pi + llama.cpp](https://pi.dev/docs/latest/llama-cpp) — la Vía B. `llama-server --models-dir ~/models --no-models-autoload --jinja --host 127.0.0.1 --port 8080 -ngl 999 -c 32768`, después `/login llama.cpp` (o `LLAMA_BASE_URL`, default `http://127.0.0.1:8080`), `/llama` para cargar o buscar en Hugging Face, `/model` para seleccionar.
+- [**Ollama**](https://ollama.com/) — **el runtime con el que Agus sirve la Vía B.** `ollama pull <modelo>` y `OLLAMA_HOST=0.0.0.0:11434 ollama serve`. Expone endpoint compatible con OpenAI en `/v1`, así que la sala le entra con una entrada de provider en `models.json` igual que al CCAD — no hace falta `/login` ni nada específico del runtime. Las tres variables que importan: `OLLAMA_HOST` (para que se le pueda llegar), `OLLAMA_CONTEXT_LENGTH` (la ventana) y `OLLAMA_NUM_PARALLEL` (cuántos pedidos atiende a la vez). **Verificar los defaults antes de la clase.**
 - [**Flavio Copes — *A Deep Dive into Open-Weight AI Models***](https://flaviocopes.com/open-weight-models/) — **la base del bloque de 30 minutos de Diego.** Recorre en orden: pesos, arquitectura vs. pesos, qué es open weight, la diferencia con open source, cómo se baja un modelo, cuantización, beneficios, límites y criterios de elección. Las dos frases que valen la clase: la definición de open source como *"los materiales y las libertades para estudiar, modificar y compartir el sistema entero"*, y **"local no significa privado automáticamente"**, que es la que desarma el reflejo más común de la sala. Números útiles: de 16 a 4 bits lleva un modelo de ~60 GB a ~15 GB. Sus ejemplos van sobre un modelo propio — nosotros los hacemos sobre el que sirva el gateway ese día.
-- [llama.cpp](https://github.com/ggml-org/llama.cpp) — el runtime del que Agus sirve en la Vía B, si elige ése. Ya no lo instala la sala.
+- [llama.cpp](https://github.com/ggml-org/llama.cpp) — lo que corre Ollama por abajo. No se usa directo en ningún lado de la sesión; queda como puntero para el que quiera bajar un nivel.
 - [**Sebastian Raschka — "Using Local Coding Agents"**](https://magazine.sebastianraschka.com/p/using-local-coding-agents) — **la referencia para el setup de la Vía B**, y el walkthrough más completo que hay de la vía local de punta a punta. Sirve tres veces: (1) **el setup con Ollama**, que se instala igual en Mac, Linux y Windows y expone el endpoint compatible con OpenAI en `http://127.0.0.1:11434/v1`; (2) **apunta harnesses open source a ese endpoint** —Qwen-Code, Codex, Claude Code— que es el mismo movimiento que hace nuestro `models.json`, hecho por otro y contra otro runtime: la tesis de interoperabilidad verificada por un tercero; (3) **mide** — 4-5/5 en tareas de razonamiento agéntico con Qwen3.6 MoE, 40 tok/s en una Mac Mini, y hasta 30 GB de RAM con contextos de 50k. Esos números son insumo directo del bloque *"¿está a la altura?"*. Detalle lindo: el modelo que mide es de la familia **Qwen3.6**, la misma que probamos en el CCAD.
 - [LiteLLM](https://github.com/BerriAI/litellm) — lo que el CCAD tiene adelante. Vale nombrarlo: es el patrón de gateway/proxy para inferencia, y explica el prefijo `vllm/` en el nombre del modelo.
 - vLLM / SGLang — **lo que corre el CCAD atrás**, y la otra familia de runtime en la teoría. Ya no es un ejemplo hipotético.
@@ -488,7 +485,7 @@ Cuando el hilo esté leído, bajar las respuestas a este archivo y recién enton
 - **Fijar `contextWindow`** con el valor real del servidor, apenas Ale lo confirme.
 - **Verificar las licencias de las revisiones exactas** de lo que esté servido, y el estado de gate de cada repo, la semana de la clase. Tener las tres cards del contraste abiertas en pestañas antes de entrar al aula: Gemma 4, Gemma 3, Llama.
 - **Pedirle a Ale el Qwen con tiempo** (item 4 de la lista), y **decidir una fecha de corte**: pasada esa fecha, las slides se cierran con un solo modelo y la tercera corrida sale del ejercicio. No dejar esa decisión para la semana de la clase.
-- **Confirmar que Agus trae la GPU portátil**, qué modelo va a servir, y probarlo. Ya no es el respaldo de la sesión, así que si no llega no se cae nada — pero es el mejor momento visual del día.
+- **Confirmar que Agus trae la GPU portátil**, qué modelo va a servir, y probar el flujo entero: `ollama serve` con `OLLAMA_HOST=0.0.0.0` alcanzable desde otra máquina del aula, un provider en `models.json` apuntándole, un tool call que funcione, y **varias máquinas pegándole a la vez** para ver cómo se comporta `OLLAMA_NUM_PARALLEL`. Ya no es el respaldo de la sesión, así que si no llega no se cae nada — pero es el mejor momento visual del día.
 - **Confirmar la participación de Ale, fecha y formato.** El plan B ya no es equivalente y hay que saberlo: los puntos 1 y 2 los podemos dar nosotros en 10 minutos con la wiki y la página de equipamiento, y de LiteLLM y vLLM podemos explicar *qué son* — pero **cómo se pide la cuenta, cómo se corre un LLM en el cluster y por qué el CCAD eligió esta arquitectura no lo podemos dar con autoridad**. Sin él, los puntos 3 a 6 se degradan a "acá están los links". Si su participación queda en duda, pedirle igual algo grabado o un walkthrough escrito de esos cuatro puntos.
 - **Decidir la duración real de la sesión** y, si son 2 horas, adoptar la variante de arriba de entrada en vez de improvisar recortes.
 - ~~Decidir quién cierra el curso~~ → **decidido: se reparte por tipo.** La Sesión 4 cierra el primer arco (costo, límites, carrera, atrofia); esta sesión cierra el curso (el repo, el espectro, la tesis de la transferencia). La duplicación era un resto de cuando el curso tenía 4 sesiones y la 4 era el final. **Avisarle a Agus**, porque le cambia el cierre de una sesión que todavía no escribió.
@@ -500,7 +497,7 @@ Cuando el hilo esté leído, bajar las respuestas a este archivo y recién enton
 
 Lo que hay que tener presente al escribirlos:
 
-- **Las slides** necesitan una que no existía y que ahora es el centro de la sesión: el `models.json` completo, para copiar textual. Igual que en la Sesión 3, la mayoría de las slides son título + nota de orador, pero las que la sala tiene que copiar o leer llevan cuerpo: el JSON del provider, la tabla del espectro, el comando de `llama-server`, y la cuenta de VRAM. Lo que se puede reusar del esqueleto viejo son los bloques de teoría que no cambiaron (licencias, espectro, cuantización, seguridad, cierre del curso).
+- **Las slides** necesitan una que no existía y que ahora es el centro de la sesión: el `models.json` completo, para copiar textual. Igual que en la Sesión 3, la mayoría de las slides son título + nota de orador, pero las que la sala tiene que copiar o leer llevan cuerpo: **el JSON del provider** (el CCAD y el de Agus), **las tres cards de licencias**, **la cuenta de cuantización** (60 GB → 15 GB) y **el checklist de siete puntos** para elegir un modelo. El esqueleto viejo ya no sirve de mucho: el bloque de teoría se reescribió entero sobre el post de Copes, así que las slides de ese bloque salen de ahí y no de lo que había.
 - **El ejercicio** se estructura como Vía A + Vía B, no como pasos numerados de uno a seis. La Vía A tiene que poder resolverse sin descubrir nada: el JSON listo para copiar, la key a mano, y todo el esfuerzo del estudiante puesto en la tarea que le da al agente y en anotar la comparación. La Vía B va como apéndice, con la advertencia de que no terminarla no es no haber hecho el ejercicio.
 - **No escribir el ejercicio antes de leer el hilo con Ale.** La `baseUrl` exacta, el `contextWindow` y la forma de las keys son datos que van textuales en el material y que hoy no tenemos.
 
