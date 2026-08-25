@@ -1,5 +1,8 @@
 # Session 1 — The Vibe Coding Experience (Instructor Notes)
 
+> 📊 **Presentation** — plain-language visual walkthrough of this session (run of show, the four rules, the context-hygiene commands, the reality check): <https://claude.ai/code/artifact/735320e0-90ba-4586-bb49-3551b35933cb>
+> Private until shared from the page's share menu.
+
 > Owner: Diego, with Agus on the Pi intro and demo. Status: shaping. Audience-facing materials live alongside this file (slides.md, exercise/README.md) and are in Spanish. These notes are for the instructor in English.
 
 ## Session goal (in one sentence)

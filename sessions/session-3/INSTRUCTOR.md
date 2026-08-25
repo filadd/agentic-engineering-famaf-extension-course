@@ -1,5 +1,8 @@
 # Sesión 3 — Herramientas y Skills (Notas para el instructor)
 
+> 📊 **Presentación** — recorrido visual de la sesión en lenguaje llano (dónde vive cada repetición, cuánto cuesta cada opción en contexto, el reveal del hook, los cuatro pasos de la práctica): <https://claude.ai/code/artifact/2079f5cb-b5ad-4538-b176-9080c7cc86aa>
+> Privada hasta que se comparta desde el menú de la página.
+
 > A cargo: Diego. Estado: en armado. Todo el material de la sesión (estas notas, `slides.md`, `exercise/README.md`) está en español.
 
 ## Objetivo de la sesión (en una frase)
@@ -193,6 +196,31 @@ Encaja además con la línea que ya decimos en anatomía: que en Pi MCP venga co
 
 **La consecuencia práctica**: la `description` es lo único que decide si el skill se usa. Un skill perfecto con una descripción vaga no se carga nunca. Decirlo así: *"la descripción no es documentación, es el trigger"*.
 
+**Un ejemplo para mostrar en pantalla: `eli5`.** Sirve porque es *todo* el archivo — no hay una segunda pantalla con lo importante:
+
+```markdown
+---
+name: eli5
+description: Explain a topic like I'm a 5 year old. Use when the user types /eli5 <topic> or asks for a dead-simple picture explainer of how something works.
+---
+
+# eli5
+
+Explain like I'm someone who knows nothing about this topic, using a HTML artifact with big pictures and few words.
+
+Topic: $ARGUMENTS
+```
+
+Tres cosas que se ven de una y que son exactamente las del bloque:
+
+- **Nueve líneas.** Mata de entrada la idea de que escribir un skill es un proyecto. El paso 3 de la práctica deja de dar miedo.
+- **La `description` hace las dos cosas que les acabamos de pedir**: dice *qué hace* y *cuándo usarlo*, incluso nombrando la forma en que el usuario lo va a pedir. Es el contraste con "Ayuda a planificar" sin tener que inventarlo.
+- **El cuerpo es una sola instrucción.** El valor no está en el largo: está en que esa instrucción no se vuelve a tipear nunca más.
+
+Y el recorrido completo del artefacto, que es lo que le da peso: **salió de un tweet** ([trq212](https://x.com/trq212/status/2090884855798407576)), se instala como plugin, y corrido sobre el `COURSE_PROGRAM.md` de este mismo repo produjo [este explicador](https://claude.ai/code/artifact/977c4128-625f-42c0-a78d-02e4425a887b). De leerlo en Twitter a usarlo sobre material propio no hay un proyecto en el medio.
+
+> ⚠️ **La advertencia honesta, y es la que hace bueno al ejemplo.** Está corrido en **Claude Code, no en Pi** — falta probarlo (ver Pendientes). Y el motivo no es menor: el formato `SKILL.md` es portable, pero **lo que el cuerpo del skill pide puede no serlo**. Este pide publicar un artifact HTML, que es una capacidad de Claude Code. Si lo vamos a mostrar en la sala, decir las dos mitades: *el estándar te lleva el archivo a cualquier herramienta; no te lleva las tools que el archivo asume.* Es matiz, no contradicción, y le da credibilidad a la frase de los treinta segundos en vez de quitársela.
+
 **La regla de dedo de la sesión**, y conviene que quede escrita a la vista (esta sí al pizarrón, o en una slide fija):
 
 > **Datos → `AGENTS.md`. Procedimientos → skill.**
@@ -300,6 +328,7 @@ Son 47 minutos de teoría en cuatro bloques. Están ordenados para que cada uno 
 - [`pi-mcp-adapter`](https://pi.dev/packages/pi-mcp-adapter) — `pi install npm:pi-mcp-adapter`. Una tool proxy (~200 tokens) en lugar de todas las definiciones. Comandos: `/mcp`, `/mcp setup`, `/mcp tools`, `/mcp-auth <server>`. La precedencia de config va `~/.config/mcp/mcp.json` → `~/.agents/mcp.json` → `.mcp.json` → `.pi/mcp.json`.
 - [Mario Zechner — "What if you don't need MCP?"](https://mariozechner.at/posts/2025-11-02-what-if-you-dont-need-mcp/) — el contraargumento del bloque de MCP y el mejor número de la sesión. **Es quien escribe Pi**; decirlo, es lo que le da peso en la sala.
 - [Agent Skills](https://agentskills.io/) — **el estándar abierto detrás del `SKILL.md`.** Formato publicado por Anthropic y adoptado por Claude Code, Cursor, Copilot/VS Code, Codex, Gemini CLI, OpenCode, Goose, Amp y **Pi**, entre muchos otros. Las páginas que valen: la [especificación](https://agentskills.io/specification) y el [quickstart](https://agentskills.io/skill-creation/quickstart), las dos para `resources/`. Desarrollo abierto en [GitHub](https://github.com/agentskills/agentskills).
+- **`eli5`** — el skill de ejemplo del bloque de skills. Nueve líneas, `SKILL.md` completo arriba. Origen: [un tweet de trq212](https://x.com/trq212/status/2090884855798407576); autor Thariq Shihipar, MIT, se instala como plugin de Claude Code. Salida de muestra sobre nuestro propio programa: [explicador del COURSE_PROGRAM.md](https://claude.ai/code/artifact/977c4128-625f-42c0-a78d-02e4425a887b). **Corrido en Claude Code; falta en Pi.**
 - [`pi-subagents`](https://www.npmjs.com/package/pi-subagents) — instalado en la Sesión 2, **se profundiza en la Sesión 4**. Hoy solo se nombra. [Fuente](https://github.com/nicobailon/pi-subagents).
 - [`@plannotator/pi-extension`](https://www.npmjs.com/package/@plannotator/pi-extension) — de la Sesión 2. Hoy vuelve como ejemplo de `tool_call` interception.
 - [context7](https://context7.com/) — docs actualizadas de librerías, se consume como servidor MCP. Por eso MCP y context7 son un solo paso de la práctica.
@@ -324,6 +353,7 @@ Son 47 minutos de teoría en cuatro bloques. Están ordenados para que cada uno 
 - **Verificar la lista de clientes de [Agent Skills](https://agentskills.io/) la semana de la clase.** Crece rápido y la frase que decimos en la sala nombra media docena de herramientas: si alguna cambió, la frase queda vieja. Chequear en particular que **Pi siga figurando** — es lo que hace que la línea funcione en esta sesión y no es un dato que controlemos nosotros.
 - **Verificar los números de Zechner el día de la clase** — son específicos de versiones de Playwright MCP y Chrome DevTools MCP y pueden haber cambiado. Si cambiaron, el argumento sigue en pie; actualizar la tabla.
 - **Confirmar con Agus que subagentes son suyos** (Sesión 4, con el caso de uso de documentación) y que el paquete del curso sigue siendo `pi-subagents` — hay al menos seis forks en npm. Hoy no se dan: si él prefiere que se nombren de otra manera, ajustar la fila de la tabla de cierre. **Worktrees quedan afuera del curso**; avisarle por si los quería usar.
+- **Probar `eli5` en Pi** antes de mostrarlo en la sala. Es el ejemplo del bloque de skills y hoy solo está corrido en Claude Code. Dos cosas para resolver: cómo se instala un skill suelto en Pi (`.pi/skills/` o `.agents/skills/`, copiando el `SKILL.md`) y qué hace el cuerpo cuando no existe la tool de artifacts — ¿escribe el HTML a un archivo y listo? Si no anda tal cual, **mejor**: mostrar el ajuste mínimo que hay que hacerle es la mejor versión posible de la línea del estándar abierto. Si no llegamos a probarlo, mostrarlo igual pero diciendo que está corrido en Claude Code — no afirmarlo sobre Pi.
 - **Elegir el proyecto de la demo.** Tiene que tener suficiente forma como para que un `AGENTS.md` no sea trivial, y ser seguro de mostrar en el proyector.
 - **Tener un `AGENTS.md` malo guardado de antemano**, y la mejor manera de conseguirlo es **pedírselo al agente sin darle nada**: sale genérico, largo y con algún comando inventado. Guardar esa salida cruda tal cual. Es exactamente lo que van a ver en el paso 1 antes de podar, así que sirve para el antipatrón sin depender de producirlo en vivo. Si tiene un comando que no existe, mejor: es el punto.
 - **Ensayar el bloque de anatomía con reloj**, sobre todo el reveal. Son 13 minutos con la herramienta abierta y el JSON de una tool call en pantalla.
