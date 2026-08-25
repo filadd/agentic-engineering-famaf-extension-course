@@ -11,6 +11,9 @@ tags:
 
 # From Vibe Coding to Agentic Engineering
 
+> 📊 **Presentation** — a plain-language visual walkthrough of this document (the intern framing, the five-level spectrum, LLM + tools + harness, the six weeks, and the model swap): <https://claude.ai/code/artifact/977c4128-625f-42c0-a78d-02e4425a887b>
+> Private by default — share it from the page's share menu before sending it to anyone.
+
 Short course for university CS students with some project experience but little/no professional training. The goal is to walk them through the full spectrum of AI-assisted development — from pure "vibe coding" to structured agentic engineering — building concepts progressively over 6 weeks.
 
 ## The Spectrum
