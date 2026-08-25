@@ -21,12 +21,11 @@ The six run as two blocks. Same cohort throughout — "advanced" describes depth
 ## Structure
 
 ```
-sessions/          — per-session materials
-examples/          — demo projects and code snippets
+sessions/          — per-session materials (slides, exercises, instructor notes)
 resources/         — reference materials and reading lists
 COURSE_PROGRAM.md  — full course design document
 ```
 
 ## Tool
 
-The course uses [Claude Code](https://docs.anthropic.com/en/docs/claude-code) as the primary AI coding tool.
+The course runs on [Pi](https://pi.dev) for all six sessions — terminal-based, minimal, standard `AGENTS.md`. Students install it in session 1, and later sessions add extensions on top of it rather than switching harness: `@plannotator/pi-extension` (file-based plan mode and review) and `pi-subagents` in session 2, `pi-mcp-adapter` in session 3. In session 6 the same tool is pointed at an open-weights model served by UNC's HPC center — which is the point of teaching structure instead of a product.
