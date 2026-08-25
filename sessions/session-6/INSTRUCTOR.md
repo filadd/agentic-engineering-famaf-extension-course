@@ -111,101 +111,131 @@ Más allá de eso, no sobre-especificar la charla de un invitado. Confirmar si q
 
 ### Modelos de pesos abiertos — el bloque de Diego (30 min)
 
-> 📖 **La base de este bloque es [*A Deep Dive into Open-Weight AI Models*, de Flavio Copes](https://flaviocopes.com/open-weight-models/).** Recorre en orden lo que necesitamos: qué son los pesos, arquitectura vs. pesos, qué significa "open weight", la diferencia con open source, cómo se baja un modelo, cuantización, beneficios, límites y criterios para elegir uno. Nuestro material ya cubría casi todo eso disperso en cuatro bloques; lo que hace el post es **darle un orden y un cierre**, y aportar dos frases que valen la clase entera (están marcadas abajo).
+> 📖 **Este bloque es [*A Deep Dive into Open-Weight AI Models*, de Flavio Copes](https://flaviocopes.com/open-weight-models/), dado en español.** No es una referencia de apoyo: es el contenido. Lo que compramos al adoptar su orden es que **cada pieza habilita la siguiente** y que el bloque termina en un criterio para elegir un modelo, en vez de terminar en una lista de datos sueltos.
 >
-> **Lo que sí hay que cambiarle**: el post trabaja sus ejemplos sobre un modelo suyo. Nosotros los hacemos **sobre el modelo que el gateway esté sirviendo ese día**, que es al que van a apuntar su repo veinte minutos después. Los números en vivo sobre el modelo propio valen más que los del post.
+> **Lo único que hay que cambiarle**: el post trabaja sus ejemplos sobre un modelo suyo. Nosotros los hacemos **sobre el modelo que el gateway esté sirviendo ese día**, que es al que van a apuntar su repo veinte minutos después. Los números en vivo sobre el modelo propio valen más que los del post.
 
-Los cuatro sub-bloques y su reparto de los 30 minutos:
+| # | Sub-bloque | Min |
+|---|---|---|
+| 1 | Qué es un modelo: arquitectura + pesos | 3 |
+| 2 | Qué significa "pesos abiertos", y por qué no es open source | 5 |
+| 3 | Licencias: qué te dejan hacer | 6 |
+| 4 | Qué pasa cuando te bajás un modelo | 5 |
+| 5 | Cuantización | 4 |
+| 6 | Por qué importan, y qué no garantizan | 5 |
+| 7 | Cómo elegir uno | 2 |
 
-| Sub-bloque | Tiempo |
-|---|---|
-| Open source vs. pesos abiertos, y licencias | 8 min |
-| Pesos abiertos vs. API hosteada: el espectro de control | 6 min |
-| Qué hace falta para correr uno: VRAM, cuantización, runtimes | 10 min |
-| Seguridad y confianza | 6 min |
+**`models.json` no vive acá**: se camina al arrancar la práctica, con la sala tipeando al mismo tiempo. Es setup, y se da cuando se usa.
 
-**`models.json` ya no vive acá**: se camina al arrancar la práctica, con la sala tipeando al mismo tiempo. Es setup, y se da cuando se usa.
+#### 1. Qué es un modelo: arquitectura + pesos (~3 min)
 
-#### Open source vs. pesos abiertos, y licencias (~8 min)
+**La analogía de la mesa de mezcla, que es la del post y funciona.** Un modelo es una consola de audio gigante con miles de millones de perillas chiquitas. Antes de entrenar, las perillas tienen valores al azar y el modelo no sirve para nada. Entrenar es: pasarle datos, que prediga, medir cuánto se equivocó, mover las perillas, y repetir millones de veces. **Los pesos son los valores que quedaron en las perillas.**
 
-La distinción que casi nadie hace bien, y tiene que ir antes de la tabla del espectro o el resto del bloque queda impreciso.
+Adentro no hay perillas: hay miles de millones de números en **tensores**, que son arreglos multidimensionales. Cuando leen `8B` o `30B` en el nombre de un modelo, esa B son miles de millones de parámetros, y casi todos son pesos.
 
-- **Pesos abiertos**: podés descargar los pesos y correrlos. Eso es todo.
-- **Open source** en sentido fuerte: además tenés el código de entrenamiento y suficiente información sobre los datos para reproducir el modelo.
-- Casi todo lo que se vende como "IA open source" es **pesos abiertos** — te dan el binario, no la receta. La analogía honesta es un ejecutable gratis, no código fuente. Usar "pesos abiertos" en clase donde corresponde; la sloppiness está en el marketing de la industria, no en los estudiantes.
+**La frase que ordena todo el bloque**: *"los pesos no son el código que entrena el modelo — son el resultado de entrenarlo"*. Son su estado aprendido.
 
-**La formulación del post, que es la más precisa que encontramos y conviene decirla casi textual**: *"«pesos abiertos» te dice que podés obtener los parámetros aprendidos. La IA open source debería además darte los materiales y las libertades para estudiar, modificar y compartir el sistema entero."* La diferencia no es el archivo: es qué podés hacer con lo que te dieron.
+**Y de ahí sale la distinción con la arquitectura**, que es lo que la sala nunca separó: la arquitectura define las capas, las conexiones, el mecanismo de atención, el camino que siguen los datos — y suele estar publicada en un paper. Los pesos son **los números aprendidos puestos adentro de esa arquitectura**, y son lo que costó millones. Dos modelos con arquitecturas parecidas se comportan distinto porque aprendieron de datos distintos o con objetivos distintos.
 
-**Y un paso previo que el post da y nosotros salteábamos**: separar **arquitectura** de **pesos**. La arquitectura suele estar publicada en un paper; los pesos son lo que la entrenó y lo que cuesta millones. Bajarse un modelo es bajarse los pesos, no la receta con la que se hicieron. Es medio minuto y hace que "pesos abiertos" deje de ser una etiqueta y pase a nombrar algo.
+**Cerrar enumerando lo que hace falta para correr uno**: arquitectura y configuración, pesos, tokenizer, un runtime de inferencia (Ollama, llama.cpp, MLX, Transformers) y memoria suficiente. Contra eso, la frase del post: *"una API esconde todo esto detrás de un request HTTP"*. **Ese contraste es la sesión entera en una línea**, y conviene decirlo acá porque en una hora lo van a estar viviendo.
 
-**Y después las licencias**, porque es donde la distinción tiene consecuencias:
+#### 2. Pesos abiertos, y por qué no es open source (~5 min)
 
-- **Licencias de software estándar** (Apache 2.0, MIT): uso comercial libre, derivados, redistribución.
-- **Licencias propias con restricciones** (la community licence de Llama, los términos de **Gemma 2 y 3**): límites de uso, cláusulas de escala, obligaciones de naming, políticas de uso aceptable pegadas.
-- **Restricciones sobre la salida** — algunas licencias prohíben usar las generaciones para entrenar otros modelos.
+**Un modelo de pesos abiertos es uno cuyos pesos aprendidos se pueden descargar.** Nada más que eso. **Qué podés hacer con ellos lo dice la licencia**, no el hecho de que estén disponibles.
 
-Las tres preguntas que un estudiante tiene que poder contestar antes de meter un modelo en un proyecto: ¿lo puedo usar comercialmente? ¿puedo redistribuir un fine-tune? ¿de quién es lo que genera?
+Lo que la licencia *puede* habilitar —y el post insiste en que **no hay que asumir que están todos**—: correrlo local, quedarte con una versión fija, hacerle fine-tune, cuantizarlo o convertirlo de formato, inspeccionar cómo se comporta, redistribuir los pesos, y usarlo comercialmente.
 
-> ⚠️ **La trampa de este bloque, y hay que tenerla clara antes de darlo.** Si uno tiene en la cabeza que "Gemma es licencia propia de Google", eso vale para **Gemma 2 y 3** y **es falso para Gemma 4**: Google la publicó bajo **Apache 2.0** y lo dice explícitamente en el anuncio ("*a commercially permissive Apache 2.0 license*"). Verificado el 2026-08-24 contra el blog de Google. Es fácil de decir mal en el aula, y decirlo mal justo acá sería vergonzoso dos veces.
+**Y acá la distinción que casi nadie hace bien.** En software normal, el código fuente es la forma preferida para estudiar y modificar un programa. Con los pesos pasa algo parecido y peor: podés correrlos y modificarlos, pero **los pesos solos no te dicen qué datos los produjeron, cómo se filtraron esos datos, ni con qué proceso se entrenó**. La [definición de Open Source AI de la OSI](https://opensource.org/ai) pide más que pesos descargables: pide el código y la información de datos necesarios para estudiar y modificar el sistema, además de los parámetros.
 
-**El gancho, y es mejor que el que teníamos.** Los dos candidatos —Gemma 4 26B y Qwen3.8-27B— son **Apache 2.0**. O sea que las tres preguntas, sobre el modelo al que están por apuntar su repo, se contestan *sí, sí y vos*: sin cláusula de escala, sin obligación de naming, sin política de uso aceptable pegada, y las generaciones son suyas.
+**La formulación del post, para decir casi textual**: *"«pesos abiertos» te dice que podés obtener los parámetros aprendidos. La IA open source debería además darte los materiales y las libertades para estudiar, modificar y compartir el sistema entero."*
 
-**Y el gancho de verdad es que Gemma cambió de licencia entre versiones.** Gemma 2 y 3 salieron con términos propios de Google; Gemma 4 salió Apache 2.0. **Misma familia, mismo nombre, mismo botón de descarga, derechos distintos.** Eso convierte la advertencia genérica del final de este bloque —*"las licencias cambian entre versiones"*— en algo que pueden ver en pantalla en treinta segundos, sobre el modelo que están usando. Es el mejor ejemplo posible y nos lo regaló Google.
+El límite todavía se discute, pero **"pesos abiertos" es el término correcto** cuando una empresa publica los parámetros entrenados sin el material completo con el que se hicieron. Casi todo lo que se vende como "IA open source" es eso. Usar el término bien en clase; la sloppiness está en el marketing de la industria, no en los estudiantes.
+
+#### 3. Licencias: qué te dejan hacer (~6 min)
+
+Es donde la distinción de arriba tiene consecuencias, y es lo que hay que mirar **antes** de meter un modelo en un proyecto. Hay licencias que restringen el uso comercial, la **cantidad de usuarios** de tu producto, industrias enteras, o cómo podés compartir las versiones que modificaste.
+
+Las tres preguntas que un estudiante tiene que poder contestar:
+
+1. ¿Lo puedo usar comercialmente?
+2. ¿Puedo redistribuir un fine-tune?
+3. ¿De quién es lo que genera?
+
+**El gancho, y es el mejor momento del bloque: Gemma cambió de licencia entre versiones.** Gemma 2 y 3 salieron con términos propios de Google; **Gemma 4 salió Apache 2.0**, y el anuncio lo dice explícitamente (*"a commercially permissive Apache 2.0 license"*). **Misma familia, mismo nombre, mismo botón de descarga, derechos distintos.** Eso convierte la advertencia genérica —"revisá la licencia"— en algo que se ve en pantalla en treinta segundos, sobre el modelo al que están por apuntar su repo.
+
+> ⚠️ **La trampa, y hay que tenerla clara antes de dar el bloque.** Si uno tiene en la cabeza que "Gemma es licencia propia de Google", eso vale para **Gemma 2 y 3** y **es falso para Gemma 4**. Verificado el 2026-08-24 contra el blog de Google. Decirlo mal justo en este bloque sería vergonzoso dos veces.
 
 **La secuencia en pantalla, tres cards, medio minuto cada una**: el campo `license` de Gemma 4 (Apache 2.0), los términos de Gemma 3 (propios), y la community licence de Llama (propia, con cláusula de escala). Tres modelos que la sala llamaría "open source" sin pestañear, con tres regímenes de derechos distintos.
 
-La frase del bloque: *"«pesos abiertos» no te dice nada sobre lo que podés hacer con ellos. Eso lo dice la licencia, y la licencia cambia entre versiones del mismo modelo."*
+Y el remate: sobre el modelo que van a usar hoy, las tres preguntas se contestan **sí, sí y de ustedes**. Sin cláusula de escala, sin obligación de naming, sin política de uso aceptable pegada.
 
-**Verificar la licencia de las versiones exactas la semana de la clase** — es justamente el error que este bloque enseña a no cometer, así que cometerlo en el material sería vergonzoso dos veces. Chequear también **si el repo está gateado en Hugging Face**: Qwen3.8-27B hoy no lo está, los de Google históricamente sí incluso siendo Apache, y de eso depende la fricción de la Vía B.
+La frase del sub-bloque: *"«pesos abiertos» no te dice nada sobre lo que podés hacer con ellos. Eso lo dice la licencia — y la licencia cambia entre versiones del mismo modelo."*
 
-#### Pesos abiertos vs. API hosteada: el espectro de control (~6 min)
+**Verificar las licencias de las versiones exactas la semana de la clase.** Es justamente el error que este bloque enseña a no cometer.
 
-Plantearlo como **espectro de control**, no como tribalismo abierto-vs-cerrado:
+#### 4. Qué pasa cuando te bajás un modelo (~5 min)
 
-| | API hosteada | Pesos abiertos, GPU de otro | Pesos abiertos, tu GPU |
-|---|---|---|---|
-| Capacidad | La más alta | Varía | Varía |
-| Tus datos salen de tu control | Sí | En parte | No |
-| Forma del costo | Por token | Por hora | Capex + electricidad |
-| Carga operativa | Ninguna | Alguna | Toda |
-| Funciona offline / air-gapped | No | No | Sí |
+El sub-bloque que convierte "bajarse un modelo" de una idea vaga en algo concreto.
 
-**La columna del medio es la de hoy, y conviene decirlo apenas aparece la tabla.** El gateway del CCAD es exactamente "pesos abiertos, GPU de otro": pesos abiertos, hardware de la UNC, cero carga operativa para ellos y sus datos pasando por un tercero que no es una empresa de IA. Es la columna que en la versión anterior de esta sesión nadie tocaba, y ahora es el default de la práctica.
+**Dos formatos, y vale nombrarlos porque los van a ver:**
 
-Honestidad sobre la brecha: los mejores modelos de pesos abiertos son genuinamente útiles y genuinamente están atrás de la frontera en lo que a este curso le importa — trabajo agéntico de horizonte largo y tool calling confiable. No sobrevender, no despreciar.
+- **safetensors** — guarda tensores **sin contenido ejecutable**, así que carga más rápido y es más seguro que los formatos viejos basados en pickle de Python. Que "más seguro" tenga una razón técnica y no sea un adjetivo es medio minuto bien gastado.
+- **GGUF** — tensores más metadata en un solo archivo, que leen llama.cpp, Ollama y LM Studio. Mostrar un nombre real, `model-Q4_K_M.gguf`, y que vean que **el `Q4` es la cuantización**, que es el sub-bloque siguiente.
 
-**Verificar nombres de modelos y afirmaciones de capacidad la semana de la clase.** Este tema se mueve más rápido que cualquier otro del curso.
+**Y después qué pasa cuando lo corrés**, que es el loop entero en cuatro pasos: el runtime lee la configuración, reserva memoria, carga los pesos y espera. Vos escribís algo, el tokenizer lo convierte en ids de tokens, el modelo pasa esos tokens por sus capas y usa los pesos para calcular probabilidades del siguiente token, elige uno, lo agrega a la secuencia y vuelve a empezar.
 
-#### Qué hace falta para correr uno (~10 min)
+**La frase para cerrar**: *"nada tiene que llamar a una API en la nube. Las cuentas pasan en tu hardware."*
 
-Mecánica práctica. Es el bloque que le da sentido a la Vía B y que explica por qué el CCAD existe.
+**Y de ahí el puente al resto de la sesión, que es nuestro y son sesenta segundos**: casi cualquiera de esos runtimes expone un **endpoint compatible con la API de OpenAI**. Por eso cualquier harness se le puede apuntar sin que nadie se haya puesto de acuerdo con nadie. **Es la razón de que cambiar de modelo sean cinco líneas de JSON y no una tarde de trabajo** — y en veinte minutos van a escribir esas cinco líneas.
 
-- **Los pesos son grandes.** Cantidad de parámetros × bytes por parámetro ≈ piso de VRAM, antes del contexto. **Hacer la cuenta en vivo con el modelo que esté servido ese día**, y los dos números son casi el mismo: Gemma 4 26B → 26 mil millones × 2 bytes ≈ **52 GB**; Qwen3.8-27B → 27 mil millones × 2 bytes ≈ **54 GB**. Sin contar el contexto. Ese número explica solo por qué el modelo está en el CCAD y no en su notebook, y por qué la Vía B usa algo mucho más chico. Es el mejor minuto del bloque.
-- **Y los 2 bytes no son un supuesto nuestro: están escritos en el modelo.** Abrir el `config.json` del model card y mostrar `dtype: bfloat16` — dos bytes por parámetro, dicho por el modelo. Es medio minuto y convierte la cuenta de una regla que hay que creernos en algo que pueden verificar solos con cualquier modelo que se encuentren después. **Ese es el mejor uso de esos treinta segundos en toda la sesión.**
-- **Denso vs. MoE, y acá los dos modelos se vuelven contenido en vez de una alternativa administrativa.** Los dos candidatos piden prácticamente la misma VRAM y no corren para nada igual:
+#### 5. Cuantización (~4 min)
 
-  | | Total | Activos por token | Piso de VRAM |
-  |---|---|---|---|
-  | **Gemma 4 26B** (MoE) | 26 mil millones | **~3,8 mil millones** | ~52 GB |
-  | **Qwen3.8-27B** (denso) | 27 mil millones | **27 mil millones** | ~54 GB |
+**La cuenta, en el pizarrón**, y es la del post:
 
-  **La VRAM la paga el total; la latencia la paga lo activo.** En un MoE tenés que tener los 26B residentes igual —por eso sigue sin entrar en su notebook— pero cada token solo pasa por una fracción, así que responde como un modelo mucho más chico. Es el bullet que rompe la intuición de que "más parámetros" significa a la vez más memoria y más lento: son dos cosas distintas y las paga distinta gente. **Si el gateway termina sirviendo los dos, esto se mide en la práctica en lugar de explicarse**, y es la mejor cosa que puede pasarle a este bloque.
-- **Nota al pie honesta**: los dos son multimodales (imagen + texto), así que arriba de los parámetros de texto hay una torre de visión. **En el curso no la usamos** — se nombra solo para que nadie se desoriente si abre el model card y ve `image-text-to-text`.
-- **La cuantización** cambia precisión por VRAM, y el post da la magnitud que hace falta para que se entienda: bajar de 16 bits a 4 lleva un modelo de ~60 GB a ~15 GB. **Es la diferencia entre "no entra en ninguna máquina de esta sala" y "entra en varias"**, y encadena directo con la cuenta de VRAM de dos bullets arriba. Mencionar que los modelos muy cuantizados se degradan en salida estructurada — que es exactamente tool calling. Esto vuelve en la discusión del final.
-- **Dos familias de runtime**: local/mono-usuario (**llama.cpp**, **Ollama**) vs. serving (**vLLM**, SGLang — batching, throughput, muchos usuarios concurrentes). **Este bullet lo dio Ale en el punto 6 de su slot, así que acá es un callback de una línea y no una explicación**: el serving ya lo vieron con nombre propio, lo que agregamos es la otra mitad — ustedes en la Vía B corren llama.cpp, y la razón es cuántos usuarios tiene cada uno. Un usuario no necesita batching.
-- **Por qué le importaría a alguien, en cinco razones** (del post, y vale darlas como lista porque la sala va a preguntar "¿y para qué?"): **la versión no se te mueve abajo de los pies** —el modelo hosteado que usás hoy puede cambiar mañana sin avisarte, y el que te bajaste no—, los datos no salen, lo podés adaptar, no quedás atado a un proveedor, y los modelos chicos empiezan a servir como **componentes** de un sistema y no como el sistema entero.
-- **Y los límites, en la misma lista y con el mismo peso**: pesos abiertos no garantiza calidad de salida, ni datos de entrenamiento sin sesgo, ni uso seguro de tools, ni hardware barato. **Lo que sí garantiza es que el operador pasás a ser vos**, con todo lo que eso implica. Esa frase es la bisagra con el sub-bloque de seguridad.
-- **El endpoint compatible con OpenAI es toda la historia de interoperabilidad.** Casi cualquier runtime expone uno, y por eso cualquier harness se le puede apuntar. Es el principio general — y es la razón de que el bloque siguiente sean cinco líneas de JSON y no una tarde de trabajo.
+```
+30 mil millones de parámetros × 16 bits ÷ 8 = 60 GB
+30 mil millones de parámetros ×  4 bits ÷ 8 = 15 GB
+```
 
-#### Seguridad y confianza (~6 min)
+Cuantizar es guardar los pesos con menos bits. **Es la diferencia entre "esto no entra en ninguna máquina de esta sala" y "entra en varias"** — y explica solo por qué el modelo grande vive en el CCAD y por qué lo que sirva Agus en su GPU va a ser mucho más chico.
 
-Cierra el hilo transversal de seguridad del curso, y el gateway le regaló el mejor punto:
+**El tradeoff, dicho como lo dice el post y sin exagerar para ningún lado**: un archivo más chico usa menos memoria y a veces corre más rápido, pero bajar la precisión **puede** cambiar la calidad. Los métodos buenos de cuantización conservan bastante más de lo que sugiere la cuenta de bits pelada — **y aun así hay que probar ese modelo y esa cuantización en tu tarea**. No se deduce, se mide.
 
-- **Un gateway también es un tercero.** "Corre en hardware de la UNC" no es lo mismo que "nadie ve mis prompts". Entre su terminal y el modelo hay un proxy que puede loguear, y eso es una pregunta legítima que hay que hacerle al operador. **Y hoy el operador está en el aula**, así que la pregunta deja de ser retórica: con LiteLLM ya explicado en el punto 5, *"Ale, ¿esto loguea los prompts?"* es una pregunta que se puede hacer en voz alta y que tiene respuesta. **Preguntársela igual antes por mail** (ver Pendiente de Ale) para no dejarlo pagando frente a la sala, y después hacerla en clase de todos modos: modelar la pregunta es la mitad de la lección, y ahora la otra mitad también está disponible. Y de paso desarma el reflejo fácil de "self-hosted = privado".
-- **Cadena de suministro**: cuando bajás pesos de un hub estás bajando gigabytes de binario. ¿A quién le estás confiando eso? Según el formato, los archivos de modelo históricamente fueron vector de ejecución de código.
-- **"Local no significa privado automáticamente."** Es la mejor frase del post y desarma el reflejo más común de la sala. Un agente corriendo contra un modelo local sigue llamando APIs externas, sigue leyendo cosas de internet y sigue mandando lo que lee a algún lado. El modelo dejó de ser el tercero; el resto del sistema sigue estando. **Dicho justo después del punto del gateway, cierra la idea**: no hay una configuración que te haga privado, hay decisiones que tomás sobre cada pieza.
-- **El argumento de privacidad corta para los dos lados**: self-hostear saca a un tercero pero te agrega como operador, con logs, disco y un filesystem compartido que capaz no pensaste.
-- **A prompt injection no le importa qué modelo corras.** Un modelo más débil puede ser *más fácil* de secuestrar. Callback directo a la Sesión 4.
+Y lo que hay que nombrar acá porque vuelve en la puesta en común: **lo primero que se degrada suele ser la salida estructurada**, que es exactamente el tool calling. O sea: lo que un coding agent necesita para funcionar.
+
+#### 6. Por qué importan, y qué no garantizan (~5 min)
+
+**Las cinco razones**, que es lo que contesta el "¿y para qué?" que la sala va a preguntar:
+
+1. **La versión no se te mueve abajo de los pies.** El proveedor puede actualizar o retirar un modelo detrás del mismo nombre de API; el que te bajaste se queda quieto. *"Tu aplicación no cambia porque un proveedor reemplazó silenciosamente el modelo."*
+2. **Los datos privados pueden quedarse en tu máquina.**
+3. **Lo podés cambiar**: fine-tune, merge, cuantizar, estudiarlo. Y una comunidad lo adapta a hardware que el que lo publicó nunca probó, y le encuentra problemas que al creador se le pasaron.
+4. **No quedás atado a un servicio.** El mismo modelo corre en varios runtimes y en varios proveedores: *"es portable de una manera en que una API cerrada no lo es"*.
+5. **Los modelos chicos sirven como componentes**, no como el sistema entero. *"No necesitan ganar todos los benchmarks. Necesitan hacer una tarea útil de manera lo bastante confiable."*
+
+**Y la lista de lo que NO garantiza, con el mismo peso y sin apurarla** — pesos abiertos no te asegura: buena calidad de salida, respuestas correctas, datos de entrenamiento sin sesgo, uso seguro de tools, hardware barato, generación rápida en tu máquina, permiso para usarlo como quieras, ni información para reproducir el entrenamiento.
+
+**Lo que sí garantiza es que el operador pasás a ser vos**: elegir el runtime, asegurar la máquina, instalar las actualizaciones y medir la calidad. Nadie lo hace por vos.
+
+> **Y acá el matiz que desarma el reflejo más común de la sala**, que el post pone justo al lado del beneficio de privacidad: **"local no significa privado automáticamente"**. Un agente corriendo contra un modelo local sigue llamando APIs, sigue leyendo cosas de afuera y sigue pudiendo subir archivos a otro lado. El modelo dejó de ser el tercero; el resto del sistema sigue estando ahí. **No hay una configuración que te haga privado: hay decisiones que tomás sobre cada pieza.**
+
+#### 7. Cómo elegir uno (~2 min)
+
+El checklist del post, que es lo más accionable que se llevan del bloque. Antes de bajar nada:
+
+1. **Licencia** — qué te deja hacer.
+2. **Cantidad de parámetros** — que alcance para la tarea y entre en tu hardware.
+3. **Cuantizaciones disponibles** — y cuánta memoria pide cada una.
+4. **Runtimes que lo soportan** — Ollama, llama.cpp, MLX, Transformers, tu servidor.
+5. **Longitud de contexto** — y lo que esa longitud cuesta en memoria.
+6. **El model card** — para qué lo diseñaron, qué evaluaciones reportan, y qué límites reconoce el que lo hizo.
+7. **Tu propio set de pruebas**, con ejemplos reales de tu aplicación.
+
+Y cerrar con las dos frases del post, que son el mejor final posible para el bloque:
+
+> *"No elijas un modelo solo por un leaderboard. **El mejor modelo es el más chico que hace tu tarea suficientemente bien, en hardware que puedas operar.**"*
+
+**Es la rampa perfecta a la práctica**, y conviene decirlo así: el punto 7 de ese checklist es lo que van a hacer en veinte minutos, sobre su propio repo.
 
 ### Puesta en común: ¿está a la altura de un proyecto serio? (~5 min)
 
@@ -298,7 +328,7 @@ El flujo entero: exportar la key → abrir `/model` → elegir **el modelo abier
 - **La tarea tiene que ser multi-paso y con al menos dos llamadas a tools.** Si le piden algo de un solo turno, los dos modelos van a parecer iguales y la comparación no dice nada. El ejemplo que funciona: *"leé estos dos archivos y arreglá la inconsistencia entre ellos"*.
 - **Dos sesiones limpias, no una sesión con `/model` en el medio.** Para que la comparación sea justa los dos modelos tienen que arrancar del mismo contexto. Es más prolijo y además les enseña algo sobre metodología.
 - **Que anoten mientras pasa, no después.** Cuatro cosas: ¿respetó el schema de las tools?, ¿cuántos turnos necesitó?, ¿inventó nombres de archivos o funciones?, ¿cómo se sintió la latencia? Esos apuntes son el insumo de la puesta en común, que dura cinco minutos: sin ellos no hay nada que poner en común.
-- **Si el gateway terminó sirviendo los dos modelos abiertos, ofrecer la tercera corrida como extra** — mismo prompt, mismo repo, MoE contra denso. **No como paso obligatorio**: el que llega mide la tabla de denso vs. MoE con su propio cronómetro. El que no llega no se perdió nada de la tesis.
+- **Si el gateway terminó sirviendo los dos modelos abiertos, ofrecer la tercera corrida como extra** — mismo prompt, mismo repo, el segundo modelo abierto. **No como paso obligatorio**: es un punto más de comparación, no parte de la tesis. El que no llega no se perdió nada.
 - **El error más probable no es conceptual, es un typo en el JSON o la key sin exportar.** Por eso el paso 0 se hace en conjunto.
 
 ### Vía B — la GPU de Agus, en el aula (opcional, ~20 min)
@@ -308,7 +338,7 @@ El flujo entero: exportar la key → abrir `/model` → elegir **el modelo abier
 **Qué enseña, y no es lo mismo que enseñaba servirlo uno mismo:**
 
 - **La tercera corrida de la comparación.** Modelo grande en hardware de la UNC, modelo hosteado, y ahora modelo chico a tres metros. Es el punto donde se separa *"los modelos abiertos son peores"* de *"este modelo chico y cuantizado es peor"*, que es un salto de madurez técnica y sale casi gratis.
-- **La columna "tu propio hardware" de la tabla del espectro, hecha física.** Los datos no salen del aula. Sin cuenta, sin key, sin nadie en el medio. Mostrar la VRAM real contra la cuenta que hicimos en la teoría, y los tokens por segundo, para que la latencia se sienta en vez de describirse.
+- **El modelo corriendo a tres metros, y los datos sin salir del aula.** Sin cuenta, sin key, sin nadie en el medio — la contracara exacta de las cinco sesiones anteriores. Mostrar la VRAM real contra la cuenta de cuantización que hicimos en la teoría, y los tokens por segundo, para que la latencia se sienta en vez de describirse.
 - **El swap por segunda vez en veinte minutos.** Que el archivo termine con tres providers y que cambiar entre ellos cueste `/model` es la tesis de la sesión, demostrada dos veces en la misma hora.
 
 > ⚠️ **La concurrencia es el riesgo, y es también el contenido.** Una GPU atendiendo a la sala entera se encola — que es exactamente lo que Ale explicó media hora antes al contar por qué el CCAD corre vLLM. **Acordarlo con Agus antes de la clase**: runtime que batchee, tandas, o asumir la cola y usarla como demostración en vivo. Cualquiera de las tres sirve; lo que no sirve es descubrirlo en el momento.
@@ -400,7 +430,7 @@ Lo que hay que preguntar ahora, en orden de prioridad:
 1. **Concurrencia y rate limits** con 25-30 estudiantes pegándole al gateway a la vez durante una hora. **Este es el nuevo riesgo más grande de la sesión** y ocupa el lugar que tenía la cola de GPU. Si hay límite por key, saberlo antes cambia el diseño de la práctica. **Lo necesitamos por mail igual**, aunque el punto 6 de su slot toque el tema: la respuesta define cómo se escribe la práctica, y eso hay que hacerlo antes de la clase, no durante.
 2. **Las keys, y hay una propuesta concreta para ponerle enfrente**: que **Diego cree una key por estudiante desde su propia cuenta**. Preguntarle si eso es posible y **si le parece bien como decisión** —es su servicio y su política, no solo una capacidad técnica—. Si no le cierra, la alternativa es una key del curso compartida. Y en cualquiera de los dos casos: con cuánta anticipación se emiten, y si siguen andando después del curso. (Que sigan andando sería un cierre lindísimo; que no, hay que avisarlo.)
 3. **¿El gateway loguea prompts?** Necesario para que el sidebar de seguridad sea honesto. Es la pregunta que vamos a hacer en voz alta en clase — y con él explicando LiteLLM en el punto 5, se la vamos a hacer *a él*. **Preguntarla por mail primero**: la idea es que la conteste, no que lo agarre desprevenido frente a la sala.
-4. **El pedido: ¿pueden volver a levantar el Qwen, ahora Qwen3.8-27B?** **No es un pedido en frío**: con el acceso que nos dio Ale, **Qwen3.6 corrió en el CCAD y anduvo**, y después se bajó. O sea que servir un Qwen ahí ya está demostrado y lo que estamos pidiendo es reponerlo, con la versión que existe hoy. Lo queremos **además** de Gemma 4 26B, no en lugar de. Sigue siendo **un pedido y no un supuesto** —el material está escrito para funcionar sin él— pero el precedente cambia la conversación. **Lo que el precedente no cubre, y hay que decirlo al pedirlo**: lo que probamos fue 3.6, no 3.8. Los números de 3.8 que están en este archivo salen de la model card, no de haberlo visto correr en ese hardware; si el salto de versión les cambia el encaje en la GPU, que nos avisen. Por qué lo pedimos, y vale decírselo porque es un argumento pedagógico y no un capricho: Gemma 4 26B es MoE (~3,8B activos) y Qwen3.8-27B es denso, así que con los dos en el mismo endpoint la sala puede **medir** la diferencia entre denso y MoE en vez de escucharla. Si no se puede, la sesión sale igual con uno solo — pero avisar con tiempo para bajar la tabla comparativa de las slides.
+4. **El pedido: ¿pueden volver a levantar el Qwen, ahora Qwen3.8-27B?** **No es un pedido en frío**: con el acceso que nos dio Ale, **Qwen3.6 corrió en el CCAD y anduvo**, y después se bajó. O sea que servir un Qwen ahí ya está demostrado y lo que estamos pidiendo es reponerlo, con la versión que existe hoy. Lo queremos **además** de Gemma 4 26B, no en lugar de. Sigue siendo **un pedido y no un supuesto** —el material está escrito para funcionar sin él— pero el precedente cambia la conversación. **Lo que el precedente no cubre, y hay que decirlo al pedirlo**: lo que probamos fue 3.6, no 3.8. Los números de 3.8 que están en este archivo salen de la model card, no de haberlo visto correr en ese hardware; si el salto de versión les cambia el encaje en la GPU, que nos avisen. Por qué lo pedimos: con dos modelos abiertos en el mismo endpoint, la práctica gana un punto más de comparación —mismo prompt, mismo repo, tres modelos— y el `models.json` de la slide muestra que `models` es una lista y no un campo. **Es un pedido más flojo que antes y conviene saberlo**: la razón fuerte era que la sala midiera denso contra MoE, y ese contenido ya no se da. Si no se puede, la sesión no pierde nada de la tesis.
 5. **Los `id` exactos de los modelos en LiteLLM.** `vllm/gemma4-26b` y `vllm/qwen3.8-27b` son las cadenas que tenemos escritas y **las dos hay que confirmarlas**: van textuales en una slide que 30 personas copian. Un typo acá cuesta diez minutos de práctica.
 6. **Con qué `--max-model-len` levantaron vLLM**, por modelo. Los dos candidatos hacen ~262.144 nativos y Pi asume 128.000: el número que manda es el del servidor, y lo necesitamos para pinear `contextWindow` en la slide de config. Es además la tercera fila de la tabla que vamos a mostrar en clase.
 7. **¿La `baseUrl` es correcta sin `/v1`?** LiteLLM sirve las dos formas y Pi construye el path; hay que probar el string exacto. Es un detalle de dos minutos que puede voltear la práctica entera.
@@ -417,7 +447,7 @@ Cuando el hilo esté leído, bajar las respuestas a este archivo y recién enton
 - **Sesión 4** → la ventana de contexto vuelve como un parámetro de arranque del servidor, no como una propiedad del producto. Y el otro modelo de costo: por hora y por GPU, no por token — el por-token lo cerró Agus en su sesión. **Los dos cierres se reparten**: él cierra el primer arco con costo, límites, carrera y atrofia; nosotros cerramos el curso. Coordinarlo con él, porque todavía no escribió esa sesión.
 - **Sesión 1** → LLM + tool + harness: hoy cambiamos la L. Es la simetría del cierre del curso.
 - **Sesión 5** → **ya no es dependencia.** La práctica corre sobre el gateway, así que sobrevive a cualquier forma que tome la sesión de Agus. Sigue valiendo coordinar: si su práctica produce un cliente, la extensión del final tiene público, y él puede armar el pase en su cierre. Agus está en el aula igual con su GPU portátil.
-- **Hilo transversal de seguridad** → cierra acá, con tres puntas: cadena de suministro de modelos, self-hosting como responsabilidad de operador, y **el gateway como tercero**, que es la punta nueva y la más útil.
+- **Hilo transversal de seguridad** → cierra acá, y **cierra más angosto de lo que prometía**: quedan las dos puntas que trae el bloque de modelos abiertos —**pasás a ser vos el operador** y **"local no significa privado automáticamente"**— dichas adentro de ese bloque y no en uno propio. La cadena de suministro de pesos, el gateway como tercero y el callback de prompt injection **se sacaron** al adoptar el arco del post. Si alguien quiere recuperarlos, el lugar natural es el cierre del curso, no la teoría.
 
 ## Herramientas y recursos referenciados
 
@@ -435,7 +465,7 @@ Cuando el hilo esté leído, bajar las respuestas a este archivo y recién enton
 - [CCAD — Centro de Computación de Alto Desempeño, UNC](https://supercomputo.unc.edu.ar/ccad/) · [wiki](https://wiki.ccad.unc.edu.ar/) · [abrir cuenta](https://wiki.ccad.unc.edu.ar/empezar/abrir-cuenta.html) · [equipamiento](https://supercomputo.unc.edu.ar/equipamiento/)
 - [Pedido de cuentas](https://supercomputo.unc.edu.ar/servicios/pedido-de-cuentas/) · [uso intensivo](https://supercomputo.unc.edu.ar/servicios/pedido-de-uso-intensivo-ventanilla-permanente/) · [soporte a usuarios](https://supercomputo.unc.edu.ar/servicios/soporte-usuarios/)
 - [Estado del servicio](https://stats.uptimerobot.com/eLhTV5CMni) · [dashboard](https://stats.ccad.unc.edu.ar/) — chequear antes de la clase.
-- **La GPU portátil de Agus** — demo de la columna "tu propio hardware" y cara visible de la Vía B.
+- **La GPU portátil de Agus** — el endpoint de la Vía B, servido en el aula.
 - Licencias: los model cards de Hugging Face (el campo de licencia y el LICENSE del repo). Leer el texto real de lo que nombremos, no un resumen. Para hoy hacen falta **tres cards** y el contraste es el contenido: **Gemma 4** (Apache 2.0, la del modelo que van a usar), **Gemma 3** (términos propios de Google, misma familia) y **Llama** (community licence con cláusula de escala).
 
 ## Lo que dejamos afuera a propósito
@@ -457,7 +487,7 @@ Cuando el hilo esté leído, bajar las respuestas a este archivo y recién enton
 - **Definir cómo se entregan las keys** y no improvisarlo en el aula. Si es una key compartida, tenerla en una slide; si es una por estudiante, repartirlas antes. Y **no dejar la key en un archivo commiteado del repo del curso** — en el material va `$CCAD_API_KEY`.
 - **Fijar `contextWindow`** con el valor real del servidor, apenas Ale lo confirme.
 - **Verificar las licencias de las revisiones exactas** de lo que esté servido, y el estado de gate de cada repo, la semana de la clase. Tener las tres cards del contraste abiertas en pestañas antes de entrar al aula: Gemma 4, Gemma 3, Llama.
-- **Pedirle a Ale el Qwen con tiempo** (item 4 de la lista), y **decidir una fecha de corte**: pasada esa fecha, las slides se cierran con un solo modelo y la tabla de denso vs. MoE se da como teoría en vez de como medición. No dejar esa decisión para la semana de la clase.
+- **Pedirle a Ale el Qwen con tiempo** (item 4 de la lista), y **decidir una fecha de corte**: pasada esa fecha, las slides se cierran con un solo modelo y la tercera corrida sale del ejercicio. No dejar esa decisión para la semana de la clase.
 - **Confirmar que Agus trae la GPU portátil**, qué modelo va a servir, y probarlo. Ya no es el respaldo de la sesión, así que si no llega no se cae nada — pero es el mejor momento visual del día.
 - **Confirmar la participación de Ale, fecha y formato.** El plan B ya no es equivalente y hay que saberlo: los puntos 1 y 2 los podemos dar nosotros en 10 minutos con la wiki y la página de equipamiento, y de LiteLLM y vLLM podemos explicar *qué son* — pero **cómo se pide la cuenta, cómo se corre un LLM en el cluster y por qué el CCAD eligió esta arquitectura no lo podemos dar con autoridad**. Sin él, los puntos 3 a 6 se degradan a "acá están los links". Si su participación queda en duda, pedirle igual algo grabado o un walkthrough escrito de esos cuatro puntos.
 - **Decidir la duración real de la sesión** y, si son 2 horas, adoptar la variante de arriba de entrada en vez de improvisar recortes.
