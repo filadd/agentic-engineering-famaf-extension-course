@@ -6,7 +6,8 @@
 > **Excepciones, y estas sí son decisiones tomadas:**
 > 1. **Al CCAD se llega por un gateway LiteLLM**, y Pi se apunta ahí con un provider propio en `~/.pi/agent/models.json`. No hay SSH, no hay scheduler, no hay túnel. Decisión de Diego.
 > 2. **La práctica tiene dos vías**: el gateway para todos (Vía A) y `llama.cpp` local opcional (Vía B). Todo lo que sigue baja de esas dos cosas.
-> 3. **El slot de Ale Silva son seis puntos**: qué es el CCAD, qué hardware tiene, cómo accede un estudiante de la UNC para correr un LLM ahí, cómo se corre un LLM ahí, **LiteLLM** (el gateway desde adentro) y **vLLM** (qué corre atrás). Decisión de Diego.
+> 3. **Hay dos modelos en juego y el material tiene que funcionar con cualquiera de los dos.** **Gemma 4 26B** es lo que el gateway sirve hoy. **Qwen3.8-27B se lo vamos a pedir a Ale** y puede que no esté: no está disponible todavía. Escribir todo contra "el modelo de hoy" y tener los dos números a mano. Si están los dos, mejor — abajo se explica por qué la comparación entre ellos es contenido y no lujo.
+> 4. **El slot de Ale Silva son seis puntos**: qué es el CCAD, qué hardware tiene, cómo accede un estudiante de la UNC para correr un LLM ahí, cómo se corre un LLM ahí, **LiteLLM** (el gateway desde adentro) y **vLLM** (qué corre atrás). Decisión de Diego.
 
 > A cargo: Diego. Estado: en armado. Este archivo es **todo lo que hay** de la sesión: las slides y el ejercicio se borraron porque estaban escritos contra el diseño viejo (SSH + cola de GPU + túnel), y hay que escribirlos de nuevo desde acá. Material en español.
 >
@@ -109,14 +110,22 @@ La distinción que casi nadie hace bien, y tiene que ir antes de la tabla del es
 **Y después las licencias**, porque es donde la distinción tiene consecuencias:
 
 - **Licencias de software estándar** (Apache 2.0, MIT): uso comercial libre, derivados, redistribución.
-- **Licencias propias con restricciones** (la community licence de Llama, los términos de Gemma): límites de uso, cláusulas de escala, obligaciones de naming, políticas de uso aceptable pegadas.
+- **Licencias propias con restricciones** (la community licence de Llama, los términos de **Gemma 2 y 3**): límites de uso, cláusulas de escala, obligaciones de naming, políticas de uso aceptable pegadas.
 - **Restricciones sobre la salida** — algunas licencias prohíben usar las generaciones para entrenar otros modelos.
 
 Las tres preguntas que un estudiante tiene que poder contestar antes de meter un modelo en un proyecto: ¿lo puedo usar comercialmente? ¿puedo redistribuir un fine-tune? ¿de quién es lo que genera?
 
-**El gancho que este bloque ahora tiene y antes no**: el modelo que van a usar hoy es de la familia **Gemma**, o sea **licencia propia de Google, no Apache**. Deja de ser un ejemplo hipotético: es la licencia del modelo al que están por apuntar su repo. Abrir los términos en pantalla treinta segundos y que la lean.
+> ⚠️ **Corrección de una versión anterior de este archivo, y vale saberla antes de dar el bloque.** Acá decía que el modelo de la sesión era "de la familia Gemma, o sea licencia propia de Google, no Apache". **Es falso para Gemma 4**: Google la publicó bajo **Apache 2.0**, y lo dice explícitamente en el anuncio ("*a commercially permissive Apache 2.0 license*"). Los términos propios son de **Gemma 2 y 3**. Verificado el 2026-08-24 contra el blog de Google.
 
-**Verificar la licencia de la versión exacta la semana de la clase** — las licencias cambian entre versiones de la misma familia, y es el tipo de error que da vergüenza cometer frente a una sala.
+**El gancho, y es mejor que el que teníamos.** Los dos candidatos —Gemma 4 26B y Qwen3.8-27B— son **Apache 2.0**. O sea que las tres preguntas, sobre el modelo al que están por apuntar su repo, se contestan *sí, sí y vos*: sin cláusula de escala, sin obligación de naming, sin política de uso aceptable pegada, y las generaciones son suyas.
+
+**Y el gancho de verdad es que Gemma cambió de licencia entre versiones.** Gemma 2 y 3 salieron con términos propios de Google; Gemma 4 salió Apache 2.0. **Misma familia, mismo nombre, mismo botón de descarga, derechos distintos.** Eso convierte la advertencia genérica del final de este bloque —*"las licencias cambian entre versiones"*— en algo que pueden ver en pantalla en treinta segundos, sobre el modelo que están usando. Es el mejor ejemplo posible y nos lo regaló Google.
+
+**La secuencia en pantalla, tres cards, medio minuto cada una**: el campo `license` de Gemma 4 (Apache 2.0), los términos de Gemma 3 (propios), y la community licence de Llama (propia, con cláusula de escala). Tres modelos que la sala llamaría "open source" sin pestañear, con tres regímenes de derechos distintos.
+
+La frase del bloque: *"«pesos abiertos» no te dice nada sobre lo que podés hacer con ellos. Eso lo dice la licencia, y la licencia cambia entre versiones del mismo modelo."*
+
+**Verificar la licencia de las versiones exactas la semana de la clase** — es justamente el error que este bloque enseña a no cometer, así que cometerlo en el material sería vergonzoso dos veces. Chequear también **si el repo está gateado en Hugging Face**: Qwen3.8-27B hoy no lo está, los de Google históricamente sí incluso siendo Apache, y de eso depende la fricción de la Vía B.
 
 ### Pesos abiertos vs. API hosteada (~8 min)
 
@@ -140,7 +149,17 @@ Honestidad sobre la brecha: los mejores modelos de pesos abiertos son genuinamen
 
 Mecánica práctica. Es el bloque que le da sentido a la Vía B y que explica por qué el CCAD existe.
 
-- **Los pesos son grandes.** Cantidad de parámetros × bytes por parámetro ≈ piso de VRAM, antes del contexto. **Hacer la cuenta en vivo con el modelo de hoy**: 26 mil millones de parámetros × 2 bytes ≈ **52 GB**, sin contar el contexto. Ese número explica solo por qué el modelo está en el CCAD y no en su notebook, y por qué la Vía B usa algo mucho más chico. Es el mejor minuto del bloque.
+- **Los pesos son grandes.** Cantidad de parámetros × bytes por parámetro ≈ piso de VRAM, antes del contexto. **Hacer la cuenta en vivo con el modelo que esté servido ese día**, y los dos números son casi el mismo: Gemma 4 26B → 26 mil millones × 2 bytes ≈ **52 GB**; Qwen3.8-27B → 27 mil millones × 2 bytes ≈ **54 GB**. Sin contar el contexto. Ese número explica solo por qué el modelo está en el CCAD y no en su notebook, y por qué la Vía B usa algo mucho más chico. Es el mejor minuto del bloque.
+- **Y los 2 bytes no son un supuesto nuestro: están escritos en el modelo.** Abrir el `config.json` del model card y mostrar `dtype: bfloat16` — dos bytes por parámetro, dicho por el modelo. Es medio minuto y convierte la cuenta de una regla que hay que creernos en algo que pueden verificar solos con cualquier modelo que se encuentren después. **Ese es el mejor uso de esos treinta segundos en toda la sesión.**
+- **Denso vs. MoE, y acá los dos modelos se vuelven contenido en vez de una alternativa administrativa.** Los dos candidatos piden prácticamente la misma VRAM y no corren para nada igual:
+
+  | | Total | Activos por token | Piso de VRAM |
+  |---|---|---|---|
+  | **Gemma 4 26B** (MoE) | 26 mil millones | **~3,8 mil millones** | ~52 GB |
+  | **Qwen3.8-27B** (denso) | 27 mil millones | **27 mil millones** | ~54 GB |
+
+  **La VRAM la paga el total; la latencia la paga lo activo.** En un MoE tenés que tener los 26B residentes igual —por eso sigue sin entrar en su notebook— pero cada token solo pasa por una fracción, así que responde como un modelo mucho más chico. Es el bullet que rompe la intuición de que "más parámetros" significa a la vez más memoria y más lento: son dos cosas distintas y las paga distinta gente. **Si el gateway termina sirviendo los dos, esto se mide en la práctica en lugar de explicarse**, y es la mejor cosa que puede pasarle a este bloque.
+- **Nota al pie honesta**: los dos son multimodales (imagen + texto), así que arriba de los parámetros de texto hay una torre de visión. **En el curso no la usamos** — se nombra solo para que nadie se desoriente si abre el model card y ve `image-text-to-text`.
 - **La cuantización** cambia precisión por VRAM. Mencionar que los modelos muy cuantizados se degradan en salida estructurada — que es exactamente tool calling. Esto vuelve en la discusión del final.
 - **Dos familias de runtime**: local/mono-usuario (**llama.cpp**, Ollama) vs. serving (**vLLM**, SGLang — batching, throughput, muchos usuarios concurrentes). **Este bullet lo dio Ale en el punto 6 de su slot, así que acá es un callback de una línea y no una explicación**: el serving ya lo vieron con nombre propio, lo que agregamos es la otra mitad — ustedes en la Vía B corren llama.cpp, y la razón es cuántos usuarios tiene cada uno. Un usuario no necesita batching.
 - **El endpoint compatible con OpenAI es toda la historia de interoperabilidad.** Casi cualquier runtime expone uno, y por eso cualquier harness se le puede apuntar. Es el principio general — y es la razón de que el bloque siguiente sean cinco líneas de JSON y no una tarde de trabajo.
@@ -159,7 +178,8 @@ El archivo va en **`~/.pi/agent/models.json`** — y vale frenar un segundo acá
       "api": "openai-completions",
       "apiKey": "$CCAD_API_KEY",
       "models": [
-        { "id": "vllm/gemma4-26b" }
+        { "id": "vllm/gemma4-26b" },
+        { "id": "vllm/qwen3.8-27b" }
       ]
     }
   }
@@ -170,8 +190,19 @@ Cuatro cosas para frenar, y cada una es un concepto que ya tienen:
 
 - **`api: "openai-completions"`** es la historia de interoperabilidad del bloque anterior convertida en un string que tipean. Los valores posibles son `openai-completions`, `openai-responses`, `anthropic-messages` y `google-generative-ai`: cuatro formas de API para todo el ecosistema. El CCAD no expone una API "del CCAD": expone la misma que expondría Ollama en su notebook, o LM Studio, o vLLM crudo. **Por eso el swap cuesta cinco líneas.**
 - **`apiKey: "$CCAD_API_KEY"`** — el campo acepta interpolación de variables de entorno (`$VAR`, `${VAR}`) y también ejecutar un comando si arranca con `!`. **Usar la variable, no la key literal**, y decir en voz alta por qué: la key literal en un archivo es la key literal en un backup, en un screenshot del proyector y —el día que a alguien se le ocurra versionar su dotfiles— en un repo público. Es la primera credencial propia del curso y es el momento de enseñar el reflejo.
-- **`{ "id": "vllm/gemma4-26b" }`** — el `id` es lo que se manda a la API y es lo que van a ver en el picker de `/model`. El prefijo `vllm/` es routing de LiteLLM y de paso les cuenta qué hay atrás. **Acá se cobra el slot de Ale**: LiteLLM y vLLM ya tienen cara, así que el bullet se da como reconocimiento y no como dato nuevo — *"eso que les contó Ale hace media hora, acá está, en un string"*. Y lo mismo con la `baseUrl`.
-- **Lo que *no* está en el JSON, y es la mejor parte.** `contextWindow` tiene default **128000** y `maxTokens` default **16384**. O sea: la ventana de contexto es un número que alguien eligió, y hoy lo eligió el CCAD del lado del servidor. Después de cinco sesiones tratando la ventana de contexto como una propiedad del producto que compraron, resulta ser un parámetro de arranque. **Si el default no coincide con lo que el servidor tiene configurado, los requests van a fallar** — fijar `contextWindow` explícitamente con el valor que confirme Ale, y usar esa corrección como la demostración de que el número es una decisión y no una ley.
+- **`models` es una lista, y por eso hay dos.** El `id` es lo que se manda a la API y es lo que van a ver en el picker de `/model`. **`vllm/gemma4-26b` es el que está servido; `vllm/qwen3.8-27b` es el que le pedimos a Ale y puede no llegar.** Dejar los dos en la slide y decirlo en voz alta: *"si el segundo no aparece en el picker, es porque el CCAD no lo levantó — no es un typo suyo"*. Y los strings exactos los decide el CCAD al registrar los modelos en LiteLLM, así que **los dos hay que confirmarlos antes de proyectarlos** (ver Pendiente de Ale).
+- **Y el archivo con dos entradas enseña algo que una sola no**: el catálogo de modelos y el modelo activo son cosas distintas. Declarás lo que hay; elegís con `/model`. Es la misma separación que tienen los providers hosteados, ahora visible en cinco líneas propias. El prefijo `vllm/` es routing de LiteLLM y de paso les cuenta qué hay atrás. **Acá se cobra el slot de Ale**: LiteLLM y vLLM ya tienen cara, así que el bullet se da como reconocimiento y no como dato nuevo — *"eso que les contó Ale hace media hora, acá está, en un string"*. Y lo mismo con la `baseUrl`.
+- **Lo que *no* está en el JSON, y es la mejor parte.** `contextWindow` tiene default **128000** y `maxTokens` default **16384**. O sea: la ventana de contexto es un número que alguien eligió. Después de cinco sesiones tratándola como una propiedad del producto que compraron, resulta ser un parámetro de arranque.
+
+  **Y con este modelo el punto se da solo, porque hay tres números distintos para la misma cosa**, y conviene escribirlos en el pizarrón uno debajo del otro:
+
+  | Quién lo decide | Número |
+  |---|---|
+  | El modelo, nativo (los dos candidatos rondan los 256K) | **~262.144** |
+  | Pi, si no le decís nada | **128.000** |
+  | El CCAD, al levantar vLLM (`--max-model-len`) | **el que manda** |
+
+  El modelo puede 256K, Pi asume 128K, y lo que realmente tienen es lo que el servidor arrancó. **Que los dos candidatos coincidan en ~256K es una suerte para la slide**: la tabla no cambia según qué modelo esté levantado. **Si el server arrancó con menos que el default de Pi, los requests van a fallar** — fijar `contextWindow` explícitamente con el valor que confirme Ale. Y usar esas tres filas como la demostración de que el número es una decisión de alguien y no una ley de la naturaleza. Es el mismo `-c` de la Vía B, visto desde el otro lado.
 
 Y el detalle operativo que hace fácil la práctica: **el archivo se relee cada vez que abrís `/model`**, sin reiniciar nada. Cambiar de modelo cuesta dos segundos.
 
@@ -254,7 +285,7 @@ Dos vías. **La A la hacen todos; la B es opcional y hay que decirlo en voz alta
 
 ### Vía A — el gateway (todos, ~25-30 min)
 
-El flujo entero: pegar `models.json` → exportar la key → abrir `/model` → elegir `vllm/gemma4-26b` → darle una tarea **en su propio repo** → repetir la misma tarea con el modelo hosteado → anotar.
+El flujo entero: pegar `models.json` → exportar la key → abrir `/model` → elegir **el modelo abierto que esté en el picker** (`vllm/gemma4-26b`, o `vllm/qwen3.8-27b` si el CCAD lo levantó) → darle una tarea **en su propio repo** → repetir la misma tarea con el modelo hosteado → anotar.
 
 **Lo que hay que vigilar caminando la sala:**
 
@@ -262,11 +293,16 @@ El flujo entero: pegar `models.json` → exportar la key → abrir `/model` → 
 - **La tarea tiene que ser multi-paso y con al menos dos llamadas a tools.** Si le piden algo de un solo turno, los dos modelos van a parecer iguales y la comparación no dice nada. El ejemplo que funciona: *"leé estos dos archivos y arreglá la inconsistencia entre ellos"*.
 - **Dos sesiones limpias, no una sesión con `/model` en el medio.** Para que la comparación sea justa los dos modelos tienen que arrancar del mismo contexto. Es más prolijo y además les enseña algo sobre metodología.
 - **Que anoten mientras pasa, no después.** Cuatro cosas: ¿respetó el schema de las tools?, ¿cuántos turnos necesitó?, ¿inventó nombres de archivos o funciones?, ¿cómo se sintió la latencia? Esos apuntes son el insumo de la discusión posterior; sin ellos la discusión se contesta con opiniones.
+- **Si el gateway terminó sirviendo los dos modelos abiertos, ofrecer la tercera corrida como extra** — mismo prompt, mismo repo, MoE contra denso. **No como paso obligatorio**: el que llega, mide la tabla de denso vs. MoE con su propio cronómetro, y esa medición es el mejor insumo posible para la discusión de "¿está a la altura?". El que no llega no se perdió nada de la tesis.
 - **El error más probable no es conceptual, es un typo en el JSON o la key sin exportar.** Tener el snippet en una slide, listo para copiar, y la key en pantalla o en un papel. Cero descubrimiento en este paso: el descubrimiento es lo que viene después.
 
 ### Vía B — servirlo vos (opcional, ~20-25 min)
 
-Para quien tenga GPU local, o de a dos con alguien que tenga. `llama-server` con un modelo **chico y cuantizado** (no 26B: la cuenta de VRAM ya explicó por qué), después `/login llama.cpp` → `/llama` → `/model`, y la misma tarea otra vez.
+Para quien tenga GPU local, o de a dos con alguien que tenga. `llama-server` con un modelo **chico y cuantizado** (no los 27B: la cuenta de VRAM ya explicó por qué), después `/login llama.cpp` → `/llama` → `/model`, y la misma tarea otra vez.
+
+**Elegir el modelo de la Vía B dentro de la misma familia que el del gateway** — mismo tokenizer, misma plantilla de chat — así la comparación aísla el tamaño y la cuantización en vez de mezclar todo. Gemma 4 tiene E2B y E4B, que es exactamente para lo que existen; Qwen tiene hermanos chicos de sobra.
+
+**Y chequear el gate antes de la clase, porque no es lo mismo según la familia**: Apache 2.0 no implica descarga libre. El repo de Qwen3.8-27B hoy no está gateado; los de Google históricamente piden aceptar términos en Hugging Face incluso siendo Apache. Un gate significa **un click de aceptación por persona con su propia cuenta de HF**, y con 25 personas en la red del aula eso es exactamente el tipo de fricción que hunde una vía opcional. Si el modelo elegido está gateado, **decirlo en el pre-work** con el link, o directamente elegir uno que no lo esté.
 
 - **En CPU también anda, y va lento. Eso también es el dato** — decirlo, así el que no tiene GPU igual lo intenta.
 - El entregable no es un modelo mejor: es la comparación a tres puntas y haber sentido lo que el gateway les tapó.
@@ -345,12 +381,14 @@ Lo que hay que preguntar ahora, en orden de prioridad:
 1. **Concurrencia y rate limits** con 25-30 estudiantes pegándole al gateway a la vez durante una hora. **Este es el nuevo riesgo más grande de la sesión** y ocupa el lugar que tenía la cola de GPU. Si hay límite por key, saberlo antes cambia el diseño de la práctica. **Lo necesitamos por mail igual**, aunque el punto 6 de su slot toque el tema: la respuesta define cómo se escribe la práctica, y eso hay que hacerlo antes de la clase, no durante.
 2. **Las keys**: ¿una key del curso compartida o una por estudiante? ¿Quién las emite, con cuánta anticipación, y siguen andando después del curso? (Que sigan andando sería un cierre lindísimo del curso; que no, hay que avisarlo.)
 3. **¿El gateway loguea prompts?** Necesario para que el sidebar de seguridad sea honesto. Es la pregunta que vamos a hacer en voz alta en clase — y con él explicando LiteLLM en el punto 5, se la vamos a hacer *a él*. **Preguntarla por mail primero**: la idea es que la conteste, no que lo agarre desprevenido frente a la sala.
-4. **Qué modelos hay en el gateway** además de `vllm/gemma4-26b`, y **con qué ventana de contexto está configurado el servidor**, para pinear `contextWindow` con el número correcto en vez del default de 128k. Cae dentro del punto 5 de su charla, pero el número lo necesitamos antes para la slide de config.
-5. **¿La `baseUrl` es correcta sin `/v1`?** LiteLLM sirve las dos formas y Pi construye el path; hay que probar el string exacto. Es un detalle de dos minutos que puede voltear la práctica entera.
-6. **¿Sigue haciendo falta una cuenta del CCAD para esto?** Si la key alcanza, la cuenta deja de ser requisito bloqueante — seguimos recomendándola por su propio valor, pero cambia lo que les pedimos como pre-work.
-7. **El slot de Ale**: el alcance ya está definido (los seis puntos), así que lo que falta es **confirmar que le cierra y que le entra en 30 minutos**. Mandarle los seis por escrito, con la prioridad explícita: **3, 4, 5 y 6 son los que nadie más en la sala puede dar**; 1 y 2 los abrimos nosotros si se va de tiempo. Y pedirle que nombre **LiteLLM** y **vLLM** con nombre propio, porque esas dos palabras vuelven después en la config y en la teoría. Además: presencial o remoto, si quiere slides o proyectar una sesión real en el cluster, y si el CCAD quiere algún reconocimiento o tiene materiales/branding que prefiera que usemos.
-8. **Para el punto 4, ¿necesita algo del aula?** Si va a mostrar una sesión real en el cluster, hace falta red que le sirva y saber si va a pedir GPU en vivo (y si eso puede quedar esperando en la cola frente a la sala). Un fallback grabado o un screenshot lo cubre.
-9. **¿El trámite que va a describir es el mismo que les mandamos en el pre-work?** Le pasamos el link de abrir cuenta semanas antes y él explica el trámite en la última sesión: si lo que cuenta no coincide con lo que les dijimos, queda raro. Vale mandarle nuestro texto de pre-work para que lo corrija.
+4. **El pedido: ¿pueden levantar Qwen3.8-27B?** Hoy el gateway sirve **Gemma 4 26B**, y queremos el Qwen **además**, no en lugar de. **Es un pedido, no un supuesto**, y el material está escrito para funcionar sin él. Por qué lo pedimos, y vale decírselo porque es un argumento pedagógico y no un capricho: Gemma 4 26B es MoE (~3,8B activos) y Qwen3.8-27B es denso, así que con los dos en el mismo endpoint la sala puede **medir** la diferencia entre denso y MoE en vez de escucharla. Si no se puede, la sesión sale igual con uno solo — pero avisar con tiempo para bajar la tabla comparativa de las slides.
+5. **Los `id` exactos de los modelos en LiteLLM.** `vllm/gemma4-26b` y `vllm/qwen3.8-27b` son las cadenas que tenemos escritas y **las dos hay que confirmarlas**: van textuales en una slide que 30 personas copian. Un typo acá cuesta diez minutos de práctica.
+6. **Con qué `--max-model-len` levantaron vLLM**, por modelo. Los dos candidatos hacen ~262.144 nativos y Pi asume 128.000: el número que manda es el del servidor, y lo necesitamos para pinear `contextWindow` en la slide de config. Es además la tercera fila de la tabla que vamos a mostrar en clase.
+7. **¿La `baseUrl` es correcta sin `/v1`?** LiteLLM sirve las dos formas y Pi construye el path; hay que probar el string exacto. Es un detalle de dos minutos que puede voltear la práctica entera.
+8. **¿Sigue haciendo falta una cuenta del CCAD para esto?** Si la key alcanza, la cuenta deja de ser requisito bloqueante — seguimos recomendándola por su propio valor, pero cambia lo que les pedimos como pre-work.
+9. **El slot de Ale**: el alcance ya está definido (los seis puntos), así que lo que falta es **confirmar que le cierra y que le entra en 30 minutos**. Mandarle los seis por escrito, con la prioridad explícita: **3, 4, 5 y 6 son los que nadie más en la sala puede dar**; 1 y 2 los abrimos nosotros si se va de tiempo. Y pedirle que nombre **LiteLLM** y **vLLM** con nombre propio, porque esas dos palabras vuelven después en la config y en la teoría. Además: presencial o remoto, si quiere slides o proyectar una sesión real en el cluster, y si el CCAD quiere algún reconocimiento o tiene materiales/branding que prefiera que usemos.
+10. **Para el punto 4, ¿necesita algo del aula?** Si va a mostrar una sesión real en el cluster, hace falta red que le sirva y saber si va a pedir GPU en vivo (y si eso puede quedar esperando en la cola frente a la sala). Un fallback grabado o un screenshot lo cubre.
+11. **¿El trámite que va a describir es el mismo que les mandamos en el pre-work?** Le pasamos el link de abrir cuenta semanas antes y él explica el trámite en la última sesión: si lo que cuenta no coincide con lo que les dijimos, queda raro. Vale mandarle nuestro texto de pre-work para que lo corrija.
 
 Cuando el hilo esté leído, bajar las respuestas a este archivo y recién entonces escribir el ejercicio contra los valores reales.
 
@@ -364,7 +402,10 @@ Cuando el hilo esté leído, bajar las respuestas a este archivo y recién enton
 
 ## Herramientas y recursos referenciados
 
-- **El gateway del CCAD** — `https://litellm.ccad.unc.edu.ar`, API compatible con OpenAI, modelo `vllm/gemma4-26b`. Es el vehículo de la práctica. La key se entrega en clase y **no se commitea**.
+- **El gateway del CCAD** — `https://litellm.ccad.unc.edu.ar`, API compatible con OpenAI. Es el vehículo de la práctica. La key se entrega en clase y **no se commitea**. Los `id` de los modelos van textuales en una slide y **hay que confirmarlos con Ale**.
+- [**Gemma 4 26B**](https://blog.google/innovation-and-ai/technology/developers-tools/gemma-4/) — **el modelo que el gateway sirve hoy**, y el default del material. **MoE: 26B totales, ~3,8B activos por token**, **Apache 2.0** (cambio respecto de Gemma 2 y 3, que tenían términos propios), contexto de hasta 256K, multimodal. Familia de cuatro tamaños: E2B, E4B, 26B MoE y 31B denso — los dos chicos son los candidatos naturales para la Vía B. Anunciada el 2026-04-02. Los repos de Google en Hugging Face suelen estar **gateados**: chequearlo antes de apoyar la Vía B en ellos.
+- [**Qwen3.8-27B**](https://huggingface.co/Qwen/Qwen3.8-27B) — **el modelo que le pedimos a Ale, todavía no disponible.** 27B **densos**, **Apache 2.0**, `bfloat16`, contexto nativo de **262.144**, multimodal (no usamos esa parte), plantilla de chat con soporte de tools, repo **sin gate**. Verificado el 2026-08-24 contra el model card; el repo se actualizó el 2026-08-14. **Denso contra el MoE de Gemma es el motivo del pedido**: con los dos servidos, la tabla de VRAM se mide en vez de explicarse.
+- **Los dos son el dato más perecedero del archivo** — re-verificar tamaños, licencias y gates la semana de la clase.
 - [Pi — modelos y providers custom](https://pi.dev/docs/latest/models) — la doc en la que se apoya el bloque de `models.json`. Config en `~/.pi/agent/models.json`, se relee al abrir `/model`. `api` acepta `openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai`. `apiKey` acepta `$VAR` / `${VAR}` e `!comando`. Defaults: `contextWindow` 128000, `maxTokens` 16384.
 - [Pi + llama.cpp](https://pi.dev/docs/latest/llama-cpp) — la Vía B. `llama-server --models-dir ~/models --no-models-autoload --jinja --host 127.0.0.1 --port 8080 -ngl 999 -c 32768`, después `/login llama.cpp` (o `LLAMA_BASE_URL`, default `http://127.0.0.1:8080`), `/llama` para cargar o buscar en Hugging Face, `/model` para seleccionar.
 - [llama.cpp](https://github.com/ggml-org/llama.cpp) — el runtime de la Vía B.
@@ -374,7 +415,7 @@ Cuando el hilo esté leído, bajar las respuestas a este archivo y recién enton
 - [Pedido de cuentas](https://supercomputo.unc.edu.ar/servicios/pedido-de-cuentas/) · [uso intensivo](https://supercomputo.unc.edu.ar/servicios/pedido-de-uso-intensivo-ventanilla-permanente/) · [soporte a usuarios](https://supercomputo.unc.edu.ar/servicios/soporte-usuarios/)
 - [Estado del servicio](https://stats.uptimerobot.com/eLhTV5CMni) · [dashboard](https://stats.ccad.unc.edu.ar/) — chequear antes de la clase.
 - **La GPU portátil de Agus** — demo de la columna "tu propio hardware" y cara visible de la Vía B.
-- Licencias: los model cards de Hugging Face (el campo de licencia y el LICENSE del repo). Leer el texto real de lo que nombremos, no un resumen. Para hoy, en particular, **los términos de Gemma**.
+- Licencias: los model cards de Hugging Face (el campo de licencia y el LICENSE del repo). Leer el texto real de lo que nombremos, no un resumen. Para hoy hacen falta **tres cards** y el contraste es el contenido: **Gemma 4** (Apache 2.0, la del modelo que van a usar), **Gemma 3** (términos propios de Google, misma familia) y **Llama** (community licence con cláusula de escala).
 
 ## Lo que dejamos afuera a propósito
 
@@ -389,12 +430,13 @@ Cuando el hilo esté leído, bajar las respuestas a este archivo y recién enton
 ## Pendientes (para próximas iteraciones)
 
 - **Correr la Vía A de punta a punta antes de la clase, en una máquina limpia**: `models.json` → key → `/model` → una tarea real en un repo real con su `AGENTS.md`. Es el único ensayo que importa y ahora es corto, así que no hay excusa para no hacerlo.
-- **Verificar que `vllm/gemma4-26b` emita tool calls válidos a través de LiteLLM**, contra un `AGENTS.md` de verdad y con varias tools cargadas. **Es el único punto que puede voltear las dos vías**: un modelo que escribe bien pero no puede producir un tool call válido hace que la práctica no tenga nada que mostrar. Probar el modelo concreto, no la familia.
+- **Verificar que el modelo abierto emita tool calls válidos a través de LiteLLM** —`vllm/gemma4-26b` seguro, y `vllm/qwen3.8-27b` si Ale lo levanta— contra un `AGENTS.md` de verdad y con varias tools cargadas. **Es el único punto que puede voltear las dos vías**: un modelo que escribe bien pero no puede producir un tool call válido hace que la práctica no tenga nada que mostrar. Probar el modelo concreto, no la familia — y ojo, **que la plantilla de chat soporte tools (lo verificamos, los soporta) no es lo mismo que que el modelo los emita bien a través del proxy**. Lo que hay que probar es la cadena entera.
 - **Probar la `baseUrl` exacta**, con y sin `/v1`, y dejar en la slide la que funcione.
 - **Probar concurrencia**: 25-30 requests simultáneos contra el gateway. Si hay rate limit, definir si se practica de a dos o en dos oleadas.
 - **Definir cómo se entregan las keys** y no improvisarlo en el aula. Si es una key compartida, tenerla en una slide; si es una por estudiante, repartirlas antes. Y **no dejar la key en un archivo commiteado del repo del curso** — en el material va `$CCAD_API_KEY`.
 - **Fijar `contextWindow`** con el valor real del servidor, apenas Ale lo confirme.
-- **Verificar la licencia de Gemma para la versión exacta**, la semana de la clase.
+- **Verificar las licencias de las revisiones exactas** de lo que esté servido, y el estado de gate de cada repo, la semana de la clase. Tener las tres cards del contraste abiertas en pestañas antes de entrar al aula: Gemma 4, Gemma 3, Llama.
+- **Pedirle a Ale el Qwen con tiempo** (item 4 de la lista), y **decidir una fecha de corte**: pasada esa fecha, las slides se cierran con un solo modelo y la tabla de denso vs. MoE se da como teoría en vez de como medición. No dejar esa decisión para la semana de la clase.
 - **Confirmar que Agus trae la GPU portátil**, qué modelo va a servir, y probarlo. Ya no es el respaldo de la sesión, así que si no llega no se cae nada — pero es el mejor momento visual del día.
 - **Confirmar la participación de Ale, fecha y formato.** El plan B ya no es equivalente y hay que saberlo: los puntos 1 y 2 los podemos dar nosotros en 10 minutos con la wiki y la página de equipamiento, y de LiteLLM y vLLM podemos explicar *qué son* — pero **cómo se pide la cuenta, cómo se corre un LLM en el cluster y por qué el CCAD eligió esta arquitectura no lo podemos dar con autoridad**. Sin él, los puntos 3 a 6 se degradan a "acá están los links". Si su participación queda en duda, pedirle igual algo grabado o un walkthrough escrito de esos cuatro puntos.
 - **Decidir la duración real de la sesión** y, si son 2 horas, adoptar la variante de arriba de entrada en vez de improvisar recortes.

@@ -410,7 +410,7 @@ Not a dedicated session, but surfaced where relevant:
 
 Owner: Diego. Guest: **Ale Silva (CCAD)**. Goes last because it lands better after Session 5 — students who wrote their own loop already believe the model is swappable — but it no longer *depends* on it.
 
-> **The vehicle is a gateway, not a cluster login.** CCAD is exposed as a **LiteLLM** proxy with an OpenAI-compatible endpoint (`vllm/gemma4-26b`), and Pi reaches it with a provider entry in `~/.pi/agent/models.json`. The GPU queue — previously flagged here as the session's biggest risk — is out of the picture entirely.
+> **The vehicle is a gateway, not a cluster login.** CCAD is exposed as a **LiteLLM** proxy with an OpenAI-compatible endpoint. **Gemma 4 26B** (`vllm/gemma4-26b`) is what it serves today; **Qwen3.8-27B is requested from Ale and may not arrive**, so the material works with either. Exact ids to be confirmed, and Pi reaches it with a provider entry in `~/.pi/agent/models.json`. The GPU queue — previously flagged here as the session's biggest risk — is out of the picture entirely.
 
 **Recap & Sharing (~10 min)**
 
@@ -421,9 +421,9 @@ Owner: Diego. Guest: **Ale Silva (CCAD)**. Goes last because it lands better aft
 
 **Theory: "The Model Is a Component" (~45 min, split around the hands-on)**
 - **Open source vs. open weights**: the binary, not the recipe. Nearly everything marketed as open-source AI is open weights.
-- **Licences**: Apache 2.0/MIT vs. bespoke licences with usage and scale restrictions vs. restrictions on the output. Can I use it commercially, redistribute a fine-tune, and who owns the generations? Concrete rather than hypothetical: the model they'll use is a Gemma, so a bespoke Google licence.
+- **Licences**: Apache 2.0/MIT vs. bespoke licences with usage and scale restrictions vs. restrictions on the output. Can I use it commercially, redistribute a fine-tune, and who owns the generations? Concrete rather than hypothetical, and note a correction to an earlier draft: **Gemma 4 is Apache 2.0**, not a bespoke Google licence — that changed with version 4, and Gemma 2/3 are the restricted ones. Which turns the generic warning into the block's best moment: **the licence changed between versions of the same family**, visible on screen in thirty seconds on the very model they're using. Three cards, three regimes: Gemma 4 (Apache), Gemma 3 (bespoke), Llama (community licence with a scale clause).
 - Open weights vs. hosted APIs: the control spectrum. The **middle column** — open weights on someone else's GPU — is what the gateway is, and it's the day's default.
-- What it takes to run one: VRAM arithmetic (26B × 2 bytes ≈ 52 GB explains by itself why it lives at CCAD), quantization, local vs. serving runtimes, the OpenAI-compatible endpoint.
+- What it takes to run one: VRAM arithmetic (26B × 2 ≈ 52 GB, or 27B × 2 ≈ 54 GB — either explains by itself why it lives at CCAD, and the "2 bytes" is verifiable on screen from the model's own `config.json`), **dense vs. MoE** (Gemma 4 26B activates ~3.8B of its 26B per token; Qwen3.8-27B activates all 27B — same VRAM floor, very different latency, which breaks the intuition that parameter count buys memory and slowness together), quantization, local vs. serving runtimes, the OpenAI-compatible endpoint.
 - **`models.json`: the model as config** — the block the session turns on. Walk the provider entry field by field: `api: openai-completions` as the interoperability story typed out, `apiKey` as an env var and never a literal, and `contextWindow` as a number somebody chose.
 - **Demo: Agus's portable GPU** serving a small model live — the "your own hardware" column made physical, and the visible face of the optional local track. No longer the fallback endpoint: the gateway is more reliable than a laptop.
 - HPC mechanics, as what the gateway abstracts away: login vs. compute node, the scheduler, why an inference gateway exists at all, shared-resource etiquette.
@@ -519,7 +519,10 @@ For students who don't bring their own:
 - The BeerJS talk *"Pi, the self-building agent"* (2026-06-25, Agus) — the source of the layer diagram, the loop diagram, the package diagram and the subagents extension shown in class.
 
 ### Session 6 — Open source models & HPC
-- **CCAD's inference gateway** — `https://litellm.ccad.unc.edu.ar`, OpenAI-compatible, model `vllm/gemma4-26b`. The vehicle for the hands-on. The API key is handed out in class and **never committed**; course material uses `$CCAD_API_KEY`.
+- **CCAD's inference gateway** — `https://litellm.ccad.unc.edu.ar`, OpenAI-compatible. The vehicle for the hands-on. The API key is handed out in class and **never committed**; course material uses `$CCAD_API_KEY`. Model ids go verbatim on a slide, so confirm them with Ale.
+- [**Gemma 4 26B**](https://blog.google/innovation-and-ai/technology/developers-tools/gemma-4/) — **served today; the material's default.** MoE, 26B total / ~3.8B active per token, **Apache 2.0** (a change from Gemma 2/3's bespoke terms), up to 256K context, multimodal. The family's E2B and E4B are the natural local-track models. Announced 2026-04-02. Google's HF repos are typically **gated** — check before leaning on them for the local track.
+- [**Qwen3.8-27B**](https://huggingface.co/Qwen/Qwen3.8-27B) — **requested from Ale, not yet available.** 27B **dense**, **Apache 2.0**, `bfloat16`, **262,144** native context, multimodal (unused here), tool-capable chat template, **ungated** repo. Verified against the model card 2026-08-24. The reason for asking: dense against Gemma's MoE lets the room *measure* the VRAM/latency split instead of being told it.
+- Both model entries are **the most perishable facts in the plan** — re-verify sizes, licences and gates the week of class.
 - [Pi — models & custom providers](https://pi.dev/docs/latest/models) — `~/.pi/agent/models.json`, re-read every time `/model` opens. `api` accepts `openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai`. `apiKey` accepts `$VAR` / `${VAR}` and `!command`. Defaults: `contextWindow` 128000, `maxTokens` 16384.
 - [Pi + llama.cpp](https://pi.dev/docs/latest/llama-cpp) — the optional local track. `/login llama.cpp` → `/llama` → `/model`.
 - [LiteLLM](https://github.com/BerriAI/litellm) — the gateway/proxy pattern for inference, and what the `vllm/` prefix in the model id comes from.
