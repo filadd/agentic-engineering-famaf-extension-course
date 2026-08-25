@@ -14,7 +14,6 @@ sessions/          — per-session materials (slides, exercises, instructor note
   session-4/       — Context Engineering               ┘
   session-5/       — Coding Harness (internals)        ┐ advanced arc
   session-6/       — Open Source Models & CCAD         ┘ (session 6 closes the course)
-resources/         — reference materials, reading lists, links
 COURSE_PROGRAM.md  — full course design document
 ```
 

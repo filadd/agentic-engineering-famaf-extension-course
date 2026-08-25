@@ -22,7 +22,6 @@ The six run as two blocks. Same cohort throughout — "advanced" describes depth
 
 ```
 sessions/          — per-session materials (slides, exercises, instructor notes)
-resources/         — reference materials and reading lists
 COURSE_PROGRAM.md  — full course design document
 ```
 
