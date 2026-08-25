@@ -19,7 +19,7 @@ Short course for university CS students with some project experience but little/
     1. Vibecoding origin (Karpathy): https://x.com/i/status/1886192184808149383
     2. Vibecoding as videogame (Naval) https://x.com/i/status/2039617101221224858
     3. Kids Vibecoding (usando Lovable): https://www.instagram.com/reels/DKj1ghsiRN3/
-    4. Vibe coding in prod: https://youtu.be/fHWFF_pnqDk?si=aJ7ctIkNvouw_3Ix
+    4. Vibe coding in prod (Anthropic): https://www.youtube.com/watch?v=fHWFF_pnqDk
 2. **AI-Assisted Coding** — copilot-style completions, developer maintains control
 3. **Directed AI Assistance** — experienced use of LLMs with constraints, specs, and review
 4. **Agentic Coding** — orchestrating AI agents on tasks with oversight
@@ -511,6 +511,17 @@ For students who don't bring their own:
 - Udemy: "The Complete Course on Coding Agents" by Nikolai Schuler & Jagger Bellagarda — [Udemy search](https://www.udemy.com/courses/search/?q=coding+agents+claude+code)
 - ICSE 2026 AGENT Workshop — academic research on agentic software engineering
 - The 80% Problem in Agentic Coding (vault: Reading_List/Queue)
+
+### Session 1 — Vibecoding
+
+- [Andrej Karpathy: *From Vibe Coding to Agentic Engineering* (w/ Stephanie Zhan)](https://www.youtube.com/watch?v=96jN2OCOfLs) — the whole arc of this course in one talk, given by the person who coined "vibe coding", and under the same title. Useful twice: as Part 5 material, and as the reason the course is shaped the way it is.
+- [Anthropic: *Vibe coding in prod* | Code w/ Claude](https://www.youtube.com/watch?v=fHWFF_pnqDk) — the fourth of Part 5's four takes. Same video linked in "The Spectrum" above.
+- [Naval: *On Vibe Coding*](https://www.youtube.com/watch?v=hTdSU7q5WCo) — vibecoding as a video game, the second of Part 5's four takes. **Check whether this is the same material as the x.com clip cited in "The Spectrum"**; if it is, keep one and drop the other from the slide.
+
+### Session 3 — Skills
+
+- [Barry Zhang & Mahesh Murag (Anthropic): *Don't Build Agents, Build Skills Instead*](https://www.youtube.com/watch?v=CEvIs9y1uog) — the argument behind Tier 3's framing: the reusable artefact is the skill, not a bespoke agent. Backs the one sentence the session spends on skills as the thing that transfers to whatever tool the student uses next.
+- [Matt Pocock: *Building Great Agent Skills: The Missing Manual*](https://www.youtube.com/watch?v=UNzCG3lw6O0) — practical guidance on writing a `SKILL.md` that actually fires: naming, descriptions, and what belongs in the body vs. the references. Directly useful for step 3 of the Session 3 hands-on, where students write their first one.
 
 ### Session 5 — Harness internals
 - **Pi's own docs, which ship with the install** — the primary source for this session and already on every student's machine: `extensions.md`, `compaction.md`, `sessions.md`, `session-format.md`, `security.md`, `sdk.md`. Online at [pi.dev/docs](https://pi.dev/docs/latest/).
