@@ -277,7 +277,7 @@ Not a dedicated session, but surfaced where relevant:
 **Theory: "Teaching The Agent" (~20-30 min)**
 - Tools: the unit of agent capability. What a tool definition looks like (name + schema + handler), how the LLM decides which to call, examples from Pi's built-in toolbelt. Why a smarter tool often beats a smarter model.
 - Harness: the program that wraps the LLM. Pi's responsibilities — context window management, tool execution, permissions, extension points. Quick comparison with Claude Code / Cursor / Aider / OpenCode so students see that "harness" is a real design space, not just "the UI."
-- Custom instructions: `AGENTS.md` as the agent's persistent memory — from the ten-line version they wrote in Session 2 to one that actually shapes behaviour, plus loading order across directories and rules files
+- Custom instructions: `AGENTS.md` as the agent's persistent memory — written here from scratch, since neither Session 1 nor Session 2 touches it; students arrive with the *motivation* (their notes on what they had to explain twice), not with a file. Plus loading order across directories and rules files
 - Skills and slash commands: building reusable capabilities — and that the `SKILL.md` format is the open [Agent Skills](https://agentskills.io/) standard, so what they write today isn't tied to Pi
 - MCP and external tools: how external services plug into the harness as new tools — the agent's capabilities grow at runtime
 - Documentation tools (e.g. context7, context-hub): why accurate docs matter — the AI hallucinates APIs, context7, context-hub fixes that

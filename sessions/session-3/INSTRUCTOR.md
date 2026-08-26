@@ -71,7 +71,33 @@ Esto arma el día mejor que una ronda de quejas, porque la respuesta de hoy a "p
 
 **Este va a Mentimeter.** Es literalmente el insumo de todos los bloques que siguen y de los cuatro pasos de la práctica. Pregunta abierta, seis o siete respuestas, y **la pantalla queda proyectada toda la clase**: vamos a volver a apuntar a esas respuestas cuatro veces.
 
-Por qué Mentimeter y no levantar la mano: responden todos a la vez y en anónimo, así que aparece lo que nadie diría en voz alta, y queda un artefacto escrito que no hay que transcribir. **Tener el menti armado y la pregunta cargada antes de entrar al aula** — no se arma en vivo. Y un plan B por si la red del aula falla: la misma pregunta a mano alzada y las respuestas al pizarrón.
+Por qué Mentimeter y no levantar la mano: responden todos a la vez y en anónimo, así que aparece lo que nadie diría en voz alta, y queda un artefacto escrito que no hay que transcribir. **Tener el menti armado y la pregunta cargada antes de entrar al aula** — no se arma en vivo.
+
+#### El menti, listo para copiar
+
+**Tipo**: pregunta abierta (*open ended*), respuestas múltiples por participante, vista de **lista** y no de nube — la nube de palabras rompe las frases, y acá lo que vale es la frase entera.
+
+**La pregunta, textual:**
+
+> **¿Qué le tuviste que explicar al agente más de una vez esta semana?**
+> Escribilo como se lo dirías a él. Una cosa por respuesta; mandá todas las que quieras.
+
+Las dos líneas importan las dos: sin la primera responden con categorías (*"convenciones"*, *"el stack"*) y no sirven; sin la segunda mandan una sola.
+
+**Los ejemplos semilla** — sembrarlos si a los noventa segundos hay menos de cuatro respuestas. Se tiran en voz alta ("a mí esta semana me pasó que…"), no se cargan en la pantalla: sembrar la pantalla mata el anonimato del resto.
+
+1. *"Los tests se corren con `pnpm test`, no con `npm test`."*
+2. *"Usamos pnpm. Cada vez que me instalaba algo con npm me rompía el lockfile."*
+3. *"Los componentes van en `src/components/`, uno por archivo."*
+4. *"No me toques los archivos de migraciones."*
+5. *"No me pongas comentarios que repiten lo que dice la línea de abajo."*
+6. *"Antes de decirme que terminaste, corré los tests."*
+
+Están redactados como los diría un estudiante y no como categorías, a propósito: es el registro que queremos que copien.
+
+**Los cuatro momentos en que se vuelve a la pantalla** — vale tenerlos en la cabeza porque son la razón de dejarla proyectada: (1) la tabla de *dónde vive cada cosa que repetís*, diciendo en voz alta a qué fila cae cada respuesta; (2) *qué va adentro del `AGENTS.md`*; (3) el paso 1 de la práctica, donde esas notas van pegadas dentro del prompt; (4) el paso 3, donde lo que quedó afuera del archivo se vuelve skill.
+
+**Plan B sin red**, y conviene tenerlo decidido y no improvisarlo: la misma pregunta a mano alzada y las respuestas al pizarrón, en la misma redacción. Se pierde el anonimato y se pierden las respuestas de los callados — que son justamente las buenas—, así que si el aula tiene wifi dudoso, probar el menti desde el celular **antes** de que entre la sala.
 
 **Coordinar con Agus antes de la clase**: cómo cerró realmente la Sesión 2, qué juntó él en su bloque de reflexión, y si la tarea se pidió como estaba escrita. No volver a recolectar lo que él ya juntó.
 
@@ -355,8 +381,8 @@ Son 47 minutos de teoría en cuatro bloques. Están ordenados para que cada uno 
 
 ## Pendientes (para próximas iteraciones)
 
-- **Armar el Mentimeter antes de la clase** con la pregunta *"¿qué le tuviste que explicar más de una vez?"* y los cuatro o cinco ejemplos concretos listos para sembrar si la nube sale floja. Probar que la pantalla se pueda dejar proyectada mientras seguimos con las slides — vamos a volver a ella cuatro veces.
-- **Probar `pi install npm:pi-mcp-adapter` en una máquina limpia** y cronometrarlo. Se instala en clase (paso 4), así que 20-30 instalaciones simultáneas pasan por la red del aula: si tarda más de un par de minutos, el paso 4 no cierra en 10 y hay que reconsiderar el pre-work.
+- ~~Redactar el Mentimeter~~ → **escrito**, en el bloque de recap: tipo de pregunta, la pregunta textual, seis ejemplos semilla y el plan B sin red. Queda **cargarlo en Mentimeter** antes de la clase y **probar que la pantalla se pueda dejar proyectada** mientras seguimos con las slides — se vuelve a ella cuatro veces, y esos cuatro momentos están listados ahí.
+- **Probar `pi install npm:pi-mcp-adapter` en una máquina limpia** y cronometrarlo. **La instalación se queda en clase — decidido**, mismo criterio que la Sesión 1: un pre-work opcional lo hace la mitad de la sala y arrancaríamos el paso 4 con dos poblaciones. Lo que cambia según el cronómetro no es *dónde* se instala sino *cuánto dura el paso 4*: si 20-30 instalaciones simultáneas contra la red del aula tardan más de un par de minutos, el paso 4 no cierra en 10 y hay que recortarlo, no adelantarlo.
 - **Probar context7 en la red del aula con 20-30 personas.** Definir si hace falta API key y, si hace falta, resolverlo antes de la clase y no en el momento.
 - **Correr `npx ctx7 setup` en una máquina limpia** y ver **qué archivo de config deja escrito y dónde**. Es el comando que 30 personas van a copiar textual en el paso 4, y el ejercicio les pide después abrir esa config para reconocer el `mcpServers` de la teoría. Si el instalador la deja en un lugar que no es `.mcp.json` en la raíz, ajustar la redacción del paso 4.
 - **Verificar la lista de clientes de [Agent Skills](https://agentskills.io/) la semana de la clase.** Crece rápido y la frase que decimos en la sala nombra media docena de herramientas: si alguna cambió, la frase queda vieja. Chequear en particular que **Pi siga figurando** — es lo que hace que la línea funcione en esta sesión y no es un dato que controlemos nosotros.
@@ -364,7 +390,7 @@ Son 47 minutos de teoría en cuatro bloques. Están ordenados para que cada uno 
 - **Confirmar con Agus que subagentes son suyos** (Sesión 4, con el caso de uso de documentación) y que el paquete del curso sigue siendo `pi-subagents` — hay al menos seis forks en npm. Hoy no se dan: si él prefiere que se nombren de otra manera, ajustar la fila de la tabla de cierre. **Worktrees quedan afuera del curso**; avisarle por si los quería usar.
 - **Correr `eli5` en Pi de punta a punta, en la máquina de la demo.** Camino propuesto: copiar el `SKILL.md` a `.pi/skills/eli5/` e instalar [`pi-artifacts`](https://pi.dev/packages/pi-artifacts). Lo que hay que averiguar probándolo: (a) si el cuerpo dispara solo o hay que nombrarle la tool —`artifact_create` / `artifact_publish` no se llaman igual que en Claude Code—, y (b) si hace falta cuenta de Cloudflare para el preview temporal. **Anotar el ajuste exacto que haya que hacerle al archivo, aunque sea una palabra**: ese diff *es* el material del matiz, y mostrarlo en pantalla vale más que contarlo. Si no llegamos a probarlo, mostrar el ejemplo igual pero diciendo que está corrido en Claude Code — no afirmarlo sobre Pi.
 - **Elegir el proyecto de la demo.** Tiene que tener suficiente forma como para que un `AGENTS.md` no sea trivial, y ser seguro de mostrar en el proyector.
-- **Tener un `AGENTS.md` malo guardado de antemano**, y la mejor manera de conseguirlo es **pedírselo al agente sin darle nada**: sale genérico, largo y con algún comando inventado. Guardar esa salida cruda tal cual. Es exactamente lo que van a ver en el paso 1 antes de podar, así que sirve para el antipatrón sin depender de producirlo en vivo. Si tiene un comando que no existe, mejor: es el punto.
+- **El `AGENTS.md` malo se le pide al agente en el momento** — decidido: no se guarda uno escrito de antemano. Se le pide sin darle nada y sale genérico, largo y con algún comando inventado; si tiene un comando que no existe, mejor, porque ése *es* el punto. El costo de esta decisión hay que asumirlo: **si ese día sale bueno, el antipatrón se cae**. Mitigación barata, y no es lo mismo que tener uno escrito: correr el prompt en la máquina de la demo **el día anterior** y, si la salida sirve, dejar la sesión abierta.
 - **Ensayar el bloque de anatomía con reloj**, sobre todo el reveal. Son 13 minutos con la herramienta abierta y el JSON de una tool call en pantalla.
 - **Coordinar con Agus** el cierre real de la Sesión 2 y el límite con la Sesión 5.
-- **Corregir `COURSE_PROGRAM.md:245`**, que todavía dice que los estudiantes llegan con un `AGENTS.md` de diez líneas escrito en la Sesión 2. Es residuo de antes de que se sacara ese paso.
+- ~~Corregir el residuo de `COURSE_PROGRAM.md` que decía que llegan con un `AGENTS.md` de diez líneas de la Sesión 2~~ → **corregido**: ahora dice que se escribe acá desde cero y que llegan con la motivación, no con el archivo.
