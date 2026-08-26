@@ -12,6 +12,7 @@ Este es el proyecto que vas a usar durante las 6 sesiones. Elegí algo que te d�
 
 - Tené **node y npm** instalados (`node --version` tiene que responder).
 - Tené una cuenta de **GitHub** y `git` configurado con tu nombre y mail.
+- **Para el `/login` de Pi vas a usar tu propia cuenta.** No repartimos credenciales del curso: la cuenta es tuya y te sobrevive a la cursada. Si no tenés una, se crea en el momento — si podés, vení unos minutos antes.
 - Elegí tu proyecto: uno propio, o uno de los briefs del final de este documento. **Tiene que ser algo que corra en el navegador.**
 
 ## Las reglas de hoy

@@ -62,7 +62,22 @@ The part that matters: **do they use AI, and for what?** Show of hands — study
 
 ### Part 4 — Fundamentals (~35 min)
 
-Align with the **Filadd bootcamp deck** — Diego brings it; this is where its material lands. Anything that can be shown live should be shown live: the model pages are more convincing than bullets.
+**The Filadd bootcamp deck is folded in** — summarized below, not pasted. Three things were adapted, because the audience changed from company leaders to CS students: the Filadd-internal framing is gone (the disclaimers, the normal-curve argument about where Filadd should sit, the NotebookLM links about how the deck itself was made); **the HPC material got promoted**, because these students *are* the FaMAF students in that story; and the cybersecurity block narrowed from company-wide data governance to the one point that matters at a keyboard — what you paste goes to a third party.
+
+Anything that can be shown live should be shown live: the model pages are more convincing than bullets.
+
+**Budget it as ~5 + ~25 + ~5 (Agus's demo).** The block is full, and Part 3's show of hands decides what gets compressed: with a room that already uses agents, the timeline and the catalogue go fast and the history block stays.
+
+#### 4.a — De dónde viene esto (~5 min)
+
+The history opener, and it earns its five minutes with this audience because it reframes the hype as the arrival of something old.
+
+- **Turing, 1950.** The Turing test is 75 years old. AI has been studied as theory for +70 years — [there's a playable version](https://turingtest.live/) if the room wants to try it in the break.
+- **What changed is that the theory became applicable**: compute got cheap enough, and in 2017 the [Transformers paper](https://arxiv.org/abs/1706.03762) showed an architecture that generates text from the preceding sequence. That's the whole revolution in one sentence — not new ideas, newly runnable ones.
+- **GPT = Generative Pre-trained Transformer.** Say what the three letters mean; nobody in the room has been told. [3Blue1Brown's video](https://www.youtube.com/watch?v=wjZofJX0v4M) is the hand-out for whoever wants the visual version.
+- **And the example that makes next-token prediction land in Argentina**: `Messi ...` → the model completes `es un excelente jugador de fútbol`. But a sports journalist in a bad decade completes *"no canta el himno"*, and [Casciari](https://hernancasciari.com/blog/messi_es_un_perro/) completes *"es un perro"*. **Same prefix, three different plausible continuations, none of them "the truth".** It's the cleanest possible setup for the next bullet, and it's funny, which buys attention for the twenty minutes after it.
+
+#### 4.b — Cómo funciona, y qué te vende (~25 min)
 
 - **Generative AI**: models that generate new content instead of classifying. Place LLMs inside that.
 - **Next-token prediction**: it produces the *plausible* continuation, not the *true* one. Hallucination is the mechanism working, not a bug. This explains half of what they'll see in the hands-on.
@@ -78,9 +93,14 @@ Align with the **Filadd bootcamp deck** — Diego brings it; this is where its m
 - **So: what is a coding agent?** An LLM that takes actions on a repo through tools.
 - **Three words: LLM, tool, harness.** The vocabulary we reuse all course. **Pi is a harness.** Say explicitly: all three get opened up in Session 3 — today we only need the names.
 - **The catalogue by environment**: web (Lovable, v0, Bolt, Claude Code web), desktop (Claude Code desktop), terminal (Claude Code, Codex, Pi, opencode). Then: in this course we use Pi.
+- **Lo que pegás se lo estás dando a un tercero.** The cybersecurity point from the Filadd deck, narrowed to what applies at a keyboard: a prompt is data leaving your machine — your data, someone else's data, or the university's. It has a legal dimension too (Brazil's LGPD is the example Diego used, and it's a good one precisely because it is not ours). One minute, no taxonomy: security is cross-cutting and each session takes a piece. **Session 6 closes this thread from the other end** — running the model yourself removes that third party and makes you the operator.
+- **El hardware existe, y está acá.** The block that lands hardest with *this* room and would have been a footnote anywhere else: [FaMAF students competing in HPC in China](https://www.instagram.com/teamcarpinchos/). The resources that are suddenly scarce and valuable — **knowledge, electricity, water for cooling, GPUs** — are not an abstraction in Córdoba. **This is the seed of Session 6**: UNC runs a supercomputing center, and in the last session they point their own agent at it. Plant it and move on; don't spend the ending here.
+- **"Don't outsource the learning."** [Addy Osmani's line](https://x.com/addyosmani/status/2056078124346228860), and the phrase to leave hanging over the whole course — it pairs exactly with *responsibility is yours*, which is Part 2's idea. Say the practical version: explore, push every button, learn from trial and error, read, and leave time for the kind of rest where you actually think. **Plant the phrase and stop there** — skill atrophy is Session 4's closing material and spending it today would spend the base arc's ending in the first hour.
 - **Pi intro + live demo — Agus.** What Pi is, why we picked it, how you install it (point at the official quickstart, don't dictate commands). Then one prompt, narrating the loop out loud as it happens: "that was a tool call; the result went back into the model's context". One concrete pass beats a diagram. ~5 min.
 
 Then a break. Deep-theory questions (attention, training, embeddings) get answered in the break, not from the slide.
+
+> **Two optional asides from the Filadd deck, for a room that's ahead of schedule** — both are colour, neither is content. [Simon Willison on the last six months in LLMs](https://simonw.substack.com/p/the-last-six-months-in-llms-in-five), for the exponential-curve framing; and **slop**, with the detail that lands in a CS classroom — SPAM as a term comes from [a Monty Python sketch](https://www.youtube.com/watch?v=mG8PcUiHTpY), and Monty Python is where Guido van Rossum got the name Python. [Willison on slop](https://simonwillison.net/2026/Mar/23/neurotica/) is the modern half. **Cut both without guilt**; the history block is worth more.
 
 ### Part 5 — Vibecoding (~35 min, theory + demo)
 
@@ -183,14 +203,14 @@ That adds to ~3 h, so it's tight but should fit. **If the room runs long, cut fr
 
 ## Open items (for future iterations)
 
-- **Pre-work**: ask students to arrive with node/npm installed and, ideally, Pi already running. Otherwise the install step eats the building time.
+- ~~Pre-work~~ → **decided: no pre-work message.** The install happens in the room, as planned, and the ~27-minute hands-on absorbs it. The reason to keep it that way: an optional pre-work is done by half the room and we'd start with two populations. It does raise the stakes on the item below.
 - **Test the Pi install on a clean machine before class, following the official quickstart.** Two package names are circulating on npm (`@earendil-works/…` and `@mariozechner/…`) — which is why the exercise points at the docs instead of a hardcoded command. Confirm what it needs from node/npm, and how `/login` resolves for 20-30 people at once.
 - **Does Pi have its own tutorial** we could hand out as extra practice? Not in the quickstart. Check the rest of pi.dev/docs.
 - **Agus's course recommendations** — pending from him for the Part 2 slide.
 - **Align the fundamentals block with the Filadd bootcamp deck** — not in this repo; Diego has to bring it. Until then Part 4 is an outline, not final content.
 - **Verify the live URLs** (Anthropic/OpenAI/Z.ai/Moonshot model + pricing pages, OpenAI compare page, "Claude Code in Action") the day before. They move.
 - **Karpathy tweet ID**: `COURSE_PROGRAM.md` "The Spectrum" uses `1886192184808149383` (Feb 2 2025, the original) and the references section used a different ID. Unified to the first — worth a 10-second check that the link resolves.
-- **Credentials**: course-wide keys or students' own? Unresolved course-wide (see COURSE_PROGRAM.md open questions).
+- ~~Credentials: course-wide keys or students' own?~~ → **decided: each student uses their own account for `/login`.** Nothing to provision and nothing to hand out. Two consequences to carry, and neither is a blocker: whoever arrives without an account creates one in the room (which is part of why the install step is protected), and **the room will not all be running the same model** — worth remembering in Session 6, where the hosted model is the baseline each student compares the open one against. The comparison is per-student, so it survives.
 - **Ask permission early** to show a student's code on the projector — mid-debrief is an awkward time to ask.
-- **Fallback demo project** with known-bad AI-generated code, for the security moment if the room's projects are too clean.
+- ~~Fallback demo project~~ → **written: `exercise/proyecto-de-respaldo/`.** Vibe-coded and left untouched, with four real holes for the security moment when the room's own projects come out too clean. The instructor's cheat sheet is in that directory's README.
 - **Confirm the 3-hour slot** for this session specifically, since the rest are 2 h.

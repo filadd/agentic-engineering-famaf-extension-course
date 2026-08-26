@@ -142,9 +142,27 @@ Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 
 
 ---
 
-# Parte 4 — Fundamentals
+# Parte 4 — Fundamentos
 
-<!-- Sección. ~35 min. Alinear el contenido con el deck del bootcamp de Filadd (Diego lo trae). Todo lo que se pueda mostrar en vivo, mostrarlo en vivo: las páginas de modelos son más convincentes que un bullet. -->
+<!-- Sección. ~35 min, repartidos ~5 (de dónde viene) + ~25 (cómo funciona) + ~5 (demo de Pi, Agus). El material del bootcamp de Filadd está incorporado y adaptado: se fue lo interno de la empresa, se ASCENDIÓ el bloque de hardware —porque esta sala ES la de esa historia— y ciberseguridad se angostó al único punto que aplica con las manos en el teclado. Todo lo que se pueda mostrar en vivo, mostrarlo en vivo. LA MANO ALZADA DE LA PARTE 3 DECIDE QUÉ SE COMPRIME: si la sala ya usa agentes, la línea de tiempo y el catálogo pasan rápido y la historia se queda. -->
+
+---
+
+## Esto no es nuevo: Turing, 1950
+
+<!-- ~5 min de historia, y con esta audiencia se pagan solos porque reencuadran el hype como la llegada de algo viejo. El test de Turing tiene 75 años y la IA se estudia como teoría hace más de 70. Hay una versión jugable (turingtest.live) para tirar en la pausa. LA IDEA: no estamos viviendo ideas nuevas, estamos viviendo ideas que recién ahora se pueden correr. -->
+
+---
+
+## Lo que cambió: cómputo + Transformers (2017)
+
+<!-- Dos cosas y nada más: el cómputo se abarató, y en 2017 el paper "Attention Is All You Need" mostró una arquitectura que genera texto a partir de la secuencia anterior. Esa es toda la revolución en una oración. Y ya que estamos, decir qué significan las tres letras que nadie les explicó: GPT = GENERATIVE PRE-TRAINED TRANSFORMER. Para el que quiera la versión visual, el video de 3Blue1Brown. -->
+
+---
+
+## `Messi ...`
+
+<!-- EL EJEMPLO QUE HACE ATERRIZAR TODO EL BLOQUE SIGUIENTE, y funciona porque es de acá. El modelo completa "es un excelente jugador de fútbol". Pero un periodista deportivo en una década mala completa "no canta el himno", y Casciari completa "es un perro". MISMO PREFIJO, TRES CONTINUACIONES PLAUSIBLES, NINGUNA ES "LA VERDAD". Es el setup perfecto para la slide siguiente, y encima es gracioso — eso compra atención para los veinte minutos que vienen. -->
 
 ---
 
@@ -235,6 +253,24 @@ Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 
 ## Pi
 
 <!-- Agus. Intro breve: qué es Pi, por qué lo elegimos para el curso, cómo se instala y cómo se arranca (mandarlos a la quickstart oficial: pi.dev/docs/latest/quickstart). -->
+
+---
+
+## Lo que pegás, se lo estás dando a un tercero
+
+<!-- ~1 min, y es el punto de ciberseguridad angostado a lo que aplica con las manos en el teclado: un prompt es data que sale de tu máquina — tuya, de otro, o de la facultad. Tiene una dimensión legal además (la LGPD de Brasil es buen ejemplo justamente porque no es la nuestra). Sin taxonomías: la seguridad es transversal y cada sesión se lleva un pedazo. Y LA SESIÓN 6 CIERRA ESTE HILO DESDE LA OTRA PUNTA: correr el modelo vos saca al tercero del medio y te convierte a vos en el operador. -->
+
+---
+
+## El hardware existe, y está acá
+
+<!-- EL BLOQUE QUE PEGA MÁS FUERTE CON ESTA SALA Y QUE EN CUALQUIER OTRA SERÍA UNA NOTA AL PIE: estudiantes de FaMAF compitiendo en HPC en China (@teamcarpinchos). Los recursos que de golpe son escasos y valiosos —CONOCIMIENTO, ELECTRICIDAD, AGUA para refrigerar, GPUs— no son una abstracción en Córdoba. ES LA SEMILLA DE LA SESIÓN 6: la UNC opera un centro de cómputo de alto desempeño, y en la última clase van a apuntar su propio agente ahí. Plantarlo y seguir — el final del curso no se gasta hoy. -->
+
+---
+
+## "Don't outsource the learning"
+
+<!-- LA FRASE QUE QUEDA COLGADA SOBRE TODO EL CURSO, y hace juego exacto con "la responsabilidad es tuya" de la Parte 2. La versión práctica: exploren, toquen todos los botones, aprendan de prueba y error, lean — y dejen tiempo para el ocio donde uno efectivamente piensa. PLANTAR LA FRASE Y PARAR AHÍ: la atrofia de habilidades es material del cierre de la Sesión 4, y gastarlo hoy sería gastar el final del arco base en la primera hora. -->
 
 ---
 

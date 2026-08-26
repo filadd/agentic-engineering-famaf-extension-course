@@ -1,0 +1,43 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Notas de la cursada</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 3rem auto; }
+  li { margin: 0.5rem 0; }
+  input, textarea { display: block; width: 100%; margin: 0.5rem 0; padding: 0.4rem; }
+</style>
+
+<h1>Notas de la cursada</h1>
+
+<ul id="lista"></ul>
+
+<h2>Dejar una nota</h2>
+<input id="alumno" placeholder="Tu nombre" />
+<textarea id="texto" placeholder="Tu nota"></textarea>
+<button onclick="enviar()">Guardar</button>
+
+<script>
+  const API = "http://localhost:3000";
+
+  async function cargar() {
+    const notas = await (await fetch(API + "/api/notas")).json();
+    document.getElementById("lista").innerHTML = notas
+      .map((n) => "<li><b>" + n.alumno + ":</b> " + n.texto + "</li>")
+      .join("");
+  }
+
+  async function enviar() {
+    await fetch(API + "/api/notas", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        alumno: document.getElementById("alumno").value,
+        texto: document.getElementById("texto").value,
+      }),
+    });
+    document.getElementById("texto").value = "";
+    cargar();
+  }
+
+  cargar();
+</script>
