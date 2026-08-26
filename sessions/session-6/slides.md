@@ -24,6 +24,11 @@ SESIÓN DE 2 H 30 (las otras son de 2 h; la Sesión 1 es de 3):
 5 recap, 30 invitado, 30 pesos abiertos, 5 pausa, 60 práctica,
 5 puesta en común, 15 cierre del curso. Da 150 EXACTOS: NO HAY COLCHÓN.
 
+LA PRÁCTICA ES VOLVER A HACER LAS PRIMERAS CUATRO SESIONES contra el
+modelo abierto: vibecodear, planificar, skills y MCP, documentar. Una
+prueba por sesión, 8 min de models.json + 40 de pruebas, y la GPU de
+Agus como punto extra de comparación. Ver exercise/README.md.
+
 El bloque elástico es el recap. Si algo se estira se sacrifica primero
 la pausa, después la puesta en común. LA PRÁCTICA Y EL CIERRE NO SE TOCAN.
 Los dos bloques de 30 hay que ensayarlos con reloj.
@@ -221,7 +226,7 @@ model-Q4_K_M.gguf
 30 mil millones de parámetros ×  4 bits ÷ 8 = 15 GB
 ```
 
-<!-- ~4 min. La cuenta es la del post y VA EN EL PIZARRÓN además de la slide. Cuantizar es guardar los pesos con menos bits. ES LA DIFERENCIA ENTRE "ESTO NO ENTRA EN NINGUNA MÁQUINA DE ESTA SALA" Y "ENTRA EN VARIAS" — y explica solo por qué el modelo grande vive en el CCAD y por qué lo que sirva Agus en su GPU va a ser mucho más chico. Dejarla escrita: en la Vía B se compara contra la VRAM real. -->
+<!-- ~4 min. La cuenta es la del post y VA EN EL PIZARRÓN además de la slide. Cuantizar es guardar los pesos con menos bits. ES LA DIFERENCIA ENTRE "ESTO NO ENTRA EN NINGUNA MÁQUINA DE ESTA SALA" Y "ENTRA EN VARIAS" — y explica solo por qué el modelo grande vive en el CCAD y por qué lo que sirva Agus en su GPU va a ser mucho más chico. Dejarla escrita: contra la GPU de Agus se compara con la VRAM real. -->
 
 ---
 
@@ -277,17 +282,17 @@ model-Q4_K_M.gguf
 
 # Práctica (60 min)
 
-<!-- Sección. EL BLOQUE MÁS LARGO DE LA SESIÓN Y EL QUE NO SE RECORTA. Dos vías, y las dos son la misma operación contra endpoints distintos: agregar un provider y elegir el modelo con /model. NADIE INSTALA UN RUNTIME. Ver exercise/README.md — no leer los pasos desde la slide. DECIR EN VOZ ALTA AL SOLTARLOS: el resultado de la sesión depende SOLO de la Vía A; nadie se va con la sensación de no haber terminado por no haber hecho la B. -->
+<!-- Sección. EL BLOQUE MÁS LARGO DE LA SESIÓN Y EL QUE NO SE RECORTA. EL EJERCICIO ES VOLVER A HACER LAS PRIMERAS CUATRO SESIONES CON OTRO MODELO ABAJO: vibecodear, planificar, skills y MCP, documentar. Nadie instala un runtime: el swap es un archivo de configuración y /model. Ver exercise/README.md — no leer los pasos desde la slide. DECIR EN VOZ ALTA AL SOLTARLOS: el resultado de la sesión son las CUATRO PRUEBAS CONTRA EL CCAD; lo de la GPU de Agus es un punto más de comparación y nadie se va con la sensación de no haber terminado por no haberlo hecho. -->
 
 ---
 
-## Las dos vías
+## Cómo se reparte la hora
 
 | | Quién | Tiempo |
 |---|---|---|
 | Paso 0 — `models.json` | todos, juntos | 8 min |
-| **Vía A** — el gateway del CCAD | **todos** | 32 min |
-| Vía B — la GPU de Agus, en el aula | opcional | 20 min |
+| **Las cuatro pruebas, contra el CCAD** | **todos** | 40 min |
+| Una prueba más contra la GPU de Agus | opcional | 12 min |
 
 <!-- Dejar proyectada. Y la etiqueta de recurso compartido, que es lo único que sobrevive del bloque de mecánica de cluster y va en UNA FRASE: hay gente corriendo su tesis en esas máquinas, así que respetar los rate limits y no dejar tareas absurdas corriendo por curiosidad. -->
 
@@ -329,18 +334,26 @@ model-Q4_K_M.gguf
 | Pi, si no le decís nada | **128.000** |
 | El CCAD, al levantar vLLM (`--max-model-len`) | **el que manda** |
 
-<!-- LA MEJOR PARTE DEL PASO 0. `contextWindow` tiene default 128000 y `maxTokens` default 16384: O SEA QUE LA VENTANA DE CONTEXTO ES UN NÚMERO QUE ALGUIEN ELIGIÓ. Después de cinco sesiones tratándola como una propiedad del producto que compraron, resulta ser un parámetro de arranque. Escribir las tres filas en el pizarrón, una debajo de la otra: el modelo puede 256K, Pi asume 128K, y LO QUE REALMENTE TIENEN ES LO QUE EL SERVIDOR ARRANCÓ. ⚠️ SI EL SERVER ARRANCÓ CON MENOS QUE EL DEFAULT DE PI, LOS REQUESTS VAN A FALLAR: fijar `contextWindow` explícitamente con el valor que confirme Ale. Es la misma perilla que Agus fija de su lado en la Vía B, vista desde la otra punta. Y el detalle operativo que hace fácil la práctica: EL ARCHIVO SE RELEE CADA VEZ QUE ABRÍS /model, sin reiniciar nada. -->
+<!-- LA MEJOR PARTE DEL PASO 0. `contextWindow` tiene default 128000 y `maxTokens` default 16384: O SEA QUE LA VENTANA DE CONTEXTO ES UN NÚMERO QUE ALGUIEN ELIGIÓ. Después de cinco sesiones tratándola como una propiedad del producto que compraron, resulta ser un parámetro de arranque. Escribir las tres filas en el pizarrón, una debajo de la otra: el modelo puede 256K, Pi asume 128K, y LO QUE REALMENTE TIENEN ES LO QUE EL SERVIDOR ARRANCÓ. ⚠️ SI EL SERVER ARRANCÓ CON MENOS QUE EL DEFAULT DE PI, LOS REQUESTS VAN A FALLAR: fijar `contextWindow` explícitamente con el valor que confirme Ale. Es la misma perilla que Agus fija de su lado al servir su GPU, vista desde la otra punta. Y el detalle operativo que hace fácil la práctica: EL ARCHIVO SE RELEE CADA VEZ QUE ABRÍS /model, sin reiniciar nada. -->
 
 ---
 
-## Vía A — el gateway del CCAD (todos)
+## Las cuatro pruebas
 
-```
-export CCAD_API_KEY=...   →   /model   →   tarea en TU repo
-                          →   misma tarea con el modelo hosteado
-```
+| | La sesión | La pregunta |
+|---|---|---|
+| 1 | **Vibecodear** | ¿funciona igual de bien? |
+| 2 | **Planificar** | ¿los planes mantienen la misma calidad? |
+| 3 | **Skills y MCP** | ¿los sigue como debe? |
+| 4 | **Documentar** | ¿qué tan buenos son los docs que genera? |
 
-<!-- ~32 min. El flujo entero. LO QUE HAY QUE VIGILAR CAMINANDO LA SALA: (1) LA TAREA VA EN SU REPO, con su AGENTS.md y sus skills de la Sesión 3, NO EN UN DIRECTORIO DE PRUEBA — el que lo hace en /tmp hizo un ejercicio de configuración, no la clase. (2) LA TAREA TIENE QUE SER MULTI-PASO Y CON AL MENOS DOS TOOL CALLS: si le piden algo de un solo turno los dos modelos van a parecer iguales y la comparación no dice nada. El ejemplo que funciona: "leé estos dos archivos y arreglá la inconsistencia entre ellos". (3) DOS SESIONES LIMPIAS, no una sesión con /model en el medio: para que la comparación sea justa los dos modelos tienen que arrancar del mismo contexto. (4) EL ERROR MÁS PROBABLE NO ES CONCEPTUAL: es un typo en el JSON o la key sin exportar — por eso el paso 0 se hace en conjunto. -->
+<!-- ~40 min, Y ES EL EJERCICIO ENTERO: volver a hacer las primeras cuatro sesiones con otro modelo abajo. Dejar la tabla proyectada toda la práctica. Ver exercise/README.md — no leer los pasos desde la slide. LA LÍNEA DE BASE NO ES OTRA CORRIDA: ES LO QUE YA SABEN de las primeras cuatro clases, así que la comparación arranca gratis. Decirlo así al soltarlos: "no estamos midiendo el modelo, estamos midiendo SU andamiaje contra otro motor". Y avisar cuál es cuál: la prueba 1 es la que menos va a diferenciar (en una sola pasada todos los modelos se parecen) y LA PRUEBA 3 ES LA QUE MÁS INFORMACIÓN DA — si algo se rompe hoy, se rompe ahí. -->
+
+---
+
+## Lo que hay que vigilar caminando la sala
+
+<!-- (1) TODO EN SU REPO, con su AGENTS.md, sus skills y su .mcp.json: el que lo hace en /tmp hizo un ejercicio de configuración, no la clase. (2) SESIÓN NUEVA Y LIMPIA PARA CADA PRUEBA, y repo limpio entre una y otra — si arrastran la conversación no saben qué están midiendo. (3) QUE NO "ARREGLEN" SUS ARTEFACTOS PARA AYUDAR AL MODELO: si el skill no dispara, ESO ES EL RESULTADO. (4) Si algo los sorprende, QUE REPITAN ESA PRUEBA CON EL MODELO HOSTEADO antes de concluir: es lo que separa "el modelo abierto no puede" de "mi prompt siempre fue frágil y recién ahora se nota". (5) EL ERROR MÁS PROBABLE NO ES CONCEPTUAL: un typo en el JSON o la key sin exportar — por eso el paso 0 se hace en conjunto. -->
 
 ---
 
@@ -348,14 +361,14 @@ export CCAD_API_KEY=...   →   /model   →   tarea en TU repo
 
 - ¿**Respetó el schema** de las tools?
 - ¿**Cuántos turnos** necesitó?
-- ¿**Inventó** nombres de archivos o funciones?
+- ¿**Inventó** archivos, funciones o APIs?
 - ¿Cómo se sintió la **latencia**?
 
-<!-- Estos apuntes SON EL INSUMO DE LA PUESTA EN COMÚN, que dura cinco minutos: sin ellos no hay nada que poner en común. Dejar la slide proyectada durante toda la Vía A. Y si el gateway terminó sirviendo los dos modelos abiertos, ofrecer una TERCERA CORRIDA COMO EXTRA —mismo prompt, mismo repo, el otro modelo— pero NO COMO PASO OBLIGATORIO: es un punto más de comparación, no parte de la tesis. -->
+<!-- Las cuatro preguntas transversales, además de lo específico de cada prueba. SON EL INSUMO DE LA PUESTA EN COMÚN, que dura cinco minutos: sin apuntes no hay nada que poner en común. Dejar la slide proyectada al lado de la tabla de las cuatro pruebas. Y el callback que vale la pena tirar caminando: lo primero que se degrada con la cuantización es la SALIDA ESTRUCTURADA — o sea, la primera de estas cuatro preguntas. -->
 
 ---
 
-## Vía B — la GPU de Agus, acá en el aula (opcional)
+## Opcional — la GPU de Agus, acá en el aula
 
 ```json
 "agus": {
@@ -366,7 +379,7 @@ export CCAD_API_KEY=...   →   /model   →   tarea en TU repo
 }
 ```
 
-<!-- ~20 min, OPCIONAL, y del lado del estudiante es OTRA ENTRADA MÁS en el mismo models.json: cero instalación, cero descarga de pesos, cero pelea con drivers. ⚠️ COMPLETAR LA IP Y EL MODELO CON AGUS ANTES DE LA CLASE, y probar el flujo entero desde otra máquina del aula. QUÉ ENSEÑA, y no es lo mismo que enseñaba servirlo uno mismo: (1) LA TERCERA CORRIDA — modelo grande en hardware de la UNC, modelo hosteado, y ahora modelo chico a tres metros: es el punto donde se separa "los modelos abiertos son peores" de "ESTE MODELO CHICO Y CUANTIZADO es peor", que es un salto de madurez técnica y sale casi gratis. (2) EL MODELO A TRES METROS Y LOS DATOS SIN SALIR DEL AULA: sin cuenta, sin key, sin nadie en el medio — la contracara exacta de las cinco sesiones anteriores. Mostrar la VRAM real contra la cuenta de cuantización, y los tokens por segundo, PARA QUE LA LATENCIA SE SIENTA EN VEZ DE DESCRIBIRSE. (3) EL SWAP POR SEGUNDA VEZ EN VEINTE MINUTOS. REPETIR AL SOLTARLOS Y OTRA VEZ A LOS QUINCE MINUTOS: NADIE TIENE QUE TERMINAR ESTO. -->
+<!-- ~12 min, OPCIONAL, y del lado del estudiante es OTRA ENTRADA MÁS en el mismo models.json: cero instalación, cero descarga de pesos, cero pelea con drivers. ⚠️ COMPLETAR LA IP Y EL MODELO CON AGUS ANTES DE LA CLASE, y probar el flujo entero desde otra máquina del aula. NO SE REPITEN LAS CUATRO PRUEBAS: eligen UNA —la 3, skills y MCP, es la que más información da— y la vuelven a correr acá. QUÉ ENSEÑA, y no es lo mismo que enseñaba servirlo uno mismo: (1) SEPARA DOS COSAS QUE LA SALA MEZCLA — modelo grande en hardware de la UNC, modelo hosteado, y ahora modelo chico a tres metros: es el punto donde se separa "los modelos abiertos son peores" de "ESTE MODELO CHICO Y CUANTIZADO es peor", que es un salto de madurez técnica y sale casi gratis. (2) EL MODELO A TRES METROS Y LOS DATOS SIN SALIR DEL AULA: sin cuenta, sin key, sin nadie en el medio — la contracara exacta de las cinco sesiones anteriores. Mostrar la VRAM real contra la cuenta de cuantización, y los tokens por segundo, PARA QUE LA LATENCIA SE SIENTA EN VEZ DE DESCRIBIRSE. (3) EL SWAP POR SEGUNDA VEZ EN LA MISMA HORA. REPETIR AL SOLTARLOS Y OTRA VEZ A LOS DIEZ MINUTOS: NADIE TIENE QUE TERMINAR ESTO. -->
 
 ---
 

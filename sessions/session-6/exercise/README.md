@@ -1,49 +1,34 @@
-# Sesión 6 — Ejercicio práctico: cambiale el modelo
+# Sesión 6 — Ejercicio práctico: volvé a hacer las primeras cuatro sesiones, con otro modelo abajo
 
 ## Objetivo
 
-**Apuntar tu agente —el mismo Pi de las cinco sesiones anteriores, con tu `AGENTS.md` y tus skills— a un modelo de pesos abiertos corriendo en hardware de la UNC, y comparar.**
+**Apuntar tu agente a un modelo de pesos abiertos corriendo en hardware de la UNC, y volver a probar contra él todo lo que aprendiste en las primeras cuatro sesiones.**
 
-No se trata de dejar una configuración "bien puesta". Se trata de que al final de la hora tengas **una opinión propia, medida sobre tu propio repo**, de qué cambia y qué no cuando le cambiás el modelo abajo al agente.
+Cuatro pruebas, una por sesión:
 
-**Nadie instala un runtime hoy.** No hay pesos que bajar, drivers que pelear ni servidores que levantar: todo el ejercicio es **un archivo de configuración** y el comando `/model`.
+| | La sesión | La pregunta |
+|---|---|---|
+| 1 | **Vibecodear** | ¿funciona igual de bien? |
+| 2 | **Planificar** | ¿los planes mantienen la misma calidad? |
+| 3 | **Skills y MCP** | ¿los sigue como debe? |
+| 4 | **Documentar** | ¿qué tan buenos son los docs que genera? |
+
+No estamos midiendo el modelo en abstracto: **estamos midiendo tu andamiaje contra otro motor**. La pregunta de fondo es cuánto de lo que construiste en cinco sesiones dependía del modelo — y la respuesta la sacás vos, midiendo, no nosotros afirmándola.
+
+**Nadie instala un runtime hoy.** No hay pesos que bajar ni drivers que pelear: el cambio de modelo es un archivo de configuración y el comando `/model`.
 
 ## Antes de empezar
 
-- Trabajá sobre **el mismo proyecto** que venís usando desde la Sesión 1, **con su `AGENTS.md` y sus skills de la Sesión 3**. Esto no es negociable y es lo que hace aterrizar la sesión: si lo hacés en un directorio de prueba, hiciste un ejercicio de configuración y no la clase.
-- `git status` limpio antes de arrancar.
-- **Tené a mano la API key del CCAD.** Se entrega en clase.
-- Un editor abierto en `~/.pi/agent/models.json`. Si el archivo no existe, lo creás vos — y fijate quién es el vecino: en ese mismo directorio vive el **`AGENTS.md` global** que escribiste en la Sesión 3.
-
-## Las dos vías
-
-| | Quién la hace | Qué necesita |
-|---|---|---|
-| **Paso 0 — `models.json`** | todos, juntos y en voz alta | 8 min |
-| **Vía A — el gateway del CCAD** | **todos** | 32 min |
-| **Vía B — la GPU de Agus, en el aula** | opcional | 20 min |
-
-> **El resultado de la sesión depende únicamente de la Vía A.** La Vía B es una pista avanzada: **no terminarla no es no haber hecho el ejercicio**. Si llegás al final de la Vía A con la comparación anotada, la clase te sirvió entera.
-
-## Antes de soltar el teclado: la etiqueta
-
-Del otro lado del endpoint hay **una máquina compartida**, y hay gente corriendo su tesis ahí. Respetá los rate limits y no dejes tareas absurdas corriendo por curiosidad. Es la misma cortesía de cualquier recurso compartido, y hoy es literal.
-
-Y lo otro: **la key no se commitea.** Ni hoy ni nunca. Más abajo está el cómo.
-
----
+- Trabajá sobre **el mismo proyecto** que venís usando desde la Sesión 1, con **su `AGENTS.md`, sus skills y su `.mcp.json`**. Esto no es negociable: si lo hacés en un directorio de prueba, hiciste un ejercicio de configuración y no la clase.
+- `git status` limpio antes de arrancar, y limpiá entre prueba y prueba (`git stash` o `git checkout .`).
+- **La API key del CCAD**, que se entrega en clase.
+- **Tu memoria de las primeras cuatro sesiones es la línea de base.** Ya sabés cómo se porta tu agente con el modelo hosteado: eso es contra lo que vas a comparar.
 
 ## Paso 0 — `models.json` (~8 min, todos juntos)
 
-Esto lo hacemos **en conjunto, con el archivo proyectado**. No arranques solo: si te trabás acá, perdés la comparación, que es lo único que no se puede recuperar en casa.
+Esto lo hacemos **en conjunto, con el archivo proyectado**. No arranques solo: si te trabás acá perdés las pruebas, que es lo único que no se puede recuperar en casa.
 
-Pi busca los proveedores de modelos en:
-
-```
-~/.pi/agent/models.json
-```
-
-Pegá esto adentro:
+Pi busca los proveedores de modelos en `~/.pi/agent/models.json` — el mismo directorio donde vive el **`AGENTS.md` global** que escribiste en la Sesión 3:
 
 ```json
 {
@@ -61,35 +46,22 @@ Pegá esto adentro:
 }
 ```
 
-> ⚠️ **La `baseUrl` y los `id` de los modelos van textuales de la slide.** Los strings exactos los decide el CCAD al registrar los modelos, así que copiá lo que esté proyectado, no lo que está acá.
-
-Y exportá la key en la terminal desde la que vas a levantar Pi:
+Y en la terminal desde la que vas a levantar Pi:
 
 ```
 export CCAD_API_KEY=<la key que te dimos en clase>
 ```
 
-### Las cuatro cosas que hay que entender de ese archivo
+> ⚠️ **La `baseUrl` y los `id` van textuales de la slide.** Los strings exactos los decide el CCAD al registrar los modelos, así que copiá lo proyectado, no lo de acá. Si el segundo modelo no aparece en el picker, es porque el CCAD no lo levantó: **no es un typo tuyo** y las cuatro pruebas se hacen igual con el que esté.
 
-**1. `api: "openai-completions"` — por qué esto funciona.**
-Es la historia de interoperabilidad de la teoría, convertida en un string que estás tipeando. Los valores posibles son `openai-completions`, `openai-responses`, `anthropic-messages` y `google-generative-ai`: **cuatro formas de API para todo el ecosistema**. El CCAD no expone una API "del CCAD" — expone la misma que expondría Ollama en una notebook, o LM Studio, o vLLM crudo. Por eso cambiar de modelo cuesta cinco líneas y no una tarde.
+**Cuatro cosas de ese archivo, y cada una es algo que ya sabés:**
 
-**2. `apiKey: "$CCAD_API_KEY"` — por qué la variable y no la key.**
-El campo acepta interpolación de variables de entorno (`$VAR`, `${VAR}`) y también ejecutar un comando si arranca con `!`. **Usá la variable.** Una key literal en un archivo es una key literal en un backup, en un screenshot, y —el día que versiones tus dotfiles— en un repo público. Es la primera credencial propia del curso: es el momento de agarrar el reflejo.
+1. **`api: "openai-completions"`** es la interoperabilidad de la teoría convertida en un string. Los valores posibles son `openai-completions`, `openai-responses`, `anthropic-messages` y `google-generative-ai`: **cuatro formas de API para todo el ecosistema**. El CCAD no expone una API "del CCAD" — expone la misma que expondría Ollama, o LM Studio, o vLLM crudo. Por eso el swap cuesta cinco líneas.
+2. **`apiKey: "$CCAD_API_KEY"`** — el campo acepta `$VAR` y `${VAR}`, y también ejecutar un comando si arranca con `!`. **Usá la variable, nunca la key literal**: una key en un archivo es una key en un backup, en un screenshot y —el día que versiones tus dotfiles— en un repo público.
+3. **`models` es una lista.** Declarás el catálogo; el modelo activo lo elegís con `/model`. Son dos cosas distintas.
+4. **`litellm.ccad.unc.edu.ar` y el prefijo `vllm/`** son las dos cosas que te explicó Ale hace media hora: el gateway adelante, y su routing hacia lo que corre atrás.
 
-**3. `models` es una lista, y por eso hay dos.**
-El `id` es lo que se manda a la API y es lo que vas a ver en el picker de `/model`. **Declarás el catálogo; el modelo activo lo elegís aparte.** Son dos cosas distintas y este archivo las separa.
-
-> Si el segundo modelo **no aparece** en el picker, es porque el CCAD no lo tiene levantado hoy. **No es un typo tuyo** y no te falta nada: la Vía A se hace igual con el que esté.
-
-**4. El prefijo `vllm/` y la URL no son magia.**
-Son las dos cosas que te explicó Ale hace media hora: `litellm.ccad.unc.edu.ar` es el **gateway LiteLLM**, y el `vllm/` es su routing hacia **vLLM**, que es lo que corre atrás sirviendo el modelo. Estás tipeando la arquitectura que te acaban de contar.
-
-### Lo que *no* está en ese JSON, y es la mejor parte
-
-Pi tiene defaults: `contextWindow` **128000** y `maxTokens` **16384**.
-
-O sea que **la ventana de contexto es un número que alguien eligió**. Después de cinco sesiones tratándola como una propiedad del producto, resulta que hay tres números distintos para la misma cosa:
+**Lo que *no* está en el JSON:** `contextWindow` tiene default **128000** y `maxTokens` **16384**. O sea que la ventana de contexto es un número que alguien eligió — y hay tres para la misma cosa:
 
 | Quién lo decide | Número |
 |---|---|
@@ -97,166 +69,115 @@ O sea que **la ventana de contexto es un número que alguien eligió**. Después
 | Pi, si no le decís nada | **128.000** |
 | El CCAD, al levantar vLLM (`--max-model-len`) | **el que manda** |
 
-Si el servidor arrancó con menos que el default de Pi, los requests fallan. Por eso, si en clase te damos un número, fijalo explícitamente:
+Si en clase te damos el número del servidor, fijalo: `{ "id": "...", "contextWindow": 128000 }`.
 
-```json
-{ "id": "vllm/gemma4-26b", "contextWindow": 128000 }
-```
+Y el dato que te va a servir toda la hora: **el archivo se relee cada vez que abrís `/model`**, sin reiniciar nada.
 
-**Dato operativo que te va a servir toda la hora:** el archivo **se relee cada vez que abrís `/model`**. No hace falta reiniciar nada.
+Ahora sí: `/model`, elegís el modelo abierto del CCAD, y empiezan las cuatro pruebas.
 
 ---
 
-## Vía A — el gateway del CCAD (~32 min, todos)
+## Cómo se corre cada prueba
 
-### 1. Elegí el modelo abierto
+Las cuatro tienen la misma forma, y conviene tenerla clara antes de arrancar:
 
-Desde tu proyecto, abrí Pi y:
-
-```
-/model
-```
-
-Elegí el modelo del CCAD que esté en el picker. Eso es todo el swap.
-
-### 2. Dale una tarea real, en tu repo
-
-**Dos requisitos, y los dos importan:**
-
-- **En tu repo**, con tu `AGENTS.md` y tus skills cargados. Todo el punto del ejercicio es ver si tu andamiaje sobrevive al cambio de modelo.
-- **Multi-paso, con al menos dos llamadas a tools.** Si le pedís algo de un solo turno, los dos modelos van a parecer iguales y la comparación no dice nada.
-
-El molde que funciona:
-
-```
-Leé <archivo A> y <archivo B>, encontrá la inconsistencia entre los dos y arreglala.
-```
-
-Otras que sirven: agregar un test que falle y después hacerlo pasar; renombrar algo que aparece en tres archivos; agregar un endpoint chico siguiendo las convenciones que ya están escritas en tu `AGENTS.md`.
-
-### 3. Anotá **mientras pasa**, no después
-
-Cuatro preguntas. Escribilas en un archivo o en papel, pero escribilas: **son el insumo de la puesta en común**, y sin ellas no hay nada que poner en común.
-
-1. **¿Respetó el schema de las tools?** ¿Los tool calls salieron bien formados, o hubo llamadas que el harness rechazó?
-2. **¿Cuántos turnos necesitó** para terminar la tarea?
-3. **¿Inventó** nombres de archivos, de funciones o de APIs que no existen?
-4. **¿Cómo se sintió la latencia** adentro del loop del agente? No los tokens por segundo en abstracto: la espera real entre que le pedís algo y el agente hace la siguiente cosa.
-
-Y una quinta, que es la de la sesión: **¿el agente usó lo que dice tu `AGENTS.md` y disparó tus skills?**
-
-### 4. La misma tarea, con el modelo hosteado
-
-**Sesión nueva y limpia** — no `/model` en el medio de la conversación. Para que la comparación sea justa, los dos modelos tienen que arrancar del mismo contexto: mismo repo, mismo estado de git, mismo prompt, cero historial.
-
-```
-git stash   # o revertí lo que hizo la corrida anterior
-```
-
-Volvé a `/model`, elegí el modelo hosteado que venís usando, y dale **exactamente el mismo prompt**. Anotá las mismas cuatro preguntas.
-
-### 5. (Extra, si el gateway tiene los dos modelos abiertos)
-
-Tercera corrida: mismo prompt, mismo repo, el otro modelo abierto. **No es obligatorio.** Es un punto más de comparación, no parte de la tesis — el que no llega no se perdió nada.
-
-### Si algo falla
-
-El error más probable **no es conceptual**:
-
-- `models.json` con un JSON inválido — una coma de más, una comilla de menos.
-- La key sin exportar, o exportada en otra terminal.
-- La `baseUrl` con o sin `/v1`. Probá la que está proyectada.
-- Requests que fallan por longitud: fijá `contextWindow` como está más arriba.
-
-**Levantá la mano.** Este paso no es donde está el aprendizaje.
+- **Sesión nueva y limpia para cada una.** Contexto limpio, repo limpio. Si arrastrás la conversación anterior, no sabés qué estás midiendo.
+- **Usá tus artefactos tal como están.** No los "arregles" para ayudar al modelo abierto: si tu skill no dispara, eso *es* el resultado.
+- **Anotá mientras pasa, no después.** Son el insumo de la puesta en común, y dura cinco minutos: sin apuntes no hay nada que poner en común.
+- **Si algo te sorprende, verificá antes de concluir.** Repetí *esa* prueba con el modelo hosteado, mismo prompt y misma sesión limpia. Es lo que separa *"el modelo abierto no puede"* de *"mi prompt siempre fue frágil y recién ahora se nota"*.
 
 ---
 
-## Vía B — la GPU de Agus, acá en el aula (opcional, ~20 min)
+## Prueba 1 — Vibecodear (~8 min)
 
-Agus tiene una GPU en la sala sirviendo un modelo chico. Del lado tuyo es **otra entrada más en el mismo archivo**: misma operación, otro endpoint.
+**La Sesión 1, otra vez: prompt-and-accept.** Sin plan, sin plan mode, sin ceremonia. Pedile algo chico y bien acotado, del tamaño de lo que le pedías en la primera clase — un helper, un endpoint mínimo, un componente, un script.
+
+**Qué mirar:**
+
+- ¿**Corre**? ¿Compila, pasa el linter, hace lo que le pediste?
+- ¿**Cuántas idas y vueltas** hasta llegar a algo aceptable? Es la métrica honesta del vibe coding.
+- ¿**Inventó** una API, una función o una opción de librería que no existe?
+- ¿Cómo se sintió la **latencia** adentro del loop? No los tokens por segundo en abstracto: la espera real entre pedir y ver la siguiente acción.
+
+> La pregunta: *¿funciona igual de bien?* Y la trampa a evitar: en tareas de una pasada casi todos los modelos parecen iguales. Si te da lo mismo, **eso también es un resultado** — y explica por qué las tres pruebas siguientes existen.
+
+## Prueba 2 — Planificar (~12 min)
+
+**La Sesión 2.** Elegí una feature de verdad de tu repo —algo que no se describa en una frase— y pedile el plan como aprendiste a pedirlo: plan mode, o tu flujo de Plannotator, o el skill de planificación que escribiste en la Sesión 3.
+
+**Qué mirar, que es exactamente lo que le anotabas a mano en la Sesión 2:**
+
+- ¿**Preguntó lo que le faltaba**, o lo adivinó y siguió?
+- ¿El plan dice **qué archivos toca**, con la ruta?
+- ¿Dice **cómo se verifica** cada paso — qué test lo cubre y dónde vive?
+- ¿**Se quedó planificando**, o se puso a escribir código igual? (Ojo acá: si tenés plan mode con bloqueo de tools, el bloqueo lo hace el harness y no el modelo. Lo que estás midiendo es **cómo reacciona al `reason`** que le devuelve el harness: ¿cambia de estrategia o reintenta a ciegas?)
+- ¿**Cuánto le tuviste que anotar** para que el plan sirviera, comparado con lo que le anotabas en la Sesión 2?
+
+> La pregunta: *¿los planes mantienen la misma calidad?* Es la prueba donde la diferencia entre modelos se empieza a ver de verdad, porque planificar es razonamiento largo y no autocompletado.
+
+## Prueba 3 — Skills y MCP (~12 min)
+
+**La Sesión 3, y es la prueba más importante de las cuatro.** Acá se mide si tu configuración sobrevive al cambio de modelo.
+
+Pedile una tarea que **tendría que disparar tu skill** — sin nombrarlo, sin `/skill:...`, dejando que la `description` haga su trabajo — y que además **necesite una tool del MCP** que configuraste (context7 o el que tengas).
+
+**Qué mirar:**
+
+- ¿**Disparó el skill solo**? Si no, forzalo con `/skill:<nombre>` y fijate si el problema era el disparo o el contenido. **Son dos fallas distintas**: la primera es de la `description`, la segunda del cuerpo.
+- Una vez cargado, ¿**siguió el procedimiento**, o hizo lo suyo igual? ¿Se saltó pasos?
+- ¿**Respetó el `AGENTS.md`** — los comandos, las convenciones, las decisiones que ya tenías escritas?
+- ¿Los **tool calls salieron bien formados**? ¿Hubo llamadas que el harness rechazó por schema inválido, argumentos faltantes o nombres de tools inventados?
+- Con **muchas tools cargadas**, ¿eligió la correcta o se confundió?
+
+> La pregunta: *¿los sigue como debe?* Y el dato de la teoría que hay que tener a mano al interpretar lo que veas: **lo primero que se degrada con la cuantización suele ser la salida estructurada** — o sea, exactamente el tool calling. Si algo se rompe hoy, lo más probable es que se rompa acá y no en la calidad del código.
+
+## Prueba 4 — Documentar (~8 min)
+
+**La Sesión 4.** Pedile que documente algo **real y verificable** de tu repo: un módulo que ya existe, el README de una parte del proyecto, la explicación de un flujo que atraviesa varios archivos.
+
+**Qué mirar:**
+
+- ¿La documentación es **fiel al código**, o describe un proyecto parecido al tuyo pero que no es el tuyo? Chequealo contra los archivos, no contra tu recuerdo.
+- ¿**Leyó** lo que tenía que leer antes de escribir, o escribió de memoria?
+- ¿Documentó **lo que hace falta** — cómo se usa, qué decisiones hay detrás — o llenó líneas repitiendo lo que el código ya dice?
+- ¿**Siguió el formato y las convenciones** que ya están en tu repo?
+
+> La pregunta: *¿qué tan buenos son los docs que genera?* Documentar es la tarea que más castiga la alucinación, porque nada la hace fallar ruidosamente: un test roto se ve, un párrafo que miente no.
+
+---
+
+## Opcional — las mismas pruebas contra la GPU de Agus
+
+Agus tiene una GPU en la sala sirviendo un modelo chico. Del lado tuyo es **otra entrada más** en el mismo archivo:
 
 ```json
-{
-  "providers": {
-    "ccad": { "...": "lo de arriba, no lo borres" },
-    "agus": {
-      "baseUrl": "http://<IP-DE-AGUS>:11434/v1",
-      "api": "openai-completions",
-      "apiKey": "ollama",
-      "models": [{ "id": "<EL-MODELO-QUE-SIRVA-AGUS>" }]
-    }
-  }
+"agus": {
+  "baseUrl": "http://<IP-DE-AGUS>:11434/v1",
+  "api": "openai-completions",
+  "apiKey": "ollama",
+  "models": [{ "id": "<EL-MODELO-QUE-SIRVA-AGUS>" }]
 }
 ```
 
-> La IP y el nombre del modelo van en la slide. Notá que es **la misma forma** que el provider del CCAD: cambia la URL y nada más. Del lado del estudiante no hay nada específico del runtime.
+**No hace falta correr las cuatro. Elegí una** —la 3 es la que más información da— y repetila.
 
-Después: `/model`, elegís el modelo de Agus, **mismo prompt, mismo repo**, y anotás las mismas cuatro preguntas.
+Lo que agrega: separa *"los modelos abiertos son peores"* de *"**este** modelo chico y cuantizado es peor"*. Mirá también la VRAM que ocupa contra la cuenta de cuantización de la teoría, y qué pasa cuando toda la sala le pega al mismo tiempo: eso que ves encolarse es el batching que explicó Ale, en chiquito.
 
-### Qué mirar, que no es lo mismo que en la Vía A
+> **Nadie tiene que terminar esto.** El resultado del ejercicio son las cuatro pruebas contra el CCAD; esto es un punto más de comparación.
 
-- **La tercera corrida separa dos cosas que la sala mezcla.** Modelo grande en hardware de la UNC, modelo hosteado, y ahora modelo chico a tres metros. Eso te deja distinguir *"los modelos abiertos son peores"* de *"**este** modelo chico y cuantizado es peor"*. No es lo mismo, y es un salto de madurez técnica que sale casi gratis.
-- **La VRAM contra la cuenta que hicimos en la teoría.** Agus va a mostrar cuánta memoria ocupa el modelo que está sirviendo. Comparalo con la cuenta de cuantización: parámetros × bits ÷ 8. Ahí se ve por qué el modelo grande vive en un cluster.
-- **Los datos no salen del aula.** Sin cuenta, sin key, sin nadie en el medio: la contracara exacta de las cinco sesiones anteriores. Y el matiz de la teoría, que sigue valiendo acá: **local no significa privado automáticamente** — tu agente sigue pudiendo llamar a cualquier otra cosa.
-- **Cuando se encole, mirá.** Una GPU atendiendo a toda la sala hace cola. Eso no es una falla del día: es exactamente lo que Ale explicó al contar por qué el CCAD corre vLLM y qué es el batching. Estás viendo el techo de una sola GPU chica, en vivo.
-
-### Y el archivo, al final
-
-Tu `models.json` termina con **tres proveedores**: el hosteado que usás hace cinco sesiones, un cluster de la UNC, y una notebook que está a tres metros. Cambiar entre ellos cuesta `/model` y dos segundos.
-
-**Esa lista es la tesis de la sesión.** No es una afirmación nuestra: es un archivo tuyo.
-
----
-
-## Extensión — si terminaste la Sesión 5 con un cliente propio
-
-Apuntá **tu propio loop** a la misma `baseUrl` de LiteLLM, con la misma key. Mismo endpoint, dos clientes distintos: uno que escribiste vos y uno que instalaste.
-
-Es una línea de configuración, no una tarde. Y es la prueba más directa de todo el argumento: el endpoint no sabe ni le importa quién le está hablando.
+Y notá cómo queda tu archivo al final: **tres proveedores** — el hosteado de cinco sesiones, un cluster de la UNC, y una notebook a tres metros — y cambiar entre ellos cuesta `/model`. Esa lista es la tesis de la sesión, y no es una afirmación nuestra: es un archivo tuyo.
 
 ## Resultado esperado
 
-Al final del ejercicio deberías tener:
+- Las **cuatro pruebas corridas** contra el modelo abierto, en tu repo, con tus artefactos.
+- **Apuntes por prueba**, no impresiones generales: qué hizo, en qué falló, cuántos turnos.
+- Una respuesta propia y con evidencia a la pregunta del día: **¿qué se cayó y qué no** cuando le cambiaste el modelo abajo al agente?
 
-- Un `models.json` con **al menos dos proveedores** (tres si hiciste la Vía B).
-- **La misma tarea corrida en tu repo con dos modelos distintos**, en sesiones limpias.
-- **Cuatro respuestas anotadas por corrida** — schema, turnos, alucinaciones, latencia.
-- Una opinión propia, y con evidencia, sobre **qué se cayó y qué no** cuando le cambiaste el modelo abajo al agente.
-
-**Lo que no deberías tener:** la API key escrita en ningún archivo del repo. Chequealo antes de commitear.
+**Y una cosa que no deberías tener:** la API key escrita en ningún archivo del repo. Chequealo antes de commitear.
 
 ## Preguntas para la discusión final
 
-1. ¿**Tu `AGENTS.md` y tus skills** funcionaron igual con el modelo abierto? ¿Se disparó lo que tenía que dispararse?
-2. ¿Dónde se notó la diferencia: en **escribir código** o en **usar las tools**? Es la pregunta importante, y la respuesta más común no es la que la gente espera.
-3. Si tuvieras que sostener **un proyecto largo** con el modelo abierto, ¿qué te preocuparía primero?
+1. De las cuatro pruebas, **¿cuál se degradó más y cuál casi nada?** ¿Coincide con lo que esperabas antes de empezar?
+2. Cuando algo falló, ¿fue **escribiendo código** o **usando las tools**? La respuesta más común no es la que la gente espera.
+3. ¿Tu **`AGENTS.md` y tus skills** funcionaron igual? Si un skill no disparó, ¿el problema era el modelo o tu `description`?
 4. Para tu propio trabajo: ¿en qué caso concreto **elegirías** el modelo abierto, y en cuál no?
-
-## Apéndice — servirlo en tu propia máquina, en casa
-
-Hoy no lo hacemos en clase a propósito: bajar pesos y pelear con drivers en el aula se come la hora y no enseña nada que no hayamos visto. Pero es la continuación natural, y es media tarde de trabajo.
-
-Con [Ollama](https://ollama.com/) —que se instala igual en Mac, Linux y Windows y resuelve solo cuántas capas manda a la GPU—:
-
-```
-ollama pull <modelo>
-ollama serve
-```
-
-Eso te deja un endpoint compatible con la API de OpenAI en `http://127.0.0.1:11434/v1`, y ahí le apuntás **otra entrada más** en `models.json`, exactamente igual que hoy.
-
-Tres cosas para saber antes de intentarlo:
-
-- **El modelo tiene que soportar tool calling.** Uno sin plantilla de tools deja al agente sin poder hacer nada: no es que ande peor, es que no anda. Probalo antes de sacar conclusiones sobre el modelo.
-- **Elegí el tamaño con la cuenta de cuantización**, no con el leaderboard: parámetros × bits ÷ 8, contra la memoria que tenés de verdad.
-- **La ventana de contexto la elegís vos** (`OLLAMA_CONTEXT_LENGTH`, o `num_ctx` según cómo lo levantes). Es la misma perilla que del lado del CCAD eligió Ale, ahora en tu máquina.
-
-Y si querés el recorrido completo hecho por alguien más, con mediciones: [**Using Local Coding Agents**, de Sebastian Raschka](https://magazine.sebastianraschka.com/p/using-local-coding-agents).
-
-## Para seguir después del curso
-
-- **Pedí tu cuenta del CCAD.** Ale contó el trámite: [abrir cuenta](https://wiki.ccad.unc.edu.ar/empezar/abrir-cuenta.html) · [pedido de cuentas](https://supercomputo.unc.edu.ar/servicios/pedido-de-cuentas/). Es la puerta a correr algo en hardware real, y te sobrevive al curso.
-- [**A Deep Dive into Open-Weight AI Models**, de Flavio Copes](https://flaviocopes.com/open-weight-models/) — la teoría de hoy, para releerla con calma.
-- [**The Big LLM Architecture Comparison**, de Sebastian Raschka](https://magazine.sebastianraschka.com/p/the-big-llm-architecture-comparison) — si la pregunta que te quedó es "¿y qué otros modelos hay?".
-- [Pi — modelos y providers custom](https://pi.dev/docs/latest/models) — la documentación del archivo que escribiste hoy.
