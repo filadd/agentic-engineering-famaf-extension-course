@@ -4,14 +4,10 @@
 > Tratar cada afirmación, cada timing y cada decisión pedagógica como una propuesta, no como algo cerrado.
 >
 > **Excepciones, y estas sí son decisiones tomadas:**
-> 1. **Al CCAD se llega por un gateway LiteLLM**, y Pi se apunta ahí con un provider propio en `~/.pi/agent/models.json`. Decisión de Diego. **Y los internals de ese servidor —scheduler, SSH, cómo se orquesta la inferencia para muchos usuarios— quedan fuera del curso**: son internals de un servicio de IA multiusuario. Ale los puede tocar como parte de qué es el CCAD, con poco detalle.
+> 1. **Al CCAD se llega por un gateway LiteLLM**, y Pi se apunta ahí con un provider propio en `~/.pi/agent/models.json`. Decisión de Diego. **Los internals de ese servidor —scheduler, SSH, cómo se orquesta la inferencia para muchos usuarios— los cuenta Ale**, como parte de qué es el CCAD, pero sin entrar en mucho detalle.
 > 2. **La práctica tiene dos vías, y las dos son conectarse a un endpoint**: el gateway del CCAD para todos (Vía A) y **la GPU de Agus, servida en el aula**, como pista avanzada opcional (Vía B). Nadie instala un runtime: las dos vías son una entrada más en `models.json`. Decisión de Diego.
 > 3. **Hay dos modelos en juego y el material tiene que funcionar con cualquiera de los dos.** **Gemma 4 26B** es lo que el gateway sirve hoy. El segundo es un **Qwen**, y no es un pedido a ciegas: Ale nos dio acceso al CCAD y **probamos Qwen3.6 ahí, andando** — hoy está bajado. Lo que le vamos a pedir para el curso es que **vuelva a levantarlo**, ahora en **Qwen3.8-27B**, que es la versión que existe hoy. Escribir todo contra "el modelo de hoy" y tener los dos números a mano. Si están los dos, mejor — abajo se explica por qué la comparación entre ellos es contenido y no lujo.
-> 4. **El slot de Ale Silva son seis puntos**: qué es el CCAD, qué hardware tiene, cómo accede un estudiante de la UNC para correr un LLM ahí, cómo se corre un LLM ahí, **LiteLLM** (el gateway desde adentro) y **vLLM** (qué corre atrás). Decisión de Diego.
-
-> A cargo: Diego. Estado: en armado. Este archivo es **todo lo que hay** de la sesión: las slides y el ejercicio se borraron porque estaban escritos contra el diseño viejo (SSH + cola de GPU + túnel), y hay que escribirlos de nuevo desde acá. Material en español.
->
-> Invitado: **Ale Silva (CCAD)** — abre la sesión con seis puntos: qué es el CCAD, qué hardware tiene, cómo accede un estudiante de la UNC para correr un LLM ahí, cómo se corre un LLM ahí, y la infraestructura de inferencia por dentro: **LiteLLM** adelante y **vLLM** atrás. El alcance está definido; falta confirmar con él fecha, duración y formato.
+> 4. **El slot de Ale Silva son siete puntos**: qué es el CCAD, qué hardware tiene, cómo accede un estudiante de la UNC para correr un LLM ahí, cómo se corre un LLM ahí, **LiteLLM** (el gateway desde adentro), **vLLM** (qué corre atrás) y para qué se usa el HPC en la UNC. Decisión de Diego.
 
 > 🟢 **La forma de la sesión está decidida y son 2 h 30** (las otras son de 2 h; la Sesión 1 es de 3, así que hay precedente). Tres bloques grandes:
 >
@@ -42,7 +38,7 @@ Va al final porque aterriza mejor después de la Sesión 5 — pero **no depende
 
 > ✅ **La logística se resuelve con un gateway, y es lo que hace posible dar esta clase en dos horas.** El CCAD se expone como un gateway **LiteLLM** con endpoint compatible con OpenAI. Pi habla con eso nativamente: se agrega un provider en `~/.pi/agent/models.json`, se abre `/model`, se elige el modelo. Eso es todo el setup de la práctica.
 
-**Y la lección se fortalece, no se debilita.** Apuntar un loop de 200 líneas escrito a mano a otro modelo prueba que el loop es agnóstico del modelo. Apuntar **Pi** a otro modelo prueba algo que al curso le importa mucho más: **el `AGENTS.md`, los skills, el plan mode, el flujo de review — todo lo de las Sesiones 2 y 3 — sigue funcionando cuando le cambiás el modelo abajo.** Esa es la tesis de cierre del curso, hecha carne, en la herramienta que ya conocen.
+**Y la lección se fortalece, no se debilita.** Apuntar un harness escrito a mano a otro modelo prueba que el harness es agnóstico del modelo. Apuntar **Pi** a otro modelo prueba algo que al curso le importa mucho más: **el `AGENTS.md`, los skills, el plan mode, el flujo de review — todo lo de las Sesiones 2 y 3 — sigue funcionando cuando le cambiás el modelo abajo.** Esa es la tesis de cierre del curso, hecha carne, en la herramienta que ya conocen.
 
 ## La decisión de herramientas
 
@@ -51,24 +47,24 @@ Sigue **Pi**, sin instalar nada nuevo. Lo único que se agrega es un archivo de 
 | Vía | Quién la hace | Qué necesita | Qué enseña |
 |---|---|---|---|
 | **A — el gateway del CCAD** | todos | una entrada en `models.json` y una API key | el modelo es un componente: el swap es una línea |
-| **B — la GPU de Agus, en el aula** | opcional | otra entrada en `models.json`, apuntada a la IP de Agus | qué cambia cuando el modelo es chico y la máquina está a tres metros |
+| **B — la GPU de Agus, en el aula** | opcional | otra entrada en `models.json`, apuntada a la IP de Agus | qué cambia cuando el hardware es menos potente y lo gestiona uno mismo |
 
-**El cambio grande respecto del borrador anterior: nadie instala un runtime.** La Vía B era que cada uno se sirviera el modelo, y eso significaba 25 instalaciones, 25 descargas de pesos por la red del aula y 25 formas distintas de romperse. **Ahora Agus sirve un modelo en su GPU y la sala se conecta**, que es exactamente el mismo movimiento de la Vía A contra otro endpoint. El que quiera montarlo en su máquina tiene el apéndice y [la guía de Raschka](https://magazine.sebastianraschka.com/p/using-local-coding-agents) para hacerlo en casa.
+**Nadie instala un runtime.** **Agus sirve un modelo en su GPU y la sala se conecta**, que es exactamente el mismo movimiento de la Vía A contra otro endpoint: cero instalaciones, cero descargas de pesos por la red del aula, cero peleas con drivers. El que quiera montarlo en su máquina tiene el apéndice y [la guía de Raschka](https://magazine.sebastianraschka.com/p/using-local-coding-agents) para hacerlo en casa.
 
 **Y las dos vías juntas enseñan algo que ninguna sola:** el archivo de config termina con **tres providers** —el hosteado que vienen usando hace cinco sesiones, el CCAD y la notebook de Agus— y el modelo activo se elige con `/model`. La tesis de la sesión deja de ser una afirmación y pasa a ser una lista de tres entradas en un JSON.
 
-> ⚠️ **El riesgo de la Vía B es la concurrencia, y hay que resolverlo con Agus antes de la clase.** Una GPU sirviendo a 25 personas a la vez es exactamente el problema que Ale va a explicar media hora antes cuando cuente por qué el CCAD usa vLLM y no otra cosa. Si se encola, **se encola en vivo y delante de todos** — y eso puede ser el mejor momento de la clase o un desastre, según si estaba previsto. Decidir con él: si sirve con un runtime que batchee, si la sala entra por tandas, o si se asume la cola y se la usa como contenido. **Lo que no puede pasar es que nos agarre de sorpresa.**
+> 💡 **La concurrencia de la Vía B no es un problema: es lo que queremos que pase.** Una GPU sirviendo a 25 personas a la vez se encola, y que se encole **en vivo y delante de todos** muestra los límites de una sola GPU chica contra las que corre el CCAD — que es exactamente lo que Ale explicó media hora antes al contar por qué el CCAD usa vLLM y no otra cosa. Avisarle a Agus para que lo esperemos y lo usemos como demostración, en vez de tratarlo como una falla.
 
 **El resultado de la sesión depende únicamente de la Vía A.** Decirlo explícitamente cuando se sueltan a la práctica: nadie se va con la sensación de no haber terminado por no haber hecho la B.
 
-**Por qué Ollama y no vLLM en la Vía B**, y esta vez el contraste tiene un referente real en la sala: **el CCAD corre vLLM** detrás del gateway (el prefijo `vllm/` en el nombre del modelo lo delata) porque sirve a muchos usuarios y necesita batching de verdad. La notebook de Agus atiende a un aula durante veinte minutos. Ollama resuelve ese problema y arranca en cualquier sistema operativo; vLLM resuelve un problema de otra escala. Es la misma distinción de siempre entre runtimes, pero hoy se puede señalar con el dedo en vez de explicarla en abstracto.
+**Por qué Ollama y no vLLM en la Vía B**, y esta vez el contraste tiene un referente real en la sala: **el CCAD corre vLLM** detrás del gateway (el prefijo `vllm/` en el nombre del modelo lo delata) porque sirve a muchos usuarios y necesita batching de verdad. La notebook de Agus atiende a un aula durante veinte minutos. Ollama resuelve ese problema y arranca en cualquier sistema operativo; vLLM resuelve un problema de otra escala. Es la misma distinción de siempre entre runtimes.
 
 ## Audiencia y supuestos
 
 - **La Vía A pide muy poca terminal**: editar un JSON y correr `/model`. La Vía B es más técnica, y es opcional a propósito.
 - **Pi es el vehículo** — el mismo harness de todas las sesiones, ahora apuntado a otro modelo. Nada de la Sesión 5 es requisito. Lo que sí hace falta es que Pi siga andando en su máquina, que después de cinco sesiones es una apuesta segura.
 - **Llegan con su repo, su `AGENTS.md` y sus skills de la Sesión 3.** Ese es el insumo de la práctica y no lo podemos generar nosotros. Avisarlo la semana anterior.
-- **La cuenta del CCAD no es requisito bloqueante**: la práctica entra con una API key. **Igual hay que seguir recomendándola con semanas de anticipación**, por dos razones: es un aprendizaje que les sobrevive al curso, y es la puerta a correr algo en hardware real después. **La opción que hay que validar con Ale: que Diego emita una key por estudiante desde su propia cuenta**, y si a él le parece bien esa decisión (ver Pendiente de Ale). **Y ahora hay una tercera razón para insistir con la cuenta**: los puntos 3 y 4 del slot de Ale son cómo pedirla y qué hacer con ella, así que el que llegue con la cuenta aprobada escucha instrucciones y no anécdotas.
+- **La cuenta del CCAD no es requisito bloqueante**: la práctica entra con una API key. **Igual hay que seguir recomendándola con semanas de anticipación**, por dos razones: es un aprendizaje que les sobrevive al curso, y es la puerta a correr algo en hardware real después. **La opción que hay que validar con Ale: que Diego emita una key por estudiante desde su propia cuenta**, y si a él le parece bien esa decisión. **Y ahora hay una tercera razón para insistir con la cuenta**: los puntos 3 y 4 del slot de Ale son cómo pedirla y qué hacer con ella, así que el que llegue con la cuenta aprobada escucha instrucciones y no anécdotas.
 - **Nadie tuvo exposición previa a HPC.** El bloque de mecánica de cluster ahora es cultura general y no instrucciones de uso, lo que lo hace más corto y más fácil de dar.
 - **No asumir que entienden qué es una API key** ni qué implica pegarla en un archivo. Es la primera vez en el curso que manejan una credencial propia y hay que decir en voz alta que no se commitea.
 
@@ -84,7 +80,7 @@ Este es el bloque elástico: **si el día se estira, se recorta de acá** (mismo
 
 ### Invitado: Ale Silva — el CCAD y cómo correr un LLM ahí (~30 min)
 
-Entregar la sala. **El alcance está definido y son seis puntos**, y el slot es de **30 minutos** (confirmar con Ale que le cierra; son seis puntos y no es poco):
+Entregar la sala. **El alcance está definido y son siete puntos**, y el slot es de **30 minutos** (confirmar con Ale que le cierra; son siete puntos y no es poco):
 
 1. **Qué es el CCAD** — qué es el centro y a quién le sirve (facultades de la UNC, el Observatorio, organismos externos; creado por Ordenanza HCS 18/2010).
 2. **Qué hardware tiene** — los clusters de verdad, cuáles tienen GPU y de qué tipo. La cuenta de VRAM de un bloque posterior se apoya en esto: conviene que los números de él y los nuestros no se contradigan.
@@ -92,22 +88,11 @@ Entregar la sala. **El alcance está definido y son seis puntos**, y el slot es 
 4. **Cómo se corre un LLM ahí** — **a grandes rasgos y sin entrar en detalle**: qué hacés una vez que tenés la cuenta, sin convertirlo en un tutorial de scheduler. Es el punto que le da un camino de vuelta al que quiera seguir después del curso; los internals del servidor quedan afuera.
 5. **LiteLLM: el gateway visto desde adentro** — por qué el CCAD decidió poner un proxy adelante del cluster, qué le resuelve (un endpoint estable, auth por key, routing a varios modelos, límites por usuario), y qué se ve desde el lado del operador. Es literalmente la URL a la que la sala le va a pegar veinte minutos después.
 6. **vLLM: qué corre atrás** — por qué vLLM y no Ollama ni otra cosa, qué es el batching y por qué un servidor con muchos usuarios lo necesita, y qué pasa cuando 25 personas le pegan al mismo tiempo. Que es exactamente lo que va a pasar durante la práctica.
+7. **Para qué se usa el HPC en la UNC** — qué trabajo real corre en esas máquinas más allá de los LLMs (simulación, astronomía, química computacional, lo que sea que él vea pasar), y dónde se para el CCAD entre los clusters de Latinoamérica. Es parte de contar qué es el CCAD y le da escala a todo lo demás.
 
-**Los puntos 3 y 4 son el camino de vuelta.** La práctica entra por el gateway, así que nada de esto hace falta para la clase de hoy — pero el que quiera correr algo en hardware real después del curso necesita saber cómo se pide la cuenta y qué se hace con ella. Dicho por el que opera la máquina, vale más que cualquier link que les pasemos. **El punto 4 va con poco detalle**: la mecánica fina del cluster es internals de un servicio multiusuario y queda fuera del curso.
+**Los puntos 3 y 4 son el camino de vuelta.** La práctica entra por el gateway, así que nada de esto hace falta para la clase de hoy — pero el que quiera correr algo en hardware real después del curso necesita saber cómo se pide la cuenta y qué se hace con ella. Dicho por el que opera la máquina, vale más que cualquier link que les pasemos. **El punto 4 va con poco detalle**: la mecánica fina del cluster la cuenta él, sin convertirla en un tutorial.
 
 **Los puntos 5 y 6 son el mismo movimiento al revés, y cierran el círculo.** `https://litellm.ccad.unc.edu.ar` y el prefijo `vllm/` del nombre del modelo dejan de ser strings que copian de una slide: son dos cosas que les explicó el que las eligió, media hora antes de tipearlas. Es la mejor versión posible del bloque de `models.json` y no la podemos comprar de otra manera. **Pedirle explícitamente que nombre los dos con nombre y apellido** — "LiteLLM", "vLLM" — porque después esas dos palabras aparecen en la config, en la teoría y en la comparación con la Vía B.
-
-**Consecuencias directas en el plan, y hay que respetarlas o se dice todo dos veces:**
-
-- El bloque *"Un cluster no es tu notebook"* **se eliminó**: era mecánica de cluster, que ahora está fuera del curso. La etiqueta de recurso compartido se dice al soltar la práctica.
-- **El bloque de familias de runtime ya no existe**: se fue cuando la teoría pasó a seguir el arco del post, que nombra runtimes pero no los divide en local vs. serving. Así que su punto 6 **no se pisa con nada nuestro** — es el único lugar de la sesión donde se explica el batching, y el contraste con Ollama queda del lado de la práctica, donde Agus sirve el suyo.
-- En *`models.json`*, el prefijo `vllm/` y la `baseUrl` se leen como reconocimiento, no como novedad. Apoyarse en eso: cuesta menos tiempo y se entiende mejor.
-
-**Lo que se cayó del alcance, y no es olvido**: para qué se usa normalmente el HPC en la UNC, y los clusters de Latam. Si él quiere meterlos, bienvenido, pero no los pedimos: seis puntos en media hora ya es un slot lleno.
-
-**Y porque son seis, hay que darle una prioridad y no dejársela a él.** Si se va de tiempo, lo que se recorta es el punto 1 (podemos abrirlo nosotros en dos minutos) y el 2 se puede hacer con una sola slide de equipamiento. **Lo que no se recorta es 3, 5 y 6** — son los que nadie más en la sala puede dar. **El 4 va liviano por decisión**, no por falta de tiempo: la mecánica fina del cluster está fuera del curso. Decírselo así, con esas palabras, cuando le confirmemos el slot.
-
-Más allá de eso, no sobre-especificar la charla de un invitado. Confirmar si quiere slides, un tour en vivo del dashboard, una sesión real en el cluster proyectada, o solo hablar.
 
 ### Modelos de pesos abiertos — el bloque de Diego (30 min)
 
@@ -161,13 +146,16 @@ Las tres preguntas que un estudiante tiene que poder contestar:
 2. ¿Puedo redistribuir un fine-tune?
 3. ¿De quién es lo que genera?
 
-**El gancho, y es el mejor momento del bloque: Gemma cambió de licencia entre versiones.** Gemma 2 y 3 salieron con términos propios de Google; **Gemma 4 salió Apache 2.0**, y el anuncio lo dice explícitamente (*"a commercially permissive Apache 2.0 license"*). **Misma familia, mismo nombre, mismo botón de descarga, derechos distintos.** Eso convierte la advertencia genérica —"revisá la licencia"— en algo que se ve en pantalla en treinta segundos, sobre el modelo al que están por apuntar su repo.
+**Las licencias de los dos modelos que van a usar hoy**, en bullets y sobre el model card real:
+
+- **Gemma 4 26B — Apache 2.0.** Uso comercial: sí. Redistribuir un fine-tune: sí. Lo que genera: de ustedes. Sin cláusula de escala, sin obligación de naming, sin política de uso aceptable pegada.
+- **Qwen3.8-27B — Apache 2.0.** Mismas tres respuestas: sí, sí, de ustedes.
+- **El gancho: Gemma cambió de licencia entre versiones.** Gemma 2 y 3 salieron con términos propios de Google; Gemma 4 salió Apache 2.0. Misma familia, mismo nombre, mismo botón de descarga, derechos distintos.
+- **El contraejemplo, para que el contraste exista**: la community licence de Llama, con cláusula de escala por cantidad de usuarios.
 
 > ⚠️ **La trampa, y hay que tenerla clara antes de dar el bloque.** Si uno tiene en la cabeza que "Gemma es licencia propia de Google", eso vale para **Gemma 2 y 3** y **es falso para Gemma 4**. Verificado el 2026-08-24 contra el blog de Google. Decirlo mal justo en este bloque sería vergonzoso dos veces.
 
 **La secuencia en pantalla, tres cards, medio minuto cada una**: el campo `license` de Gemma 4 (Apache 2.0), los términos de Gemma 3 (propios), y la community licence de Llama (propia, con cláusula de escala). Tres modelos que la sala llamaría "open source" sin pestañear, con tres regímenes de derechos distintos.
-
-Y el remate: sobre el modelo que van a usar hoy, las tres preguntas se contestan **sí, sí y de ustedes**. Sin cláusula de escala, sin obligación de naming, sin política de uso aceptable pegada.
 
 La frase del sub-bloque: *"«pesos abiertos» no te dice nada sobre lo que podés hacer con ellos. Eso lo dice la licencia — y la licencia cambia entre versiones del mismo modelo."*
 
@@ -239,30 +227,23 @@ Y cerrar con las dos frases del post, que son el mejor final posible para el blo
 
 ### Puesta en común: ¿está a la altura de un proyecto serio? (~5 min)
 
-**La pregunta que la sala realmente quiere contestada**, y este es el lugar: apenas terminan la práctica, con sus propias mediciones en la mano. **Son cinco minutos, así que es cosecha y no debate**: que cada uno tire una línea de lo que midió, se anota en el pizarrón, y el criterio se cierra en la retrospectiva. Que argumenten desde lo que acabaron de medir, no desde lo que leyeron.
+**Resumir lo que midió Sebastian Raschka** en [*Using Local Coding Agents*](https://magazine.sebastianraschka.com/p/using-local-coding-agents), que corrió esta misma pregunta de punta a punta:
 
-Los ejes que lo deciden, todos cosas que midieron en el último paso de la práctica:
+- **Setup**: Ollama sirviendo el modelo local, y harnesses open source (Qwen-Code, Codex, Claude Code) apuntados a ese endpoint compatible con OpenAI. Es exactamente el movimiento que la sala acaba de hacer con `models.json`, hecho por un tercero contra otro runtime.
+- **Calidad agéntica**: 4-5 sobre 5 en tareas de razonamiento agéntico con un **Qwen3.6 MoE** — la misma familia que probamos en el CCAD. Su conclusión: los MoE nuevos ya alcanzan para mucho trabajo real.
+- **Velocidad**: ~40 tokens/s en una Mac Mini. Alcanza para trabajar, no para no notarlo.
+- **Memoria**: hasta ~30 GB de RAM con contextos de 50k. La ventana de contexto se paga en hardware, y acá está el número.
+- **El matiz que hay que decir junto con los números**: él mide **tareas acotadas**. Sostener un proyecto largo es otra pregunta, y el cuello de botella ahí suele ser el tool calling confiable, no la capacidad de escribir código. No es una contradicción: son dos preguntas distintas, y distinguirlas es el criterio que este bloque quiere dejar.
 
-- ¿Llama las tools respetando el schema — *siempre*, no casi siempre?
-- ¿Sobrevive una tarea de veinte pasos sin perder el hilo?
-- ¿Alcanza la ventana de contexto para un repo real?
-- ¿La latencia es tolerable dentro de un loop, donde cada paso es otro round trip?
+**Re-verificar la semana de la clase**: esto se mueve rápido.
 
-Nuestra respuesta honesta hoy — **re-verificar la semana de la clase, esto se mueve rápido**: para tareas acotadas, reviews, trabajo repetitivo de alto volumen y cualquier cosa con datos sensibles, sí. Como motor principal de un coding agent en un proyecto serio y de vida larga, todavía no del todo — y el cuello de botella suele ser **el tool calling confiable, no la capacidad de escribir código**. Decirlo así, plano: les sirve más que el entusiasmo o el desprecio.
+### Cuándo conviene open source — **se pliega al final de la puesta en común**
 
-**Y hay un dato externo que conviene tener a mano, porque alguien lo va a preguntar**: Sebastian Raschka corrió [esta misma pregunta con agentes locales](https://magazine.sebastianraschka.com/p/using-local-coding-agents) y midió 4-5 sobre 5 en tareas de razonamiento agéntico con un Qwen3.6 MoE, concluyendo que los MoE nuevos alcanzan para mucho trabajo real. **Es más optimista que nuestra respuesta de arriba y vale decirlo así**, con la diferencia que lo explica: él mide tareas acotadas, y nosotros hablamos de sostener un proyecto largo. No es una contradicción, son dos preguntas distintas — y distinguirlas es exactamente el criterio que este bloque quiere dejar.
-
-Y el matiz que la Vía B habilita, si alguien la hizo: parte de lo que van a haber medido no es el modelo, es **la cuantización**. El mismo modelo a 4 bits y a 16 bits no falla igual en salida estructurada. Que la sala distinga "el modelo abierto es peor" de "esta versión cuantizada de este modelo es peor" es un salto de madurez técnica y sale gratis acá.
-
-Este bloque desemboca en el siguiente: la respuesta no es sí o no, es "para qué trabajo".
-
-### Cuándo conviene open source — **se pliega dentro del cierre del curso**
-
-> Ya no es un bloque propio: con la sesión repartida en tres bloques grandes no hay lugar, y el contenido siempre fue la rampa del cierre. **Se da adentro de la retrospectiva**, en dos minutos, justo antes de la frase final. Lo que sigue es el material.
+> Ya no es un bloque propio: con la sesión repartida en tres bloques grandes no hay lugar. **Se da en dos minutos, cerrando la puesta en común**, y de ahí se sale al debate final. Lo que sigue es el material.
 
 - **Encaja bien**: datos sensibles o regulados, tareas repetitivas de alto volumen donde el costo domina, investigación que necesita reproducibilidad y un modelo pineado, trabajo offline o air-gapped, y *estudiar la cosa en sí* — no podés inspeccionar logits que no tenés.
 - **Encaja mal**: querés el mejor coding agent disponible hoy; no tenés capacidad operativa; el volumen es bajo (una API hosteada va a salir más barata que tu tiempo).
-- Y ensanchar al cierre real del curso: **el modelo es un componente.** Todo lo de las Sesiones 2 a 5 — planificación, review, tests, contexto, tools, harness — se transfiere entre modelos. Ese es el pago de haber enseñado estructura en vez de un producto.
+- Y el remate: **el modelo es un componente.** Todo lo de las Sesiones 2 a 5 — planificación, review, tests, contexto, tools, harness — se transfiere entre modelos. Ese es el pago de haber enseñado estructura en vez de un producto.
 
 ## Práctica (60 min)
 
@@ -302,7 +283,7 @@ Cuatro cosas para frenar, y cada una es un concepto que ya tienen:
 
 - **`api: "openai-completions"`** es la historia de interoperabilidad del bloque anterior convertida en un string que tipean. Los valores posibles son `openai-completions`, `openai-responses`, `anthropic-messages` y `google-generative-ai`: cuatro formas de API para todo el ecosistema. El CCAD no expone una API "del CCAD": expone la misma que expondría Ollama en su notebook, o LM Studio, o vLLM crudo. **Por eso el swap cuesta cinco líneas.**
 - **`apiKey: "$CCAD_API_KEY"`** — el campo acepta interpolación de variables de entorno (`$VAR`, `${VAR}`) y también ejecutar un comando si arranca con `!`. **Usar la variable, no la key literal**, y decir en voz alta por qué: la key literal en un archivo es la key literal en un backup, en un screenshot del proyector y —el día que a alguien se le ocurra versionar su dotfiles— en un repo público. Es la primera credencial propia del curso y es el momento de enseñar el reflejo.
-- **`models` es una lista, y por eso hay dos.** El `id` es lo que se manda a la API y es lo que van a ver en el picker de `/model`. **`vllm/gemma4-26b` es el que está servido; `vllm/qwen3.8-27b` es el que le pedimos a Ale que vuelva a levantar y puede no llegar a tiempo.** Dejar los dos en la slide y decirlo en voz alta: *"si el segundo no aparece en el picker, es porque el CCAD no lo levantó — no es un typo suyo"*. Y los strings exactos los decide el CCAD al registrar los modelos en LiteLLM, así que **los dos hay que confirmarlos antes de proyectarlos** (ver Pendiente de Ale).
+- **`models` es una lista, y por eso hay dos.** El `id` es lo que se manda a la API y es lo que van a ver en el picker de `/model`. **`vllm/gemma4-26b` es el que está servido; `vllm/qwen3.8-27b` es el que le pedimos a Ale que vuelva a levantar y puede no llegar a tiempo.** Dejar los dos en la slide y decirlo en voz alta: *"si el segundo no aparece en el picker, es porque el CCAD no lo levantó — no es un typo suyo"*. Y los strings exactos los decide el CCAD al registrar los modelos en LiteLLM, así que **los dos hay que confirmarlos antes de proyectarlos**.
 - **Y el archivo con dos entradas enseña algo que una sola no**: el catálogo de modelos y el modelo activo son cosas distintas. Declarás lo que hay; elegís con `/model`. Es la misma separación que tienen los providers hosteados, ahora visible en cinco líneas propias. El prefijo `vllm/` es routing de LiteLLM y de paso les cuenta qué hay atrás. **Acá se cobra el slot de Ale**: LiteLLM y vLLM ya tienen cara, así que el bullet se da como reconocimiento y no como dato nuevo — *"eso que les contó Ale hace media hora, acá está, en un string"*. Y lo mismo con la `baseUrl`.
 - **Lo que *no* está en el JSON, y es la mejor parte.** `contextWindow` tiene default **128000** y `maxTokens` default **16384**. O sea: la ventana de contexto es un número que alguien eligió. Después de cinco sesiones tratándola como una propiedad del producto que compraron, resulta ser un parámetro de arranque.
 
@@ -341,7 +322,7 @@ El flujo entero: exportar la key → abrir `/model` → elegir **el modelo abier
 - **El modelo corriendo a tres metros, y los datos sin salir del aula.** Sin cuenta, sin key, sin nadie en el medio — la contracara exacta de las cinco sesiones anteriores. Mostrar la VRAM real contra la cuenta de cuantización que hicimos en la teoría, y los tokens por segundo, para que la latencia se sienta en vez de describirse.
 - **El swap por segunda vez en veinte minutos.** Que el archivo termine con tres providers y que cambiar entre ellos cueste `/model` es la tesis de la sesión, demostrada dos veces en la misma hora.
 
-> ⚠️ **La concurrencia es el riesgo, y es también el contenido.** Una GPU atendiendo a la sala entera se encola — que es exactamente lo que Ale explicó media hora antes al contar por qué el CCAD corre vLLM. **Acordarlo con Agus antes de la clase**: runtime que batchee, tandas, o asumir la cola y usarla como demostración en vivo. Cualquiera de las tres sirve; lo que no sirve es descubrirlo en el momento.
+> 💡 **La concurrencia es contenido, no un riesgo.** Una GPU atendiendo a la sala entera se encola — que es exactamente lo que Ale explicó media hora antes al contar por qué el CCAD corre vLLM. Que pase delante de todos muestra dónde está el techo de una sola GPU chica. **Avisarle a Agus** para que lo esperemos y lo narremos en vivo.
 
 **Nadie tiene que terminar esto.** Repetirlo al soltarlos y otra vez a los quince minutos. El que quiera además servirlo en su propia máquina tiene el apéndice del ejercicio y [la guía de Raschka](https://magazine.sebastianraschka.com/p/using-local-coding-agents) para hacerlo en casa.
 
@@ -399,44 +380,13 @@ Da **150 minutos exactos**, o sea que **no hay colchón**. Dos consecuencias pr�
 - **El bloque elástico es el recap**, con 5 minutos ya al mínimo. Si algo se estira, lo que se sacrifica primero es la pausa; después, la puesta en común. **La práctica y el cierre no se tocan.**
 - **Los dos bloques de 30 hay que ensayarlos con reloj.** Un invitado que se va a 40 y un bloque propio que se va a 38 se comen la puesta en común y la mitad del cierre del curso. A Ale hay que decirle **30** con ese número, y con la prioridad: si algo se cae, que sean sus puntos 1 y 2.
 
-Notar el orden: la puesta en común va *después* de la práctica a propósito, y "cuándo conviene open source" se da adentro del cierre. Las discusiones de criterio salen mejor cuando ya midieron algo propio.
+Notar el orden: la puesta en común va *después* de la práctica a propósito, y "cuándo conviene open source" se da al final de ella. Las discusiones de criterio salen mejor cuando ya midieron algo propio.
 
 **Proteger, en este orden: la Vía A completa con la comparación, la retrospectiva de cierre, y el slot del invitado.**
 
 ## Cierre del curso (~15 min)
 
-No es el cierre de la sesión, es el cierre de las seis. Merece que no lo agarre el reloj.
-
-**Arranca con dos minutos de *cuándo conviene open source*** —el material está más arriba, plegado acá— porque es la rampa natural: la pregunta deja de ser "¿es bueno?" y pasa a ser "¿para qué trabajo?", y de ahí se sale directo a la retrospectiva.
-
-Vale tener presente la estructura, porque cambia qué hay que decir acá: las sesiones 1 a 4 son el **curso base** y **la Sesión 4 ya cerró ese arco** (costo, límites, carrera, atrofia). Las 5 y 6 son el **arco avanzado**, y los estudiantes lo saben desde la Sesión 1. Así que este cierre no tiene que volver a cerrar los fundamentos: cierra el arco avanzado y, con él, el curso.
-
-- **Abrir el repo y mirar el primer commit.** Lo que escribieron en la Sesión 1 contra lo que tienen hoy.
-- **Volver a la slide del espectro de la Sesión 1**, la misma, sin retocarla. Pedirle el archivo a Diego y no rehacerla: parte del efecto es que reconozcan la slide.
-- **El takeaway**: todo lo de las Sesiones 2 a 5 —planificación, review, tests, contexto, tools, harness— se transfiere entre modelos. Es exactamente lo que acabaron de comprobar a mano hace media hora. Por eso el curso enseñó estructura y no un producto.
-- **Cerrar donde empezó**: la Sesión 1 les dio tres palabras, LLM + tool + harness. Hoy cambiaron la primera y todo lo demás siguió en pie.
-
-**Lo que NO va acá, y es una decisión, no un olvido**: costo y límites, atrofia de habilidades, cuándo NO usar IA, y las implicancias para su carrera. Todo eso **cierra la Sesión 4**, que es el final del primer arco del curso (*"¿cómo trabajo bien con esta cosa?"*). Los dos cierres se reparten **por tipo y no por jerarquía**: la Sesión 4 se queda con el material de criterio humano, y esta sesión con el material de artefacto — el repo, el espectro y la tesis de la transferencia. Es lo que hace que este cierre entre en 15 minutos, y evita gastar el final del curso dos sesiones antes. Si Agus recorta su cierre, avisar: son cuatro temas que si no los da él, no los da nadie.
-
-## Pendiente de Ale (hilo de mail)
-
-**Estas notas se escribieron sin el hilo de mail.** Tratar todo como no verificado hasta chequearlo, con **una sola excepción, que ya está firme**: Ale nos dio acceso al CCAD y ahí probamos **Qwen3.6 andando**; hoy está bajado. Ese precedente es lo que reescribe el punto 4 de abajo; todo el resto sigue sin verificar.
-
-Lo que hay que preguntar ahora, en orden de prioridad:
-
-1. **Concurrencia y rate limits** con 25-30 estudiantes pegándole al gateway a la vez durante una hora. **Este es el nuevo riesgo más grande de la sesión** y ocupa el lugar que tenía la cola de GPU. Si hay límite por key, saberlo antes cambia el diseño de la práctica. **Lo necesitamos por mail igual**, aunque el punto 6 de su slot toque el tema: la respuesta define cómo se escribe la práctica, y eso hay que hacerlo antes de la clase, no durante.
-2. **Las keys, y hay una propuesta concreta para ponerle enfrente**: que **Diego cree una key por estudiante desde su propia cuenta**. Preguntarle si eso es posible y **si le parece bien como decisión** —es su servicio y su política, no solo una capacidad técnica—. Si no le cierra, la alternativa es una key del curso compartida. Y en cualquiera de los dos casos: con cuánta anticipación se emiten, y si siguen andando después del curso. (Que sigan andando sería un cierre lindísimo; que no, hay que avisarlo.)
-3. **¿El gateway loguea prompts?** Necesario para que el sidebar de seguridad sea honesto. Es la pregunta que vamos a hacer en voz alta en clase — y con él explicando LiteLLM en el punto 5, se la vamos a hacer *a él*. **Preguntarla por mail primero**: la idea es que la conteste, no que lo agarre desprevenido frente a la sala.
-4. **El pedido: ¿pueden volver a levantar el Qwen, ahora Qwen3.8-27B?** **No es un pedido en frío**: con el acceso que nos dio Ale, **Qwen3.6 corrió en el CCAD y anduvo**, y después se bajó. O sea que servir un Qwen ahí ya está demostrado y lo que estamos pidiendo es reponerlo, con la versión que existe hoy. Lo queremos **además** de Gemma 4 26B, no en lugar de. Sigue siendo **un pedido y no un supuesto** —el material está escrito para funcionar sin él— pero el precedente cambia la conversación. **Lo que el precedente no cubre, y hay que decirlo al pedirlo**: lo que probamos fue 3.6, no 3.8. Los números de 3.8 que están en este archivo salen de la model card, no de haberlo visto correr en ese hardware; si el salto de versión les cambia el encaje en la GPU, que nos avisen. Por qué lo pedimos: con dos modelos abiertos en el mismo endpoint, la práctica gana un punto más de comparación —mismo prompt, mismo repo, tres modelos— y el `models.json` de la slide muestra que `models` es una lista y no un campo. **Es un pedido más flojo que antes y conviene saberlo**: la razón fuerte era que la sala midiera denso contra MoE, y ese contenido ya no se da. Si no se puede, la sesión no pierde nada de la tesis.
-5. **Los `id` exactos de los modelos en LiteLLM.** `vllm/gemma4-26b` y `vllm/qwen3.8-27b` son las cadenas que tenemos escritas y **las dos hay que confirmarlas**: van textuales en una slide que 30 personas copian. Un typo acá cuesta diez minutos de práctica.
-6. **Con qué `--max-model-len` levantaron vLLM**, por modelo. Los dos candidatos hacen ~262.144 nativos y Pi asume 128.000: el número que manda es el del servidor, y lo necesitamos para pinear `contextWindow` en la slide de config. Es además la tercera fila de la tabla que vamos a mostrar en clase.
-7. **¿La `baseUrl` es correcta sin `/v1`?** LiteLLM sirve las dos formas y Pi construye el path; hay que probar el string exacto. Es un detalle de dos minutos que puede voltear la práctica entera.
-8. **¿Sigue haciendo falta una cuenta del CCAD para esto?** Si la key alcanza, la cuenta deja de ser requisito bloqueante — seguimos recomendándola por su propio valor, pero cambia lo que les pedimos como pre-work.
-9. **El slot de Ale**: el alcance ya está definido (los seis puntos), así que lo que falta es **confirmar que le cierra y que le entra en 30 minutos**. Mandarle los seis por escrito, con la prioridad explícita: **3, 4, 5 y 6 son los que nadie más en la sala puede dar**; 1 y 2 los abrimos nosotros si se va de tiempo. Y pedirle que nombre **LiteLLM** y **vLLM** con nombre propio, porque esas dos palabras vuelven después en la config y en la teoría. Además: presencial o remoto, si quiere slides o proyectar una sesión real en el cluster, y si el CCAD quiere algún reconocimiento o tiene materiales/branding que prefiera que usemos.
-10. **Para el punto 4, ¿necesita algo del aula?** Si va a mostrar una sesión real en el cluster, hace falta red que le sirva y saber si va a pedir GPU en vivo (y si eso puede quedar esperando en la cola frente a la sala). Un fallback grabado o un screenshot lo cubre.
-11. **¿El trámite que va a describir es el mismo que les mandamos en el pre-work?** Le pasamos el link de abrir cuenta semanas antes y él explica el trámite en la última sesión: si lo que cuenta no coincide con lo que les dijimos, queda raro. Vale mandarle nuestro texto de pre-work para que lo corrija.
-
-Cuando el hilo esté leído, bajar las respuestas a este archivo y recién entonces escribir el ejercicio contra los valores reales.
+Debate abierto de qué les pareció, si creen que les sirvió, y qué mejorarían.
 
 ## Puentes entre sesiones
 
@@ -455,6 +405,7 @@ Cuando el hilo esté leído, bajar las respuestas a este archivo y recién enton
 - [Pi — modelos y providers custom](https://pi.dev/docs/latest/models) — la doc en la que se apoya el bloque de `models.json`. Config en `~/.pi/agent/models.json`, se relee al abrir `/model`. `api` acepta `openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai`. `apiKey` acepta `$VAR` / `${VAR}` e `!comando`. Defaults: `contextWindow` 128000, `maxTokens` 16384.
 - [**Ollama**](https://ollama.com/) — **el runtime con el que Agus sirve la Vía B.** `ollama pull <modelo>` y `OLLAMA_HOST=0.0.0.0:11434 ollama serve`. Expone endpoint compatible con OpenAI en `/v1`, así que la sala le entra con una entrada de provider en `models.json` igual que al CCAD — no hace falta `/login` ni nada específico del runtime. Las tres variables que importan: `OLLAMA_HOST` (para que se le pueda llegar), `OLLAMA_CONTEXT_LENGTH` (la ventana) y `OLLAMA_NUM_PARALLEL` (cuántos pedidos atiende a la vez). **Verificar los defaults antes de la clase.**
 - [**Flavio Copes — *A Deep Dive into Open-Weight AI Models***](https://flaviocopes.com/open-weight-models/) — **la base del bloque de 30 minutos de Diego.** Recorre en orden: pesos, arquitectura vs. pesos, qué es open weight, la diferencia con open source, cómo se baja un modelo, cuantización, beneficios, límites y criterios de elección. Las dos frases que valen la clase: la definición de open source como *"los materiales y las libertades para estudiar, modificar y compartir el sistema entero"*, y **"local no significa privado automáticamente"**, que es la que desarma el reflejo más común de la sala. Números útiles: de 16 a 4 bits lleva un modelo de ~60 GB a ~15 GB. Sus ejemplos van sobre un modelo propio — nosotros los hacemos sobre el que sirva el gateway ese día.
+- [**Sebastian Raschka — "The Big LLM Architecture Comparison"**](https://magazine.sebastianraschka.com/p/the-big-llm-architecture-comparison) — **el recorrido por las familias de modelos de pesos abiertos**: qué arquitectura tiene cada una y en qué se diferencian. Es el puntero para el que pregunte "¿y qué otros modelos hay?", que es la pregunta que el bloque de teoría deliberadamente no contesta con una lista.
 - [llama.cpp](https://github.com/ggml-org/llama.cpp) — lo que corre Ollama por abajo. No se usa directo en ningún lado de la sesión; queda como puntero para el que quiera bajar un nivel.
 - [**Sebastian Raschka — "Using Local Coding Agents"**](https://magazine.sebastianraschka.com/p/using-local-coding-agents) — **la referencia para el setup de la Vía B**, y el walkthrough más completo que hay de la vía local de punta a punta. Sirve tres veces: (1) **el setup con Ollama**, que se instala igual en Mac, Linux y Windows y expone el endpoint compatible con OpenAI en `http://127.0.0.1:11434/v1`; (2) **apunta harnesses open source a ese endpoint** —Qwen-Code, Codex, Claude Code— que es el mismo movimiento que hace nuestro `models.json`, hecho por otro y contra otro runtime: la tesis de interoperabilidad verificada por un tercero; (3) **mide** — 4-5/5 en tareas de razonamiento agéntico con Qwen3.6 MoE, 40 tok/s en una Mac Mini, y hasta 30 GB de RAM con contextos de 50k. Esos números son insumo directo del bloque *"¿está a la altura?"*. Detalle lindo: el modelo que mide es de la familia **Qwen3.6**, la misma que probamos en el CCAD.
 - [LiteLLM](https://github.com/BerriAI/litellm) — lo que el CCAD tiene adelante. Vale nombrarlo: es el patrón de gateway/proxy para inferencia, y explica el prefijo `vllm/` en el nombre del modelo.
