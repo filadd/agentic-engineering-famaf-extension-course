@@ -21,7 +21,7 @@ No estamos midiendo el modelo en abstracto: **estamos midiendo tu andamiaje cont
 
 - Trabajá sobre **el mismo proyecto** que venís usando desde la Sesión 1, con **su `AGENTS.md`, sus skills y su `.mcp.json`**. Esto no es negociable: si lo hacés en un directorio de prueba, hiciste un ejercicio de configuración y no la clase.
 - `git status` limpio antes de arrancar, y limpiá entre prueba y prueba (`git stash` o `git checkout .`).
-- **La API key del CCAD**, que se entrega en clase.
+- **Tu API key del CCAD.** Se entrega en clase y **es tuya, no del curso**: no la compartas, no la pegues en un chat y no la commitees.
 - **Tu memoria de las primeras cuatro sesiones es la línea de base.** Ya sabés cómo se porta tu agente con el modelo hosteado: eso es contra lo que vas a comparar.
 
 ## Paso 0 — `models.json` (~8 min, todos juntos)
@@ -49,8 +49,10 @@ Pi busca los proveedores de modelos en `~/.pi/agent/models.json` — el mismo di
 Y en la terminal desde la que vas a levantar Pi:
 
 ```
-export CCAD_API_KEY=<la key que te dimos en clase>
+export CCAD_API_KEY=<tu key>
 ```
+
+Cada uno tiene **su propia key**. Si la corrida de al lado anda y la tuya no, no es el modelo: es tu `export`.
 
 > ⚠️ **La `baseUrl` y los `id` van textuales de la slide.** Los strings exactos los decide el CCAD al registrar los modelos, así que copiá lo proyectado, no lo de acá. Si el segundo modelo no aparece en el picker, es porque el CCAD no lo levantó: **no es un typo tuyo** y las cuatro pruebas se hacen igual con el que esté.
 
