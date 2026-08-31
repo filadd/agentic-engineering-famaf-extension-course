@@ -31,7 +31,7 @@ The session deliberately ends on discomfort, not on a solution. Sessions 2–6 a
 | 2 | Start doing plannings and code reviews |
 | 3 | Give them better tools and written documentation |
 | 4 | Build a culture where good work happens by default |
-| 5 | Understand the machinery the intern actually works inside (TBD — Agus) |
+| 5 | Understand the machinery the intern actually works inside |
 | 6 | Realise the intern is a replaceable component — and host one yourself |
 
 Today is deliberately the bad boss. Say that out loud so students don't think we're endorsing it.

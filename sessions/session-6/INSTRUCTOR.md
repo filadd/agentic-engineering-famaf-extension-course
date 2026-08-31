@@ -74,7 +74,7 @@ Sigue **Pi**, sin instalar nada nuevo. Lo único que se agrega es un archivo de 
 
 Discusión, no slides. Qué hicieron, qué se les rompió, qué les sorprendió del loop por dentro.
 
-**Coordinar con Agus antes de la clase**: la Sesión 5 está en `TBD`, así que este bloque se escribe recién cuando su sesión exista. Preguntar con qué quedaron en la mano y si alguien terminó con un cliente propio andando — eso define si la extensión del final tiene público.
+**Coordinar con Agus antes de la clase**: su sesión **ya está escrita** (`sessions/session-5/INSTRUCTOR.md`), y de ahí **no sale un cliente propio: sale una extensión de Pi**. Su tarea les pide mantenerla viva durante la semana y traerla a esta clase, así que el recap se arma sobre eso: qué extensión escribieron, qué le tuvieron que arreglar, si la volvieron a usar. Falta hablar con él cómo cerró la sala.
 
 Este es el bloque elástico: **si el día se estira, se recorta de acá** (mismo criterio que las Sesiones 2 y 3).
 
@@ -361,6 +361,8 @@ OLLAMA_HOST=0.0.0.0:11434 ollama serve
 
 Apuntar su propio loop a la misma base URL de LiteLLM. Mismo endpoint, dos clientes. Es una oferta genuina y no un premio consuelo: con el gateway es una línea de config, no una tarde.
 
+> ⚠️ **Este bloque quedó escrito contra el diseño viejo y hay que rehacerlo.** Asumía que de la Sesión 5 salía un cliente propio; de la sesión que Agus efectivamente escribió sale **una extensión de Pi**, y los estudiantes la traen a esta clase. El reemplazo natural es correr esa extensión contra el modelo abierto —es exactamente la tesis con la que cierra el curso, y las notas de la Sesión 5 ya lo anticipan así (`sessions/session-5/INSTRUCTOR.md:361`: *"todo lo que construyeron sobrevive al cambio de modelo. La extensión incluida"*)—, pero **la decisión es de Diego** y hay que bajarla también a la slide (`sessions/session-6/slides.md:392`).
+
 ## Timing de la sesión (2 h 30)
 
 **La sesión dura 2 h 30**, decidido. Las otras cinco son de 2 h y la Sesión 1 es de 3, así que no es un caso raro: es la sesión que cierra el curso y tiene un invitado. **Confirmar el aula por esos 30 minutos extra.**
@@ -391,9 +393,9 @@ Debate abierto de qué les pareció, si creen que les sirvió, y qué mejoraría
 ## Puentes entre sesiones
 
 - **Sesión 3** → el pago que nadie espera. Su `AGENTS.md`, sus skills y su config siguen funcionando contra un modelo que corre en un cluster de la UNC. Todo lo que construyeron en la Sesión 3 nunca fue sobre el modelo. Y un detalle concreto: `models.json` vive en `~/.pi/agent/`, al lado del `AGENTS.md` global que escribieron esa semana.
-- **Sesión 4** → la ventana de contexto vuelve como un parámetro de arranque del servidor, no como una propiedad del producto. Y el otro modelo de costo: por hora y por GPU, no por token — el por-token lo cerró Agus en su sesión. **Los dos cierres se reparten**: él cierra el primer arco con costo, límites, carrera y atrofia; nosotros cerramos el curso. Coordinarlo con él, porque todavía no escribió esa sesión.
+- **Sesión 4** → la ventana de contexto vuelve como un parámetro de arranque del servidor, no como una propiedad del producto. Y el otro modelo de costo: por hora y por GPU, no por token — el por-token lo cerró Agus en su sesión. **Los dos cierres se reparten**: él cierra el primer arco con costo, límites, carrera y atrofia; nosotros cerramos el curso. ⚠️ **Su sesión ya está escrita y el cierre que quedó no incluye ni el costo ni la carrera** (`sessions/session-4/INSTRUCTOR.md:139`): sobreviven los límites y la atrofia, adentro del bullet de "cuándo no usar IA". Hablarlo antes de dar el reparto por hecho, porque esta sesión saca ese material apoyándose en que él lo da.
 - **Sesión 1** → LLM + tool + harness: hoy cambiamos la L. Es la simetría del cierre del curso.
-- **Sesión 5** → **ya no es dependencia.** La práctica corre sobre el gateway, así que sobrevive a cualquier forma que tome la sesión de Agus. Sigue valiendo coordinar: si su práctica produce un cliente, la extensión del final tiene público, y él puede armar el pase en su cierre. Agus está en el aula igual con su GPU portátil.
+- **Sesión 5** → **ya no es dependencia.** La práctica corre sobre el gateway, así que sobrevive a cualquier forma que tome la sesión de Agus. Lo que sí quedó definido es **qué traen**: una extensión de Pi, no un cliente propio (`sessions/session-5/INSTRUCTOR.md:303` se los pide como tarea). ⚠️ Eso deja desalineado el bloque opcional del final, que todavía ofrece apuntar *un loop propio* al endpoint — ver la nota ahí. Agus está en el aula igual con su GPU portátil.
 - **Hilo transversal de seguridad** → cierra acá, y **cierra más angosto de lo que prometía**: quedan las dos puntas que trae el bloque de modelos abiertos —**pasás a ser vos el operador** y **"local no significa privado automáticamente"**— dichas adentro de ese bloque y no en uno propio. La cadena de suministro de pesos, el gateway como tercero y el callback de prompt injection **se sacaron** al adoptar el arco del post. Si alguien quiere recuperarlos, el lugar natural es el cierre del curso, no la teoría.
 
 ## Herramientas y recursos referenciados
@@ -439,17 +441,17 @@ Debate abierto de qué les pareció, si creen que les sirvió, y qué mejoraría
 - **Confirmar que Agus trae la GPU portátil**, qué modelo va a servir, y probar el flujo entero: `ollama serve` con `OLLAMA_HOST=0.0.0.0` alcanzable desde otra máquina del aula, un provider en `models.json` apuntándole, un tool call que funcione, y **varias máquinas pegándole a la vez** para ver cómo se comporta `OLLAMA_NUM_PARALLEL`. Ya no es el respaldo de la sesión, así que si no llega no se cae nada — pero es el mejor momento visual del día.
 - ~~Confirmar la participación de Ale~~ → **confirmada.** No se escribe plan B, y eso tiene una consecuencia de diseño que conviene tener presente: **el material se apoya en su slot y no lo puede reemplazar**. Los puntos 3 a 6 no los podemos dar con autoridad —cómo se pide la cuenta, cómo se corre un LLM en el cluster, por qué el CCAD eligió esta arquitectura— así que sin él se degradarían a "acá están los links". Lo que sí queda por cerrar es **el formato y el reloj**: decirle **30 minutos** con ese número, pasarle los siete puntos por escrito, y pedirle explícitamente que **nombre LiteLLM y vLLM con nombre y apellido**, porque el bloque de `models.json` se cobra media hora después.
 - **Decidir la duración real de la sesión** y, si son 2 horas, adoptar la variante de arriba de entrada en vez de improvisar recortes.
-- ~~Decidir quién cierra el curso~~ → **decidido: se reparte por tipo.** La Sesión 4 cierra el primer arco (costo, límites, carrera, atrofia); esta sesión cierra el curso (el repo, el espectro, la tesis de la transferencia). La duplicación era un resto de cuando el curso tenía 4 sesiones y la 4 era el final. **Avisarle a Agus**, porque le cambia el cierre de una sesión que todavía no escribió.
-- **Coordinar con Agus el recap de la Sesión 5**, que todavía está en `TBD`.
+- ~~Decidir quién cierra el curso~~ → **decidido: se reparte por tipo.** La Sesión 4 cierra el primer arco (costo, límites, carrera, atrofia); esta sesión cierra el curso (el repo, el espectro, la tesis de la transferencia). La duplicación era un resto de cuando el curso tenía 4 sesiones y la 4 era el final. ⚠️ **Sigue abierto con Agus**: su sesión ya está escrita y el cierre que quedó (`sessions/session-4/INSTRUCTOR.md:139`) no tiene ni costo ni carrera, sólo límites y atrofia. El reparto está decidido en el papel y a medio cumplir en el material.
+- **Coordinar con Agus el recap de la Sesión 5.** Su sesión ya está escrita y de ahí sale **una extensión de Pi**, no un cliente; los estudiantes la traen, porque es su tarea. Falta hablar cómo cerró la sala.
 
-### Las slides y el ejercicio hay que escribirlos de nuevo
+### Estado del material
 
-**`slides.md` y `exercise/README.md` se borraron**, no se parchearon. Estaban escritos contra el diseño anterior —entrar por SSH, ganarle a la cola, servir el modelo, forwardear el puerto, cambiar la base URL del agente de la Sesión 5— y no quedaba casi nada rescatable: el ejercicio era literalmente ese flujo paso por paso. Están en el historial de git si hace falta mirarlos: `git log --diff-filter=D -- sessions/session-6/slides.md` te da el commit que los borró, y `git show <commit>^:sessions/session-6/slides.md` el contenido.
+**`slides.md` y `exercise/README.md` están escritos.** Los originales —los del diseño anterior: entrar por SSH, ganarle a la cola, servir el modelo, forwardear el puerto— se borraron en vez de parchearse, y los actuales se escribieron de cero a partir de estas notas. Si hace falta mirar los viejos: `git log --diff-filter=D -- sessions/session-6/slides.md` da el commit que los borró, y `git show <commit>^:sessions/session-6/slides.md` el contenido.
 
-Lo que hay que tener presente al escribirlos:
+Lo que sigue abierto de ellos son los datos que dependen del hilo con Ale, y están marcados con ⚠️ adentro del propio material además de estar en la lista de pendientes de arriba:
 
-- **Las slides** necesitan una que no existía y que ahora es el centro de la sesión: el `models.json` completo, para copiar textual. Igual que en la Sesión 3, la mayoría de las slides son título + nota de orador, pero las que la sala tiene que copiar o leer llevan cuerpo: **el JSON del provider** (el CCAD y el de Agus), **las tres cards de licencias**, **la cuenta de cuantización** (60 GB → 15 GB) y **el checklist de siete puntos** para elegir un modelo. El esqueleto viejo ya no sirve de mucho: el bloque de teoría se reescribió entero sobre el post de Copes, así que las slides de ese bloque salen de ahí y no de lo que había.
-- **El ejercicio** se estructura como Vía A + Vía B, no como pasos numerados de uno a seis. La Vía A tiene que poder resolverse sin descubrir nada: el JSON listo para copiar, la key a mano, y todo el esfuerzo del estudiante puesto en la tarea que le da al agente y en anotar la comparación. La Vía B va como apéndice, con la advertencia de que no terminarla no es no haber hecho el ejercicio.
-- **No escribir el ejercicio antes de leer el hilo con Ale.** La `baseUrl` exacta, el `contextWindow` y la forma de las keys son datos que van textuales en el material y que hoy no tenemos.
+- **La slide del Paso 0 y el `models.json` del ejercicio**: la `baseUrl` exacta (con o sin `/v1`) y los dos `id` textuales, que los decide el CCAD al registrar los modelos en LiteLLM.
+- **El `contextWindow` real** con el que arrancó vLLM, para fijarlo explícitamente si es menor que el default de Pi.
+- **La Vía B**: la IP y el modelo de la GPU de Agus, y probar el flujo entero desde otra máquina del aula.
 
-El resto de las dependencias ya está arreglado: `COURSE_PROGRAM.md` (Tier 6, sección de la Sesión 6, preguntas abiertas y recursos), `sessions/session-5/INSTRUCTOR.md` y el `README.md` de la raíz.
+El resto de las dependencias del rediseño ya está arreglado: `COURSE_PROGRAM.md` (Tier 6, sección de la Sesión 6, preguntas abiertas y recursos), `sessions/session-5/INSTRUCTOR.md` y el `README.md` de la raíz.

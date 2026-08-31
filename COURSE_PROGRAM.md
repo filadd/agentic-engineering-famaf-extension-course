@@ -462,7 +462,7 @@ Steps 1-4 are the **base course**, and they're one question asked four times: *h
 
 **Sessions 5-6 are the advanced arc, and they change the question** — from *how do I work well with this thing?* to *what is this thing made of, and what if I swap its parts?* That's why they're framed as advanced rather than as two more layers of structure: the move isn't deeper management, it's opening the machine.
 
-5. **Open the box** → TBD (Agus)
+5. **Open the box** → the tool is a harness wrapped around a model, and every part you can name you can also replace ("understand the machinery the intern actually works inside")
 6. **Swap the model** → the model is one replaceable component; everything you learned survives the swap
 
 Each session in the base arc adds a layer of structure, and students feel *why* each layer matters because they've experienced the problems it solves. The advanced arc adds no layers — it takes the thing apart and shows that the layers survive.
@@ -497,7 +497,7 @@ For students who don't bring their own:
 - ~~**Session 5 tooling prerequisites**~~ → **resolved: nothing.** The hands-on runs on Pi as they already have it, and its material (docs and example extensions) ships with the install. No new package, no raw API access, no keys to provision. It is the only session in the course with no setup risk.
 - ~~Session 6 needs CCAD accounts provisioned in advance~~ → **no longer blocking.** The hands-on authenticates with an API key against the gateway. Keep recommending accounts weeks ahead — it's a takeaway that outlives the course and the door to real cluster work — but confirm with Ale whether the key is independent of an account.
 - ~~Session 6 hands-on is hostage to the GPU queue~~ → **resolved by the gateway.** The replacement risk is **concurrency**: 25-30 students hitting one LiteLLM endpoint for an hour. Confirm rate limits, and decide how keys are handed out (one shared course key, or one per student?).
-- **Session 6 needs slides and an exercise written from scratch.** The originals were built against the cluster hands-on and were deleted rather than patched; only `INSTRUCTOR.md` exists.
+- ~~Session 6 needs slides and an exercise written from scratch~~ → **written**, both rebuilt from `INSTRUCTOR.md` after the originals (the cluster hands-on) were deleted rather than patched. What stays open in them are the values that depend on Ale: the exact `baseUrl`, the two model `id`s, and the server's real `contextWindow`.
 - ~~Which session owns the full-course retrospective now that there are six?~~ → **decided: they split by kind.** Session 4 closes the base course (cost, limits, career, atrophy); Session 6 closes the advanced arc and the course (the repo from first commit to today, the spectrum, the transfer thesis). The overlap was a leftover from the 4-session version, where Session 4 *was* the finale.
 
 ## References & Inspiration

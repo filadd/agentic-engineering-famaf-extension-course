@@ -69,7 +69,7 @@ Diego Piloni · invitado: Ale Silva (CCAD)
 
 # ¿Cómo les fue?
 
-<!-- Sección de recap de la Sesión 5. ~5 MIN DE DISCUSIÓN, no de slides. ESTE ES EL BLOQUE ELÁSTICO y ya está en el mínimo: si el día se estira, se recorta de acá. COORDINAR CON AGUS ANTES DE LA CLASE: la Sesión 5 todavía está en TBD, así que este bloque se escribe recién cuando su sesión exista. Preguntarle con qué quedaron en la mano y si alguien terminó con un cliente propio andando — eso define si la extensión del final tiene público. -->
+<!-- Sección de recap de la Sesión 5. ~5 MIN DE DISCUSIÓN, no de slides. ESTE ES EL BLOQUE ELÁSTICO y ya está en el mínimo: si el día se estira, se recorta de acá. COORDINAR CON AGUS ANTES DE LA CLASE: su sesión ya está escrita y de ahí NO SALE UN CLIENTE PROPIO, SALE UNA EXTENSIÓN DE PI que su tarea les pide mantener viva durante la semana y traer hoy. Preguntar qué extensión escribieron, qué le tuvieron que arreglar y si la volvieron a usar. Falta hablar con él cómo cerró la sala. -->
 
 ---
 
@@ -391,7 +391,7 @@ model-Q4_K_M.gguf
 
 ## Extensión — si terminaste la Sesión 5
 
-<!-- Para el que quedó con su propio loop andando: apuntarlo a la MISMA base URL de LiteLLM. Mismo endpoint, dos clientes. Es una oferta genuina y no un premio consuelo: con el gateway es una línea de config, no una tarde. Sale solo si el recap dijo que hay público. -->
+<!-- Para el que quedó con su propio loop andando: apuntarlo a la MISMA base URL de LiteLLM. Mismo endpoint, dos clientes. Es una oferta genuina y no un premio consuelo: con el gateway es una línea de config, no una tarde. Sale solo si el recap dijo que hay público. ⚠️ ESTA SLIDE QUEDÓ CONTRA EL DISEÑO VIEJO Y HAY QUE REHACERLA: de la Sesión 5 no sale un loop propio, sale UNA EXTENSIÓN DE PI, y la traen. Ver la nota en INSTRUCTOR.md, sección "Extensión — para quien haya terminado la Sesión 5". -->
 
 ---
 
