@@ -109,7 +109,20 @@ These are the concepts to cover, roughly ordered by complexity:
 - Orchestration, in passing: shared docs as the ground truth that lets several agents work in parallel
 
 ### [Agus] Tier 5: Harness Internals
-- **TBD** — topics to be defined by the owner. See `harness_internals.md` and `sessions/session-5/`.
+
+> **The spine: teach the concept, use Pi as the specimen.** Every topic here is a design decision *any* harness has to make; Pi is the one we can open, not the one being sold. That rehearses Tier 6's transfer thesis a week early. The failure mode of this tier is turning into a tour of Pi's features.
+
+- What a harness is, revisited from Tier 1: interface, agent loop, tools/memory/context, model. An LLM alone predicts tokens and can do nothing; the harness connects it to the world.
+- **The other harnesses, as axes rather than a ranking**: open vs. closed source, what ships built in vs. what you add, whether there is an extension surface and how deep it reaches, who controls the system prompt. The questions to ask the next tool they pick up. **No comparison table** — comparing harnesses in the abstract is useless to someone who has used one.
+- The agent loop, step by step, with the extension points on the arrows: `session_start`, `resources_discover`, `input`, `before_agent_start`, `turn_start`, `context`, the model call, `tool_call`, `tool_result`, `turn_end`, `agent_end`, `session_shutdown`. Every moment is subscribable, and from there you block, modify or inject. **This is where Tier 2's plan mode finally gets its mechanism**: `tool_call` → `{ block: true }`.
+- Harness architecture as layers, and the idea that you use only the ones you need. Pi's four packages: unified model API, generic agent loop, coding layer, terminal UI.
+- **Sessions as a tree, not a list**: entries with `id` and `parentId`, the active leaf, the whole tree in one file. Why `/tree` is cheap — you move a pointer, you don't delete. Tier 1 sold it as the antidote to cascading errors; here it gets its reason.
+- **Steering vs. follow-up**: when does new information reach an agent that is already running? Interrupt mid-stream, wait for it to settle, or queue for the next turn. Every harness decides this; most hide it.
+- **Three ways to give a model a tool**, and the tradeoffs: an **extension** (reaches harness internals, works in that harness only), a **CLI** (simplest, portable to any harness with a shell, no auth story, and the agent has to learn it exists — which is what `AGENTS.md` is for), **MCP** (for tools other people consume: distribution, auth, remote services, paid for in context). The question that decides it is who the consumer is.
+- **Subagents, the mechanism** (the use case is Tier 4's): a separate context with its own transcript, whose entire result returns to the parent as one message. The honest reason is context economy, not "more AI".
+- **Compaction**, the debt Tier 1 assigned here: the trigger (`contextTokens > contextWindow - reserveTokens`), the algorithm (walk back to `keepRecentTokens`, cut, summarize the older half in a structured format, store the summary with the first kept entry), and the two consequences — it is lossy and it is another model call, and it is interceptable.
+- **Run modes**: interactive, headless one-shot, embedded as a library, served behind a protocol. The agent loop is a library and the terminal is one of its interfaces. Why CI agents, bots and in-browser agents exist.
+- **Security, generalized**: threat models (prompt injection from repo content, a malicious extension/skill/MCP server, the agent's own destructive mistakes, credential exfiltration), permission models as a design space, and the sandbox ladder (none → in-process → container → micro-VM → separate machine). The counterintuitive argument worth stating: **a partial sandbox is worse than none**, because it reads as a boundary while still resting on your shell, filesystem, package managers and credentials. Real isolation comes from the OS.
 
 ### [Diego] Tier 6: Open Source Models & HPC
 
@@ -132,8 +145,8 @@ Not a dedicated session, but surfaced where relevant:
 - **Session 1**: security issues found during code analysis (common vulnerabilities in AI output)
 - **Session 2**: reviewing code with a security lens, what to look for
 - **Session 3**: sandboxing, permission models, why tools have allowlists/denylists
-- **Session 4**: none dedicated — trust boundaries, prompt injection and supply chain moved out of this session; the natural landing spot is Session 5 (TBD, confirm with its owner)
-- **Session 5**: TBD
+- **Session 4**: none dedicated — trust boundaries, prompt injection and supply chain moved out of this session and **landed in Session 5**, which now closes the thread with a block of its own
+- **Session 5**: the block that closes the thread. Threat models (prompt injection from repo content, malicious extensions/skills/MCP servers, the agent's own destructive mistakes, credential exfiltration), permission models as a design space, and the sandbox ladder. Placed after the hands-on so it lands on an extension they just wrote and installed themselves.
 - **Session 6**: model supply chain (binary weights from a hub), self-hosting as an operator responsibility, weaker models as easier injection targets
 
 ## Proposed Sessions
@@ -307,9 +320,57 @@ Not a dedicated session, but surfaced where relevant:
 
 ### Session 5: Coding Harness (internals)
 
-Owner: **Agus**. **TBD** — session design to be written by the owner in `sessions/session-5/INSTRUCTOR.md`.
+> Materials in `sessions/session-5/` (instructor notes, deck, exercise), all in Spanish. **Nothing gets installed** — the only session in the course with no setup risk, because today's material is Pi itself: its docs and its example extensions, both already on every student's machine.
+>
+> This session opens the advanced arc. The four base sessions each add a layer of structure; this one does not have to. The course closing belongs to Session 6, so there is no farewell here.
 
-Known dependency: **Session 6 currently assumes** students leave this session with an agent of their own that they can point at a different model. If the hands-on takes a different shape, Session 6's hands-on needs rework — sync between owners.
+**Recap (~8 min)**
+- Session 4's homework: where did a doc help, and where did it go stale against the code? The second one is the interesting half.
+- The elastic block, as in Sessions 2, 3 and 6.
+
+**Qué vamos a ver hoy (~3 min)**
+- Five weeks driving the tool. Today we open it.
+- The framing that has to survive the whole session: *"we did not come to learn Pi. We came to see what problems any harness has to solve, using the one we can open."*
+
+**What a harness is, and the others (~10 min)**
+- The layer diagram, revisited from Session 1 in thirty seconds rather than rebuilt.
+- The other harnesses as four axes, not a table: open vs. closed, built in vs. added, how far you can extend, who controls the system prompt. Each one is a decision somebody made.
+
+**The loop, and Pi's parts (~14 min)**
+- The densest block of the day; rehearse it against a clock. The loop is built on screen, not shown whole.
+- Every moment is subscribable. `tool_call` → `{ block: true }` pays off the plan-mode thread from Sessions 2 and 3 for the third and last time.
+- The four packages, base to surface, and the line that you use only the layers you need.
+
+**The session tree, and steering vs. follow-up (~7 min)**
+- Two quick looks, not two blocks. The tree explains why `/tree` costs nothing. Steering is the general question of when a message reaches a running agent.
+
+**Break (~5 min)**
+
+**Three ways to give a model a tool, and subagents (~13 min)**
+- The most transferable block in the session, and not about Pi. Extension, CLI, MCP, and the question that decides between them.
+- Subagents as mechanism, since Session 4 owns the use case. A ~200-line extension is the mechanism; the rest is product.
+
+**Compaction (~7 min)**
+- The trigger in one line, the algorithm in four steps, the before/after diagram of the entry array. Lossy, another model call, and interceptable.
+
+**Hands-on (~35 min)**
+- ~5 min reading their own session file (`~/.pi/agent/sessions/`, JSONL): `id`/`parentId` pairs, a branch point, and a compaction entry if anyone has one — project it.
+- ~30 min picking one target from a menu (a `/command`, a tool wrapping a CLI, a hook, a widget) and **directing the agent to build it**. Installed in `.pi/extensions/`, iterated with `/reload`.
+- **TypeScript is not assumed**, which was the constraint Session 3 named. The exercise is direction, not typing, and it points everything the course has taught at the harness for the first time.
+- The agent will hallucinate Pi's API. That is expected, it is the point, and it gets fixed the Session 4 way, with the docs in context.
+
+**Run modes (~4 min)**
+- Interactive, headless, embedded, behind a protocol. The loop is a library; the terminal is one interface.
+
+**Security (~9 min)**
+- Threat models, permission models, the sandbox ladder, and Pi's deliberate absence of a sandbox.
+- **Placed after the hands-on on purpose.** They have just written an extension and installed it; only then do they learn it runs with their full permissions, as Pi's own docs state.
+
+**Closing (~5 min)**
+- What surprised you about opening the machine? None of what we saw today is Pi's; Pi is where we could look at it.
+- Homework: keep the extension alive during the week, note what you had to fix and whether you used it again, and **bring it** — Session 6 uses it.
+
+> **Handoff to Session 6, changed.** The earlier design assumed students left here with a hand-written client to point at another model. ~~That dependency~~ → **no client comes out of this session.** What comes out is an extension, which serves Session 6 better: its opening recap can ask what they wrote and whether it survived the week, and its closing thesis is that everything they built survives the model swap. The extension included.
 
 ### Session 6: Open Source Models & Running on CCAD
 
@@ -385,7 +446,7 @@ For students who don't bring their own:
 - Do we want a final deliverable (repo + reflection) or is the journey enough?
 - LLM fundamentals block: include or skip depending on group assessment?
 - Does the extension-course format actually allow 6 weeks? Confirm before announcing.
-- **Session 5 tooling prerequisites**: TBD once Agus defines the session. If the hands-on hits the API directly, note that raw API access is a different requirement from "Claude Code works" — course-wide keys, a proxy, or their own?
+- ~~**Session 5 tooling prerequisites**~~ → **resolved: nothing.** The hands-on runs on Pi as they already have it, and its material (docs and example extensions) ships with the install. No new package, no raw API access, no keys to provision. It is the only session in the course with no setup risk.
 - **Session 6 needs CCAD accounts provisioned in advance** (form + email, not same-day). Send instructions weeks ahead; confirm whether bulk/expedited provisioning is possible and whether a sponsoring researcher is required.
 - **Session 6 hands-on is hostage to the GPU queue** unless CCAD can reserve a window for the class. Fallback endpoint needed either way.
 - Which session owns the full-course retrospective now that there are six? (Currently duplicated between Session 4's closing and Session 6.)
@@ -406,7 +467,12 @@ For students who don't bring their own:
 - The 80% Problem in Agentic Coding (vault: Reading_List/Queue)
 
 ### Session 5 — Harness internals
-- **TBD** (Agus)
+- **Pi's own docs, which ship with the install** — the primary source for this session and already on every student's machine: `extensions.md`, `compaction.md`, `sessions.md`, `session-format.md`, `security.md`, `sdk.md`. Online at [pi.dev/docs](https://pi.dev/docs/latest/).
+- **`examples/extensions/`** — around eighty example extensions, also shipped with the install. They are the reading material for anyone who finishes the hands-on early, and the source of half the theory's examples. The ones this session uses: `subagent/`, `custom-compaction.ts`, `permission-gate.ts`, `protected-paths.ts`, `tool-override.ts`, `truncated-tool.ts`.
+- [Mario Zechner: *The Pi coding agent*](https://mariozechner.at/posts/2025-11-30-pi-coding-agent/) — Pi's own author writing about the agent the course runs on. The harness taken apart by the person who built it, which is exactly this session's move.
+- [Mario Zechner: *What if you don't need MCP?*](https://mariozechner.at/posts/2025-11-02-what-if-you-dont-need-mcp/) — already on Session 3's list; it returns in the three-ways-to-give-a-tool block. Worth naming that the person who wrote the harness we are opening thinks a CLI is often enough.
+- [Sebastian Raschka: *The Components of a Coding Agent*](https://magazine.sebastianraschka.com/p/components-of-a-coding-agent) — cited in Session 1 as instructor prep. Its components 4 and 5, context reduction and session memory, are this session's material.
+- The BeerJS talk *"Pi, the self-building agent"* (2026-06-25, Agus) — the source of the layer diagram, the loop diagram, the package diagram and the subagents extension shown in class.
 
 ### Session 6 — Open source models & HPC
 - [CCAD — Centro de Computación de Alto Desempeño, UNC](https://supercomputo.unc.edu.ar/ccad/) — created by Ordenanza HCS 18/2010; serves UNC faculties, the Astronomical Observatory, and external research organizations
