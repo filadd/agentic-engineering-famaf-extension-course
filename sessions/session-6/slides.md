@@ -12,44 +12,42 @@ cada slide es un título + una nota de oradora/orador (comentario HTML),
 y SOLO traen cuerpo escrito las slides que la sala tiene que copiar
 textual o leer despacio:
 
-  - el `models.json` del CCAD y el de la GPU de Agus (se copian);
-  - las tres cards de licencias (Gemma 4 / Gemma 3 / Llama);
-  - la cuenta de cuantización (60 GB → 15 GB);
+  - el `models.json` del CCAD (se copia);
+  - la card de licencia de Gemma 4;
+  - la cuenta de cuantización (60 GB → 15 GB) y la de la VRAM de Agus;
   - la tabla de las tres ventanas de contexto;
   - el checklist de siete puntos para elegir un modelo;
-  - los números de Raschka;
+  - los cuatro puntos del programa de Ale;
+  - la tabla de las cuatro pruebas;
   - las frases que quedan proyectadas.
 
-SESIÓN DE 2 H 30 (las otras son de 2 h; la Sesión 1 es de 3):
-5 recap, 30 invitado, 30 pesos abiertos, 5 pausa, 60 práctica,
-5 puesta en común, 15 cierre del curso. Da 150 EXACTOS: NO HAY COLCHÓN.
+SESIÓN DE 2 H 30 (las otras son de 2 h; la Sesión 1 es de 3). CINCO BLOQUES:
+30 teoría (Diego), 15 demo GPU (Agus), 60 CCAD (Ale), 30 práctica, 15 retrospectiva.
+Da 150 EXACTOS: NO HAY COLCHÓN, NO HAY PAUSA, NO HAY RECAP.
 
-LA PRÁCTICA ES VOLVER A HACER LAS PRIMERAS CUATRO SESIONES contra el
-modelo abierto: vibecodear, planificar, skills y MCP, documentar. Una
-prueba por sesión, 8 min de models.json + 40 de pruebas, y la GPU de
-Agus como punto extra de comparación. Ver exercise/README.md.
+NO HAY BLOQUE ELÁSTICO. Si algo se estira, lo único recortable en vivo es la
+práctica — y es lo peor que puede pasar, porque es lo único que la sala hace
+con las manos. Los tres bloques expositivos hay que ensayarlos con reloj y a
+Ale hay que decirle 60 CON ESE NÚMERO.
 
-El bloque elástico es el recap. Si algo se estira se sacrifica primero
-la pausa, después la puesta en común. LA PRÁCTICA Y EL CIERRE NO SE TOCAN.
-Los dos bloques de 30 hay que ensayarlos con reloj.
+EL ORDEN ES EL DISEÑO: abstracto (qué es un modelo) → una GPU en un escritorio
+(16 GB, a tres metros) → un centro de cómputo nacional → la sala le pega.
+Hacer esas transiciones en voz alta.
 
-ANTES DE PROYECTAR ESTO HAY QUE CONFIRMAR CON ALE:
-  - la `baseUrl` exacta (con o sin `/v1`),
-  - los `id` textuales de los modelos,
-  - el `contextWindow` real con el que arrancó vLLM,
-  - cómo se entregan las keys.
-Y con Agus: la IP del aula, el modelo que sirve y su ventana de contexto.
-Están marcados con <ASÍ> en las slides que llevan cuerpo.
+DATOS DEL CCAD, YA CONFIRMADOS Y TEXTUALES:
+  baseUrl  https://litellm.ccad.unc.edu.ar   (SIN /v1)
+  modelos  vllm/gemma4-26b   y   vllm/qwen3.8:30b
+Los dos están servidos: el picker muestra los dos.
 
-Y verificar la semana de la clase: licencias, tamaños y gates de los repos,
-y los números de Raschka. Es el material más perecedero del curso.
+Verificar la semana de la clase: licencias, tamaños y gates de los repos.
+Es el material más perecedero del curso.
 -->
 
 # Sesión 6
 ## Modelos open source y CCAD
 
 **De Vibe Coding a Agentic Engineering** — FaMAF
-Diego Piloni · invitado: Ale Silva (CCAD)
+Diego Piloni · Agustín Carrasco · invitado: Ale Silva (CCAD)
 
 <!-- Portada. Anclar tres cosas: es la última sesión, dura 2 h 30, y hoy cambia UNA sola pieza de todo lo que vinieron construyendo. Las cinco sesiones anteriores usaron un modelo hosteado detrás de una API: fue un default sensato y también un supuesto que nadie examinó. Hoy lo rompemos. -->
 
@@ -57,57 +55,19 @@ Diego Piloni · invitado: Ale Silva (CCAD)
 
 ## Hoy
 
-<!-- Agenda en una slide: cómo les fue con la Sesión 5, media hora con Ale Silva sobre el CCAD, media hora de modelos de pesos abiertos, pausa, una hora de práctica apuntando SU repo a un modelo que corre en hardware de la UNC, puesta en común y cierre del curso. Avisar acá dos cosas operativas: (1) hoy nadie instala un runtime ni baja pesos — la práctica entera es un archivo de configuración; (2) hace falta que traigan SU repo con SU AGENTS.md y SUS skills de la Sesión 3, porque ese es el insumo. -->
+<!-- Agenda en una slide: media hora de modelos de pesos abiertos, quince minutos de Agus corriendo uno en su GPU acá adelante, una hora con Ale Silva sobre el CCAD, media hora de práctica apuntando SU repo a un modelo que corre en hardware de la UNC, y el cierre del curso. NOMBRAR EL ORDEN COMO LO QUE ES —una escalada: primero qué es la cosa, después una GPU en un escritorio, después un centro de cómputo entero, después ustedes le pegan. Avisar acá tres cosas operativas: (1) hoy nadie instala un runtime ni baja pesos — la práctica entera es un archivo de configuración; (2) hace falta que traigan SU repo con SU AGENTS.md y SUS skills de la Sesión 3, porque ese es el insumo; (3) NO HAY PAUSA FORMAL y son 1 h 45 antes de tocar el teclado: que salgan un minuto cuando lo necesiten, sin frenar la clase. -->
 
 ---
 
 ## "Cambiás el modelo editando cinco líneas de JSON, y nada de lo que construiste en cinco sesiones se cae"
 
-<!-- LA FRASE DE LA SESIÓN. Decirla al principio y dejarla escrita a la vista. Todo lo que viene hoy —el invitado, la teoría, la práctica— existe para que esa frase deje de ser una afirmación y pase a ser algo que hicieron ellos, en su propio repo. -->
-
----
-
-# ¿Cómo les fue?
-
-<!-- Sección de recap de la Sesión 5. ~5 MIN DE DISCUSIÓN, no de slides. ESTE ES EL BLOQUE ELÁSTICO y ya está en el mínimo: si el día se estira, se recorta de acá. COORDINAR CON AGUS ANTES DE LA CLASE: su sesión ya está escrita y de ahí NO SALE UN CLIENTE PROPIO, SALE UNA EXTENSIÓN DE PI que su tarea les pide mantener viva durante la semana y traer hoy. Preguntar qué extensión escribieron, qué le tuvieron que arreglar y si la volvieron a usar. Falta hablar con él cómo cerró la sala. -->
-
----
-
-## ¿Qué se les rompió del loop por dentro?
-
-<!-- Disparador. Qué hicieron, qué se les rompió, qué les sorprendió de ver el harness desde adentro. Levantar la mano: ¿a alguien le quedó un cliente propio funcionando? Si hay manos, avisar que al final de la práctica hay una extensión para ellos: apuntar SU loop a la misma base URL del CCAD. -->
-
----
-
-# Invitado: Ale Silva — el CCAD
-
-<!-- Sección. 30 MIN, y entregar la sala. DECIRLE "30" CON ESE NÚMERO Y CON LA PRIORIDAD: si algo se cae, que sean sus puntos 1 y 2 — los podemos abrir nosotros en dos minutos con la wiki. Los puntos 3 a 6 son los que nadie más puede dar con autoridad. Presentarlo en treinta segundos: es quien opera la máquina a la que la sala le va a pegar en una hora. -->
-
----
-
-## Los siete puntos
-
-1. Qué es el CCAD y a quién le sirve
-2. Qué hardware tiene
-3. Cómo pide cuenta un estudiante de la UNC
-4. Cómo se corre un LLM ahí
-5. **LiteLLM** — el gateway, desde adentro
-6. **vLLM** — qué corre atrás, y qué es el batching
-7. Para qué se usa el HPC en la UNC
-
-<!-- Dejar esta slide proyectada durante todo el slot: le sirve de reloj a él y de mapa a la sala. Marcar antes de entregar la sala por qué importan los puntos 3 y 4: son EL CAMINO DE VUELTA. Nada de eso hace falta para la clase de hoy —entramos por el gateway— pero el que quiera correr algo en hardware real después del curso necesita saber cómo se pide la cuenta. Dicho por el que opera la máquina vale más que cualquier link que les pasemos. -->
-
----
-
-## Dos palabras que vuelven en cuarenta minutos
-
-<!-- PEDIRLE EXPLÍCITAMENTE A ALE que nombre las dos con nombre y apellido: LiteLLM y vLLM. Es lo que convierte su slot en la mejor versión posible del bloque de configuración: en una hora van a tipear `https://litellm.ccad.unc.edu.ar` y un `id` que arranca con `vllm/`, y no van a ser dos strings copiados de una slide — van a ser dos cosas que les explicó el que las eligió, media hora antes. Ese círculo no lo podemos comprar de otra manera. Y su punto 6 —qué pasa cuando 25 personas le pegan al mismo tiempo— es literalmente lo que va a pasar durante la práctica. -->
+<!-- LA FRASE DE LA SESIÓN. Decirla al principio y dejarla escrita a la vista. Todo lo que viene hoy —la teoría, las dos demos, la práctica— existe para que esa frase deje de ser una afirmación y pase a ser algo que hicieron ellos, en su propio repo. -->
 
 ---
 
 # Modelos de pesos abiertos
 
-<!-- Sección. 30 MIN, siete sub-bloques, ENSAYAR CON RELOJ: 3 + 5 + 6 + 5 + 4 + 5 + 2. El bloque es "A Deep Dive into Open-Weight AI Models" de Flavio Copes, dado en español. No es una referencia de apoyo: es el contenido. Lo que compramos al adoptar su orden es que cada pieza habilita la siguiente y que el bloque TERMINA EN UN CRITERIO PARA ELEGIR UN MODELO, en vez de terminar en una lista de datos sueltos. Lo único que le cambiamos: los ejemplos van sobre EL MODELO QUE EL GATEWAY ESTÉ SIRVIENDO HOY, que es al que van a apuntar su repo en cuarenta minutos. -->
+<!-- Sección. 30 MIN, siete sub-bloques, ENSAYAR CON RELOJ: 3 + 5 + 6 + 5 + 4 + 5 + 2. El bloque es "A Deep Dive into Open-Weight AI Models" de Flavio Copes, dado en español. No es una referencia de apoyo: es el contenido. Lo que compramos al adoptar su orden es que cada pieza habilita la siguiente y que el bloque TERMINA EN UN CRITERIO PARA ELEGIR UN MODELO, en vez de terminar en una lista de datos sueltos. Lo único que le cambiamos: los ejemplos van sobre LOS DOS MODELOS QUE SIRVE EL GATEWAY, a los que van a apuntar su repo al final de la clase. ⚠️ ESTE BLOQUE ABRE LA SESIÓN: todo lo que diga del CCAD es ANTICIPACIÓN, no callback. Todavía no escucharon a Ale ni vieron la GPU de Agus. -->
 
 ---
 
@@ -133,7 +93,7 @@ Diego Piloni · invitado: Ale Silva (CCAD)
 
 **Una API esconde todo esto detrás de un request HTTP.**
 
-<!-- Cerrar el sub-bloque enumerando esto, y rematar con la frase del post que está en el cuerpo. ESE CONTRASTE ES LA SESIÓN ENTERA EN UNA LÍNEA, y conviene decirlo acá porque en una hora lo van a estar viviendo desde el otro lado: hoy le pegan a un endpoint que alguien más operó, y ese alguien es Ale. -->
+<!-- Cerrar el sub-bloque enumerando esto, y rematar con la frase del post que está en el cuerpo. ESE CONTRASTE ES LA SESIÓN ENTERA EN UNA LÍNEA. Y avisar que esta lista NO SE VA A QUEDAR EN UNA SLIDE: en quince minutos Agus va a mostrar cada uno de estos cinco renglones en su máquina, con las piezas a la vista. -->
 
 ---
 
@@ -172,7 +132,7 @@ Diego Piloni · invitado: Ale Silva (CCAD)
 - Lo que genera: **de ustedes**
 - Sin cláusula de escala · sin obligación de naming · sin política de uso aceptable pegada
 
-<!-- Card 1 de 3, MEDIO MINUTO. Es el modelo que el gateway sirve hoy y al que le van a pegar en cuarenta minutos: el campo `license` real del model card. VERIFICAR LA SEMANA DE LA CLASE y tener las tres cards abiertas en pestañas antes de entrar al aula. (Si el CCAD levantó además el Qwen3.8-27B: mismas tres respuestas, también Apache 2.0.) -->
+<!-- Card 1 de 3, MEDIO MINUTO. Es uno de los dos modelos que sirve el gateway y al que le van a pegar al final de la clase: el campo `license` real del model card. El otro, Qwen3.8 30B, tiene las mismas tres respuestas y también es Apache 2.0. VERIFICAR LA SEMANA DE LA CLASE y tener las tres cards abiertas en pestañas antes de entrar al aula. -->
 
 ---
 
@@ -209,13 +169,13 @@ model-Q4_K_M.gguf
 
 ## Y cuando lo corrés
 
-<!-- El loop entero en cuatro pasos: el runtime lee la configuración, reserva memoria, carga los pesos y espera. Vos escribís algo → el tokenizer lo convierte en ids de tokens → el modelo pasa esos tokens por sus capas y usa los pesos para calcular probabilidades del siguiente token → elige uno, lo agrega a la secuencia y vuelve a empezar. La frase para cerrar: "NADA TIENE QUE LLAMAR A UNA API EN LA NUBE. LAS CUENTAS PASAN EN TU HARDWARE." -->
+<!-- El loop entero en cuatro pasos: el runtime lee la configuración, reserva memoria, carga los pesos y espera. Vos escribís algo → el tokenizer lo convierte en ids de tokens → el modelo pasa esos tokens por sus capas y usa los pesos para calcular probabilidades del siguiente token → elige uno, lo agrega a la secuencia y vuelve a empezar. La frase para cerrar: "NADA TIENE QUE LLAMAR A UNA API EN LA NUBE. LAS CUENTAS PASAN EN TU HARDWARE." Y avisar: en quince minutos eso deja de ser una afirmación. -->
 
 ---
 
 ## Casi todos exponen la misma API
 
-<!-- EL PUENTE AL RESTO DE LA SESIÓN, es nuestro y son SESENTA SEGUNDOS. Casi cualquiera de esos runtimes expone un ENDPOINT COMPATIBLE CON LA API DE OPENAI. Por eso cualquier harness se le puede apuntar a cualquier modelo sin que nadie se haya puesto de acuerdo con nadie: no hay un estándar votado en un comité, hay una forma de API que todos copiaron. ES LA RAZÓN DE QUE CAMBIAR DE MODELO SEAN CINCO LÍNEAS DE JSON Y NO UNA TARDE DE TRABAJO — y en veinte minutos van a escribir esas cinco líneas. -->
+<!-- EL PUENTE AL RESTO DE LA SESIÓN, es nuestro y son SESENTA SEGUNDOS. Casi cualquiera de esos runtimes expone un ENDPOINT COMPATIBLE CON LA API DE OPENAI. Por eso cualquier harness se le puede apuntar a cualquier modelo sin que nadie se haya puesto de acuerdo con nadie: no hay un estándar votado en un comité, hay una forma de API que todos copiaron. ES LA RAZÓN DE QUE CAMBIAR DE MODELO SEAN CINCO LÍNEAS DE JSON Y NO UNA TARDE DE TRABAJO — y al final de la clase van a escribir esas cinco líneas. -->
 
 ---
 
@@ -226,13 +186,13 @@ model-Q4_K_M.gguf
 30 mil millones de parámetros ×  4 bits ÷ 8 = 15 GB
 ```
 
-<!-- ~4 min. La cuenta es la del post y VA EN EL PIZARRÓN además de la slide. Cuantizar es guardar los pesos con menos bits. ES LA DIFERENCIA ENTRE "ESTO NO ENTRA EN NINGUNA MÁQUINA DE ESTA SALA" Y "ENTRA EN VARIAS" — y explica solo por qué el modelo grande vive en el CCAD y por qué lo que sirva Agus en su GPU va a ser mucho más chico. Dejarla escrita: contra la GPU de Agus se compara con la VRAM real. -->
+<!-- ~4 min. La cuenta es la del post y VA EN EL PIZARRÓN además de la slide. Cuantizar es guardar los pesos con menos bits. ES LA DIFERENCIA ENTRE "ESTO NO ENTRA EN NINGUNA MÁQUINA DE ESTA SALA" Y "ENTRA EN VARIAS". 💡 DEJARLA ESCRITA EN EL PIZARRÓN Y NO BORRARLA: Agus la va a usar en quince minutos contra los 16 GB reales de su GPU, y ahí es donde la cuenta muestra lo que le falta. -->
 
 ---
 
 ## El tradeoff, sin exagerar para ningún lado
 
-<!-- Como lo dice el post: un archivo más chico usa menos memoria y a veces corre más rápido, pero bajar la precisión PUEDE cambiar la calidad. Los métodos buenos de cuantización conservan bastante más de lo que sugiere la cuenta de bits pelada — Y AUN ASÍ HAY QUE PROBAR ESE MODELO Y ESA CUANTIZACIÓN EN TU TAREA. No se deduce, se mide. Y lo que hay que nombrar acá porque VUELVE EN LA PUESTA EN COMÚN: lo primero que se suele degradar es LA SALIDA ESTRUCTURADA, que es exactamente el tool calling. O sea: lo que un coding agent necesita para funcionar. -->
+<!-- Como lo dice el post: un archivo más chico usa menos memoria y a veces corre más rápido, pero bajar la precisión PUEDE cambiar la calidad. Los métodos buenos de cuantización conservan bastante más de lo que sugiere la cuenta de bits pelada — Y AUN ASÍ HAY QUE PROBAR ESE MODELO Y ESA CUANTIZACIÓN EN TU TAREA. No se deduce, se mide. Y lo que hay que nombrar acá porque VUELVE EN LA PRÁCTICA: lo primero que se suele degradar es LA SALIDA ESTRUCTURADA, que es exactamente el tool calling. O sea: lo que un coding agent necesita para funcionar. -->
 
 ---
 
@@ -244,7 +204,7 @@ model-Q4_K_M.gguf
 
 ## Qué NO te garantiza
 
-<!-- CON EL MISMO PESO QUE LA LISTA ANTERIOR Y SIN APURARLA. Pesos abiertos no te asegura: buena calidad de salida, respuestas correctas, datos de entrenamiento sin sesgo, uso seguro de tools, hardware barato, generación rápida en tu máquina, permiso para usarlo como quieras, ni información para reproducir el entrenamiento. LO QUE SÍ GARANTIZA ES QUE EL OPERADOR PASÁS A SER VOS: elegir el runtime, asegurar la máquina, instalar las actualizaciones y medir la calidad. Nadie lo hace por vos. -->
+<!-- CON EL MISMO PESO QUE LA LISTA ANTERIOR Y SIN APURARLA. Pesos abiertos no te asegura: buena calidad de salida, respuestas correctas, datos de entrenamiento sin sesgo, uso seguro de tools, hardware barato, generación rápida en tu máquina, permiso para usarlo como quieras, ni información para reproducir el entrenamiento. LO QUE SÍ GARANTIZA ES QUE EL OPERADOR PASÁS A SER VOS: elegir el runtime, asegurar la máquina, instalar las actualizaciones y medir la calidad. Nadie lo hace por vos. Y el puente: "en quince minutos van a ver a un operador; en cuarenta y cinco, a otro, con un cluster atrás". -->
 
 ---
 
@@ -264,37 +224,78 @@ model-Q4_K_M.gguf
 6. **El model card** — para qué lo diseñaron, qué evalúan, qué límites reconocen
 7. **Tu propio set de pruebas**, con ejemplos reales de tu aplicación
 
-<!-- ~2 min, y es LO MÁS ACCIONABLE QUE SE LLEVAN DEL BLOQUE. Es la rampa a la práctica y conviene decirlo así: EL PUNTO 7 DE ESTE CHECKLIST ES LO QUE VAN A HACER EN VEINTE MINUTOS, SOBRE SU PROPIO REPO. -->
+<!-- ~2 min, y es LO MÁS ACCIONABLE QUE SE LLEVAN DEL BLOQUE. ES LA RAMPA A LA DEMO DE AGUS y conviene decirlo con esas palabras: LOS PUNTOS 2, 3 Y 5 —que entre en tu hardware, qué cuantización elegís, y lo que el contexto cuesta en memoria— son literalmente lo que él va a resolver en vivo en los próximos quince minutos, con 16 GB. El punto 7 es lo que van a hacer ustedes al final de la clase, sobre su propio repo. -->
 
 ---
 
 > *"No elijas un modelo solo por un leaderboard. **El mejor modelo es el más chico que hace tu tarea suficientemente bien, en hardware que puedas operar.**"*
 
-<!-- El cierre del bloque de teoría, y las dos mejores frases del post. Dejarla proyectada mientras arranca la pausa. -->
+<!-- El cierre del bloque de teoría, y las dos mejores frases del post. Dejarla proyectada mientras Agus enchufa la GPU: "el hardware que puedas operar" es literalmente lo próximo que van a ver. -->
 
 ---
 
-# Pausa (5 min)
+# Agus — un modelo en una GPU, acá
 
-<!-- Aprovechar para abrir la terminal y dejar listo el paso 0 de la práctica en pantalla. SI EL DÍA SE ESTIRÓ, ESTE ES EL PRIMER SACRIFICIO. -->
-
----
-
-# Práctica (60 min)
-
-<!-- Sección. EL BLOQUE MÁS LARGO DE LA SESIÓN Y EL QUE NO SE RECORTA. EL EJERCICIO ES VOLVER A HACER LAS PRIMERAS CUATRO SESIONES CON OTRO MODELO ABAJO: vibecodear, planificar, skills y MCP, documentar. Nadie instala un runtime: el swap es un archivo de configuración y /model. Ver exercise/README.md — no leer los pasos desde la slide. DECIR EN VOZ ALTA AL SOLTARLOS: el resultado de la sesión son las CUATRO PRUEBAS CONTRA EL CCAD; lo de la GPU de Agus es un punto más de comparación y nadie se va con la sensación de no haber terminado por no haberlo hecho. -->
+<!-- Sección. 15 MIN Y LA SALA ES DE AGUS. Presentarlo en treinta segundos y entregarla. EL HARDWARE: MSI GeForce RTX 5070 Ti 16 GB GDDR7 Ventus 3X OC, conectada POR THUNDERBOLT (o sea, una eGPU externa, no una placa adentro de la máquina), con Ollama sobre CUDA. LO QUE ESTE SLOT LE PAGA A LA CLASE: la lista de "qué hace falta para correr uno" de hace veinte minutos, dejando de ser una enumeración; y sobre todo la slide siguiente. ⚠️ COORDINAR ANTES: que el modelo esté bajado (no bajarlo en vivo por la red del aula) y que la salida de nvidia-smi se lea desde el proyector. -->
 
 ---
 
-## Cómo se reparte la hora
+## 16 GB
+
+```
+30B × 4 bits ÷ 8 = 15 GB   ← los PESOS
+        + la ventana de contexto (KV cache)
+        ─────────────────────────────────
+        > 16 GB
+```
+
+<!-- 💡 EL MEJOR MOMENTO DEL BLOQUE DE TEORÍA, Y HACE FALTA UNA GPU REAL PARA TENERLO. La cuenta del pizarrón dice que un 30B a 4 bits son ~15 GB. La placa tiene 16. LA LECTURA INGENUA ES "ENTRA JUSTO" — Y NO ENTRA: los pesos no son lo único que vive en la VRAM. LA VENTANA DE CONTEXTO TAMBIÉN SE PAGA AHÍ (el KV cache) y crece con cada token de la conversación. Convierte el punto 5 del checklist —"longitud de contexto, y lo que esa longitud cuesta en memoria"— de un bullet en una restricción que la sala VE. Y prepara lo que Ale cuenta después: POR ESO EL MODELO GRANDE VIVE EN UN CLUSTER Y NO EN UNA NOTEBOOK. El número de referencia para cerrar: Raschka midió hasta ~30 GB de RAM con contextos de 50k. -->
+
+---
+
+## Qué se ve cuando arranca
+
+<!-- Lo demás del slot, en orden de cuánto le paga a la clase y SIEMPRE A CRITERIO DE AGUS: (1) `ollama pull` y `ollama run` — los cinco renglones de "qué hace falta para correr uno" convertidos en archivos que se bajan y un proceso que arranca, Y NADA LLAMA A UNA API EN LA NUBE, que es la frase que quedó dicha hace veinte minutos; (2) TOKENS POR SEGUNDO, para que la latencia se sienta en vez de describirse; (3) la eGPU por Thunderbolt como tema propio: una vez que los pesos están en la VRAM el bus no es el cuello de botella de la generación, se paga sobre todo al cargar — DATO SUYO PARA MEDIR, NO NUESTRO PARA AFIRMAR; (4) CUDA en una frase: por qué el ecosistema de inferencia asume NVIDIA en la práctica. -->
+
+---
+
+## "Con esto, ¿qué tamaño de modelo puedo correr de verdad?"
+
+<!-- La pregunta con la que cierra el slot, y la transición hacia Ale. La respuesta honesta es "menos de lo que la cuenta sugiere", y de ahí sale sola la pregunta siguiente: ¿Y SI NECESITO MÁS? Que es exactamente con lo que arranca Ale. Puntero escrito para el que quiera montarlo en su máquina: la guía de Raschka, que está en el ejercicio. -->
+
+---
+
+# Invitado: Ale Silva — el CCAD
+
+<!-- Sección. 60 MIN, y entregar la sala. Presentarlo en treinta segundos: es quien opera la máquina a la que la sala le va a pegar en una hora. ⚠️ DECIR EN VOZ ALTA ANTES DE ENTREGARLA, porque si no media clase va a pensar que necesita un trámite para la práctica de hoy: PEDIR UNA CUENTA DEL CCAD ES EL CAMINO DE VUELTA PARA DESPUÉS DEL CURSO. Hoy entran con la key que ya les repartimos. -->
+
+---
+
+## El programa
+
+1. Una breve introducción a **HPC**
+2. **UNC Supercómputo** — historia, clusters, métricas, la región y el mundo
+3. **Nuevos servicios** — desplegar modelos con hardware limitado, y convertir una prueba que anda en un servicio para muchos usuarios
+4. **Cómo usar los recursos del CCAD** — pedir una cuenta, qué acceso tienen, y la primera llamada a sus modelos
+
+<!-- Dejar esta slide proyectada durante todo el slot: le sirve de reloj a él y de mapa a la sala. POR QUÉ ESTE PROGRAMA LE CAE PERFECTO A LA SESIÓN, y conviene tenerlo claro para hacer bien las transiciones: SU PUNTO 1 ES EL ESCALÓN QUE FALTA —nadie tuvo exposición previa a HPC, y viene justo después de ver UNA sola GPU en un escritorio, así que "por qué hacen falta clusters" tiene un referente de quince minutos antes. SU PUNTO 3 ES EL CORAZÓN DEL SLOT PARA NOSOTROS: "desplegar modelos con hardware limitado" y "convertirlo en un servicio usable por múltiples usuarios" es exactamente la historia de LiteLLM, vLLM y el batching, contada por el que la vivió. VA A NOMBRAR LAS DOS HERRAMIENTAS, y eso es lo que hace que en quince minutos `litellm.ccad.unc.edu.ar` y el prefijo `vllm/` no sean dos strings copiados de una slide. SU PUNTO 4 DESEMBOCA DIRECTO EN EL PASO 0: el corte está acordado — él llega hasta la primera llamada, nosotros seguimos con models.json. NO REPETIR LO SUYO. -->
+
+---
+
+# Práctica (30 min)
+
+<!-- Sección. EL ÚNICO BLOQUE QUE LA SALA HACE CON LAS MANOS Y EL QUE NO SE RECORTA. Una sola vía: el gateway del CCAD. Nadie instala un runtime — el swap es un archivo de configuración y /model. Ver exercise/README.md; no leer los pasos desde la slide. LA ETIQUETA DE RECURSO COMPARTIDO VA ACÁ Y EN UNA FRASE: hay gente corriendo su tesis en esas máquinas, así que respetar los rate limits y no dejar tareas absurdas corriendo por curiosidad. -->
+
+---
+
+## Cómo se reparte la media hora
 
 | | Quién | Tiempo |
 |---|---|---|
 | Paso 0 — `models.json` | todos, juntos | 8 min |
-| **Las cuatro pruebas, contra el CCAD** | **todos** | 40 min |
-| Una prueba más contra la GPU de Agus | opcional | 12 min |
+| **Una prueba, a elección** | cada uno | 22 min |
 
-<!-- Dejar proyectada. Y la etiqueta de recurso compartido, que es lo único que sobrevive del bloque de mecánica de cluster y va en UNA FRASE: hay gente corriendo su tesis en esas máquinas, así que respetar los rate limits y no dejar tareas absurdas corriendo por curiosidad. -->
+<!-- Dejar proyectada. Y decir en voz alta lo que la tabla no dice: NO HAY PRUEBA OBLIGATORIA Y NADIE TIENE QUE HACER LAS CUATRO. Con 22 minutos se entra cómodo en una y apretado en dos; las que no hagan quedan escritas para terminar en casa. -->
 
 ---
 
@@ -309,20 +310,20 @@ model-Q4_K_M.gguf
       "apiKey": "$CCAD_API_KEY",
       "models": [
         { "id": "vllm/gemma4-26b" },
-        { "id": "vllm/qwen3.8-27b" }
+        { "id": "vllm/qwen3.8:30b" }
       ]
     }
   }
 }
 ```
 
-<!-- EL CORAZÓN DE LA SESIÓN, y se da acá y no en la teoría: es setup, así que SE CAMINA EN PANTALLA CON LA SALA TIPEANDO AL MISMO TIEMPO, y queda proyectado el resto de la hora. FRENAR LA PRÁCTICA HASTA QUE EL ARCHIVO LE FUNCIONE A TODO EL MUNDO: el que arranca tarde acá pierde la comparación, que es lo único que no se puede recuperar en casa. Frenar un segundo en el PATH: es el mismo directorio donde vive el AGENTS.md GLOBAL que escribieron en la Sesión 3 — la config global del agente y el catálogo de modelos son vecinos. ⚠️ CONFIRMAR CON ALE ANTES DE PROYECTAR: la baseUrl exacta (con o sin /v1) y los dos `id` textuales; los strings los decide el CCAD al registrar los modelos en LiteLLM. Y decir en voz alta: SI EL SEGUNDO MODELO NO APARECE EN EL PICKER ES PORQUE EL CCAD NO LO LEVANTÓ, NO ES UN TYPO SUYO. -->
+<!-- EL CORAZÓN DE LA SESIÓN, y se da acá y no en la teoría: es setup, así que SE CAMINA EN PANTALLA CON LA SALA TIPEANDO AL MISMO TIEMPO, y queda proyectado el resto de la media hora. FRENAR HASTA QUE EL ARCHIVO LE FUNCIONE A TODO EL MUNDO: con 22 minutos de práctica, el que arranca tarde acá se queda sin prueba. Frenar un segundo en el PATH: es el mismo directorio donde vive el AGENTS.md GLOBAL que escribieron en la Sesión 3 — la config global del agente y el catálogo de modelos son vecinos. Los dos modelos ESTÁN SERVIDOS: el picker va a mostrar los dos. -->
 
 ---
 
 ## Cuatro cosas para frenar
 
-<!-- Una por una, y cada una es un concepto que YA TIENEN. (1) `api: "openai-completions"` es la historia de interoperabilidad de hace veinte minutos convertida en un string que tipean; los valores posibles son openai-completions, openai-responses, anthropic-messages y google-generative-ai: CUATRO FORMAS DE API PARA TODO EL ECOSISTEMA. El CCAD no expone una API "del CCAD": expone la misma que expondría Ollama, o LM Studio, o vLLM crudo. POR ESO EL SWAP CUESTA CINCO LÍNEAS. (2) `apiKey: "$CCAD_API_KEY"` — el campo acepta $VAR y ${VAR}, y también ejecutar un comando si arranca con `!`. CADA UNO TIENE SU PROPIA KEY, emitida desde la cuenta de Diego y repartida antes de clase: decirlo en voz alta, porque significa que si la corrida de al lado anda y la suya no, el problema es su export y no el modelo. USAR LA VARIABLE, NO LA KEY LITERAL, y decir por qué: la key literal en un archivo es la key literal en un backup, en un screenshot del proyector y —el día que a alguien se le ocurra versionar sus dotfiles— en un repo público. ES LA PRIMERA CREDENCIAL PROPIA DEL CURSO Y ES EL MOMENTO DE ENSEÑAR EL REFLEJO. (3) `models` ES UNA LISTA: el catálogo de modelos y el modelo activo son cosas distintas — declarás lo que hay, elegís con /model. (4) El prefijo `vllm/` es routing de LiteLLM y de paso les cuenta qué hay atrás. ACÁ SE COBRA EL SLOT DE ALE: LiteLLM y vLLM ya tienen cara, así que esto se da COMO RECONOCIMIENTO Y NO COMO DATO NUEVO — "eso que les contó Ale hace media hora, acá está, en un string". Lo mismo con la baseUrl. -->
+<!-- Una por una, y cada una es un concepto que YA TIENEN. (1) `api: "openai-completions"` es la historia de interoperabilidad de hace una hora convertida en un string que tipean; los valores posibles son openai-completions, openai-responses, anthropic-messages y google-generative-ai: CUATRO FORMAS DE API PARA TODO EL ECOSISTEMA. El CCAD no expone una API "del CCAD": expone la misma que expone el Ollama que Agus acaba de mostrar. POR ESO EL SWAP CUESTA CINCO LÍNEAS. (2) `apiKey: "$CCAD_API_KEY"` — el campo acepta $VAR y ${VAR}, y también ejecutar un comando si arranca con `!`. CADA UNO TIENE SU PROPIA KEY, emitida desde la cuenta de Diego y repartida antes de clase: decirlo en voz alta, porque significa que si la corrida de al lado anda y la suya no, el problema es su export y no el modelo. USAR LA VARIABLE, NO LA KEY LITERAL, y decir por qué: la key literal en un archivo es la key literal en un backup, en un screenshot del proyector y —el día que a alguien se le ocurra versionar sus dotfiles— en un repo público. ES LA PRIMERA CREDENCIAL PROPIA DEL CURSO Y ES EL MOMENTO DE ENSEÑAR EL REFLEJO. (3) `models` ES UNA LISTA: el catálogo de modelos y el modelo activo son cosas distintas — declarás lo que hay, elegís con /model. (4) El prefijo `vllm/` es routing de LiteLLM. ACÁ SE COBRA EL SLOT DE ALE, QUE TERMINÓ RECIÉN: LiteLLM y vLLM ya tienen cara, así que esto se da COMO RECONOCIMIENTO Y NO COMO DATO NUEVO — "eso que les acaba de contar Ale, acá está, en un string". Lo mismo con la baseUrl. -->
 
 ---
 
@@ -334,11 +335,11 @@ model-Q4_K_M.gguf
 | Pi, si no le decís nada | **128.000** |
 | El CCAD, al levantar vLLM (`--max-model-len`) | **el que manda** |
 
-<!-- LA MEJOR PARTE DEL PASO 0. `contextWindow` tiene default 128000 y `maxTokens` default 16384: O SEA QUE LA VENTANA DE CONTEXTO ES UN NÚMERO QUE ALGUIEN ELIGIÓ. Después de cinco sesiones tratándola como una propiedad del producto que compraron, resulta ser un parámetro de arranque. Escribir las tres filas en el pizarrón, una debajo de la otra: el modelo puede 256K, Pi asume 128K, y LO QUE REALMENTE TIENEN ES LO QUE EL SERVIDOR ARRANCÓ. ⚠️ SI EL SERVER ARRANCÓ CON MENOS QUE EL DEFAULT DE PI, LOS REQUESTS VAN A FALLAR: fijar `contextWindow` explícitamente con el valor que confirme Ale. Es la misma perilla que Agus fija de su lado al servir su GPU, vista desde la otra punta. Y el detalle operativo que hace fácil la práctica: EL ARCHIVO SE RELEE CADA VEZ QUE ABRÍS /model, sin reiniciar nada. -->
+<!-- LA MEJOR PARTE DEL PASO 0. `contextWindow` tiene default 128000 y `maxTokens` default 16384: O SEA QUE LA VENTANA DE CONTEXTO ES UN NÚMERO QUE ALGUIEN ELIGIÓ. Después de cinco sesiones tratándola como una propiedad del producto que compraron, resulta ser un parámetro de arranque. Escribir las tres filas en el pizarrón, una debajo de la otra: el modelo puede 256K, Pi asume 128K, y LO QUE REALMENTE TIENEN ES LO QUE EL SERVIDOR ARRANCÓ. ES LA MISMA PERILLA QUE AGUS TUVO QUE ELEGIR HACE UNA HORA, VISTA DESDE LA OTRA PUNTA — y la que explica por qué su GPU de 16 GB no podía con todo. Y el detalle operativo que hace fácil la práctica: EL ARCHIVO SE RELEE CADA VEZ QUE ABRÍS /model, sin reiniciar nada. -->
 
 ---
 
-## Las cuatro pruebas
+## Elegí una
 
 | | La sesión | La pregunta |
 |---|---|---|
@@ -347,13 +348,13 @@ model-Q4_K_M.gguf
 | 3 | **Skills y MCP** | ¿los sigue como debe? |
 | 4 | **Documentar** | ¿qué tan buenos son los docs que genera? |
 
-<!-- ~40 min, Y ES EL EJERCICIO ENTERO: volver a hacer las primeras cuatro sesiones con otro modelo abajo. Dejar la tabla proyectada toda la práctica. Ver exercise/README.md — no leer los pasos desde la slide. LA LÍNEA DE BASE NO ES OTRA CORRIDA: ES LO QUE YA SABEN de las primeras cuatro clases, así que la comparación arranca gratis. Decirlo así al soltarlos: "no estamos midiendo el modelo, estamos midiendo SU andamiaje contra otro motor". Y avisar cuál es cuál: la prueba 1 es la que menos va a diferenciar (en una sola pasada todos los modelos se parecen) y LA PRUEBA 3 ES LA QUE MÁS INFORMACIÓN DA — si algo se rompe hoy, se rompe ahí. -->
+<!-- ~22 min, Y ES UN MENÚ, NO UNA SECUENCIA. Dejar la tabla proyectada toda la práctica. Ver exercise/README.md — no leer los pasos desde la slide. LA RECOMENDACIÓN HONESTA, EN VOZ ALTA AL SOLTARLOS: si no saben cuál elegir, LA 3 — es la que más información da y donde más probable es que algo se rompa, porque es la que depende del tool calling. La 1 es la que menos va a diferenciar: en tareas de una sola pasada casi todos los modelos se parecen. LA LÍNEA DE BASE NO ES OTRA CORRIDA: ES LO QUE YA SABEN de las primeras cuatro clases, así que la comparación arranca gratis. Decirlo así: "no estamos midiendo el modelo, estamos midiendo SU andamiaje contra otro motor". -->
 
 ---
 
 ## Lo que hay que vigilar caminando la sala
 
-<!-- (1) TODO EN SU REPO, con su AGENTS.md, sus skills y su .mcp.json: el que lo hace en /tmp hizo un ejercicio de configuración, no la clase. (2) SESIÓN NUEVA Y LIMPIA PARA CADA PRUEBA, y repo limpio entre una y otra — si arrastran la conversación no saben qué están midiendo. (3) QUE NO "ARREGLEN" SUS ARTEFACTOS PARA AYUDAR AL MODELO: si el skill no dispara, ESO ES EL RESULTADO. (4) Si algo los sorprende, QUE REPITAN ESA PRUEBA CON EL MODELO HOSTEADO antes de concluir: es lo que separa "el modelo abierto no puede" de "mi prompt siempre fue frágil y recién ahora se nota". (5) EL ERROR MÁS PROBABLE NO ES CONCEPTUAL: un typo en el JSON o la key sin exportar — por eso el paso 0 se hace en conjunto. -->
+<!-- (1) TODO EN SU REPO, con su AGENTS.md, sus skills y su .mcp.json: el que lo hace en /tmp hizo un ejercicio de configuración, no la clase. (2) SESIÓN NUEVA Y LIMPIA, y repo limpio — si arrastran una conversación previa no saben qué están midiendo. (3) QUE NO "ARREGLEN" SUS ARTEFACTOS PARA AYUDAR AL MODELO: si el skill no dispara, ESO ES EL RESULTADO. (4) Si algo los sorprende, QUE REPITAN ESA PRUEBA CON EL MODELO HOSTEADO antes de concluir: es lo que separa "el modelo abierto no puede" de "mi prompt siempre fue frágil y recién ahora se nota". (5) EL ERROR MÁS PROBABLE NO ES CONCEPTUAL: un typo en el JSON o la key sin exportar — por eso el paso 0 se hace en conjunto. (6) SI A ALGUIEN LE SOBRA TIEMPO: la misma prueba contra el otro modelo del picker. -->
 
 ---
 
@@ -364,87 +365,19 @@ model-Q4_K_M.gguf
 - ¿**Inventó** archivos, funciones o APIs?
 - ¿Cómo se sintió la **latencia**?
 
-<!-- Las cuatro preguntas transversales, además de lo específico de cada prueba. SON EL INSUMO DE LA PUESTA EN COMÚN, que dura cinco minutos: sin apuntes no hay nada que poner en común. Dejar la slide proyectada al lado de la tabla de las cuatro pruebas. Y el callback que vale la pena tirar caminando: lo primero que se degrada con la cuantización es la SALIDA ESTRUCTURADA — o sea, la primera de estas cuatro preguntas. -->
+<!-- Las cuatro preguntas transversales, además de lo específico de la prueba que hayan elegido. Dejar la slide proyectada al lado de la tabla de las pruebas. Y el callback que vale la pena tirar caminando: lo primero que se degrada con la cuantización es la SALIDA ESTRUCTURADA — o sea, la primera de estas cuatro preguntas. Sirven además para arrancar la retrospectiva si la sala queda callada. -->
 
 ---
 
-## Opcional — la GPU de Agus, acá en el aula
+# ¿Qué les pareció el curso?
 
-```json
-"agus": {
-  "baseUrl": "http://<IP-DE-AGUS>:11434/v1",
-  "api": "openai-completions",
-  "apiKey": "ollama",
-  "models": [{ "id": "<MODELO-DE-AGUS>" }]
-}
-```
-
-<!-- ~12 min, OPCIONAL, y del lado del estudiante es OTRA ENTRADA MÁS en el mismo models.json: cero instalación, cero descarga de pesos, cero pelea con drivers. ⚠️ COMPLETAR LA IP Y EL MODELO CON AGUS ANTES DE LA CLASE, y probar el flujo entero desde otra máquina del aula. NO SE REPITEN LAS CUATRO PRUEBAS: eligen UNA —la 3, skills y MCP, es la que más información da— y la vuelven a correr acá. QUÉ ENSEÑA, y no es lo mismo que enseñaba servirlo uno mismo: (1) SEPARA DOS COSAS QUE LA SALA MEZCLA — modelo grande en hardware de la UNC, modelo hosteado, y ahora modelo chico a tres metros: es el punto donde se separa "los modelos abiertos son peores" de "ESTE MODELO CHICO Y CUANTIZADO es peor", que es un salto de madurez técnica y sale casi gratis. (2) EL MODELO A TRES METROS Y LOS DATOS SIN SALIR DEL AULA: sin cuenta, sin key, sin nadie en el medio — la contracara exacta de las cinco sesiones anteriores. Mostrar la VRAM real contra la cuenta de cuantización, y los tokens por segundo, PARA QUE LA LATENCIA SE SIENTA EN VEZ DE DESCRIBIRSE. (3) EL SWAP POR SEGUNDA VEZ EN LA MISMA HORA. REPETIR AL SOLTARLOS Y OTRA VEZ A LOS DIEZ MINUTOS: NADIE TIENE QUE TERMINAR ESTO. -->
+<!-- Sección, 15 MIN, Y NO SE TOCA aunque el día se haya estirado. Es el final del curso. DEBATE ABIERTO: si les sirvió, qué se llevan, qué cambiarían. ESCUCHAR MÁS QUE DEFENDER — las respuestas honestas son las que hacen la próxima edición; las amables no sirven para nada. -->
 
 ---
 
-## Tres providers en un archivo
+## Preguntas para destrabar
 
-<!-- LA TESIS DE LA SESIÓN, Y NO ES UNA AFIRMACIÓN: ES UNA LISTA DE TRES ENTRADAS EN UN JSON. El hosteado que vienen usando hace cinco sesiones, el CCAD y la notebook que está a tres metros. El modelo activo se elige con /model y cambiar cuesta dos segundos. 💡 Y CUANDO LA GPU DE AGUS SE ENCOLE, NARRARLO EN VIVO EN VEZ DE TRATARLO COMO UNA FALLA: una GPU sirviendo a 25 personas a la vez se encola, y que se encole delante de todos muestra el techo de una sola GPU chica — QUE ES EXACTAMENTE LO QUE ALE EXPLICÓ MEDIA HORA ANTES al contar por qué el CCAD corre vLLM y no otra cosa. Avisarle a Agus para que lo esperemos y lo usemos como demostración. -->
-
----
-
-## Extensión — si terminaste la Sesión 5
-
-<!-- Para el que quedó con su propio loop andando: apuntarlo a la MISMA base URL de LiteLLM. Mismo endpoint, dos clientes. Es una oferta genuina y no un premio consuelo: con el gateway es una línea de config, no una tarde. Sale solo si el recap dijo que hay público. ⚠️ ESTA SLIDE QUEDÓ CONTRA EL DISEÑO VIEJO Y HAY QUE REHACERLA: de la Sesión 5 no sale un loop propio, sale UNA EXTENSIÓN DE PI, y la traen. Ver la nota en INSTRUCTOR.md, sección "Extensión — para quien haya terminado la Sesión 5". -->
-
----
-
-# ¿Está a la altura de un proyecto serio?
-
-<!-- Sección, ~5 min, Y VA DESPUÉS DE LA PRÁCTICA A PROPÓSITO: las discusiones de criterio salen mejor cuando ya midieron algo propio. Arrancar por la sala, con las cuatro preguntas que anotaron, y recién después poner los números de Raschka. -->
-
----
-
-## Lo que midió Sebastian Raschka
-
-- **Setup**: Ollama + harnesses open source apuntados al endpoint — *el mismo movimiento que acaban de hacer*
-- **Calidad agéntica**: 4-5/5 en razonamiento agéntico con un **Qwen3.6 MoE**
-- **Velocidad**: ~40 tokens/s en una Mac Mini
-- **Memoria**: hasta ~30 GB de RAM con contextos de 50k
-
-<!-- "Using Local Coding Agents": corrió esta misma pregunta de punta a punta, con otro runtime y por un tercero. Su conclusión: los MoE nuevos ya alcanzan para mucho trabajo real. La ventana de contexto se paga en hardware, Y ACÁ ESTÁ EL NÚMERO. ⚠️ RE-VERIFICAR LA SEMANA DE LA CLASE: esto se mueve rápido. EL MATIZ QUE HAY QUE DECIR JUNTO CON LOS NÚMEROS: él mide TAREAS ACOTADAS. Sostener un proyecto largo es otra pregunta, y el cuello de botella ahí suele ser EL TOOL CALLING CONFIABLE, no la capacidad de escribir código. No es una contradicción: son dos preguntas distintas, y distinguirlas es el criterio que este bloque quiere dejar. -->
-
----
-
-## Cuándo conviene, y cuándo no
-
-<!-- DOS MINUTOS, CERRANDO LA PUESTA EN COMÚN, y de ahí se sale al cierre del curso. ENCAJA BIEN: datos sensibles o regulados; tareas repetitivas de alto volumen donde el costo domina; investigación que necesita reproducibilidad y un modelo pineado; trabajo offline o air-gapped; y ESTUDIAR LA COSA EN SÍ — no podés inspeccionar logits que no tenés. ENCAJA MAL: querés el mejor coding agent disponible hoy; no tenés capacidad operativa; el volumen es bajo y una API hosteada va a salir más barata que tu tiempo. Y el otro modelo de costo, que es el callback a la Sesión 4: POR HORA Y POR GPU, NO POR TOKEN. -->
-
----
-
-# Cierre del curso
-
-<!-- Sección, ~15 min, Y NO SE TOCA aunque el día se haya estirado. Es el final del curso, no el final de la sesión. OJO CON EL REPARTO: la Sesión 4 ya cerró el arco base con el material de juicio (costo, límites, carrera, atrofia). ACÁ VA EL MATERIAL DE ARTEFACTO: el repo, el espectro y la tesis de la transferencia. No reintroducir lo de la Sesión 4. -->
-
----
-
-## El repo, desde el primer commit hasta hoy
-
-<!-- Que abran el log de su propio proyecto. En la Sesión 1 era prompt-and-accept. Después le agregaron un plan y un review, después un AGENTS.md y skills, después contexto y spec, después vieron el loop por dentro, y hoy le cambiaron el modelo abajo. NADA DE ESO SE CAYÓ HOY. Es el artefacto que se llevan, y es la mejor evidencia de la tesis del curso — no se los tenemos que decir nosotros, está en su git log. -->
-
----
-
-## El espectro, otra vez
-
-<!-- Los cinco niveles de la Sesión 1, ahora como mapa y no como promesa. La pregunta para la sala: ¿DÓNDE SE PARAN HOY, Y DÓNDE SE QUIEREN PARAR EL LUNES? Y la respuesta que el curso da: no hay un nivel correcto — hay una decisión que se toma por tarea, y hoy tienen el criterio para tomarla. -->
-
----
-
-## Lo que se transfiere
-
-<!-- LA TESIS DE CIERRE, hecha carne hace veinte minutos. El AGENTS.md, los skills, el plan mode, el flujo de review, la spec, el presupuesto de contexto: NADA DE ESO ERA SOBRE EL MODELO. Hoy le cambiaron el modelo por uno que corre en un cluster de la UNC y todo siguió funcionando. Ese es el pago de haber enseñado ESTRUCTURA en vez de un producto: lo que construyeron sobrevive al modelo, y va a sobrevivir a la herramienta. Cerrar con la frase de la sesión, que quedó proyectada desde el principio. -->
-
----
-
-## ¿Qué les pareció? ¿Qué mejorarían?
-
-<!-- DEBATE ABIERTO, y es el bloque más importante de los 15 minutos: SI LES SIRVIÓ, QUÉ SE LLEVAN, QUÉ CAMBIARÍAN. Preguntas para desbloquear si la sala está callada: ¿qué sesión les sirvió más y cuál menos? ¿qué habrían querido que dure el doble? ¿qué van a usar el lunes y qué no van a volver a abrir? Escuchar más que defender: las respuestas honestas son las que hacen la próxima edición. -->
+<!-- Son quince minutos sostenidos SÓLO POR PREGUNTAS, así que llegar con varias y usarlas si la sala se queda callada: ¿qué sesión les sirvió más y cuál menos? ¿qué habrían querido que dure el doble, y qué sacarían? ¿qué van a usar el lunes y qué no van a volver a abrir? ¿qué esperaban del curso cuando se anotaron, y qué se llevan en cambio? ¿a quién se lo recomendarían y a quién no? Y SI LA SALA ES MUY ELOGIOSA, empujar con "¿qué fue lo más aburrido?", que es la pregunta que siempre destraba. -->
 
 ---
 
@@ -452,4 +385,4 @@ model-Q4_K_M.gguf
 
 **Diego Piloni** · **Agustín Carrasco** · invitado: **Ale Silva** (CCAD)
 
-<!-- Agradecer a Ale y al CCAD con nombre: sin ese acceso esta sesión no existe. Y dejar tres punteros abiertos para el que quiera seguir: pedir su cuenta del CCAD (la wiki, el trámite que contó Ale), la guía de Raschka para montarlo en su propia máquina, y el post de Copes para releer la teoría de hoy con calma. -->
+<!-- Agradecer a Ale y al CCAD con nombre: sin ese acceso esta sesión no existe. Y dejar tres punteros abiertos para el que quiera seguir: pedir su cuenta del CCAD (el trámite que contó Ale), la guía de Raschka para montarlo en su propia máquina, y el post de Copes para releer la teoría de hoy con calma. Los tres están escritos en exercise/README.md. -->

@@ -114,7 +114,7 @@ Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 
 
 ## Los 5 niveles
 
-<!-- Vibe coding → AI-assisted → asistencia dirigida → agentic coding → agentic engineering. Una slide, sin profundidad: es un mapa, no un temario. Ubicar dónde cae cada sesión. Volvemos a esta slide una sola vez: en el cierre de la Sesión 6, que es el cierre del curso. Mantener el archivo reusable — allá se muestra esta slide, no una redibujada. -->
+<!-- Vibe coding → AI-assisted → asistencia dirigida → agentic coding → agentic engineering. Una slide, sin profundidad: es un mapa, no un temario. Ubicar dónde cae cada sesión. ⚠️ ANTES ESTA SLIDE VOLVÍA EN EL CIERRE DE LA SESIÓN 6; ESE CIERRE AHORA ES RETROSPECTIVA ABIERTA Y NO TIENE CONTENIDO, así que hoy es la única vez que se muestra. Sigue valiendo como mapa; simplemente no tiene callback. -->
 
 ---
 
