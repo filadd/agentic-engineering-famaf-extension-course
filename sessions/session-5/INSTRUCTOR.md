@@ -16,9 +16,9 @@ Eso importa porque es la tesis con la que cierra el curso: lo que construís sob
 
 ## Audiencia y supuestos
 
-- **Dura 2 horas y no se instala nada.** Es la única sesión del curso sin riesgo de setup, y conviene aprovecharlo: el tiempo que las otras sesiones pierden en instalaciones acá es tiempo de clase.
+- **Dura 2 h 30 y no se instala nada.** La primera hora es de demos: la sala muestra lo que construyó. Es además la única sesión del curso sin riesgo de setup, y conviene aprovecharlo: el tiempo que las otras sesiones pierden en instalaciones acá es tiempo de clase.
 - **Con qué llegan**: Pi con Plannotator y `pi-subagents` (Sesión 2) y `pi-mcp-adapter` (Sesión 3), su repo, su `AGENTS.md`, sus skills y los docs que escribieron en la Sesión 4. Todo eso es insumo de la práctica.
-- **No se asume TypeScript.** Es una restricción real, marcada por Diego en la Sesión 3, y **la práctica está diseñada alrededor de ella**: la extensión la escribe el agente. Ver "Práctica".
+- **No se asume TypeScript.** Es una restricción real, marcada por Diego en la Sesión 3, y **la práctica está diseñada alrededor de ella**: la extensión la escribe el agente. Ver "La tarea de la semana".
 - Grupo heterogéneo, de primer año a graduados. El menú de la práctica existe para que cada uno elija su nivel.
 - **Esta sesión abre el tramo avanzado.** Las cuatro anteriores agregaban una capa de estructura cada una; ésta no tiene que agregar ninguna. Y el cierre del curso es de la Sesión 6, así que acá no hay despedida.
 
@@ -35,16 +35,27 @@ Decirlo explícitamente en el bloque de apertura: *"todo lo que vamos a mirar ho
 
 ## Plan tema por tema
 
-### Recap (~8 min)
+### Demo de proyectos (~60 min)
 
-Discusión, no slides. La tarea de la Sesión 4 era mantener los docs vivos durante la semana y anotar dos cosas:
+**Abre la sesión.** Es la primera vez en el curso que la sala ve lo que construyó el resto. Se anunció en la Sesión 1 y se recordó en el cierre de la Sesión 4, así que llegan sabiendo.
+
+Cómo corre:
+
+- **Los primeros dos minutos son para armar la lista.** Quién quiere mostrar y en qué orden. **Voluntarios**, no lista de clase: no es una entrega y no se corrige.
+- **Unos ocho turnos de 5 a 7 minutos**: 4 o 5 de mostrar, 2 de preguntas. Proyector, cada uno abre su repo. Cronómetro a la vista y corte amable a los 7.
+- **Qué muestran**: el proyecto que vienen arrastrando desde la Sesión 1. Y no solo qué construyeron: **cómo**. El plan de la Sesión 2, el `AGENTS.md` y los skills de la Sesión 3, los docs de la Sesión 4.
+- **La pregunta que se repite en cada turno**: *"¿qué decidiste vos y qué decidió el agente?"* Es el hilo del curso entero y acá se cobra.
+
+**El recap de la Sesión 4 va acá adentro, sin bloque aparte.** La tarea era mantener los docs vivos durante la semana y anotar dos cosas, y son las dos preguntas que se le hacen a quien muestra:
 
 1. **Cuándo un doc sirvió.** Que cuenten un caso concreto: el agente hizo algo bien sin que se lo expliquen, un plan salió distinto.
 2. **Cuándo un doc quedó desactualizado** respecto del código, y qué costó eso.
 
 El segundo es el más interesante y el que más va a aparecer. No hace falta resolverlo hoy; es material del cierre del curso.
 
-**Este es el bloque elástico.** Si el día se estira, se recorta de acá, como en las Sesiones 2, 3 y 6.
+**Este es el bloque elástico**, el rol que en el diseño anterior tenía el recap. Si el día se estira, se recortan turnos.
+
+**Plan B**: si no se levantan ocho manos, Diego y Agus eligen —tienen los repos desde la Sesión 1— o el bloque se acorta y el tiempo vuelve a la teoría, que hoy tiene colchón.
 
 ### Qué vamos a ver hoy (~3 min)
 
@@ -238,9 +249,11 @@ Después:  [ resumen ] + [ mensajes conservados ]
 
 Y el callback a la Sesión 1: la regla del 50% que Diego les dio como higiene tiene un número atrás, y es éste.
 
-### Práctica (~35 min)
+### Abrí tu sesión, y la tarea de la semana (~10 min)
 
-Ver `exercise/README.md`. Está detallada abajo, en su propia sección.
+**~5 min en vivo: el Paso 0.** Que abran su propio archivo de sesión. Es el único paso del ejercicio que se hace en clase, porque es el que necesita la sala. Está detallado abajo, en su propia sección.
+
+**~5 min: presentar la tarea.** El menú, las tres reglas y dónde se instala. Escribir la extensión se lo llevan a la semana. Ver `exercise/README.md`.
 
 ### Run modes (~4 min)
 
@@ -287,13 +300,13 @@ Y el argumento que vale la pena decir en voz alta porque es contraintuitivo: **u
 - **¿Qué les sorprendió de abrir la máquina?** Pregunta abierta. Sirve para pescar lo que no cubrimos.
 - **Cerrar en el encuadre**: hoy vieron el loop, la compactación, el árbol, las tres formas de dar una tool, los subagentes y los run modes. Ninguna de esas cosas es de Pi. Pi es donde las pudimos mirar.
 - **Nombrar la transición**: la semana que viene se cambia el modelo que está abajo de todo esto, y vamos a ver qué sobrevive.
-- **Tarea**: mantener la extensión viva durante la semana. Anotar qué le tuvieron que arreglar y si la volvieron a usar. **Traerla**: la Sesión 6 la usa.
+- **Tarea**: el ejercicio. Escribir la extensión en casa, dirigiendo al agente, y después mantenerla viva el resto de la semana: anotar qué le tuvieron que arreglar y si la volvieron a usar. **Traerla**: la Sesión 6 la usa.
 
-## Timing de la sesión (~2 h)
+## Timing de la sesión (~2 h 30)
 
 | Bloque | Tiempo |
 |---|---|
-| Recap | 8 min |
+| **Demo de proyectos** | **60 min** |
 | Qué vamos a ver hoy | 3 min |
 | Qué es un harness, y los otros | 10 min |
 | El loop y las partes de Pi | 14 min |
@@ -301,21 +314,21 @@ Y el argumento que vale la pena decir en voz alta porque es contraintuitivo: **u
 | Pausa | 5 min |
 | Tres formas de darle una tool, y subagentes | 13 min |
 | Compactación | 7 min |
-| **Práctica** | **35 min** |
+| Abrí tu sesión, y la tarea de la semana | 10 min |
 | Run modes | 4 min |
 | Seguridad | 9 min |
 | Cierre | 5 min |
 
-Da **120 exactos, sin colchón**. Dos consecuencias:
+Da **147 sobre 150: tres minutos de colchón y nada más**. Dos consecuencias:
 
-- **El bloque elástico es el recap**, como en las Sesiones 2, 3 y 6. Después, run modes. Después, el árbol o steering. **La práctica y el bloque de seguridad no se tocan.**
+- **El bloque elástico es la demo**, que además es el que más limpio se recorta: son turnos, no ideas. Después, run modes. Después, el árbol o steering. **El bloque de seguridad no se toca.**
 - **Los dos bloques de 13 y 14 hay que ensayarlos con reloj.** El del loop es el que se va de largo: son once momentos y un diagrama que se construye en pantalla.
 
-Si se decide que la práctica tiene que ser de 45, **la pagan dos bloques enteros, no cinco minutos de cada uno**. Esa decisión se toma antes de la clase, no durante.
+Si el aula resulta ser de 2 h 15 y no de 2 h 30, **la demo baja a 45 y la teoría queda intacta**. Esa decisión se toma antes de la clase, no durante.
 
-## Práctica (~35 min) — que el agente extienda al agente
+## La tarea de la semana — que el agente extienda al agente
 
-Cuatro pasos en `exercise/README.md`. La forma del bloque: cinco minutos de mirar, treinta de construir.
+Cuatro pasos en `exercise/README.md`. **El Paso 0 se hace en clase (~5 min); los otros tres se los llevan.**
 
 **Paso 0 (~5 min): abrir su propio archivo de sesión.** Las sesiones viven en `~/.pi/agent/sessions/`, organizadas por directorio de trabajo, un JSONL cada una. Que abran la suya, encuentren sus entradas, miren los pares `id` / `parentId`, ubiquen un punto donde ramificaron.
 
@@ -345,7 +358,7 @@ Es la primera vez que todo lo que aprendieron apunta al harness: el plan de la S
 - **Desde la Sesión 2**: el plan mode que les restringió el toolset vuelve por tercera y última vez, ahora ubicado en el diagrama del loop: `tool_call` → `{ block: true }`.
 - **Desde la Sesión 3**: allá los puntos de extensión se usan **desde afuera** (instalar, configurar, registrar); acá se abre el loop. Diego dejó ese límite marcado como una propuesta hasta que lo hablemos: **esta sesión lo cierra así**. También quedó parkeado acá "escribir una extensión de TypeScript", que se mantiene, con el agente tecleando.
 - **Desde la Sesión 4**: los subagentes se **abren** allá con el caso de uso de documentación, como se acordó con Diego. Acá reciben el **mecanismo**. Es el mismo reparto que la Sesión 1 hace con la higiene de contexto: nombrar la operación temprano, abrir la maquinaria en la 5.
-- **Hacia la Sesión 6 (Diego)**: ⚠️ **el handoff cambió y hay que avisarle.** El diseño anterior asumía que de acá salía un cliente propio que se podía apuntar a otro endpoint. **No sale ninguno.** Lo que sale es una extensión, y eso le sirve mejor: su recap de apertura puede preguntar qué extensión escribieron y si sobrevivió la semana, y su tesis de cierre es justamente que todo lo que construyeron sobrevive al cambio de modelo. **La extensión incluida.**
+- **Hacia la Sesión 6 (Diego)**: ⚠️ **el handoff cambió y hay que avisarle.** El diseño anterior asumía que de acá salía un cliente propio que se podía apuntar a otro endpoint. **No sale ninguno.** Lo que sale es una extensión, y eso le sirve mejor: su recap de apertura puede preguntar qué extensión escribieron y si sobrevivió la semana, y su tesis de cierre es justamente que todo lo que construyeron sobrevive al cambio de modelo. **La extensión incluida.** Ojo con una consecuencia del cambio de formato: la extensión ahora se escribe en casa, así que **parte de la sala puede llegar sin ninguna**, y el recap de apertura de la Sesión 6 necesita un camino para esa gente.
 
 ## Lo que dejamos afuera a propósito
 

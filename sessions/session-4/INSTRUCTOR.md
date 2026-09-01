@@ -143,6 +143,7 @@ Qué vigilar caminando la sala:
 - **Cuándo no usar IA.** La IA amplifica lo que ya sabés; sin los fundamentos, amplifica la confusión. "Don't use AI as a crutch" (MIT Missing Semester).
 - **Ser dueño.** Entender, decidir, discutir, mantener. Si no podés explicar tu sistema sin abrir el código, no sos dueño del sistema.
 - **Nombrar la transición**: con esta sesión termina el tramo de "cómo trabajo bien con esta herramienta". Las próximas dos desarman la máquina: la Sesión 5 abre el harness por adentro y la Sesión 6 cambia el modelo que tiene abajo.
+- **Recordar la demo**: la Sesión 5 abre con **una hora de demos del proyecto**. Se anunció en la Sesión 1 y ésta es la última clase antes. El que quiera mostrar, que venga con el repo listo y sepa qué quiere contar en 5 a 7 minutos. No es una entrega, es voluntario y no se corrige.
 - **Tarea**: mantener los docs vivos durante la semana. Cada decisión nueva va al doc de su feature; anotar cuándo los docs sirvieron y cuándo quedaron desactualizados respecto del código.
 
 ## Timing de la sesión (~2 h)

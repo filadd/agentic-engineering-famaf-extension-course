@@ -15,10 +15,11 @@ diagramas (capas, loop, paquetes, compactación), las tres tablas
 (tree/fork/clone, las tres formas de dar una tool, la escalera de
 sandbox) y el menú de la práctica. El resto es título + nota.
 
-Sesión de 2 h: 8 recap, 3 intro, 10 harness y los otros, 14 loop y
+Sesión de 2 h 30: 60 demo, 3 intro, 10 harness y los otros, 14 loop y
 partes, 7 árbol y steering, 5 pausa, 13 tres formas y subagentes,
-7 compactación, 35 práctica, 4 run modes, 9 seguridad, 5 cierre.
-Da 120 exactos, sin colchón.
+7 compactación, 10 abrí tu sesión + la tarea, 4 run modes, 9 seguridad,
+5 cierre. Da 147 sobre 150. La práctica de escribir la extensión pasó
+a ser tarea; en clase queda solo el Paso 0.
 
 Cuatro diagramas vienen de la charla de BeerJS "Pi, the self-building
 agent" (2026-06-25). Ojo al reusarlos: aquella charla VENDÍA Pi, ésta
@@ -31,19 +32,31 @@ lo usa como espécimen. Revisar el tono de cada uno.
 **De Vibe Coding a Agentic Engineering** — FaMAF
 Agustín Carrasco
 
-<!-- Portada. Anclar: sesión 5 de 6, arranca el tramo avanzado, 2 h, y hoy no se instala NADA. Es la única sesión del curso sin riesgo de setup. -->
+<!-- Portada. Anclar: sesión 5 de 6, arranca el tramo avanzado, 2 h 30, LA PRIMERA HORA ES DE DEMOS, y hoy no se instala NADA. Es la única sesión del curso sin riesgo de setup. -->
 
 ---
 
 ## Hoy
 
-<!-- Agenda en una slide: cómo les fue con los docs, qué es un harness y cuáles hay, el loop por dentro, el árbol y el steering, pausa, cómo se le agrega una tool a un modelo, compactación, una hora larga de práctica escribiendo una extensión, run modes, seguridad, cierre. Avisar que hoy la herramienta es el OBJETO DE ESTUDIO, no el instrumento. -->
+<!-- Agenda en una slide: UNA HORA DE DEMOS para arrancar, qué es un harness y cuáles hay, el loop por dentro, el árbol y el steering, pausa, cómo se le agrega una tool a un modelo, compactación, abrir el archivo de sesión propio, run modes, seguridad, cierre. Avisar dos cosas: que hoy la herramienta es el OBJETO DE ESTUDIO y no el instrumento, y que la práctica de escribir una extensión ES LA TAREA DE LA SEMANA, no se hace en clase. -->
 
 ---
 
-# ¿Cómo les fue?
+# Demos
 
-<!-- Sección de recap. ~8 MIN DE DISCUSIÓN, no de slides. ESTE ES EL BLOQUE ELÁSTICO: si el día se estira, se recorta de acá (mismo criterio que las Sesiones 2, 3 y 6). -->
+<!-- Sección. ~60 MIN, y abre la sesión. Voluntarios, unos OCHO TURNOS DE 5 A 7 MIN: 4 o 5 de mostrar, 2 de preguntas. Proyector, cada uno abre su repo. Cronómetro a la vista y corte amable a los 7. NO ES UNA ENTREGA Y NO SE CORRIGE — se anunció en la Sesión 1 y se recordó en el cierre de la Sesión 4. ESTE ES EL BLOQUE ELÁSTICO: si el día se estira, se recortan turnos. PLAN B: si no se levantan ocho manos, elegimos nosotros, o el bloque se acorta. -->
+
+---
+
+## ¿Quién muestra?
+
+<!-- Los primeros DOS MINUTOS son para armar la lista: quién quiere mostrar y en qué orden. Anotarla en el pizarrón. Qué muestran: el proyecto que vienen arrastrando desde la Sesión 1, y no solo QUÉ construyeron sino CÓMO — el plan de la Sesión 2, el AGENTS.md y los skills de la Sesión 3, los docs de la Sesión 4. LA PREGUNTA QUE SE REPITE EN CADA TURNO: "¿qué decidiste vos y qué decidió el agente?" -->
+
+---
+
+## ¿Cómo les fue?
+
+<!-- El recap de la Sesión 4 VA ACÁ ADENTRO, sin bloque aparte: son las dos preguntas que se le hacen a quien está mostrando. -->
 
 ---
 
@@ -127,7 +140,7 @@ input → before_agent_start → turn_start → context → LLM call
 
 ## Todos esos momentos son escuchables
 
-<!-- pi.on(evento, handler), y desde ahí se BLOQUEA, se MODIFICA o se INYECTA. Es la línea que convierte el diagrama en algo que pueden usar, y es lo que van a hacer en la práctica. -->
+<!-- pi.on(evento, handler), y desde ahí se BLOQUEA, se MODIFICA o se INYECTA. Es la línea que convierte el diagrama en algo que pueden usar, y es lo que van a hacer en la tarea de la semana. -->
 
 ---
 
@@ -253,9 +266,9 @@ Después:  [ resumen ] + [ mensajes conservados ]
 
 ---
 
-# Práctica
+# Abrí tu sesión, y la tarea de la semana
 
-<!-- Sección. ~35 min: 5 de mirar, 30 de construir. Ver exercise/README.md. -->
+<!-- Sección. ~10 min: 5 de abrir el archivo de sesión EN VIVO y 5 de presentar la tarea. ESCRIBIR LA EXTENSIÓN NO SE HACE EN CLASE: es el ejercicio de la semana. Ver exercise/README.md. -->
 
 ---
 
@@ -263,7 +276,7 @@ Después:  [ resumen ] + [ mensajes conservados ]
 
 `~/.pi/agent/sessions/`
 
-<!-- ~5 min, y NO MÁS. Que abran su JSONL y busquen tres cosas: los pares id/parentId (el árbol del que hablamos), un punto donde ramificaron (las dos ramas siguen ahí), y una entrada de compactación si tienen. SI ALGUIEN TIENE UNA ENTRADA DE COMPACTACIÓN, PROYECTARLA: el resumen que viene arrastrando hace semanas es una línea en un archivo. Es el mejor momento del bloque y no cuesta nada. Acá todo lo de la teoría deja de ser un diagrama. -->
+<!-- EL ÚNICO PASO QUE SE HACE EN CLASE, porque es el que necesita la sala. ~5 min, y NO MÁS. Que abran su JSONL y busquen tres cosas: los pares id/parentId (el árbol del que hablamos), un punto donde ramificaron (las dos ramas siguen ahí), y una entrada de compactación si tienen. SI ALGUIEN TIENE UNA ENTRADA DE COMPACTACIÓN, PROYECTARLA: el resumen que viene arrastrando hace semanas es una línea en un archivo. Es el mejor momento del bloque y no cuesta nada. Acá todo lo de la teoría deja de ser un diagrama. -->
 
 ---
 
@@ -274,19 +287,19 @@ Después:  [ resumen ] + [ mensajes conservados ]
 - un hook que avise o bloquee sobre algo (`.env`, `git push`)
 - un widget o una status line
 
-<!-- El menú, para copiar. Existe para que la sala heterogénea se auto-seleccione. Si a alguien no se le ocurre nada: que mire sus notas de las semanas anteriores, lo que anotaron como fricción suele ser la mejor candidata. -->
+<!-- El menú, PARA COPIAR Y LLEVARSE: la extensión se escribe en casa. Existe para que la sala heterogénea se auto-seleccione. Si a alguien no se le ocurre nada: que mire sus notas de las semanas anteriores, lo que anotaron como fricción suele ser la mejor candidata. -->
 
 ---
 
 ## No hace falta que sepas TypeScript
 
-<!-- Y ESO ES EL EJERCICIO. Llevan cuatro semanas aprendiendo a dirigir a un agente; hoy el objetivo es la herramienta misma. Se instala en .pi/extensions/ o ~/.pi/agent/extensions/ y se itera con /reload, sin reiniciar. Es la primera vez que TODO lo que aprendieron apunta al harness: el plan de la Sesión 2, el AGENTS.md y los skills de la Sesión 3, y el research de la Sesión 4 — que acá significa apuntarle a las docs de Pi y a examples/extensions/ ANTES de que escriba una línea. -->
+<!-- Y ESO ES EL EJERCICIO DE LA SEMANA. Llevan cuatro semanas aprendiendo a dirigir a un agente; ahora el objetivo es la herramienta misma. Se instala en .pi/extensions/ o ~/.pi/agent/extensions/ y se itera con /reload, sin reiniciar. Es la primera vez que TODO lo que aprendieron apunta al harness: el plan de la Sesión 2, el AGENTS.md y los skills de la Sesión 3, y el research de la Sesión 4 — que acá significa apuntarle a las docs de Pi y a examples/extensions/ ANTES de que escriba una línea. -->
 
 ---
 
 ## Pasale las docs primero
 
-<!-- LA REGLA QUE HAY QUE REPETIR CAMINANDO. Pi es chico y reciente: no está en el entrenamiento del modelo como está React. VA A ALUCINAR LA API, y es lo mejor que puede pasar — le va a pasar a casi toda la sala sin que hagamos nada, y demuestra lo que el curso viene diciendo sobre grounding mejor que cualquier slide. NO PREVENIRLO: dejar que pase y arreglarlo como en la Sesión 4, con las docs en contexto. La pregunta para tirar caminando: "¿le pasaste las docs antes o después de que inventara la función?" -->
+<!-- LA REGLA QUE HAY QUE REPETIR CAMINANDO. Pi es chico y reciente: no está en el entrenamiento del modelo como está React. VA A ALUCINAR LA API, y es lo mejor que puede pasar — le va a pasar a casi toda la sala sin que hagamos nada, y demuestra lo que el curso viene diciendo sobre grounding mejor que cualquier slide. NO PREVENIRLO: dejar que pase y arreglarlo como en la Sesión 4, con las docs en contexto. COMO AHORA LES PASA EN CASA Y NO CON NOSOTROS AL LADO, pedirles que lo anoten: "¿le pasaste las docs antes o después de que inventara la función?" es la primera pregunta del recap de la Sesión 6. -->
 
 ---
 
@@ -356,4 +369,4 @@ nada → in-process → contenedor → micro-VM → máquina aparte
 
 ## Para la semana · Próxima sesión
 
-<!-- TAREA: mantener la extensión viva. Usarla, y anotar dos cosas — qué le tuvieron que arreglar cuando la usaron de verdad, y si la volvieron a usar o si la escribieron y nunca más. TRAERLA: la Sesión 6 la usa. NOMBRAR LA TRANSICIÓN: la semana que viene se cambia el modelo que está abajo de todo esto y vamos a ver qué sobrevive. La sesión la da Diego, con Ale Silva del CCAD de invitado. -->
+<!-- TAREA: escribir la extensión (el ejercicio completo, en casa) y después mantenerla viva. Usarla, y anotar dos cosas — qué le tuvieron que arreglar cuando la usaron de verdad, y si la volvieron a usar o si la escribieron y nunca más. TRAERLA: la Sesión 6 la usa. NOMBRAR LA TRANSICIÓN: la semana que viene se cambia el modelo que está abajo de todo esto y vamos a ver qué sobrevive. La sesión la da Diego, con Ale Silva del CCAD de invitado. -->

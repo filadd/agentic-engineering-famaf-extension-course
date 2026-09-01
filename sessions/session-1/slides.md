@@ -84,6 +84,12 @@ Diego Piloni · con Agustín Carrasco
 
 ---
 
+## En la Sesión 5 lo mostrás
+
+<!-- DECIRLO HOY, EN LA PRIMERA CLASE, porque cambia cómo trabajan las seis semanas. El proyecto que arrancan hoy es el mismo las seis sesiones, y la Sesión 5 ABRE CON UNA HORA DE DEMOS: el que quiere, lo muestra al grupo. Aclarar lo que NO es: no es una entrega, no se corrige, no hay nota. Son 5 a 7 minutos, con preguntas, y se anota voluntario ese mismo día. Lo interesante no es el producto sino CÓMO lo construyeron. Lo volvemos a recordar en la Sesión 4. -->
+
+---
+
 ## La responsabilidad es tuya, no de la IA
 
 <!-- La idea que más nos importa que se lleven, de las dos. La responsabilidad como punto de partida sigue siendo de las personas: si algo sale mal, si el código no anda, si se filtró una clave — el responsable sos vos, no la IA. No existe "lo escribió el agente" como excusa. Todo el resto del curso es cómo estar a la altura de esa responsabilidad. -->

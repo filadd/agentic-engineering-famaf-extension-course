@@ -91,7 +91,7 @@ Al final de la clase deberías tener:
 - Un prototipo que corre y hace algo (aunque sea poco).
 - Una lista de cosas que te sorprendieron al abrir el código.
 
-No hay nada formal para entregar. Guardá el repo: lo seguimos usando las próximas cinco sesiones.
+No hay nada formal para entregar. Guardá el repo: lo seguimos usando las próximas cinco sesiones, y **en la Sesión 5 hay una hora para mostrarlo al grupo** — voluntario, sin nota, 5 a 7 minutos.
 
 ## Para la semana
 

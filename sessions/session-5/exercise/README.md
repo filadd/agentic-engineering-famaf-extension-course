@@ -1,5 +1,7 @@
 # Sesión 5 — Ejercicio práctico: extendé tu agente
 
+> **Esto es la tarea de la semana.** El Paso 0 lo hicimos en clase; el resto lo hacés en casa. Lleva entre 45 y 60 minutos. No se entrega: se trae a la Sesión 6.
+
 ## Objetivo
 
 Abrir el archivo donde vive tu propia sesión, y después escribir una extensión de Pi **dirigiendo al agente**, sin escribir TypeScript vos.
@@ -17,7 +19,7 @@ Abrir el archivo donde vive tu propia sesión, y después escribir una extensió
 2. **Pasale las docs antes de pedirle nada.** Pi es chico y reciente: el modelo no lo conoce como conoce React. Si no le das las docs, te va a inventar funciones que no existen.
 3. **Que entre en una pantalla.** El ejercicio es el ciclo entre lo que pedís y lo que sale, no el tamaño de lo que sale.
 
-## Paso 0 — Abrí tu sesión (~5 min)
+## Paso 0 — Abrí tu sesión (lo hicimos en clase)
 
 Tus sesiones están en `~/.pi/agent/sessions/`, organizadas por directorio de trabajo. Cada una es un archivo **JSONL**: una entrada por línea.
 
@@ -29,7 +31,7 @@ Abrí la de este proyecto y buscá tres cosas:
 
 No hay nada que entregar acá. Es para que veas que el contexto es un archivo, no una abstracción.
 
-## Pasos 1 a 3 — Escribí una extensión (~30 min)
+## Pasos 1 a 3 — Escribí una extensión
 
 ### Paso 1 — Elegí qué construir
 
@@ -76,7 +78,7 @@ Commiteá la extensión si vive en el proyecto.
 
 No arranques una segunda. Andá a leer el ejemplo de subagentes que viene con Pi (`examples/extensions/subagent/`) y comparalo con la versión mínima que vimos en la teoría. La pregunta que vale: **¿qué de todo eso es el mecanismo y qué es producto?**
 
-## Preguntas para la discusión final
+## Preguntas para traer a la Sesión 6
 
 1. ¿Te inventó una función que no existía? ¿En qué momento te diste cuenta, y qué lo arregló?
 2. ¿En qué parte del loop terminó enganchada tu extensión, y por qué ahí y no en otra?
@@ -84,7 +86,7 @@ No arranques una segunda. Andá a leer el ejemplo de subagentes que viene con Pi
 
 ## Para la semana
 
-**Mantené la extensión viva.** Usala, y anotá dos cosas:
+**Escribila, y después mantenela viva.** Usala, y anotá dos cosas:
 
 1. Qué le tuviste que arreglar cuando la usaste de verdad.
 2. Si la volviste a usar, o si la escribiste y nunca más.

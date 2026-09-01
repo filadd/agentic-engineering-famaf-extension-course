@@ -43,11 +43,12 @@ Diego and Agus: academic background, industry background, what we do now, **and 
 
 ### Part 2 — What this course is (~10 min)
 
-The expectation-setting block. Three moves:
+The expectation-setting block. Four moves:
 
 1. **This course is built on our own experience, not on theory.** For theory there are excellent online courses — many made by the same companies selling the AI services. Say it plainly, because the practical consequence is *ask a lot of questions*: the value of being in the room is access to people who already ate the problems.
 2. **Recommend the courses and ask for theirs.** DeepLearning.AI (Andrew Ng), Karpathy, Simon Willison, "Claude Code in Action" (Anthropic), plus Agus's picks. Then ask the room what AI courses they've taken and would recommend — write it on the board, it seeds `resources/`.
-3. **The six sessions in one slide**, then the two ideas that carry the course: **responsibility is yours** and **managing a smart intern**. Close the block with the five-level spectrum as a map (vibe coding → AI-assisted → directed → agentic coding → agentic engineering) — one slide, no depth. Revisited in Session 4's closing.
+3. **The six sessions in one slide**, and right after it: **Session 5 opens with an hour of demos** — the project they start today gets shown to the room in the second-to-last class. Say what it is not: no deliverable, no grading, volunteers only, 5-7 minutes each, and what matters is *how* they built it. Announcing it now is the point — it changes how they work for six weeks. One slide, ~1 min; it absorbs into this block, and Session 4's closing reminds them.
+4. **The two ideas that carry the course**: **responsibility is yours** and **managing a smart intern**. Close the block with the five-level spectrum as a map (vibe coding → AI-assisted → directed → agentic coding → agentic engineering) — one slide, no depth. Revisited in Session 4's closing.
 
 ### Part 3 — Who they are (~30 min)
 

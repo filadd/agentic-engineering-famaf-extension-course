@@ -100,6 +100,8 @@ Commiteá todo. Los docs son parte del proyecto, igual que el código.
 
 ## Para la semana
 
+**La Sesión 5 abre con una hora de demos**: el que quiera muestra su proyecto al grupo, 5 a 7 minutos con preguntas. Es voluntario, no se entrega y no se corrige. Si vas a mostrar, vení con el repo listo y con una idea de qué querés contar — sobre todo **cómo** lo construiste.
+
 Mantené los docs vivos: cada decisión nueva va al doc de su feature. Anotá dos cosas:
 
 1. Cuándo un doc te sirvió (el agente hizo algo bien sin que se lo expliques, un plan salió mejor).

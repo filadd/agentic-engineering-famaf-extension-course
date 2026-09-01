@@ -35,7 +35,7 @@ Vibe coding is a great on-ramp — fast, fun, empowering. But professional softw
 
 ## Format
 
-- **6 sessions**, 1 per week, ~2-3 hours each (originally 4; sessions 5-6 added as a deeper technical arc — see below)
+- **6 sessions**, 1 per week, ~2-3 hours each (originally 4; sessions 5-6 added as a deeper technical arc — see below). **Sessions 1 and 5 are the long ones**: Session 1 needs 3 h for introductions plus the install, Session 5 needs 2 h 30 because it opens with an hour of student demos.
 - Each session: theory → hands-on → show-and-tell discussion
 - **Same project across all 4 sessions** — students see their codebase evolve
 - Students bring their own project idea; default fallback is a small web app
@@ -163,6 +163,7 @@ Not a dedicated session, but surfaced where relevant:
 - This course is built on our own experience, not on theory — for theory there are excellent online courses (DeepLearning.AI/Andrew Ng, Karpathy, Simon Willison, Anthropic's "Claude Code in Action"). The practical consequence: ask a lot of questions.
 - Ask the room what AI courses they've taken and recommend
 - The six sessions in one slide
+- **Announce the Session 5 demo hour**: the project they start today gets shown to the room in the second-to-last class. Volunteers, 5-7 min each, no deliverable and no grading. Announcing it on day one is the point — it changes how they work for six weeks. Reminded in Session 4's closing.
 - **Responsibility stays with the person, not the AI** — the idea we most want them to leave with
 - Core mental model: managing a smart intern. Today is deliberately the absent boss.
 - The five-level spectrum as a map (revisited in Session 4's closing)
@@ -316,17 +317,22 @@ Not a dedicated session, but surfaced where relevant:
 - When NOT to use AI: skill atrophy, "don't use AI as a crutch" (MIT Missing Semester)
 - Ownership: understand, decide, discuss, maintain
 - Name the transition: the next two sessions take the machine apart
+- Remind them of the demo hour that opens Session 5 — this is the last class before it
 - Homework: keep the docs alive during the week; note when they helped and when they went stale against the code
 
 ### Session 5: Coding Harness (internals)
 
 > Materials in `sessions/session-5/` (instructor notes, deck, exercise), all in Spanish. **Nothing gets installed** — the only session in the course with no setup risk, because today's material is Pi itself: its docs and its example extensions, both already on every student's machine.
 >
+> **This session runs 2 h 30** (every other session but the first is 2): it opens with a **60-minute demo block** where students show the project they have carried since Session 1. Announced in Session 1, reminded in Session 4's closing. To pay for it, the theory stays intact and the extension-writing hands-on **moves to homework** — only its Paso 0 stays in the room.
+>
 > This session opens the advanced arc. The four base sessions each add a layer of structure; this one does not have to. The course closing belongs to Session 6, so there is no farewell here.
 
-**Recap (~8 min)**
-- Session 4's homework: where did a doc help, and where did it go stale against the code? The second one is the interesting half.
-- The elastic block, as in Sessions 2, 3 and 6.
+**Demo de proyectos (~60 min)**
+- Opens the session. Volunteers, ~8 turns of 5-7 min (4-5 showing, 2 of questions), at the projector, each one opening their own repo. Not a deliverable, not graded.
+- What they show: the project carried since Session 1 — and not only *what* they built but **how**: Session 2's plan, Session 3's `AGENTS.md` and skills, Session 4's docs. The question repeated every turn: *"what did you decide and what did the agent decide?"*
+- **Session 4's recap lives inside this block**, with no slot of its own: where did a doc help, and where did it go stale against the code? Asked of each person who presents.
+- **The elastic block**, the role the recap used to hold: if the day runs long, turns get cut. Plan B if fewer than eight hands go up: we pick, or the block shrinks.
 
 **Qué vamos a ver hoy (~3 min)**
 - Five weeks driving the tool. Today we open it.
@@ -353,24 +359,24 @@ Not a dedicated session, but surfaced where relevant:
 **Compaction (~7 min)**
 - The trigger in one line, the algorithm in four steps, the before/after diagram of the entry array. Lossy, another model call, and interceptable.
 
-**Hands-on (~35 min)**
-- ~5 min reading their own session file (`~/.pi/agent/sessions/`, JSONL): `id`/`parentId` pairs, a branch point, and a compaction entry if anyone has one — project it.
-- ~30 min picking one target from a menu (a `/command`, a tool wrapping a CLI, a hook, a widget) and **directing the agent to build it**. Installed in `.pi/extensions/`, iterated with `/reload`.
+**Abrí tu sesión, y la tarea de la semana (~10 min)**
+- ~5 min **in the room**: reading their own session file (`~/.pi/agent/sessions/`, JSONL): `id`/`parentId` pairs, a branch point, and a compaction entry if anyone has one — project it. This is the only step of the exercise that needs the room, and it is the payoff of the tree and compaction blocks.
+- ~5 min briefing **the homework**: the menu (a `/command`, a tool wrapping a CLI, a hook, a widget), the three rules, and where it installs. They pick one target and **direct the agent to build it** during the week, installed in `.pi/extensions/`, iterated with `/reload`.
 - **TypeScript is not assumed**, which was the constraint Session 3 named. The exercise is direction, not typing, and it points everything the course has taught at the harness for the first time.
-- The agent will hallucinate Pi's API. That is expected, it is the point, and it gets fixed the Session 4 way, with the docs in context.
+- The agent will hallucinate Pi's API. That is expected, it is the point, and it gets fixed the Session 4 way, with the docs in context — but now it happens at home, with nobody walking the room, so noticing it becomes the first question of Session 6's recap.
 
 **Run modes (~4 min)**
 - Interactive, headless, embedded, behind a protocol. The loop is a library; the terminal is one interface.
 
 **Security (~9 min)**
 - Threat models, permission models, the sandbox ladder, and Pi's deliberate absence of a sandbox.
-- **Placed after the hands-on on purpose.** They have just written an extension and installed it; only then do they learn it runs with their full permissions, as Pi's own docs state.
+- **Placed late on purpose.** They have been installing extensions since Session 2 and are about to write and install one of their own, alone, during the week; only then do they learn it runs with their full permissions, as Pi's own docs state. ⚠️ The staging changed with the hands-on moving to homework — Agus's call on how to re-land the punchline.
 
 **Closing (~5 min)**
 - What surprised you about opening the machine? None of what we saw today is Pi's; Pi is where we could look at it.
-- Homework: keep the extension alive during the week, note what you had to fix and whether you used it again, and **bring it** — Session 6 uses it.
+- Homework: **write the extension** (the full exercise, at home), then keep it alive during the week, note what you had to fix and whether you used it again, and **bring it** — Session 6 uses it.
 
-> **Handoff to Session 6, changed.** The earlier design assumed students left here with a hand-written client to point at another model. ~~That dependency~~ → **no client comes out of this session.** What comes out is an extension, which serves Session 6 better: its opening recap can ask what they wrote and whether it survived the week, and its closing thesis is that everything they built survives the model swap. The extension included.
+> **Handoff to Session 6, changed.** The earlier design assumed students left here with a hand-written client to point at another model. ~~That dependency~~ → **no client comes out of this session.** What comes out is an extension, which serves Session 6 better: its opening recap can ask what they wrote and whether it survived the week, and its closing thesis is that everything they built survives the model swap. The extension included. **One consequence of the demo reshuffle**: the extension is now written at home, so part of the room may arrive without one, and Session 6's opening recap needs a path for those students.
 
 ### Session 6: Open Source Models & Running on CCAD
 
@@ -437,13 +443,13 @@ For students who don't bring their own:
 
 ## Open Questions
 
-- Exact session duration (2h vs 3h) — **Session 1 is 3 h**, the rest are 2 h. Confirm the room allows it.
+- Exact session duration (2h vs 3h) — **Session 1 is 3 h and Session 5 is 2 h 30** (it opens with an hour of demos), the rest are 2 h. Confirm the room allows it.
 - ~~Claude Code vs alternatives~~ → **decided: Pi is the course tool.** Terminal-based, minimal, standard `AGENTS.md`.
 - ~~Session 2 is written against Claude Code and misaligned with the Pi decision~~ → **resolved: Session 2 runs on Pi.** Planning and review go through `@plannotator/pi-extension`, which adds file-based plan mode (`pi --plan`) and `/plannotator-review` to Pi. One harness for the whole course; students install two extensions at the start of Session 2.
 - ~~`pi-subagents` package is unpinned~~ → **decided: the unscoped `pi-subagents`** (`pi install npm:pi-subagents`), installed by students at the start of Session 2. There are at least six forks on npm (`@tintinweb/`, `@gotgenes/`, `@yassimba/`, `@nklisch/`, plus bridges) — the course standardizes on one. **Confirm with Agus** before Session 4 builds on it — the subagents block is his now, so it stays installed from Session 2 and unused until then.
 - API keys: provide them or have students set up their own?
 - Pre-work: should students come to Session 1 with a project idea already?
-- Do we want a final deliverable (repo + reflection) or is the journey enough?
+- ~~Do we want a final deliverable (repo + reflection) or is the journey enough?~~ → **half-answered: Session 5 opens with an hour of demos.** There is a public moment, but no deliverable and no grading — showing is voluntary. Still open: whether Session 6's retrospective wants a written reflection to go with it.
 - LLM fundamentals block: include or skip depending on group assessment?
 - Does the extension-course format actually allow 6 weeks? Confirm before announcing.
 - ~~**Session 5 tooling prerequisites**~~ → **resolved: nothing.** The hands-on runs on Pi as they already have it, and its material (docs and example extensions) ships with the install. No new package, no raw API access, no keys to provision. It is the only session in the course with no setup risk.
