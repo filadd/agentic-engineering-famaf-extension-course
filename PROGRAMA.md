@@ -1,6 +1,6 @@
 # Ingeniería Agéntica
 
-**Curso de extensión en FaMAF, Universidad Nacional de Córdoba.** Docentes: Diego Piloni y Agustín Carrasco. Invitado: Alejandro Silva (CCAD, UNC). Destinatarios: programadores/as junior y estudiantes avanzados de carreras de computación (cupo de 30 personas). Modalidad presencial teórico-práctica: 6 encuentros semanales de ~2 hs cada uno. Cada estudiante trabaja sobre un proyecto propio que comienza en el curso y evoluciona a lo largo de las seis clases.
+**Curso de extensión en FaMAF, Universidad Nacional de Córdoba.** Docentes: Diego Piloni y Agustín Carrasco.  Invitado: Alejandro Silva (CCAD, UNC). Docente Responsable: Marcos Gómez. Destinatarios: programadores/as junior y estudiantes avanzados de carreras de computación (cupo de 30 personas). Modalidad presencial teórico-práctica: 6 encuentros semanales de ~2 hs cada uno. Cada estudiante trabaja sobre un proyecto propio que comienza en el curso y evoluciona a lo largo de las seis clases.
 
 Requisitos: notebook, uso de la terminal y `git`. Hay que asistir al curso con una suscripción paga a un proveedor de IA, de ~20 USD mensuales. Sugeridos: Plan Lite de GLM Coding Plan https://z.ai/subscribe de 18 USD mensuales o Plan Plus de Codex https://chatgpt.com/codex/pricing/ de 20 USD mensuales. Un plan de Claude no sirve, porque solo funciona con Claude Code y en el curso usamos Pi https://pi.dev/, un agente de código abierto.
 
