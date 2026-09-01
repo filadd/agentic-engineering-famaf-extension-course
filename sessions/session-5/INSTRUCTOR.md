@@ -300,7 +300,7 @@ Y el argumento que vale la pena decir en voz alta porque es contraintuitivo: **u
 - **¿Qué les sorprendió de abrir la máquina?** Pregunta abierta. Sirve para pescar lo que no cubrimos.
 - **Cerrar en el encuadre**: hoy vieron el loop, la compactación, el árbol, las tres formas de dar una tool, los subagentes y los run modes. Ninguna de esas cosas es de Pi. Pi es donde las pudimos mirar.
 - **Nombrar la transición**: la semana que viene se cambia el modelo que está abajo de todo esto, y vamos a ver qué sobrevive.
-- **Tarea**: el ejercicio. Escribir la extensión en casa, dirigiendo al agente, y después mantenerla viva el resto de la semana: anotar qué le tuvieron que arreglar y si la volvieron a usar. **Traerla**: la Sesión 6 la usa.
+- **Tarea**: el ejercicio. Escribir la extensión en casa, dirigiendo al agente, y después mantenerla viva el resto de la semana: anotar qué le tuvieron que arreglar y si la volvieron a usar. **La Sesión 6 no la revisa**: no hay recap ni bloque de extensión ahí. La tarea vale por sí sola, y las dudas van al canal del curso durante la semana.
 
 ## Timing de la sesión (~2 h 30)
 
@@ -358,7 +358,7 @@ Es la primera vez que todo lo que aprendieron apunta al harness: el plan de la S
 - **Desde la Sesión 2**: el plan mode que les restringió el toolset vuelve por tercera y última vez, ahora ubicado en el diagrama del loop: `tool_call` → `{ block: true }`.
 - **Desde la Sesión 3**: allá los puntos de extensión se usan **desde afuera** (instalar, configurar, registrar); acá se abre el loop. Diego dejó ese límite marcado como una propuesta hasta que lo hablemos: **esta sesión lo cierra así**. También quedó parkeado acá "escribir una extensión de TypeScript", que se mantiene, con el agente tecleando.
 - **Desde la Sesión 4**: los subagentes se **abren** allá con el caso de uso de documentación, como se acordó con Diego. Acá reciben el **mecanismo**. Es el mismo reparto que la Sesión 1 hace con la higiene de contexto: nombrar la operación temprano, abrir la maquinaria en la 5.
-- **Hacia la Sesión 6 (Diego)**: ⚠️ **el handoff cambió y hay que avisarle.** El diseño anterior asumía que de acá salía un cliente propio que se podía apuntar a otro endpoint. **No sale ninguno.** Lo que sale es una extensión, y eso le sirve mejor: su recap de apertura puede preguntar qué extensión escribieron y si sobrevivió la semana, y su tesis de cierre es justamente que todo lo que construyeron sobrevive al cambio de modelo. **La extensión incluida.** Ojo con una consecuencia del cambio de formato: la extensión ahora se escribe en casa, así que **parte de la sala puede llegar sin ninguna**, y el recap de apertura de la Sesión 6 necesita un camino para esa gente.
+- **Hacia la Sesión 6 (Diego)**: **no hay handoff, y está decidido así.** El diseño original asumía que de acá salía un cliente propio para apuntar a otro endpoint; no sale ninguno, sale una extensión. Y la Sesión 6, tal como quedó armada con Ale y Agus, **no tiene recap ni bloque de extensión**: sus cinco bloques dan 150 exactos. Así que **la tarea no se revisa la semana que viene**. Sigue teniendo valor propio —mantener una extensión viva una semana es el ejercicio—, pero acá no se promete un lugar de llegada: las dudas van al canal del curso. ⚠️ **Pendiente con Agus: el canal de dudas de la semana** (un grupo de Google Chat o un Discord). Es principalmente para que se ayuden entre ellos, **sin prometer que nosotros estamos atentos**, y reemplaza quedarse después de clase. Si sale, se anuncia en la Sesión 1 y se repite acá.
 
 ## Lo que dejamos afuera a propósito
 
@@ -387,4 +387,4 @@ Es la primera vez que todo lo que aprendieron apunta al harness: el plan de la S
 - **Decidir qué queda proyectado durante la teoría.** La Sesión 3 decidió que su proyecto de demo es el repo del curso; esta sesión necesita la misma decisión. Lo más probable: las docs y el código de Pi, más una sesión viva para los bloques del árbol y de compactación.
 - **Decidir qué bloques se muestran en vivo** en vez de en diagrama. El loop, el árbol y la compactación piden pantalla. Grabar un clip de respaldo de cada uno.
 - **Recortar el bloque de seguridad a nueve minutos de verdad.** Suelto se va a veinte fácil.
-- **Coordinar con Diego**: el límite con la Sesión 3, y el handoff cambiado de la Sesión 6.
+- **Coordinar con Diego**: el límite con la Sesión 3. (El handoff hacia la Sesión 6 ya está resuelto: no hay, y la tarea no se revisa allá.)

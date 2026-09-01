@@ -344,6 +344,8 @@ Y el detalle operativo que hace fácil la práctica: **el archivo se relee cada 
 
 **Debate abierto, y es el cierre de las seis sesiones.** Qué les pareció, si creen que les sirvió, qué mejorarían. **No se toca aunque el día se haya estirado.**
 
+Y al terminar, antes de soltar la sala: **recordar el canal del curso.** Lo que quedó trabado —la extensión de la Sesión 5, o cualquier cosa de las seis semanas— se pregunta ahí y no en el pasillo. ⚠️ **Pendiente con Agus: el canal de dudas de la semana** (un grupo de Google Chat o un Discord). Es principalmente para que se ayuden entre ellos, **sin prometer que nosotros estamos atentos**, y reemplaza quedarse después de clase. Si sale, se anuncia en la Sesión 1 y se repite acá.
+
 Son quince minutos sostenidos sólo por preguntas, así que conviene llegar con varias preparadas y usarlas si la sala se queda callada:
 
 - ¿Qué sesión les sirvió más y cuál menos?
@@ -379,7 +381,7 @@ Da **150 minutos exactos**. Tres consecuencias prácticas:
 - **Sesión 3** → el pago que nadie espera. Su `AGENTS.md`, sus skills y su config siguen funcionando contra un modelo que corre en un cluster de la UNC. Y un detalle concreto: `models.json` vive en `~/.pi/agent/`, al lado del `AGENTS.md` global que escribieron esa semana.
 - **Sesión 4** → la ventana de contexto vuelve **tres veces en la misma clase**: como el KV cache que no entra en los 16 GB de Agus, como `--max-model-len` del lado del CCAD, y como `contextWindow` en su propio JSON. Deja de ser una propiedad del producto y pasa a ser un número que alguien eligió. Y el otro modelo de costo: **por hora y por GPU, no por token**.
 - **Sesión 1** → LLM + tool + harness: hoy cambiamos la L.
-- **Sesión 5** → **no es dependencia y ya no hay handoff.** El diseño anterior abría con un recap de la extensión que trajeran; esta versión no tiene recap. ⚠️ **Hay que avisarle a Agus**, porque su sesión les pide traerla diciendo que la Sesión 6 la usa (`sessions/session-5/INSTRUCTOR.md:290`).
+- **Sesión 5** → **no es dependencia y no hay handoff. Decidido: la tarea de la extensión no se revisa acá.** El diseño anterior abría con un recap de lo que trajeran; esta versión no tiene recap ni bloque de extensión. La Sesión 5 ya no promete lo contrario. Las dudas van **al canal del curso**, durante la semana.
 - **Hilo transversal de seguridad** → cierra acá, adentro del bloque de teoría y no en uno propio, con dos puntas: **pasás a ser vos el operador** y **"local no significa privado automáticamente"**.
 
 ## Herramientas y recursos referenciados
@@ -412,7 +414,7 @@ Da **150 minutos exactos**. Tres consecuencias prácticas:
 - **Un tour por cada familia de modelos de pesos abiertos**: se mueve rápido y como lista vale poco.
 - **Cómo funciona LiteLLM por dentro**: es infraestructura del CCAD, no contenido del curso.
 - **El bloque "¿está a la altura de un proyecto serio?"**, que en el diseño anterior eran 5 minutos después de la práctica con los números de Raschka y el *cuándo conviene y cuándo no*. **No entra en 150 minutos.** Sobrevive como material escrito en el ejercicio, y el número de VRAM de Raschka se lo pasamos a Agus para cerrar su demo.
-- **El recap de la Sesión 5 y la extensión** de quien la haya terminado. No hay tiempo.
+- **El recap de la Sesión 5 y la extensión** de quien la haya terminado. No hay tiempo, y está decidido: las dudas van al canal del curso.
 
 ## Pendientes
 
@@ -423,7 +425,7 @@ Da **150 minutos exactos**. Tres consecuencias prácticas:
 - **Confirmar el aula por 2 h 30** (las otras sesiones son de 2 h).
 - **Cerrar con Agus su slot de 15 min**: que traiga la GPU, que el modelo esté bajado de antemano, que la VRAM se lea desde el proyector, y pasarle el punto del KV cache y el número de Raschka.
 - **Pasarle a Ale el reloj por escrito**: 60 minutos, y el corte acordado con el Paso 0 (él llega hasta la primera llamada, nosotros seguimos con `models.json`).
-- ⚠️ **Avisarle a Agus que se cayó el handoff de la Sesión 5.** Su sesión les pide traer la extensión porque "la Sesión 6 la usa" (`sessions/session-5/INSTRUCTOR.md:290`) y esta versión no tiene recap ni bloque de extensión. La tarea sigue teniendo valor propio; lo que hay que sacar es la promesa.
+- ~~Avisarle a Agus que se cayó el handoff de la Sesión 5.~~ **Resuelto**: la tarea de la extensión no se revisa acá y la Sesión 5 ya no lo promete. ⚠️ **Pendiente con Agus: el canal de dudas de la semana** (un grupo de Google Chat o un Discord). Es principalmente para que se ayuden entre ellos, **sin prometer que nosotros estamos atentos**, y reemplaza quedarse después de clase. Si sale, se anuncia en la Sesión 1 y se repite acá.
 
 ### Estado del material
 

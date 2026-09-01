@@ -1,6 +1,6 @@
 # Sesión 5 — Ejercicio práctico: extendé tu agente
 
-> **Esto es la tarea de la semana.** El Paso 0 lo hicimos en clase; el resto lo hacés en casa. Lleva entre 45 y 60 minutos. No se entrega: se trae a la Sesión 6.
+> **Esto es la tarea de la semana.** El Paso 0 lo hicimos en clase; el resto lo hacés en casa. Lleva entre 45 y 60 minutos. No se entrega y no se revisa en clase: es tuyo.
 
 ## Objetivo
 
@@ -78,7 +78,7 @@ Commiteá la extensión si vive en el proyecto.
 
 No arranques una segunda. Andá a leer el ejemplo de subagentes que viene con Pi (`examples/extensions/subagent/`) y comparalo con la versión mínima que vimos en la teoría. La pregunta que vale: **¿qué de todo eso es el mecanismo y qué es producto?**
 
-## Preguntas para traer a la Sesión 6
+## Preguntas para pensar
 
 1. ¿Te inventó una función que no existía? ¿En qué momento te diste cuenta, y qué lo arregló?
 2. ¿En qué parte del loop terminó enganchada tu extensión, y por qué ahí y no en otra?
@@ -91,4 +91,4 @@ No arranques una segunda. Andá a leer el ejemplo de subagentes que viene con Pi
 1. Qué le tuviste que arreglar cuando la usaste de verdad.
 2. Si la volviste a usar, o si la escribiste y nunca más.
 
-**Traela a la Sesión 6.** La semana que viene se cambia el modelo que está abajo de todo esto, y tu extensión es una de las cosas que vamos a ver si sobrevive.
+En la Sesión 6 no hay un bloque para mostrarla: la clase se va entera en cambiar el modelo que está abajo de todo esto. Pero tu extensión es una de las cosas que deberían sobrevivir ese cambio — probala contra el modelo nuevo cuando lo tengas andando. **Si algo no te cierra, preguntá en el canal del curso durante la semana.**

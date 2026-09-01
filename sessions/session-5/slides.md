@@ -369,4 +369,4 @@ nada → in-process → contenedor → micro-VM → máquina aparte
 
 ## Para la semana · Próxima sesión
 
-<!-- TAREA: escribir la extensión (el ejercicio completo, en casa) y después mantenerla viva. Usarla, y anotar dos cosas — qué le tuvieron que arreglar cuando la usaron de verdad, y si la volvieron a usar o si la escribieron y nunca más. TRAERLA: la Sesión 6 la usa. NOMBRAR LA TRANSICIÓN: la semana que viene se cambia el modelo que está abajo de todo esto y vamos a ver qué sobrevive. La sesión la da Diego, con Ale Silva del CCAD de invitado. -->
+<!-- TAREA: escribir la extensión (el ejercicio completo, en casa) y después mantenerla viva. Usarla, y anotar dos cosas — qué le tuvieron que arreglar cuando la usaron de verdad, y si la volvieron a usar o si la escribieron y nunca más. LA SESIÓN 6 NO LA REVISA: decirlo tal cual, para que nadie llegue esperando mostrarla. Las dudas van al canal del curso durante la semana. NOMBRAR LA TRANSICIÓN: la semana que viene se cambia el modelo que está abajo de todo esto y vamos a ver qué sobrevive. La sesión la da Diego, con Ale Silva del CCAD de invitado. -->

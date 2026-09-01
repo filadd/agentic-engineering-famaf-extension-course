@@ -385,4 +385,4 @@ model-Q4_K_M.gguf
 
 **Diego Piloni** · **Agustín Carrasco** · invitado: **Ale Silva** (CCAD)
 
-<!-- Agradecer a Ale y al CCAD con nombre: sin ese acceso esta sesión no existe. Y dejar tres punteros abiertos para el que quiera seguir: pedir su cuenta del CCAD (el trámite que contó Ale), la guía de Raschka para montarlo en su propia máquina, y el post de Copes para releer la teoría de hoy con calma. Los tres están escritos en exercise/README.md. -->
+<!-- Y ANTES DE SOLTAR LA SALA, RECORDAR EL CANAL DEL CURSO: lo que quedó trabado —la extensión de la Sesión 5, o cualquier cosa de las seis semanas— se pregunta ahí. ⚠️ PENDIENTE definir el canal con Agus (Google Chat o Discord); si no sale, esta línea se cae. Agradecer a Ale y al CCAD con nombre: sin ese acceso esta sesión no existe. Y dejar tres punteros abiertos para el que quiera seguir: pedir su cuenta del CCAD (el trámite que contó Ale), la guía de Raschka para montarlo en su propia máquina, y el post de Copes para releer la teoría de hoy con calma. Los tres están escritos en exercise/README.md. -->

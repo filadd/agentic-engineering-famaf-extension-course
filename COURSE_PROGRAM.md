@@ -406,9 +406,9 @@ Not a dedicated session, but surfaced where relevant:
 
 **Closing (~5 min)**
 - What surprised you about opening the machine? None of what we saw today is Pi's; Pi is where we could look at it.
-- Homework: **write the extension** (the full exercise, at home), then keep it alive during the week, note what you had to fix and whether you used it again. ⚠️ It used to say **bring it — Session 6 uses it**; it does not any more, see below.
+- Homework: **write the extension** (the full exercise, at home), then keep it alive during the week, note what you had to fix and whether you used it again. It used to say *bring it — Session 6 uses it*; **it does not any more** — Session 6 does not review it, see below.
 
-> **Handoff to Session 6, gone.** The earlier design assumed students left here with a hand-written client to point at another model; the version after that assumed Session 6 would pick the extension back up in an opening recap. **Session 6 was redesigned and has neither a recap nor an extension slot** — its five blocks (theory 30, GPU demo 15, CCAD 60, hands-on 30, retrospective 15) come to 150 minutes exactly. The homework still stands on its own — keeping an extension alive for a week is the point — but the promise of a landing place does not. **To settle with Agus**, together with the loose ends the demo reshuffle left in `sessions/session-5/`, which still promise that Session 6 uses the extension.
+> **Handoff to Session 6, gone.** The earlier design assumed students left here with a hand-written client to point at another model; the version after that assumed Session 6 would pick the extension back up in an opening recap. **Session 6 was redesigned and has neither a recap nor an extension slot** — its five blocks (theory 30, GPU demo 15, CCAD 60, hands-on 30, retrospective 15) come to 150 minutes exactly. The homework still stands on its own — keeping an extension alive for a week is the point — but the promise of a landing place does not. **Settled: Session 6 does not review the extension homework.** It has no recap and no slot for it, the exercise stands on its own, and questions go to the course channel during the week (see Open Questions). Session 5's materials no longer promise a landing place.
 
 ### Session 6: Open Source Models & Running on CCAD
 
@@ -486,6 +486,7 @@ For students who don't bring their own:
 
 ## Open Questions
 
+- **A channel for questions during the week — Google Chat group or Discord? To settle with Agus.** Its main purpose is students helping each other; **we do not promise to be watching it**. It replaces staying after class for questions, which is why Sessions 5 and 6 now point at it. If it happens, it gets announced in Session 1 and repeated at the end of Session 6 — and if it doesn't, both of those lines come out.
 - Exact session duration (2h vs 3h) — **Session 1 is 3 h and Session 5 is 2 h 30** (it opens with an hour of demos), the rest are 2 h. Confirm the room allows it.
 - ~~Claude Code vs alternatives~~ → **decided: Pi is the course tool.** Terminal-based, minimal, standard `AGENTS.md`.
 - ~~Session 2 is written against Claude Code and misaligned with the Pi decision~~ → **resolved: Session 2 runs on Pi.** Planning and review go through `@plannotator/pi-extension`, which adds file-based plan mode (`pi --plan`) and `/plannotator-review` to Pi. One harness for the whole course; students install two extensions at the start of Session 2.
@@ -500,7 +501,7 @@ For students who don't bring their own:
 - ~~Session 6 hands-on is hostage to the GPU queue~~ → **resolved by the gateway.** The replacement risk is **concurrency**: 25-30 students hitting one LiteLLM endpoint. Confirm rate limits; if they bite, run the hands-on in two waves.
 - ~~Session 6 needs slides and an exercise written from scratch~~ → **written**, and rewritten again for the five-block shape agreed with Ale and Agus. The CCAD values are settled and go in verbatim: `https://litellm.ccad.unc.edu.ar` (no `/v1`), `vllm/gemma4-26b` and `vllm/qwen3.8:30b`, both served.
 - ~~Which session owns the full-course retrospective now that there are six?~~ → **decided: Session 6, and it is the whole 15-minute closing block** — open debate on what they thought of the course and what they would change, nothing else. Session 4 keeps the base-course closing (cost, limits, career, atrophy). The overlap was a leftover from the 4-session version, where Session 4 *was* the finale.
-- **Session 6's shape changed after talking to Ale and Agus** → five blocks: theory 30, Agus's GPU demo 15, Ale on CCAD 60, hands-on 30, retrospective 15. Gone: the Session 5 recap, the break, the measurement harvest, the optional track connecting to Agus's GPU, and the artifact closing. **Consequence to settle with Agus**: Session 5's homework tells students to bring their extension because Session 6 uses it, and Session 6 no longer has a recap.
+- **Session 6's shape changed after talking to Ale and Agus** → five blocks: theory 30, Agus's GPU demo 15, Ale on CCAD 60, hands-on 30, retrospective 15. Gone: the Session 5 recap, the break, the measurement harvest, the optional track connecting to Agus's GPU, and the artifact closing. **Consequence, settled**: Session 5's homework no longer tells students to bring their extension — Session 6 does not review it. The exercise stands on its own, and questions go to the course channel.
 
 ## References & Inspiration
 
