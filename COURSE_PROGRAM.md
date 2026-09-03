@@ -11,7 +11,10 @@ tags:
 
 # From Vibe Coding to Agentic Engineering
 
-Short course for university CS students with some project experience but little/no professional training. The goal is to walk them through the full spectrum of AI-assisted development — from pure "vibe coding" to structured agentic engineering — building concepts progressively over 4 weeks.
+> 📊 **Presentation** — a plain-language visual walkthrough of this document (the intern framing, the five-level spectrum, LLM + tools + harness, the six weeks, and the model swap): <https://claude.ai/code/artifact/977c4128-625f-42c0-a78d-02e4425a887b>
+> Private by default — share it from the page's share menu before sending it to anyone.
+
+Short course for university CS students with some project experience but little/no professional training. The goal is to walk them through the full spectrum of AI-assisted development — from pure "vibe coding" to structured agentic engineering — building concepts progressively over 6 weeks.
 
 ## The Spectrum
 
@@ -19,7 +22,7 @@ Short course for university CS students with some project experience but little/
     1. Vibecoding origin (Karpathy): https://x.com/i/status/1886192184808149383
     2. Vibecoding as videogame (Naval) https://x.com/i/status/2039617101221224858
     3. Kids Vibecoding (usando Lovable): https://www.instagram.com/reels/DKj1ghsiRN3/
-    4. Vibe coding in prod: https://youtu.be/fHWFF_pnqDk?si=aJ7ctIkNvouw_3Ix
+    4. Vibe coding in prod (Anthropic): https://www.youtube.com/watch?v=fHWFF_pnqDk
 2. **AI-Assisted Coding** — copilot-style completions, developer maintains control
 3. **Directed AI Assistance** — experienced use of LLMs with constraints, specs, and review
 4. **Agentic Coding** — orchestrating AI agents on tasks with oversight
@@ -35,11 +38,17 @@ Vibe coding is a great on-ramp — fast, fun, empowering. But professional softw
 
 ## Format
 
-- **4 sessions**, 1 per week, ~2-3 hours each
+- **6 sessions**, 1 per week, ~2-3 hours each, in two blocks:
+  - **Sessions 1 and 5 are the long ones**: Session 1 needs 3 h for introductions plus the install, Session 5 needs 2 h 30 because it opens with an hour of student demos.
+  - **Base — sessions 1-4.** The fundamentals arc: *how do I work well with this thing?* Complete on its own terms, and **Session 4 closes it.**
+  - **Advanced — sessions 5-6.** The internals arc: *what is this thing made of, and what if I swap its parts?* **Session 6 closes the course.**
+  - **Same cohort throughout** — "advanced" describes depth and register, not enrollment. Everyone attends all six.
+  - **The split is announced to students in Session 1**, on the six-sessions slide, so they know where the base material ends and what changes after it.
+  - The shape is not an accident of numbering: the course was originally 4 sessions, and 5-6 were added as a deeper technical arc rather than as more of the same.
 - Each session: theory → hands-on → show-and-tell discussion
-- **Same project across all 4 sessions** — students see their codebase evolve
+- **Same project across all 6 sessions** — students see their codebase evolve
 - Students bring their own project idea; default fallback is a small web app
-- Tool: Claude Code (leaning toward, TBD)
+- Tool: **Pi** (`pi.dev`) — decided; installed by students in Session 1
 - Class size: ~20-30 students
 
 ## Topic Inventory
@@ -47,130 +56,240 @@ Vibe coding is a great on-ramp — fast, fun, empowering. But professional softw
 These are the concepts to cover, roughly ordered by complexity:
 
 ### [Diego] Tier 1: Fundamentals
+- **Responsibility is the starting point**: accountability stays with the person, not the AI. "The agent wrote it" is not an excuse. Everything else in the course is a way of living up to that.
 - The AI-assisted coding spectrum (overview)
--  LLM fundamentals: how they work at a practical level — tokens, context windows, probability, why hallucinations happen.
-- Vibe coding: prompt-and-accept workflow. Talk with the agent, don't open files — focus entirely on the output.
+- Generative AI: what it is, where LLMs sit inside it
+- LLM fundamentals: how they work at a practical level — tokens, context windows, probability, why hallucinations happen.
+- The model landscape: Anthropic (Claude), OpenAI (GPT), Z.ai (GLM), Moonshot AI (Kimi). Reading a model page: modalities, context window, price. OpenAI's model-comparison page as a way to teach the base concepts in one pass.
+- Tokens as the unit of everything: input, output, and price. Multimodality — images and audio become tokens too.
+- Pricing shapes: per-token (API) vs subscription, and when each makes sense.
+- Context window as finite working memory — and the rule of thumb we actually use: **don't go past 50%** of what the model supports. Nothing persists between conversations.
+- **Context hygiene as operations**, named in the Session 1 hands-on and used from day one: `/session` (tokens and cost so far), `/new` (clean context for an unrelated task), `/compact` (summarize the old part of a long task), `/tree` (rewind to before the agent dug the hole). Four commands, not a topic — the mechanism is Session 5's.
+- Chat vs agent: a chat returns text and you execute; an agent executes in a loop (reads, runs, edits, checks, retries).
+- A short timeline: tab completion (Copilot) → chat beside the editor → Cursor → terminal coding agents (Claude Code, Codex, Pi).
+- Vibe coding: prompt-and-accept workflow. Talk with the agent, don't open files — focus entirely on the output. Working definition: *programar sin pensar que el código existe*.
 - Analyzing AI output: what did it actually produce?
 - Code quality awareness: dead code, inconsistent patterns, missing tests
 - Comprehension debt: you shipped code you don't understand
-- The productivity illusion (METR study, CodeRabbit data)
+- The productivity illusion (METR study)
 - Anatomy of a coding agent (brief intro): LLM + tools + harness — just enough vocabulary to use these terms in later sessions
   - Tool: a function the LLM can invoke (read file, run shell, edit code)
   - Coding agent: an LLM that takes actions on a codebase via tools, not just suggests text
-  - Harness: the program wrapping the LLM (context management, tool dispatch, permissions). Claude Code is a harness.
+  - Harness: the program wrapping the LLM (context management, tool dispatch, permissions). Pi is a harness.
+  - The catalogue by environment: web (Lovable, v0, Bolt, Claude Code web), desktop (Claude Code desktop), terminal (Claude Code, Codex, Pi, opencode)
+
+> `AGENTS.md` used to sit here as "first contact with project context". The step was dropped from Session 1 — it is introduced from scratch in Tier 3.
 
 ### [Agus] Tier 2: Planning & Review
 - Code review of AI output (reading diffs, understanding changes)
 - Task decomposition: breaking work into reviewable units
-- Plan mode: planning before executing
-- Structured planning & review (plannotator): externalizing, annotating, and reviewing plans and generated code as first-class artifacts
+- Planning before executing: the plan always exists — the question is whether you can read it
+- Structured planning & review (`@plannotator/pi-extension`): file-based plan mode for Pi. Externalize, annotate, deny-with-annotations, Plan Diff, then `/plannotator-review` on the resulting diff. Plans and reviews as first-class artifacts
+- The harness enforces the discipline: planning mode restricts the toolset to read/search and blocks writes outside the plan file (seeds Tier 3's permissions/extension-points material)
 - Testing: test-first development, tests as guardrails
 - Debugging AI-generated code
 - Git workflow with AI (branching, reviewing diffs, reverting)
 
 ### [Diego] Tier 3: Tooling & Skills
-- Tools deep dive: what tools are, how the LLM calls them, examples in Claude Code (Read, Bash, Edit, Grep). Why tools are the unit of capability.
-- Harness deep dive: what Claude Code provides as a harness — context management, tool dispatch, permissions, hooks, slash commands. Comparison with other harnesses (Cursor, Aider, OpenCode). Why the harness matters as much as the model.
-- Custom instructions (CLAUDE.md basics, rules files)
-- Skills / slash commands: teaching AI reusable behaviors
+
+> Prerequisite, not content: **Pi is installed in Session 1**, and Session 2 adds the Plannotator and `pi-subagents` extensions. Tier 3 goes deeper on the harness — it does not introduce it. `AGENTS.md` **is** introduced here from scratch: the Session 1 step that had students write one was dropped, and Session 2 does not touch it.
+>
+> **Subagents moved to Tier 4** (decided while building Session 3): Agus opens them there with a documentation use case, so Tier 3 only names them — one row in the always-loaded vs. on-demand table, one row in the extension-points table. Session 2's "depth on subagents is Session 3" promise moves with them.
+>
+> **Worktrees are out of the course**, not relocated. They were only ever a one-line mention riding along with subagents, no session's hands-on needs them, and git-level parallel work is already named in Session 2's git block. Cut rather than parked.
+
+- Tools deep dive: what tools are, how the LLM calls them, examples from Pi's toolbelt (read, write, edit, bash, grep, find, ls). Why tools are the unit of capability.
+- Harness deep dive: what Pi provides as a harness — context management, tool dispatch, permissions, extension points. Comparison with other harnesses (Claude Code, Cursor, Aider, OpenCode). Why the harness matters as much as the model.
+- Custom instructions: `AGENTS.md` from scratch — what it is, the loading order across directories, rules files. Students arrive with the *motivation* for it from Session 2's homework ("what did you have to explain to the agent more than once?"), not with a file.
+- Skills / slash commands: teaching AI reusable behaviors. **[Agent Skills](https://agentskills.io/) is an open standard**, not a Pi feature — a folder with a `SKILL.md`, published by Anthropic and adopted across Claude Code, Cursor, Copilot/VS Code, Codex, Gemini CLI, OpenCode and Pi. The three-stage loading taught here is the standard's *progressive disclosure*. Worth one sentence in class: it's the first artefact of the course that transfers to whatever tool the student uses next — and a small rehearsal of what Session 6 makes students verify by hand.
 - MCP / external tools: extending the harness — the LLM gains new tools at runtime
 - Documentation tools (e.g. [context7](https://context7.com/), [context-hub](https://github.com/andrewyng/context-hub)): fetching up-to-date library docs so the AI works with accurate references instead of guessing
-- Subagents: delegating subtasks to specialized agents — intro to the concept and available agent types
-- Worktrees: isolated parallel execution
+- Subagents: **named only, as the third row of the always-loaded vs. on-demand table** — the work itself can also go to a separate context. The block itself is Tier 4.
 
 ### [Agus] Tier 4: Context Engineering
-- Spec-driven development: defining WHAT before prompting HOW — specs as context for the AI
-- Research-driven development: using documentation tools (context7, context-hub) to ground the AI in accurate, current docs before implementing
-- Agent orchestration: the *pattern* of coordinating multiple agents on a task — distinct from the subagent primitive introduced in Tier 3. Orchestration is about dispatch and coordination (who plans, who works, how results merge); subagents are one substrate to implement it on, alongside separate Claude sessions, the Task tool, or MCP-mediated handoffs. The "Teams" pattern is a common form: a planner agent dispatches to specialized worker agents (research, review, exploration, implementation), often running in parallel.
-- Framework vs. roll-your-own orchestration: a real design decision when you start coordinating agents. Example of an opinionated framework — `oh-my-openagent` (https://github.com/code-yeongyu/oh-my-openagent), with named discipline agents (Sisyphus planner, Hephaestus worker, Prometheus interviewer), automatic model routing, and parallel team mode. Useful to *learn from* — it shows what orchestration looks like at scale — but worth discussing the tradeoff: adopt a framework's opinions, or design your own orchestration on top of Claude Code's primitives (subagents, worktrees, Task tool). Neither is universally better; the choice depends on how much control vs. convention the team wants.
-- Deep context engineering: shaping AI behavior through project structure and documentation
-- Full workflow integration: spec → research → tests → implementation → review
+- Problem domain vs. solution domain: the same feature described as a need (actors, data and relations, processes, in problem terms) and as a system (data diagrams, breadboards/page sketches, flows). Starting from the solution means deciding without having considered the problem in depth, and inheriting the agent's average answer for every decision left open.
+- Living project documentation as context: `docs/PROJECT.md` (what the project is, main goal, constraints) plus one doc per feature (the problem it solves, then a design section with the model and one flow per interaction — each flow carries its screens, steps, rules and decisions with their reasons). Committed to the repo; `AGENTS.md` points to them.
+- Writing docs with the agent: interrogation before drafting — the agent asks, the student decides (e.g. Matt Pocock's grill-me skill). Delegating the writing is fine; delegating the thinking is the failure mode.
+- Research feeds the docs at high level: documentation tools (context7) to understand a library, while implementation details belong to the plan, not the doc
+- Subagents, the primitive: delegating a subtask to a separate context, and the available agent types (research, exploration, review). Moved here from Tier 3, and **opened through the research above** — sending the library research to its own context is where the delegation pays for itself, so the primitive and its best motivation land together.
+- The chain: doc → plan → implementation → review (the review checks against both the plan and the doc)
+- Cognitive debt and cognitive surrender: the cost of repeatedly delegating reasoning to the AI, and adopting its decisions as your own opinions
 - When to delegate vs. intervene (developing intuition)
 - Professional accountability: you sign off on what the AI produces
-- The spectrum revisited: when is each approach appropriate?
+- Orchestration, in passing: shared docs as the ground truth that lets several agents work in parallel
+- Cost and limits: tokens as a budget, model tiering, when NOT to use AI, skill atrophy, and what skills matter in an AI-augmented world. This tier closes the *"how do I work well with this thing?"* arc, so the judgment material lives here. The full-course retrospective belongs to Tier 6. (The spectrum revisit used to as well; it no longer happens anywhere.)
+
+### [Agus] Tier 5: Harness Internals
+
+> **The spine: teach the concept, use Pi as the specimen.** Every topic here is a design decision *any* harness has to make; Pi is the one we can open, not the one being sold. That rehearses Tier 6's model swap a week early. The failure mode of this tier is turning into a tour of Pi's features.
+
+- What a harness is, revisited from Tier 1: interface, agent loop, tools/memory/context, model. An LLM alone predicts tokens and can do nothing; the harness connects it to the world.
+- **The other harnesses, as axes rather than a ranking**: open vs. closed source, what ships built in vs. what you add, whether there is an extension surface and how deep it reaches, who controls the system prompt. The questions to ask the next tool they pick up. **No comparison table** — comparing harnesses in the abstract is useless to someone who has used one.
+- The agent loop, step by step, with the extension points on the arrows: `session_start`, `resources_discover`, `input`, `before_agent_start`, `turn_start`, `context`, the model call, `tool_call`, `tool_result`, `turn_end`, `agent_end`, `session_shutdown`. Every moment is subscribable, and from there you block, modify or inject. **This is where Tier 2's plan mode finally gets its mechanism**: `tool_call` → `{ block: true }`.
+- Harness architecture as layers, and the idea that you use only the ones you need. Pi's four packages: unified model API, generic agent loop, coding layer, terminal UI.
+- **Sessions as a tree, not a list**: entries with `id` and `parentId`, the active leaf, the whole tree in one file. Why `/tree` is cheap — you move a pointer, you don't delete. Tier 1 sold it as the antidote to cascading errors; here it gets its reason.
+- **Steering vs. follow-up**: when does new information reach an agent that is already running? Interrupt mid-stream, wait for it to settle, or queue for the next turn. Every harness decides this; most hide it.
+- **Three ways to give a model a tool**, and the tradeoffs: an **extension** (reaches harness internals, works in that harness only), a **CLI** (simplest, portable to any harness with a shell, no auth story, and the agent has to learn it exists — which is what `AGENTS.md` is for), **MCP** (for tools other people consume: distribution, auth, remote services, paid for in context). The question that decides it is who the consumer is.
+- **Subagents, the mechanism** (the use case is Tier 4's): a separate context with its own transcript, whose entire result returns to the parent as one message. The honest reason is context economy, not "more AI".
+- **Compaction**, the debt Tier 1 assigned here: the trigger (`contextTokens > contextWindow - reserveTokens`), the algorithm (walk back to `keepRecentTokens`, cut, summarize the older half in a structured format, store the summary with the first kept entry), and the two consequences — it is lossy and it is another model call, and it is interceptable.
+- **Run modes**: interactive, headless one-shot, embedded as a library, served behind a protocol. The agent loop is a library and the terminal is one of its interfaces. Why CI agents, bots and in-browser agents exist.
+- **Security, generalized**: threat models (prompt injection from repo content, a malicious extension/skill/MCP server, the agent's own destructive mistakes, credential exfiltration), permission models as a design space, and the sandbox ladder (none → in-process → container → micro-VM → separate machine). The counterintuitive argument worth stating: **a partial sandbox is worse than none**, because it reads as a boundary while still resting on your shell, filesystem, package managers and credentials. Real isolation comes from the OS.
+
+### [Diego] Tier 6: Open Source Models & HPC
+
+> 🔴 **TO REVIEW** — Claude-generated, not yet reviewed by Diego.
+
+- **Open source vs. open weights**: open weights means you can download and run them; open source in the strong sense means you could reproduce the model (training code + data information). Nearly everything marketed as "open source AI" is open weights — the binary, not the recipe.
+- **Licences**, where that distinction gets consequences: standard software licences (Apache 2.0, MIT) vs. bespoke licences with usage restrictions and scale clauses (Llama community licence, Gemma terms) vs. restrictions on the output itself. The three questions to answer before shipping: commercial use? redistribute a fine-tune? who owns the generations?
+- Honest about the capability gap on long-horizon agentic work and reliable tool calling. **The control-spectrum table was cut** when the theory block moved to Copes's arc — the tradeoffs are still named, through his five reasons and his list of what open weights do not guarantee.
+- **Is an open model good enough to be the engine of a serious project?** No longer a taught block — 150 minutes do not hold it. It survives as written material in the exercise (Raschka's measurements, and when open source is the right call), and the VRAM figure goes to Agus to close his demo. The line worth keeping wherever it lands: the bottleneck is usually reliable tool calling, not the ability to write code.
+- **Running one on your own hardware**, made concrete: **Agus's 15-minute demo** — a portable eGPU on the desk, Ollama on CUDA, and the quantization arithmetic from the theory checked against 16 GB of real VRAM. He shows, the room watches; it is not an endpoint students connect to.
+- What it takes to run one: what a download actually gets you (safetensors vs. GGUF, tokenizer, runtime, the token loop), quantization and its cost to structured output — i.e. to tool calling — and the OpenAI-compatible endpoint that lets any harness point anywhere. **The local-vs-serving runtime distinction is no longer taught as a block**; the guest owns batching in his slot, and the contrast has a real referent in the room instead: CCAD runs **vLLM** behind its gateway because it serves many users, while Agus's demo runs **Ollama** on one card.
+- **The context window is paid for in VRAM, not just declared.** The best single moment of the theory arc, and it needs the demo to land: `30B × 4 bits ≈ 15 GB` of weights against a 16 GB card reads as "it just fits" and does not, because the KV cache lives there too. It returns twice more — as `--max-model-len` on CCAD's side, and as `contextWindow` in the student's own JSON.
+- The OpenAI-compatible endpoint as the interoperability story: why a harness can point at a different model by adding a provider to its config. This is the technical bridge from Tier 5.
+- **The inference gateway.** CCAD is reached through a **LiteLLM** proxy exposing an OpenAI-compatible endpoint, and Pi gets there with a provider entry in `~/.pi/agent/models.json` — no SSH, no scheduler, no tunnel. Swapping the model is a config file. Two things that fall out of it and are worth teaching: the context window turns out to be a startup parameter somebody chose (server-side here, chosen by the student with `-c` in the local track), and **a gateway is also a third party** — "runs on UNC hardware" is not the same as "nobody sees my prompts".
+- Shared-resource etiquette, in one line when the hands-on is released: people are running their theses on those machines. **Cluster mechanics are out of the course** — login vs. compute node, the scheduler, modules, port forwarding are internals of a multi-user inference service; the guest touches them lightly and that's it.
+- **CCAD (Centro de Computación de Alto Desempeño, UNC)**: a 60-minute guest talk by Ale Silva, and the programme is his — an introduction to HPC and why clusters are needed; UNC Supercómputo's history, clusters and metrics, and where it stands against the region and the world; the experience of deploying models on limited hardware and turning a working test into a stable multi-user service; and how to use CCAD's resources, from requesting an account to making a first call to their models. Most students don't know UNC runs an HPC center they can use. **Access is the takeaway that outlives the course** — and it is explicitly the road back *after* the course, not today's access, which runs on a key Diego hands out. His third point is where LiteLLM and vLLM get named by the person who chose them, fifteen minutes before students type them into `models.json`. Cluster mechanics stay out — light touch only.
+- Supply chain and self-hosting risk: what you trust when you download multi-gigabyte binary weights; how self-hosting removes a third party and adds you as the operator.
+- When open source is the right call: sensitive data, cost-dominated volume, research reproducibility, offline work, studying the model itself — versus wanting the best coding agent today with no ops capacity.
 
 ### Cross-cutting: Security & Trust (woven throughout)
 Not a dedicated session, but surfaced where relevant:
 - **Session 1**: security issues found during code analysis (common vulnerabilities in AI output)
 - **Session 2**: reviewing code with a security lens, what to look for
 - **Session 3**: sandboxing, permission models, why tools have allowlists/denylists
-- **Session 4**: trust boundaries, prompt injection awareness, supply chain risks with agents
+- **Session 4**: none dedicated — trust boundaries, prompt injection and supply chain moved out of this session and **landed in Session 5**, which now closes the thread with a block of its own
+- **Session 5**: the block that closes the thread. Threat models (prompt injection from repo content, malicious extensions/skills/MCP servers, the agent's own destructive mistakes, credential exfiltration), permission models as a design space, and the sandbox ladder. Placed after the hands-on so it lands on an extension they just wrote and installed themselves.
+- **Session 6**: self-hosting makes *you* the operator — runtime, patching, machine, quality — and "local" does not automatically mean private, since the agent still calls out. **Narrowed deliberately**: the open-weight block now follows Copes's arc, which covers those two and not the model supply chain or injection, so the session no longer promises them.
 
 ## Proposed Sessions
 
+> ### Base course — sessions 1-4
+>
+> The fundamentals arc: *how do I work well with this thing?* Each session adds a layer of structure, and Session 4 closes the arc.
+
 ### Session 1: The Vibe Coding Experience
 
-**Intro (~30 min)**
-- What is AI-assisted coding? Brief tour of the spectrum
-- LLM fundamentals: how they work, tokens, context windows, hallucinations
-- Anatomy of a coding agent: tool + harness + LLM. ~5 min, just to plant the vocabulary. Show "Claude Code = a harness that calls Claude with a toolbelt." We'll come back to these in Session 3.
-- Set expectations: today we start at the shallow end on purpose
-- Introduce project briefs (or students pitch their own)
+> **This session runs 3 hours** (every other session is 2): ~2 h of introductions + theory, ~1 h of hands-on. It carries all the shared vocabulary for the course *and* the tool install, which is why the usual theory/hands-on ratio is inverted here.
 
-**Hands-on: Pure Vibe Coding (~1.5-2 hours)**
-- Rules: talk with the agent, describe what you want — don't open files to see the code
-- Focus entirely on the output: does it look right? Does it work?
-- Iterate by describing problems, not by reading the code
-- Goal: get a working (or "working") prototype
+**Part 1 — Who we are (~10 min)**
+- Diego and Agus: academic and industry background, what we do now, and concretely how we use AI at Filadd
+- Introduce the Filadd TAs who help during the hands-on
 
-**Analysis & Discussion: "The Reality Check" (~30 min)**
-- Now open the files — what did the AI actually produce?
-- Group discussion: identify patterns — what's good, what's concerning?
-- Surface common issues: no tests, security holes, dead code, inconsistent patterns
-- The productivity illusion: METR study (19% slower despite feeling 20% faster), CodeRabbit (1.7x more issues)
-- Agent failure modes to watch for: cascading errors (one bad assumption compounds), false success reporting (AI says "tests pass" but modified the assertions to match), scope creep (the agent over-solved the problem)
-- The 80% problem: AI handled most of the work fast, but the remaining rough edges are where the real effort lives — and that's where understanding the code matters
-- Key question: "Would you ship this? Would you maintain this?"
+**Part 2 — What this course is (~20 min)**
+- This course is built on our own experience, not on theory — for theory there are excellent online courses (DeepLearning.AI/Andrew Ng, Karpathy, Simon Willison, Anthropic's "Claude Code in Action"). The practical consequence: ask a lot of questions.
+- Ask the room what AI courses they've taken and recommend
+- The six sessions in one slide
+- **Announce the Session 5 demo hour**: the project they start today gets shown to the room in the second-to-last class. Volunteers, 5-7 min each, no deliverable and no grading. Announcing it on day one is the point — it changes how they work for six weeks. Reminded in Session 4's closing.
+- **Responsibility stays with the person, not the AI** — the idea we most want them to leave with
+- Core mental model: managing a smart intern. Today is deliberately the absent boss.
+- The five-level spectrum as a map (shown once, here — ⚠️ the Session 6 callback it used to have is gone)
+
+**Part 3 — Who they are (~15 min)**
+- Quick round of introductions, and: do they use AI, and for what?
+- This is the calibration instrument — the answers decide how much of Part 4 gets compressed
+
+**Part 4 — Fundamentals (~35 min)**
+- Generative AI; next-token prediction and why hallucinations are the mechanism, not a bug
+- The model landscape (Claude, GPT, GLM, Kimi) — **read the model pages live**: modalities, context window, price. OpenAI's comparison page to explain the base concepts in one pass.
+- Tokens; multimodality (images and audio are tokens too); pricing per-token vs subscription
+- Context window as finite working memory, and the **50% rule of thumb**
+- Chat vs agent; short timeline from tab completion to terminal coding agents
+- What a coding agent is; the three words: LLM + tool + harness. **Pi is a harness.** Opened up in Session 3.
+- The catalogue by environment: web / desktop / terminal
+- **Pi intro + live demo (Agus)** — what Pi is, why we picked it, install pointer, and one prompt narrating the agent loop out loud
+
+**Part 5 — Vibecoding: theory + demo (~35 min)**
+- Definition: *programar sin pensar que el código existe*
+- The four takes: Karpathy (origin), Naval (vibecoding as a video game), kids vibecoding with Lovable, vibe coding in prod
+- Vibe coding is not an insult — present it honestly before critiquing it. Live demo.
+- Then the critique, framed as predictions for the hands-on:
+  - Comprehension debt: you shipped code you don't understand
+  - The productivity illusion: METR (19% slower despite feeling 20% faster)
+  - The 80% problem: the remaining rough edges are where the real effort lives — and where understanding the code matters
+  - Agent failure modes: cascading errors, false success reporting ("tests pass" after editing the assertions), scope creep
+
+**Hands-on (~27 min)**
+- Install Pi (official quickstart), create the project + git repo, add the `pi-processes` package so the dev server can run in the background
+- Then vibe code, with the rules: talk to the agent, don't open the files, describe symptoms not diagnoses, judge only by the output
+- Context hygiene while they build: `/session`, `/new`, `/compact`, `/tree` — read aloud before they start, then repeated while walking the room. `/tree` is the one to push: rewinding beats a fourth failed fix
+- Nobody should leave the room without Pi working
+
+**Reality check (~12 min, closes the hands-on)**
+- Now open the files — what did the AI actually produce? Checklist: tests, secrets, dead code, duplication, unvalidated input
+- Collect from the room; show one concrete security hole if it appears (permission asked in advance)
+- Key question: "Would you ship this? Would you maintain this?" — left unresolved; Session 2 opens on it
+- **Homework**: keep vibe coding with the same rules until it gets away from you. That's the material for Session 2's recap, which is where the deeper debrief now happens.
 
 ### Session 2: Planning & Review
 
-**Recap & Sharing (~15-20 min)**
-- Show-and-tell: what happened since last session? Anyone explore their code more?
+> Runs on **Pi**, plus two extensions installed at the start of class: `@plannotator/pi-extension` and `pi-subagents`. Session duration is 2 h. All session materials are in Spanish, including the instructor notes.
 
-**Theory: "Working With Intent" (~20-30 min)**
-- Why code review matters more with AI (verification bottleneck, comprehension debt)
-- Task decomposition: breaking work into reviewable units
-- Plan mode: think before you execute — the agent plans, but the plan lives inside the agent's context
-- Structured planning & review (plannotator): externalizing the plan — annotate, review, refine before executing. Also works for reviewing generated code: walk through the output step by step, annotate issues, approve or request changes. The plan (and the review) become first-class artifacts you can read, edit, and sign off on
-- Test-first development: tests as guardrails for AI output
-- Git as your safety net: branching, reviewing diffs, reverting
+**Recap & debrief from Session 1 (~12 min)**
+- Discussion, not slides. The material comes from the homework ("keep vibe coding until it gets away from you, and write down when"); Session 1's in-class reality check was only ~12 min on 15 min of building
+- Collect the moments it got away from them, onto the board. Ask who broke the no-reading rule, and what made them
+- Don't close with a conclusion — the board is raw material for the next block, which supplies it
 
-**Hands-on (~1.5 hours)**
-- New rules: plan your work, break it into tasks, review every change
-- Use plan mode to decompose the next feature — feel the difference vs. Session 1
-- Try structured planning (plannotator): create an externalized plan, annotate it, review it — compare with the built-in plan mode experience
-- Use plannotator to review generated code: walk through the output, annotate issues, approve or iterate
-- Write tests first, have the AI implement to pass them
-- Review diffs, use git to track changes
-- Debug when things break — understand *why*, not just fix it
+**What we're doing today (~8 min)**
+- Takes what's on the board and orders it. First the diagnosis, as diagnosis and not scolding: **you don't know what you shipped** (comprehension debt, compounding because each new feature rests on something you don't understand); **the bottleneck moved** from writing code to verifying it, and skipping verification defers the cost rather than saving it; **the first 80% arrives on its own and the last 20% is all the work** — exactly the part that needs understanding
+- Then the three moves that are the skeleton of the day and of the rest of the course: **plan** (decide before it's built, while changing your mind costs a sentence instead of a refactor), **document** (the plan lives outside the agent's head and yours — a file you can read, annotate, version and show; a plan that only exists in a conversation can't be reviewed), **design** (the decisions that matter are yours; the agent executes — when the agent designs by default you get last week)
+- Closes on the session's line: *"Hoy no vamos a escribir menos código. Vamos a saber qué código escribimos."* Plus the honest warning that today will feel slower, and that's the point
 
-**Reflection & Discussion (~15-20 min)**
-- Compare experience with Session 1: what changed?
-- What was the overhead? Was it worth it?
-- Security sidebar: what vulnerabilities did you catch (or miss) during review?
+**Setup (~5 min)**
+- `pi install npm:@plannotator/pi-extension` and `pi install npm:pi-subagents`, everyone together, before any theory. Asked for as pre-work, but don't assume. Doing it here means an hour of theory to unblock stragglers instead of losing build time
+
+**Git as your safety net (~5 min)**
+- A spectrum tied to context, not a rigid workflow: solo on your repo, `main` is fine; in a team, branches; parallel work, worktrees. AI doesn't change git, it just makes throwing the branch away cheaper
+- The reviewed diff is the gate before merging. Matters more than usual today, because the hands-on has students executing an agent-written plan step by step
+
+**Planning: theory + demo (~18 min)**
+- The plan always exists; the only question is whether you can read it. Pi has no built-in plan mode, so the extension *is* plan mode and the plan is a file from the first moment
+- The harness enforces the discipline: planning mode swaps the toolset to read/search, blocks destructive commands, restricts writes to the plan file. You cannot skip ahead
+- **Demo (~12 min)**: `pi --plan` → checklist → **deny with annotations** → Plan Diff → subagent reviews the plan → approve and execute. The diff it leaves behind is the material for the next demo
+- Decomposition is folded in: the plan is already a checklist. Point at it, don't teach a rubric
+
+**Review: theory + demo (~12 min)**
+- The spectrum of review surfaces, not a checklist: watch+steer, read in editor, `git diff`/hunk, `/plannotator-review`, delegate to a subagent
+- **Demo (~8 min)** on the diff the planning demo produced: `/plannotator-review`, annotate a concrete line, send it back. Closes on *"does this match the plan you approved?"* — the most useful review question, and one you can only ask because the plan is written down
+
+**Tests as guardrails (~5 min)**
+- Test-first development. Delegate the runner setup, never the assertion
+
+**Hands-on (~40 min)**
+- Rules invert from Session 1: nothing executes without a written plan; **reject the first plan**; read every diff; read broken code yourself before asking for a fix
+- Pick a small feature (4-5 files max), enter plan mode, iterate the plan through deny-with-annotations
+- Write one test yourself before executing; have the agent set up the runner if there isn't one
+- Execute the plan step by step, steering when it drifts
+- Review the diff via `/plannotator-review`; commit the plan file alongside the code
+- Debugging has no theory block — it's said while walking the room: read the code yourself before asking for a fix
+
+**Reflection & Discussion (~10 min)**
+- Compare with Session 1: what changed? Did the annotated plan surface something you'd missed?
+- What was the overhead? Was it worth it? (For a small feature, honestly: maybe not. Let them say so.)
+- Homework for Session 3: where did the flow feel like pure ceremony, and what did you have to explain to the agent more than once? The second question sets up Session 3's `AGENTS.md` material.
 
 ### Session 3: Tooling & Skills
 
 **Recap & Sharing (~15-20 min)**
 - Show-and-tell: how did planning and review change the work?
 
-**Theory: "Teaching The Agent" + "Parallel Execution" (~20-30 min)**
-- Tools: the unit of agent capability. What a tool definition looks like (name + schema + handler), how the LLM decides which to call, examples from Claude Code's built-in toolbelt. Why a smarter tool often beats a smarter model.
-- Harness: the program that wraps the LLM. Claude Code's responsibilities — context window management, tool execution, permissions, hooks, slash commands, plan mode. Quick comparison with Cursor / Aider / OpenCode so students see that "harness" is a real design space, not just "the UI."
-- Custom instructions: CLAUDE.md as the agent's persistent memory
-- Skills and slash commands: building reusable capabilities
+> Students arrive with **Pi plus the Plannotator and `pi-subagents` extensions** (Sessions 1 and 2). No setup block here. `AGENTS.md` is introduced here from scratch — neither Session 1 nor Session 2 touches it.
+
+**Theory: "Teaching The Agent" (~20-30 min)**
+- Tools: the unit of agent capability. What a tool definition looks like (name + schema + handler), how the LLM decides which to call, examples from Pi's built-in toolbelt. Why a smarter tool often beats a smarter model.
+- Harness: the program that wraps the LLM. Pi's responsibilities — context window management, tool execution, permissions, extension points. Quick comparison with Claude Code / Cursor / Aider / OpenCode so students see that "harness" is a real design space, not just "the UI."
+- Custom instructions: `AGENTS.md` as the agent's persistent memory — written here from scratch, since neither Session 1 nor Session 2 touches it; students arrive with the *motivation* (their notes on what they had to explain twice), not with a file. Plus loading order across directories and rules files
+- Skills and slash commands: building reusable capabilities — and that the `SKILL.md` format is the open [Agent Skills](https://agentskills.io/) standard, so what they write today isn't tied to Pi
 - MCP and external tools: how external services plug into the harness as new tools — the agent's capabilities grow at runtime
 - Documentation tools (e.g. context7, context-hub): why accurate docs matter — the AI hallucinates APIs, context7, context-hub fixes that
-- Subagents: intro to the concept — different agent types for different tasks (research, exploration, code review). Not deep usage yet, just "these exist and here's what they do"
-- Worktrees: delegating and parallelizing work
+- Subagents: **named, not taught** — the third row of the always-loaded vs. on-demand table is left open and handed to Session 4
 - Security sidebar: sandboxing, permissions, allowlists
 
 **Hands-on (~1.5 hours)**
-- Write a CLAUDE.md for your project (coding style, patterns, constraints)
+- Write your first `AGENTS.md` and make it real: coding style, patterns, constraints, verification commands. Start from what you had to repeat to the agent during Session 2's homework
 - Create a custom skill or command for a repeated task
 - Set up an MCP tool or external integration
 - Try a documentation tool (context7, context-hub): ask the agent to look up a library you're using — compare the output with and without it
-- Try subagents or worktrees for parallel work
 
 **Reflection & Discussion (~15-20 min)**
 - How did the agent's behavior change with instructions?
@@ -178,35 +297,158 @@ Not a dedicated session, but surfaced where relevant:
 
 ### Session 4: Context Engineering
 
-**Recap & Sharing (~15-20 min)**
-- Show-and-tell: what did the tooling enable that wasn't possible before?
+> Materials in `sessions/session-4/` (instructor notes, deck, exercise), all in Spanish. The session interleaves explanation and practice per block instead of one long hands-on. Documentation replaces spec-driven development as the spine.
 
-**Theory: "Shaping The Input" + "The Full Loop" (~20-30 min)**
-- Spec-driven development: define WHAT before prompting HOW
-- Research before implementation: use documentation tools (context7, context-hub) to ground the AI — "look it up, don't guess"
-- Agent orchestration as a coordination pattern: distinct from the subagent primitive (Session 3). Orchestration = *how* multiple agents share work (dispatch, planning, result merging); subagents are one substrate to run it on, alongside separate sessions, the Task tool, or MCP-mediated handoffs. The "Teams" pattern is the canonical form: a planner agent dispatches to specialized worker agents (research, review, exploration, implementation), often in parallel. Why orchestration is the natural next step from single-agent context engineering.
-- A design decision: framework vs. roll-your-own orchestration. Walk through oh-my-openagent (https://github.com/code-yeongyu/oh-my-openagent) as a concrete example of an opinionated orchestration framework — discipline agents (Sisyphus, Hephaestus, Prometheus), automatic model routing, parallel team mode. Open the discussion: do you adopt those opinions, or design your own orchestration on Claude Code's primitives? Frame it as a real choice the student will face, not a recommended path.
-- Context engineering: the AI's output is only as good as what you feed it
-- The full workflow: spec → research → tests → implementation → review
-- Developing delegation intuition: what to hand off vs. what requires your judgment
-- Professional accountability: you sign off on what the AI produces
-- Security sidebar: trust boundaries, prompt injection, supply chain awareness
+**Recap (~10 min)**
+- Skills show-and-tell: new skills built or found during the week
+- Open questions left from Session 3
 
-**Hands-on (~1.5 hours)**
-- Write a spec for a feature, then have the AI implement it
-- Research before coding: use context7/context-hub to look up the libraries/APIs you need — compare how the AI's output changes when it has accurate docs
-- Use subagents for non-implementation tasks: have a research agent explore your codebase, a review agent check your last change
-- Practice the full loop: spec → research → plan → test → implement → review
-- Experiment with delegation: what can you safely hand off? What benefits do specialized agents bring beyond just "more AI"?
-- (Optional) Compare two paths: (a) read through oh-my-openagent's discipline agents and try `ultrawork` on a small task, vs. (b) sketch a minimal roll-your-own orchestrator on top of Claude Code's subagents + Task tool. Discuss which approach feels right for your project — and why.
+**Framing (~5 min)**
+- Building on planning (Session 2) and configuration (Session 3): project documents that feed the plans and record the decisions for the long run
+- Cognitive debt and cognitive surrender, introduced here and returned to in the closing
+- The session's phrase: "documentar es pensar antes de construir"
 
-**Closing Discussion (~20-30 min)**
-- Retrospective: compare your codebase across all 4 sessions
-- The spectrum revisited: when is each approach appropriate?
-- Cost and token awareness (brief): AI tools aren't free — model tiering (fast/cheap vs slow/powerful), why context engineering saves money too, not just quality. Think of tokens as a budget, not an infinite resource
-- When NOT to use AI: recognizing limitations, avoiding overreliance, the skill atrophy risk. AI amplifies expertise — if you don't have the fundamentals, it amplifies confusion. "Don't use AI as a crutch" (MIT Missing Semester)
-- Career implications: what skills matter in an AI-augmented world?
-- Key takeaway: AI tools amplify expertise — invest in fundamentals
+**Two domains (~15 min)**
+- One feature described twice: adding multi-user support to the task list (the Session 1 brief, same project as Session 3's demo)
+- Problem domain: the need, detailed with actors, data and relations, and processes, in problem terms
+- Solution domain: the system, detailed with data diagrams, breadboards or page sketches, and flows — one of many possible solutions
+- Same problem, many solutions; starting from the solution means deciding shallowly and inheriting the agent's average answer
+- The distinction matters with or without AI (requirements vs. design)
+
+**Document what you already built (~30 min: ~5 templates + ~25 work)**
+- Two templates, committed to the repo: `docs/PROJECT.md` (what the project is, main goal, constraints) and `docs/features/<name>.md`, one per feature (the problem it solves, then a design section with the model and one flow per interaction — each flow carries its screens, steps, rules and decisions with their reasons)
+- Templates, not forms: each project adapts them. `AGENTS.md` points to these docs
+- Interactive drafting: the agent explores code, commits and past plans, shows a draft, and asks what it can't know — the problem and the whys; the student answers
+
+**Break (~5 min)**
+
+**Document the next feature and implement it (~40 min: ~5 explanation + ~35 work)**
+- The feature from Session 3's homework, the one that doesn't fit in one sentence — a new feature, or a change to an existing one (extending that feature's doc)
+- Interrogation before drafting: ask the agent to question you (Matt Pocock's grill-me skill); the doc gets written once the decisions are made
+- The doc stays high-level: context7 to understand libraries, implementation details go to the plan
+- The chain: doc → plan (Plannotator) → implement → review against both the plan and the doc
+- Optional aside for fast students: parallel agents (subagents, worktrees) with the docs as shared ground truth
+
+**Closing (~15 min) — the end of the base course**
+
+> **This is the milestone block.** Sessions 1-4 are a complete arc and this closes it: a student who has followed to here has the whole base course. Give it the weight of an ending, then point forward — *there are two more, and they take the machine apart.*
+>
+> **The two closings split by kind, not by rank.** Session 4 owns the human-judgment material: cost, limits, career, atrophy. **Session 6's closing is the retrospective itself** — fifteen minutes of open debate on the course, with no taught content. Neither repeats the other, and both are real endings — one of the base arc, one of the course.
+>
+> The duplication that used to be here was a fossil: the course was originally 4 sessions and this was the finale — hence the old "compare your codebase across all 4 sessions".
+
+- What changed when the agent had the doc?
+- Cognitive debt and surrender, revisited with the class's own experience
+- Cost and limits: tokens as a budget, model tiering, and why context engineering saves money too, not just quality — this is the session that earns the point, since context engineering *is* budget management. (Session 6 later adds the other cost model: per-GPU-hour instead of per-token.)
+- When NOT to use AI: skill atrophy, "don't use AI as a crutch" (MIT Missing Semester)
+- Career implications: what skills matter in an AI-augmented world? Pairs with ownership below — you sign off on what the AI produces, and that is the skill that keeps mattering
+- Ownership: understand, decide, discuss, maintain
+- **Name the transition explicitly**, since Session 1 announced it and this is where it arrives: the base course ends here. The next two are the advanced arc, and they stop asking how to work well with the tool and start asking what it's made of.
+- Remind them of the demo hour that opens Session 5 — this is the last class before it
+- **Deliberately not here**: the full-course retrospective, which is Session 6's whole closing block — doing it here would spend the course's ending two sessions early. (The spectrum revisit used to be Session 6's too; it no longer happens anywhere. See Session 1's notes.)
+- Homework: keep the docs alive during the week; note when they helped and when they went stale against the code
+
+> ### Advanced arc — sessions 5-6
+>
+> The question changes: *what is this thing made of, and what if I swap its parts?* Same cohort, higher register, no new layers of structure — these two take the machine apart and show that everything from the base course survives it. Session 6 closes the course.
+
+### Session 5: Coding Harness (internals)
+
+> Materials in `sessions/session-5/` (instructor notes, deck, exercise), all in Spanish. **Nothing gets installed** — the only session in the course with no setup risk, because today's material is Pi itself: its docs and its example extensions, both already on every student's machine.
+>
+> **This session runs 2 h 30** (every other session but the first is 2): it opens with a **60-minute demo block** where students show the project they have carried since Session 1. Announced in Session 1, reminded in Session 4's closing. To pay for it, the theory stays intact and the extension-writing hands-on **moves to homework** — only its Paso 0 stays in the room.
+>
+> This session opens the advanced arc. The four base sessions each add a layer of structure; this one does not have to. The course closing belongs to Session 6, so there is no farewell here.
+
+**Demo de proyectos (~60 min)**
+- Opens the session. Volunteers, ~8 turns of 5-7 min (4-5 showing, 2 of questions), at the projector, each one opening their own repo. Not a deliverable, not graded.
+- What they show: the project carried since Session 1 — and not only *what* they built but **how**: Session 2's plan, Session 3's `AGENTS.md` and skills, Session 4's docs. The question repeated every turn: *"what did you decide and what did the agent decide?"*
+- **Session 4's recap lives inside this block**, with no slot of its own: where did a doc help, and where did it go stale against the code? Asked of each person who presents.
+- **The elastic block**, the role the recap used to hold: if the day runs long, turns get cut. Plan B if fewer than eight hands go up: we pick, or the block shrinks.
+
+**Qué vamos a ver hoy (~3 min)**
+- Five weeks driving the tool. Today we open it.
+- The framing that has to survive the whole session: *"we did not come to learn Pi. We came to see what problems any harness has to solve, using the one we can open."*
+
+**What a harness is, and the others (~10 min)**
+- The layer diagram, revisited from Session 1 in thirty seconds rather than rebuilt.
+- The other harnesses as four axes, not a table: open vs. closed, built in vs. added, how far you can extend, who controls the system prompt. Each one is a decision somebody made.
+
+**The loop, and Pi's parts (~14 min)**
+- The densest block of the day; rehearse it against a clock. The loop is built on screen, not shown whole.
+- Every moment is subscribable. `tool_call` → `{ block: true }` pays off the plan-mode thread from Sessions 2 and 3 for the third and last time.
+- The four packages, base to surface, and the line that you use only the layers you need.
+
+**The session tree, and steering vs. follow-up (~7 min)**
+- Two quick looks, not two blocks. The tree explains why `/tree` costs nothing. Steering is the general question of when a message reaches a running agent.
+
+**Break (~5 min)**
+
+**Three ways to give a model a tool, and subagents (~13 min)**
+- The most transferable block in the session, and not about Pi. Extension, CLI, MCP, and the question that decides between them.
+- Subagents as mechanism, since Session 4 owns the use case. A ~200-line extension is the mechanism; the rest is product.
+
+**Compaction (~7 min)**
+- The trigger in one line, the algorithm in four steps, the before/after diagram of the entry array. Lossy, another model call, and interceptable.
+
+**Abrí tu sesión, y la tarea de la semana (~10 min)**
+- ~5 min **in the room**: reading their own session file (`~/.pi/agent/sessions/`, JSONL): `id`/`parentId` pairs, a branch point, and a compaction entry if anyone has one — project it. This is the only step of the exercise that needs the room, and it is the payoff of the tree and compaction blocks.
+- ~5 min briefing **the homework**: the menu (a `/command`, a tool wrapping a CLI, a hook, a widget), the three rules, and where it installs. They pick one target and **direct the agent to build it** during the week, installed in `.pi/extensions/`, iterated with `/reload`.
+- **TypeScript is not assumed**, which was the constraint Session 3 named. The exercise is direction, not typing, and it points everything the course has taught at the harness for the first time.
+- The agent will hallucinate Pi's API. That is expected, it is the point, and it gets fixed the Session 4 way, with the docs in context — but now it happens at home, with nobody walking the room, so noticing it becomes the first question of Session 6's recap.
+
+**Run modes (~4 min)**
+- Interactive, headless, embedded, behind a protocol. The loop is a library; the terminal is one interface.
+
+**Security (~9 min)**
+- Threat models, permission models, the sandbox ladder, and Pi's deliberate absence of a sandbox.
+- **Placed late on purpose.** They have been installing extensions since Session 2 and are about to write and install one of their own, alone, during the week; only then do they learn it runs with their full permissions, as Pi's own docs state. ⚠️ The staging changed with the hands-on moving to homework — Agus's call on how to re-land the punchline.
+
+**Closing (~5 min)**
+- What surprised you about opening the machine? None of what we saw today is Pi's; Pi is where we could look at it.
+- Homework: **write the extension** (the full exercise, at home), then keep it alive during the week, note what you had to fix and whether you used it again. It used to say *bring it — Session 6 uses it*; **it does not any more** — Session 6 does not review it, see below.
+
+> **Handoff to Session 6, gone.** The earlier design assumed students left here with a hand-written client to point at another model; the version after that assumed Session 6 would pick the extension back up in an opening recap. **Session 6 was redesigned and has neither a recap nor an extension slot** — its five blocks (theory 30, GPU demo 15, CCAD 60, hands-on 30, retrospective 15) come to 150 minutes exactly. The homework still stands on its own — keeping an extension alive for a week is the point — but the promise of a landing place does not. **Settled: Session 6 does not review the extension homework.** It has no recap and no slot for it, the exercise stands on its own, and questions go to the course channel during the week (see Open Questions). Session 5's materials no longer promise a landing place.
+
+### Session 6: Open Source Models & Running on CCAD
+
+> 🔴 **TO REVIEW** — Claude-generated, not yet reviewed by Diego.
+
+Owner: Diego. Guest: **Ale Silva (CCAD)**, with a demo slot by **Agus**. Goes last because it lands better after Session 5 — students who opened the harness already believe the model is swappable — but it no longer *depends* on it.
+
+> **The vehicle is a gateway, not a cluster login.** CCAD is exposed as a **LiteLLM** proxy with an OpenAI-compatible endpoint, and Pi reaches it with a provider entry in `~/.pi/agent/models.json`. **Settled and verbatim in the material**: `baseUrl` is `https://litellm.ccad.unc.edu.ar` (no `/v1`), and **both** models are served — `vllm/gemma4-26b` and `vllm/qwen3.8:30b`. The GPU queue — previously flagged here as the session's biggest risk — is out of the picture entirely.
+
+> **The shape is five blocks and the order is the design.** Abstract (what a model is) → one GPU on a desk (16 GB, three metres away) → a national HPC centre → the room hits it. There is **no recap, no break and no measurement harvest**: the five blocks total 150 minutes exactly.
+
+**Theory: open-weight models (~30 min, Diego)** — built on [Flavio Copes's deep dive](https://flaviocopes.com/open-weight-models/), which runs the topics in the order the block needs. It **opens** the session, so everything it says about CCAD is anticipation rather than callback.
+- **Open source vs. open weights**: the binary, not the recipe. Nearly everything marketed as open-source AI is open weights.
+- **Licences**: Apache 2.0/MIT vs. bespoke licences with usage and scale restrictions vs. restrictions on the output. Can I use it commercially, redistribute a fine-tune, and who owns the generations? Concrete rather than hypothetical, and note a correction to an earlier draft: **Gemma 4 is Apache 2.0**, not a bespoke Google licence — that changed with version 4, and Gemma 2/3 are the restricted ones. Which turns the generic warning into the block's best moment: **the licence changed between versions of the same family**, visible on screen in thirty seconds on the very model they're using. Three cards, three regimes: Gemma 4 (Apache), Gemma 3 (bespoke), Llama (community licence with a scale clause).
+- What it takes to run one: what a download actually gets you (safetensors vs. GGUF, tokenizer, runtime, the token loop that never calls a cloud API), the quantization arithmetic (30B × 16 bits = 60 GB, × 4 bits = 15 GB) **left on the board for Agus to use fifteen minutes later**, and the **OpenAI-compatible endpoint** as the reason a model swap is five lines of JSON — the bridge to `models.json`.
+- Security sidebar, narrowed to two points inside the block: self-hosting makes **you** the operator, and **"local does not automatically mean private"**.
+- The closing checklist for picking a model is the **ramp into Agus's demo**: its points 2, 3 and 5 — does it fit your hardware, which quantization, what the context costs in memory — are exactly what he resolves live with 16 GB.
+
+**Demo: a model on a portable GPU (~15 min, Agus)**
+- **MSI GeForce RTX 5070 Ti 16 GB GDDR7 Ventus 3X OC** over **Thunderbolt** (an external eGPU, not a card inside the machine), running **Ollama** on **CUDA**. He shows, the room watches — it is **not** an endpoint students connect to.
+- **What the course needs from this slot, and it is one thing.** The theory just wrote `30B × 4 bits = ~15 GB` on the board. The card has 16 GB. The naive read is *"it just fits"* — **and it does not**, because weights are not the only thing living in VRAM: **the context window is paid for there too** (the KV cache), and it grows with every token. That turns the checklist's "what the context length costs in memory" from a bullet into a constraint the room sees, and it sets up why the big model lives on a cluster and not on a laptop.
+- The rest, at his discretion: `ollama pull` / `ollama run` making the *what it takes to run one* list physical, tokens/s so latency is felt rather than described, the Thunderbolt bus (once weights are in VRAM it is not the generation bottleneck — his to measure, not ours to assert), and one line on why the inference ecosystem assumes CUDA.
+
+**Guest: Ale Silva on CCAD (~60 min)** — his programme, four points:
+- (1) A short introduction to **HPC**: what it is, what problem it solves, why clusters are needed. (2) **UNC Supercómputo**: history, its clusters, some metrics, and how it compares to the region and the world. (3) **New services**: the experience of deploying models on limited hardware and turning a working test into a service that is reasonably stable and usable by many people at once. (4) **How to use CCAD's resources**: requesting an account, what access students get, and making your first call to their models.
+- **Point 1 is the missing step** — nobody in the room has HPC exposure, and it lands right after seeing a single GPU on a desk, so "why clusters" has a concrete referent from fifteen minutes earlier.
+- **Point 3 is the heart of the slot for us**: deploying on limited hardware and making it multi-user *is* the LiteLLM / vLLM / batching story, told by the person who lived it. **He will name both tools**, which is what stops `litellm.ccad.unc.edu.ar` and the `vllm/` prefix from being strings copied off a slide fifteen minutes later.
+- **Point 4 feeds straight into Step 0**, and the cut is agreed: he goes as far as the endpoint and the first call, we translate it into Pi's `models.json`. Say out loud before handing him the room that **requesting an account is the road back after the course**, not today's access — today they enter with the key Diego handed out.
+
+**Hands-on (~30 min), one track**
+- **Step 0, together (~8 min)**: add the CCAD provider to `models.json`, export the key, `/model`. Walked on screen with the room typing along. The best part is what is *not* in the JSON — `contextWindow` defaults to 128000, so the context window turns out to be a number somebody chose, and there are three of them for the same thing (the model's native ~262,144, Pi's default, and whatever vLLM was started with). Same knob Agus had to pick an hour earlier, seen from the other end.
+- **One test, their choice (~22 min)**: the exercise offers four — one per base session (vibecoding, planning, skills & MCP, documenting) — and each student picks. No mandatory test; 22 minutes fits one comfortably and two in a hurry, and the rest stay written for home. The honest recommendation given out loud is **skills & MCP**: most informative, and the likeliest to break, because it is the one that depends on tool calling.
+- Everything in **their own repo, with their own `AGENTS.md` and skills from Session 3**. The baseline is not another run — it is what they already know from the first four classes, so the comparison starts free.
+
+> **Timing is settled: this session runs 2 h 30, in five blocks.** Theory 30, Agus 15, Ale 60, hands-on 30, retrospective 15 — **150 minutes exactly**. There is no elastic block: in Sessions 2 and 3 the recap absorbed overruns, and here it does not exist, so the only thing cuttable live is the hands-on, which is the worst thing that can happen. Rehearse the three expository blocks against a clock, and tell Ale **60** with that number. Confirm the room for the extra half hour.
+
+**Course retrospective (~15 min)**
+- Open debate: what they thought of the course, whether it was worth it, what they would change. Fifteen minutes held up **only by questions**, so arrive with several: which session helped most and least, what should have lasted twice as long, what they will use on Monday and what they will never open again, what they expected when they signed up. If the room is complimentary, push with *"what was the most boring part?"*.
+- Listen rather than defend. Close by thanking Ale and CCAD by name, and leave three pointers: requesting a CCAD account, Raschka's guide for running it on your own machine, and Copes's post.
+- **Not here**: cost/limits, career, and skill atrophy — those are Session 4's closing, which ends the base course.
 
 ## Progression Arc
 
@@ -217,7 +459,14 @@ The arc follows a clear logic (and mirrors growing from a hands-off boss to an e
 3. **Tool leverage** → use the tool's capabilities to scale your judgment ("give the intern better tools and clear documentation")
 4. **Context shaping** → engineer the AI's environment (specs, project context, documentation) so it produces better output by default ("build a team culture where good work happens by default")
 
-Each session adds a layer of structure. Students feel *why* each layer matters because they've experienced the problems it solves.
+Steps 1-4 are the **base course**, and they're one question asked four times: *how do I work well with this thing?* Session 4 closes that arc.
+
+**Sessions 5-6 are the advanced arc, and they change the question** — from *how do I work well with this thing?* to *what is this thing made of, and what if I swap its parts?* That's why they're framed as advanced rather than as two more layers of structure: the move isn't deeper management, it's opening the machine.
+
+5. **Open the box** → the tool is a harness wrapped around a model, and every part you can name you can also replace ("understand the machinery the intern actually works inside")
+6. **Swap the model** → the model is one replaceable component; everything you learned survives the swap
+
+Each session in the base arc adds a layer of structure, and students feel *why* each layer matters because they've experienced the problems it solves. The advanced arc adds no layers — it takes the thing apart and shows that the layers survive.
 
 ## Session Flow Template
 
@@ -233,16 +482,26 @@ Each session follows roughly the same structure:
 For students who don't bring their own:
 - Small web app (todo with auth, simple dashboard, chat app)
 - Must be achievable as a basic vibe-coded prototype in ~2 hours
-- Complex enough to reveal problems across all 4 weeks (security, architecture, testing, state management)
+- Complex enough to reveal problems across all 6 weeks (security, architecture, testing, state management)
 
 ## Open Questions
 
-- Exact session duration (2h vs 3h)
-- Claude Code vs alternatives (CC requires terminal comfort, but matches the agentic depth we want)
+- **A channel for questions during the week — Google Chat group or Discord? To settle with Agus.** Its main purpose is students helping each other; **we do not promise to be watching it**. It replaces staying after class for questions, which is why Sessions 5 and 6 now point at it. If it happens, it gets announced in Session 1 and repeated at the end of Session 6 — and if it doesn't, both of those lines come out.
+- Exact session duration (2h vs 3h) — **Session 1 is 3 h and Session 5 is 2 h 30** (it opens with an hour of demos), the rest are 2 h. Confirm the room allows it.
+- ~~Claude Code vs alternatives~~ → **decided: Pi is the course tool.** Terminal-based, minimal, standard `AGENTS.md`.
+- ~~Session 2 is written against Claude Code and misaligned with the Pi decision~~ → **resolved: Session 2 runs on Pi.** Planning and review go through `@plannotator/pi-extension`, which adds file-based plan mode (`pi --plan`) and `/plannotator-review` to Pi. One harness for the whole course; students install two extensions at the start of Session 2.
+- ~~`pi-subagents` package is unpinned~~ → **decided: the unscoped `pi-subagents`** (`pi install npm:pi-subagents`), installed by students at the start of Session 2. There are at least six forks on npm (`@tintinweb/`, `@gotgenes/`, `@yassimba/`, `@nklisch/`, plus bridges) — the course standardizes on one. **Confirm with Agus** before Session 4 builds on it — the subagents block is his now, so it stays installed from Session 2 and unused until then.
 - API keys: provide them or have students set up their own?
 - Pre-work: should students come to Session 1 with a project idea already?
-- Do we want a final deliverable (repo + reflection) or is the journey enough?
+- ~~Do we want a final deliverable (repo + reflection) or is the journey enough?~~ → **half-answered: Session 5 opens with an hour of demos.** There is a public moment, but no deliverable and no grading — showing is voluntary. Still open: whether Session 6's retrospective wants a written reflection to go with it.
 - LLM fundamentals block: include or skip depending on group assessment?
+- Does the extension-course format actually allow 6 weeks? Confirm before announcing.
+- ~~**Session 5 tooling prerequisites**~~ → **resolved: nothing.** The hands-on runs on Pi as they already have it, and its material (docs and example extensions) ships with the install. No new package, no raw API access, no keys to provision. It is the only session in the course with no setup risk.
+- ~~Session 6 needs CCAD accounts provisioned in advance~~ → **decided: not needed.** The hands-on authenticates with an **API key issued by Diego from his own account**, one per student, handed out before class. Requesting a CCAD account is what Ale's fourth point covers, and it is framed as the road back *after* the course — students do it on their own if they want to.
+- ~~Session 6 hands-on is hostage to the GPU queue~~ → **resolved by the gateway.** The replacement risk is **concurrency**: 25-30 students hitting one LiteLLM endpoint. Confirm rate limits; if they bite, run the hands-on in two waves.
+- ~~Session 6 needs slides and an exercise written from scratch~~ → **written**, and rewritten again for the five-block shape agreed with Ale and Agus. The CCAD values are settled and go in verbatim: `https://litellm.ccad.unc.edu.ar` (no `/v1`), `vllm/gemma4-26b` and `vllm/qwen3.8:30b`, both served.
+- ~~Which session owns the full-course retrospective now that there are six?~~ → **decided: Session 6, and it is the whole 15-minute closing block** — open debate on what they thought of the course and what they would change, nothing else. Session 4 keeps the base-course closing (cost, limits, career, atrophy). The overlap was a leftover from the 4-session version, where Session 4 *was* the finale.
+- **Session 6's shape changed after talking to Ale and Agus** → five blocks: theory 30, Agus's GPU demo 15, Ale on CCAD 60, hands-on 30, retrospective 15. Gone: the Session 5 recap, the break, the measurement harvest, the optional track connecting to Agus's GPU, and the artifact closing. **Consequence, settled**: Session 5's homework no longer tells students to bring their extension — Session 6 does not review it. The exercise stands on its own, and questions go to the course channel.
 
 ## References & Inspiration
 
@@ -252,9 +511,47 @@ For students who don't bring their own:
 - [Simon Willison: "Vibe Engineering"](https://simonwillison.net/2025/Oct/7/vibe-engineering/) — analysis of vibe coding and the case for discipline (search for "vibe coding" posts)
 - [OWASP Top 10 for Agentic Applications (2025)](https://genai.owasp.org/resource-center/security-guides/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/) — ASI01-ASI10: goal hijack, tool misuse, rogue agents, cascading failures
 - [OWASP GenAI Security Project](https://genai.owasp.org/) — broader LLM security resources, supply chain risks, prompt injection
-- Karpathy's progression from coining "vibe coding" to proposing "agentic engineering" — [original vibe coding tweet/thread (Feb 2025)](https://x.com/karpathy/status/1889105372806840545)
+- Karpathy's progression from coining "vibe coding" to proposing "agentic engineering" — [original vibe coding tweet/thread (Feb 2025)](https://x.com/i/status/1886192184808149383) (same link as "The Spectrum" above; the two IDs previously disagreed)
 - METR: "Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity" — [metr.org](https://metr.org/) (devs 19% slower with AI despite feeling 20% faster)
-- CodeRabbit: AI co-authored code has 1.7x more major issues — [coderabbit.ai](https://coderabbit.ai/)
-- Udemy: "The Complete Course on Coding Agents" by Nikolai Schuler & Jagger Bellagarda — [Udemy search](https://www.udemy.com/courses/search/?q=coding+agents+claude+code)
-- ICSE 2026 AGENT Workshop — academic research on agentic software engineering
-- The 80% Problem in Agentic Coding (vault: Reading_List/Queue)
+
+### Session 1 — Vibecoding
+
+- [Sebastian Raschka: *The Components of a Coding Agent*](https://magazine.sebastianraschka.com/p/components-of-a-coding-agent) — **the reference for the fundamentals block's "what is a coding agent"**, and for the LLM + tool + harness vocabulary planted in Part 4. Separates LLM from reasoning model from agent (a control loop deciding what to inspect, what to call, when to stop) from harness, and argues the harness is often what makes one model outperform another — *"much of the apparent model quality is really context quality"*. Its six components run past Session 1 on purpose (context reduction and session memory are Session 5's, subagents are Session 4's), so it's instructor prep and optional student reading rather than class content.
+- [Andrej Karpathy: *From Vibe Coding to Agentic Engineering* (w/ Stephanie Zhan)](https://www.youtube.com/watch?v=96jN2OCOfLs) — the whole arc of this course in one talk, given by the person who coined "vibe coding", and under the same title. Useful twice: as Part 5 material, and as the reason the course is shaped the way it is.
+- [Anthropic: *Vibe coding in prod* | Code w/ Claude](https://www.youtube.com/watch?v=fHWFF_pnqDk) — the fourth of Part 5's four takes. Same video linked in "The Spectrum" above.
+- [Naval: *On Vibe Coding*](https://www.youtube.com/watch?v=hTdSU7q5WCo) — vibecoding as a video game, the second of Part 5's four takes. **Check whether this is the same material as the x.com clip cited in "The Spectrum"**; if it is, keep one and drop the other from the slide.
+
+### Session 3 — Skills
+
+- [Barry Zhang & Mahesh Murag (Anthropic): *Don't Build Agents, Build Skills Instead*](https://www.youtube.com/watch?v=CEvIs9y1uog) — the argument behind Tier 3's framing: the reusable artefact is the skill, not a bespoke agent. Backs the one sentence the session spends on skills as the thing that transfers to whatever tool the student uses next.
+- [`eli5` skill](https://github.com/anthropics/claude-plugins-community/blob/main/eli5/skills/eli5/SKILL.md) — **the example `SKILL.md` shown in class**, in Anthropic's community plugin repo, so it can be opened and read live in thirty seconds. Nine lines including frontmatter, and the whole value is in a `description` that says what it does *and* when to fire. Spotted in [a tweet](https://x.com/trq212/status/2090884855798407576), installed as a plugin, and run over this repo's own `COURSE_PROGRAM.md` to produce [a visual explainer](https://claude.ai/code/artifact/977c4128-625f-42c0-a78d-02e4425a887b) — the shortest possible path from "saw a skill" to "used it on my own material". The nuance to state in the room, and it's the point rather than a caveat: the file travels verbatim, but the capability its body assumes does not come along — publishing an HTML artifact isn't in Pi's base toolbelt. It is one extension away ([`pi-artifacts`](https://pi.dev/packages/pi-artifacts), which adds `artifact_create` / `artifact_preview` / `artifact_publish`), which is the same from-the-factory vs. as-an-extension design space the session already names in the anatomy block, landing a second time on a concrete case. Run on Claude Code so far; end-to-end on Pi is a Session 3 pendiente, and `pi-artifacts` goes on the demo machine only — the room installs nothing but `pi-mcp-adapter`.
+- [Matt Pocock: *Building Great Agent Skills: The Missing Manual*](https://www.youtube.com/watch?v=UNzCG3lw6O0) — practical guidance on writing a `SKILL.md` that actually fires: naming, descriptions, and what belongs in the body vs. the references. Directly useful for step 3 of the Session 3 hands-on, where students write their first one.
+- [Thariq Shihipar (Anthropic): *Lessons from Building Claude Code: How We Use Skills*](https://x.com/trq212/status/2033949937936085378) — **the strongest single piece of writing on skills we have**, and by the same author as the `eli5` example above, which is a line worth saying out loud in the room. Written 2026-03-17 from inside the team that ships Claude Code, with hundreds of skills in daily use. It gives the session two things. First, it kills the "a skill is just a markdown file" reading: a skill is a *folder* — scripts, assets and data the agent can discover, explore and run — which is exactly the `scripts/` / `references/` / `assets/` layout the anatomy block already puts on screen, now with a reason to care. Second, its writing advice is the checklist for step 3 of the hands-on, where students write their first one: don't state what the model already knows (aim for what "pushes Claude out of its normal way of thinking"), keep a gotchas section built from real failures, write the `description` for the model's trigger matching rather than as a human summary, describe intent instead of over-prescribing steps, and ship helper scripts so the model composes instead of rebuilding boilerplate. It also names nine recurring categories of skill — library/API reference, product verification, data fetching and analysis, business-process automation, scaffolding and templates, code quality and review, CI/CD, runbooks, infra operations — a good seed list for the Mentimeter if the room's answers come out thin. ⚠️ **x.com wants a login as of 2026-08-25**; the text is mirrored in [a gist](https://gist.github.com/Danm72/467f6d6cd193d19c0042371866d53b75). Thariq said in [his pinned thread](https://x.com/trq212/status/2035372716820218141) that much of this writing would land on the Claude blog — check for a canonical URL before class.
+- [Anthropic Academy: *Introduction to Agent Skills*](https://anthropic.skilljar.com/introduction-to-agent-skills) — free, self-paced, six modules: what skills are, creating your first one, configuration and multi-file skills, skills vs. other Claude Code features, sharing skills, troubleshooting skills. **The thing to hand the students who ask for more after this session** — it walks the same ground the hands-on covers, in the same order: frontmatter and descriptions that reliably trigger, progressive disclosure as context hygiene, restricting tool access with `allowed-tools`, distribution via repos, plugins and managed settings, wiring skills into subagents, and a whole module on the failure the room will actually hit — the skill that doesn't fire. The caveat to state when handing it out: it's taught **on Claude Code**, not Pi, so the concepts travel verbatim and some of the plumbing does not — the same lesson the `eli5` nuance lands, which makes it a good closing recommendation rather than a footnote.
+
+### Session 5 — Harness internals
+- **Pi's own docs, which ship with the install** — the primary source for this session and already on every student's machine: `extensions.md`, `compaction.md`, `sessions.md`, `session-format.md`, `security.md`, `sdk.md`. Online at [pi.dev/docs](https://pi.dev/docs/latest/).
+- **[`examples/extensions/`](https://github.com/earendil-works/pi/tree/main/packages/coding-agent/examples/extensions)** — around eighty example extensions, also shipped with the install. They are the reading material for anyone who finishes the hands-on early, and the source of half the theory's examples. The ones this session uses: `subagent/`, `custom-compaction.ts`, `permission-gate.ts`, `protected-paths.ts`, `tool-override.ts`, `truncated-tool.ts`.
+- [Mario Zechner: *The Pi coding agent*](https://mariozechner.at/posts/2025-11-30-pi-coding-agent/) — Pi's own author writing about the agent the course runs on. The harness taken apart by the person who built it, which is exactly this session's move.
+- [Mario Zechner: *What if you don't need MCP?*](https://mariozechner.at/posts/2025-11-02-what-if-you-dont-need-mcp/) — already on Session 3's list; it returns in the three-ways-to-give-a-tool block. Worth naming that the person who wrote the harness we are opening thinks a CLI is often enough.
+- [Sebastian Raschka: *The Components of a Coding Agent*](https://magazine.sebastianraschka.com/p/components-of-a-coding-agent) — cited in Session 1 as instructor prep. Its components 4 and 5, context reduction and session memory, are this session's material.
+- The BeerJS talk *"Pi, the self-building agent"* (2026-06-25, Agus) — the source of the layer diagram, the loop diagram, the package diagram and the subagents extension shown in class.
+
+### Session 6 — Open source models & HPC
+- **CCAD's inference gateway** — `https://litellm.ccad.unc.edu.ar` (**no** `/v1`), OpenAI-compatible. The vehicle for the hands-on. The API key is **issued by Diego from his own account**, one per student, handed out before class and **never committed**; course material uses `$CCAD_API_KEY`.
+- [**Gemma 4 26B**](https://blog.google/innovation-and-ai/technology/developers-tools/gemma-4/) — `vllm/gemma4-26b`, **served**. MoE, 26B total / ~3.8B active per token, **Apache 2.0** (a change from Gemma 2/3's bespoke terms), up to 256K context, multimodal. Announced 2026-04-02.
+- **Qwen3.8 30B** — `vllm/qwen3.8:30b`, **served**. **Apache 2.0**, **262,144** native context, tool-capable chat template, ungated repo.
+- Both model entries are **the most perishable facts in the plan** — re-verify sizes, licences and gates the week of class.
+- [Pi — models & custom providers](https://pi.dev/docs/latest/models) — `~/.pi/agent/models.json`, re-read every time `/model` opens. `api` accepts `openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai`. `apiKey` accepts `$VAR` / `${VAR}` and `!command`. Defaults: `contextWindow` 128000, `maxTokens` 16384.
+- [Flavio Copes: *A Deep Dive into Open-Weight AI Models*](https://flaviocopes.com/open-weight-models/) — **the basis for Diego's 30-minute block.** Weights vs. architecture, open weight vs. open source, quantization (16→4 bits takes a model from ~60 GB to ~15 GB), five reasons to care, and the limits. Two lines worth quoting nearly verbatim: open source as *"the materials and freedoms to study, modify and share the wider system"*, and **"local does not automatically mean private"** — an agent on a local model still calls out to the world.
+- **Agus's portable GPU** — **MSI GeForce RTX 5070 Ti 16 GB GDDR7 Ventus 3X OC**, over **Thunderbolt** (external eGPU), running **Ollama** on **CUDA**. A 15-minute demo, not an endpoint the room connects to. The 16 GB figure is what the theory's quantization arithmetic gets checked against.
+- [**Ollama**](https://ollama.com/) — the runtime in Agus's demo. `ollama pull <model>`, `ollama run <model>`. It exposes an OpenAI-compatible endpoint on `/v1`, which makes it the easiest possible example of the interoperability story even though nobody connects to it in class — and it is what students would use to reproduce the demo at home.
+- [**Sebastian Raschka: *Using Local Coding Agents***](https://magazine.sebastianraschka.com/p/using-local-coding-agents) — **the written pointer for running it on your own machine**, in the exercise's appendix. Built on **Ollama** (one installer across Mac/Linux/Windows, OpenAI-compatible endpoint on `http://127.0.0.1:11434/v1`), it points several open-source harnesses at that endpoint — the same move as our `models.json`, verified by a third party — and carries measurements: 4-5/5 on agentic reasoning tasks with a Qwen3.6 MoE, ~40 tok/s on a Mac Mini, and **up to 30 GB RAM at 50k context**, which is the number that explains Agus's 16 GB arithmetic. The caveat to state when citing it: he measures **bounded tasks**.
+- [LiteLLM](https://github.com/BerriAI/litellm) — the gateway/proxy pattern for inference, and what the `vllm/` prefix in the model id comes from. Ale names it in his slot.
+- [CCAD — Centro de Computación de Alto Desempeño, UNC](https://supercomputo.unc.edu.ar/ccad/) — created by Ordenanza HCS 18/2010; serves UNC faculties, the Astronomical Observatory, and external research organizations
+- [CCAD wiki / documentation](https://wiki.ccad.unc.edu.ar/) — the reference for cluster usage
+- [Opening a CCAD account](https://wiki.ccad.unc.edu.ar/empezar/abrir-cuenta.html) — SSH keys → request form → credentials by email
+- [CCAD equipment](https://supercomputo.unc.edu.ar/equipamiento/) — active clusters: Boogie (2025), Gordito (2025/2026), Mendieta Fase 2 (2022), Serafín (2021), Eulogia (2018/2021), Mulatona (2018). Per-cluster specs live on the individual pages and the wiki
+- [CCAD services](https://supercomputo.unc.edu.ar/servicios/pedido-de-cuentas/) — account requests, intensive-use requests, user support
+- [CCAD status](https://stats.uptimerobot.com/eLhTV5CMni) · [dashboard](https://stats.ccad.unc.edu.ar/) — check before class
+- Guest: **Ale Silva** (CCAD) — **60 minutes, and the programme is his**: an introduction to HPC and why clusters are needed; UNC Supercómputo's history, clusters and metrics, and how it compares to the region and the world; the experience of deploying models on limited hardware and turning a working test into a stable multi-user service; and how to use CCAD's resources, from requesting an account to a first call to their models. He will name LiteLLM and vLLM. The cut with our Step 0 is agreed: he goes as far as the first call, we translate it into Pi's `models.json`.
