@@ -3,6 +3,8 @@
 > 📊 **Presentation** — plain-language visual walkthrough of this session (run of show, the four rules, the context-hygiene commands, the reality check): <https://claude.ai/code/artifact/735320e0-90ba-4586-bb49-3551b35933cb>
 > Private until shared from the page's share menu.
 
+> 🎞️ **Slides** — final deck in Claude Design: <https://claude.ai/design/p/22345472-cddd-4d9a-8f2a-2917312d19b6?file=Sesion+1+-+Ingenieria+Agentica.dc.html&via=share>
+
 > Owner: Diego, with Agus on the Pi intro and demo. Status: shaping. Audience-facing materials live alongside this file (slides.md, exercise/README.md) and are in Spanish. These notes are for the instructor in English.
 
 ## Session goal (in one sentence)

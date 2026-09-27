@@ -7,6 +7,7 @@ title: Sesión 1 — La Experiencia Vibe Coding
 
 <!--
 Skeleton de la presentación de la Sesión 1.
+Slides finales (Claude Design): https://claude.ai/design/p/22345472-cddd-4d9a-8f2a-2917312d19b6?file=Sesion+1+-+Ingenieria+Agentica.dc.html&via=share
 Cada slide tiene un título + una nota de oradora/orador (HTML comment).
 El contenido del cuerpo de cada slide está pendiente.
 
