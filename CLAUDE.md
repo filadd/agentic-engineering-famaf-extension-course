@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This is the course material repository for "From Vibe Coding to Agentic Engineering", a 6-session extension course at FaMAF (Universidad Nacional de Cordoba). Target audience: ~20-30 CS students with some project experience but little professional training.
+This is the course material repository for "From Vibe Coding to Agentic Engineering", a 6-session extension course at FaMAF (Universidad Nacional de Cordoba). Target audience: ~30 CS students and junior programmers with some project experience but little professional training.
 
 ## Structure
 
@@ -20,7 +20,6 @@ COURSE_PROGRAM.md  — full course design document
 ## Conventions
 
 - Write all student-facing materials in Spanish (the course is taught in Spanish at FaMAF)
-- Write instructor notes and internal docs in English
 - Use Markdown for all documents
 - Keep exercises self-contained: each exercise directory should include a README with objectives, setup, and expected outcomes
-- **Sessions 1-4 are the base arc, 5-6 the advanced arc** — same cohort, different register. The base sessions each add a layer of structure; the advanced ones take the machine apart and show the layers survive. Session 4 closes the base arc with the judgment material (cost, limits, career, atrophy). **Session 6 closes the course with an open retrospective** — fifteen minutes of what they thought of it and what they would change, and nothing else. Don't move session 4's closing material into session 6, and don't add taught content to session 6's closing block.
+- **Sessions 1-4 are the base arc, 5-6 the advanced arc** — same cohort. The base sessions each add a layer of structure; the advanced ones take the machine apart and show the layers survive. Session 4 closes the base arc with the judgment material (cost, limits, career, atrophy). **Session 6 closes the course with an open retrospective** — fifteen minutes of what they thought of it and what they would change, and nothing else. Don't move session 4's closing material into session 6, and don't add taught content to session 6's closing block.

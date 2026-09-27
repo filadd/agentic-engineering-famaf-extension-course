@@ -1,6 +1,6 @@
 # From Vibe Coding to Agentic Engineering
 
-A 6-session extension course at FaMAF (Universidad Nacional de Cordoba) that walks CS students through the full spectrum of AI-assisted development — from pure "vibe coding" to structured agentic engineering, and then into the internals: how a coding harness works, and running open-weights models on UNC's supercomputing center.
+A 6-session extension course at FaMAF (Universidad Nacional de Cordoba) that walks CS students and Junior programmers through the full spectrum of AI-assisted development — from pure "vibe coding" to structured agentic engineering, and then into the internals: how a coding harness works, and running open-weights models on UNC's supercomputing center.
 
 ## Sessions
 

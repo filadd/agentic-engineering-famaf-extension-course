@@ -7,6 +7,7 @@ title: Sesión 1 — La Experiencia Vibe Coding
 
 <!--
 Skeleton de la presentación de la Sesión 1.
+Slides finales (Claude Design): https://claude.ai/design/p/22345472-cddd-4d9a-8f2a-2917312d19b6?file=Sesion+1+-+Ingenieria+Agentica.dc.html&via=share
 Cada slide tiene un título + una nota de oradora/orador (HTML comment).
 El contenido del cuerpo de cada slide está pendiente.
 
@@ -66,7 +67,7 @@ Diego Piloni · con Agustín Carrasco
 
 ## Este curso es sobre experiencia, no sobre teoría
 
-<!-- Decirlo explícito y sin vueltas: este curso está basado en nuestra experiencia propia usando coding agents todos los días, no en teoría. Para teoría hay cursos online muy buenos — muchos hechos por las mismas empresas que venden los servicios de IA. Consecuencia práctica para ellos: PREGUNTEN MUCHO. El valor de estar acá es poder preguntarle a alguien que ya se comió los problemas. -->
+<!-- Decirlo explícito y sin vueltas: este curso está basado en nuestra experiencia propia usando coding agents todos los días, no en teoría. Para teoría hay cursos online muy buenos — muchos hechos por las mismas empresas que venden los servicios de IA. Consecuencia práctica para ellos: PREGUNTEN MUCHO. El valor de estar acá es acceso a gente que ya está usando agentes y ya se comió los problemas que eso trae. -->
 
 ---
 
@@ -90,7 +91,7 @@ BASE (1 a 4) — "¿cómo trabajo bien con esta cosa?": 1) vibe coding y fundame
 
 AVANZADAS (5 y 6) — acá cambia la pregunta: de "¿cómo trabajo bien con esta cosa?" a "¿de qué está hecha, y qué pasa si le cambio las partes?". 5) internals del harness (Agus), 6) modelos open source y CCAD. No agregan capas: abren la máquina y muestran que todo lo del curso base sigue en pie.
 
-Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 6 sesiones para todos —"avanzado" es el registro, no una inscripción aparte— y no son un apéndice opcional, son donde se entiende por qué funcionó todo lo anterior. -->
+Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 6 sesiones para todos —"avanzado" es la profundidad, no una inscripción aparte— y no son un apéndice opcional, son donde se entiende por qué funcionó todo lo anterior. -->
 
 ---
 
@@ -108,7 +109,7 @@ Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 
 
 ## El modelo mental: manejar a un pasante brillante
 
-<!-- El framing que vuelve las 6 sesiones. La IA es rápida, entusiasta, produce muchísimo — y no tiene contexto ni criterio propio. Vos no aceptarías el código de un pasante sin leerlo, ni lo dejarías decidir la arquitectura. La Sesión 1 es, a propósito, el jefe ausente. Decirlo explícito: hoy vamos a hacer todo mal. -->
+<!-- El framing que vuelve las 6 sesiones, y hay que nombrarlo explícitamente acá porque cada sesión posterior es otra capa de habilidad de gestión. La IA es rápida, entusiasta, produce muchísimo — y no tiene contexto ni criterio propio. Vos no aceptarías el código de un pasante sin leerlo, ni lo dejarías decidir la arquitectura. La Sesión 1 es, a propósito, el jefe ausente. Decirlo explícito: hoy vamos a hacer todo mal. -->
 
 ---
 
@@ -126,13 +127,13 @@ Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 
 
 ## Preséntense
 
-<!-- Vuelta rápida: nombre, año de la carrera, si trabajan. Con 20-30 personas hay que ser breve — 15-20 segundos cada uno, cortar con simpatía si se estira. -->
+<!-- Vuelta, ~1 min por persona: nombre, edad, si trabajan (dónde y de qué), si estudian en qué año están, qué proyecto les gustaría construir, y si usan IA y para qué. ⚠️ CON 30 PERSONAS ESO ES LOS 30 MINUTOS ENTEROS DEL BLOQUE — cortar con amabilidad apenas alguien se estira, o el resto de la sesión se come la diferencia. -->
 
 ---
 
 ## ¿Usan IA? ¿En qué la usan?
 
-<!-- Lo importante de la vuelta. Levantar manos: quién usa IA para estudiar, para programar, quién usó un coding agent en terminal, quién nunca. Anotar mentalmente la distribución: define cuánto comprimir o estirar la Parte 4. Si la sala es muy avanzada, fundamentals se comprime; si es mayoría de primer año, ir más despacio con tokens y contexto. -->
+<!-- Lo importante de la vuelta, y lo que hay que asegurarse de tener aunque la ronda se haya ido de tiempo. Levantar manos: quién usa IA para estudiar, para programar, quién usó un coding agent en terminal, quién nunca. Anotar mentalmente la distribución: define cuánto comprimir o estirar la Parte 4. Si la sala es muy avanzada, fundamentals se comprime; si es mayoría de primer año, ir más despacio con tokens y contexto. -->
 
 ---
 
@@ -144,25 +145,25 @@ Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 
 
 # Parte 4 — Fundamentos
 
-<!-- Sección. ~35 min, repartidos ~5 (de dónde viene) + ~25 (cómo funciona) + ~5 (demo de Pi, Agus). El material del bootcamp de Filadd está incorporado y adaptado: se fue lo interno de la empresa, se ASCENDIÓ el bloque de hardware —porque esta sala ES la de esa historia— y ciberseguridad se angostó al único punto que aplica con las manos en el teclado. Todo lo que se pueda mostrar en vivo, mostrarlo en vivo. LA MANO ALZADA DE LA PARTE 3 DECIDE QUÉ SE COMPRIME: si la sala ya usa agentes, la línea de tiempo y el catálogo pasan rápido y la historia se queda. -->
+<!-- Sección. ~35 min, repartidos ~5 (de dónde viene) + ~25 (cómo funciona) + ~5 (demo de Pi, Agus). Todo lo que se pueda mostrar en vivo, mostrarlo en vivo: las páginas de modelos convencen más que los bullets. LA MANO ALZADA DE LA PARTE 3 DECIDE QUÉ SE COMPRIME: si la sala ya usa agentes, la línea de tiempo y el catálogo pasan rápido y la historia se queda. -->
 
 ---
 
 ## Esto no es nuevo: Turing, 1950
 
-<!-- ~5 min de historia, y con esta audiencia se pagan solos porque reencuadran el hype como la llegada de algo viejo. El test de Turing tiene 75 años y la IA se estudia como teoría hace más de 70. Hay una versión jugable (turingtest.live) para tirar en la pausa. LA IDEA: no estamos viviendo ideas nuevas, estamos viviendo ideas que recién ahora se pueden correr. -->
+<!-- ~5 min de historia, y con esta audiencia se pagan solos porque reencuadran el hype como la llegada de algo viejo. El test de Turing tiene 75 años (en.wikipedia.org/wiki/Turing_test) y la IA se estudia como teoría hace más de 70. LA IDEA: no estamos viviendo ideas nuevas, estamos viviendo ideas que recién ahora se pueden correr. -->
 
 ---
 
 ## Lo que cambió: cómputo + Transformers (2017)
 
-<!-- Dos cosas y nada más: el cómputo se abarató, y en 2017 el paper "Attention Is All You Need" mostró una arquitectura que genera texto a partir de la secuencia anterior. Esa es toda la revolución en una oración. Y ya que estamos, decir qué significan las tres letras que nadie les explicó: GPT = GENERATIVE PRE-TRAINED TRANSFORMER. Para el que quiera la versión visual, el video de 3Blue1Brown. -->
+<!-- Dos cosas y nada más: hoy existe el cómputo necesario para entrenar modelos grandes, y en 2017 el paper "Attention Is All You Need" mostró una arquitectura que genera texto a partir de la secuencia anterior. Esa es toda la revolución en una oración. Y ya que estamos, decir qué significan las tres letras que nadie les explicó: GPT = GENERATIVE PRE-TRAINED TRANSFORMER. Para el que quiera la versión visual, el video de 3Blue1Brown. -->
 
 ---
 
 ## `Messi ...`
 
-<!-- EL EJEMPLO QUE HACE ATERRIZAR TODO EL BLOQUE SIGUIENTE, y funciona porque es de acá. El modelo completa "es un excelente jugador de fútbol". Pero un periodista deportivo en una década mala completa "no canta el himno", y Casciari completa "es un perro". MISMO PREFIJO, TRES CONTINUACIONES PLAUSIBLES, NINGUNA ES "LA VERDAD". Es el setup perfecto para la slide siguiente, y encima es gracioso — eso compra atención para los veinte minutos que vienen. -->
+<!-- EL EJEMPLO QUE HACE ATERRIZAR TODO EL BLOQUE SIGUIENTE, y funciona porque es de acá. El modelo completa "es un excelente jugador de fútbol". Pero un periodista deportivo en una década mala completa "no canta el himno", y Casciari completa "es un perro". MISMO PREFIJO, TRES CONTINUACIONES PLAUSIBLES, NINGUNA ES "LA VERDAD". Es el setup perfecto para las dos slides siguientes, y encima es gracioso — eso compra atención para los veinte minutos que vienen. -->
 
 ---
 
@@ -174,7 +175,13 @@ Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 
 
 ## Predice el siguiente token
 
-<!-- El mecanismo, en una idea: el modelo produce la continuación *plausible*, no la *verdadera*. Las alucinaciones no son un bug, son el mecanismo funcionando. Cuando no sabe, no se calla: completa. Esto explica la mitad de lo que van a ver hoy en la práctica. -->
+<!-- El mecanismo, en una idea: el modelo produce la continuación *más probable*, no la *verdadera*. Cuando no sabe, no se calla: completa. Esto explica la mitad de lo que van a ver hoy en la práctica. -->
+
+---
+
+## Alucinaciones
+
+<!-- Las alucinaciones son resultados incorrectos o engañosos que generan los modelos: pueden venir de datos de entrenamiento insuficientes, de suposiciones incorrectas del modelo o de sesgos en los datos con los que se lo entrenó (definición de Google Cloud, link en INSTRUCTOR.md). Conectarlo con la slide anterior: si el mecanismo es producir la continuación más probable, alucinar no es una falla aparte del mecanismo. -->
 
 ---
 
@@ -216,7 +223,7 @@ Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 
 
 ## Context rot: la calidad se degrada antes de lo que pensás
 
-<!-- No es un límite duro: a medida que se llena la ventana de contexto la calidad se degrada, bastante antes de que el harness te avise o de que se acabe el espacio. Consecuencia práctica: sesiones cortas, contexto limpio, empezar de nuevo cuando la conversación se ensució. Hoy en la práctica van a poder ver cuánto contexto tienen cargado. -->
+<!-- No es un límite duro: a medida que se llena la ventana de contexto la calidad se degrada, bastante antes de que el harness te avise o de que se acabe el espacio. LA REGLA PRÁCTICA QUE USAMOS: tratá de no pasar del 50% de lo que el modelo soporta. Consecuencia: sesiones cortas, contexto limpio, empezar de nuevo cuando la conversación se ensució. Hoy en la práctica van a poder ver cuánto contexto tienen cargado. -->
 
 ---
 
@@ -226,15 +233,15 @@ Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 
 
 ---
 
-## Una línea de tiempo corta
+## De Copilot a los agentes en terminal
 
-<!-- Cómo llegamos hasta acá: autocompletado (tab completion) con Copilot → chat al costado del editor → Cursor y el editor con IA adentro → coding agents en terminal (Claude Code, Codex, Pi). En pocos años, de "completame la línea" a "resolvé esta tarea". Sirve para que ubiquen lo que ya usaban. -->
+<!-- Línea de tiempo corta, para que ubiquen lo que ya venían usando. Las fechas están en COURSE_PROGRAM.md: 2017 el paper de Transformers; 2022 Copilot general (tab completion, junio) y ChatGPT (noviembre), que los devs adoptan enseguida para escribir y explicar código; 2023 Cursor (un fork de VS Code pensado para LLMs) y Copilot Chat (el chat al lado del editor); 2024 el modo Composer de Cursor —multi-archivo, el salto de "completame la línea" a "editá el repo"— y Windsurf; 2025 Claude Code, agente en la terminal que corre comandos, busca en el repo, edita archivos y corre tests; 2025-2026 OpenCode, Codex CLI, Gemini CLI, GLM Coding, Kimi CLI, Pi. En pocos años, de "completame la línea" a "resolvé esta tarea". -->
 
 ---
 
 ## Entonces: ¿qué es un coding agent?
 
-<!-- Cerrar el bloque con la definición: un LLM que toma acciones sobre un repo a través de tools, no que sugiere texto. El loop: recibe una tarea, decide qué tool usar, la ejecuta, ve el resultado, sigue. -->
+<!-- Cerrar el bloque con la definición: un LLM que toma acciones sobre un repo a través de tools, en un loop — no que sugiere texto. Recibe una tarea, decide qué tool usar, la ejecuta, ve el resultado, sigue. -->
 
 ---
 
@@ -250,27 +257,15 @@ Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 
 
 ---
 
+## "No tercericen el aprendizaje"
+
+<!-- LA FRASE QUE QUEDA COLGADA SOBRE TODO EL CURSO (es de Addy Osmani), y hace juego exacto con "la responsabilidad es tuya" de la Parte 2. La versión práctica: exploren, toquen todos los botones, aprendan de prueba y error, lean — y dejen tiempo para el ocio donde uno efectivamente piensa. PLANTAR LA FRASE Y PARAR AHÍ: la atrofia de habilidades es material del cierre de la Sesión 4, y gastarlo hoy sería gastar el final del arco base en la primera hora. -->
+
+---
+
 ## Pi
 
 <!-- Agus. Intro breve: qué es Pi, por qué lo elegimos para el curso, cómo se instala y cómo se arranca (mandarlos a la quickstart oficial: pi.dev/docs/latest/quickstart). -->
-
----
-
-## Lo que pegás, se lo estás dando a un tercero
-
-<!-- ~1 min, y es el punto de ciberseguridad angostado a lo que aplica con las manos en el teclado: un prompt es data que sale de tu máquina — tuya, de otro, o de la facultad. Tiene una dimensión legal además (la LGPD de Brasil es buen ejemplo justamente porque no es la nuestra). Sin taxonomías: la seguridad es transversal y cada sesión se lleva un pedazo. Y LA SESIÓN 6 CIERRA ESTE HILO DESDE LA OTRA PUNTA: correr el modelo vos saca al tercero del medio y te convierte a vos en el operador. -->
-
----
-
-## El hardware existe, y está acá
-
-<!-- EL BLOQUE QUE PEGA MÁS FUERTE CON ESTA SALA Y QUE EN CUALQUIER OTRA SERÍA UNA NOTA AL PIE: estudiantes de FaMAF compitiendo en HPC en China (@teamcarpinchos). Los recursos que de golpe son escasos y valiosos —CONOCIMIENTO, ELECTRICIDAD, AGUA para refrigerar, GPUs— no son una abstracción en Córdoba. ES LA SEMILLA DE LA SESIÓN 6: la UNC opera un centro de cómputo de alto desempeño, y en la última clase van a apuntar su propio agente ahí. Plantarlo y seguir — el final del curso no se gasta hoy. -->
-
----
-
-## "Don't outsource the learning"
-
-<!-- LA FRASE QUE QUEDA COLGADA SOBRE TODO EL CURSO, y hace juego exacto con "la responsabilidad es tuya" de la Parte 2. La versión práctica: exploren, toquen todos los botones, aprendan de prueba y error, lean — y dejen tiempo para el ocio donde uno efectivamente piensa. PLANTAR LA FRASE Y PARAR AHÍ: la atrofia de habilidades es material del cierre de la Sesión 4, y gastarlo hoy sería gastar el final del arco base en la primera hora. -->
 
 ---
 
@@ -312,13 +307,13 @@ Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 
 
 ## Demo: vibecodeando en vivo
 
-<!-- Demo propia: arrancar algo de cero hablándole al agente, sin abrir un archivo, y que la sala vea la velocidad. Que se vea lo bueno (aparece algo que funciona en minutos) y, si sale solo, lo malo (una decisión que el agente tomó y nadie pidió). ~8 min. -->
+<!-- Demo propia: arrancar algo de cero hablándole al agente, sin abrir un archivo, y que la sala vea la velocidad. Que se vea lo bueno (aparece algo que funciona en minutos) y, si sale solo, lo malo (una decisión que el agente tomó y nadie pidió). ~5 min. -->
 
 ---
 
 ## Entonces, ¿cuál es el problema?
 
-<!-- El giro. El software profesional exige accountability: seguridad, mantenibilidad, correctitud. Ahí el vibecoding se cae, y no por culpa del modelo. Las próximas 3 slides son las formas concretas en que se cae — y en la práctica de hoy las van a ver en su propio código. -->
+<!-- El giro. El software profesional exige accountability: seguridad, mantenibilidad, correctitud. Ahí el vibecoding se cae, y no por culpa del modelo. La slide que viene es la forma concreta en que se cae — y en la práctica de hoy la van a ver en su propio código. -->
 
 ---
 
@@ -328,27 +323,15 @@ Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 
 
 ---
 
-## La ilusión de productividad
-
-<!-- METR: devs experimentados 19% MÁS LENTOS con IA, sintiéndose 20% más rápidos. Presentarlo como dato, no como sermón — y avisar que en la práctica de hoy van a poder chequear el número contra su propia sensación. -->
-
----
-
-## El problema del 80%
-
-<!-- El primer 80% llega en minutos. El 20% que queda es donde vive el esfuerzo real — y es justo la parte donde hace falta entender el código. Enlazar con la responsabilidad: ese 20% es tuyo. -->
-
----
-
 ## Pausa
 
 <!-- Última pausa antes de la práctica. Dudas. Aprovechar para pedir que abran una terminal y se sienten cerca de alguien que ya tenga Pi funcionando. -->
 
 ---
 
-# Práctica (1 hora)
+# Práctica
 
-<!-- Transición al bloque práctico. Objetivo: Pi instalado y funcionando, y arrancar a vibecodear. Recorremos la sala con los profes de práctico. -->
+<!-- Transición al bloque práctico: ~27 min de instalar y construir, + ~12 del reality check. Objetivo: Pi instalado y funcionando, y arrancar a vibecodear. NADIE SE VA SIN PI ANDANDO — si se van sin instalarlo, la Sesión 2 arranca rota. Recorremos la sala con los profes de práctico. -->
 
 ---
 
@@ -360,7 +343,7 @@ Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 
 
 ## Las 4 reglas de hoy
 
-<!-- Leerlas en voz alta, están en el ejercicio: 1) hablale al agente, describí lo que querés. 2) NO abras los archivos, no leas los diffs, no espíes en el IDE. 3) Si algo se rompe, describí el síntoma, no diagnostiques. 4) Juzgá solo por el output: ¿se ve bien? ¿corre? -->
+<!-- Leerlas en voz alta, están en el ejercicio: 1) hablale al agente, describí lo que querés. 2) NO abras los archivos, ni en el IDE, ni con `cat`, ni con `git diff`. 3) Si algo se rompe, describí el síntoma, no diagnostiques. 4) Juzgá solo por el output: ¿se ve bien? ¿corre? -->
 
 ---
 
@@ -372,7 +355,7 @@ Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 
 
 ## Los pasos
 
-<!-- Ver exercise/README.md. No leerlos desde la slide: dejarlos leer el ejercicio y arrancar. Los primeros dos pasos son setup (instalar Pi, crear el repo); recién el paso 3 es vibecodear. -->
+<!-- Ver exercise/README.md. No leerlos desde la slide: dejarlos leer el ejercicio y arrancar. Los primeros dos pasos son setup (instalar Pi ~8 min, crear el repo ~4); recién el paso 3 es vibecodear (~15). -->
 
 ---
 
@@ -395,13 +378,13 @@ Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 
 
 ## Ahora sí: abrí los archivos
 
-<!-- Últimos 10-15 min de la práctica. Unos minutos en silencio para leer lo que shippearon, con la checklist del ejercicio. No comentar nada mientras leen: dejar que pase la reacción. -->
+<!-- Los ~12 min finales de la práctica. Unos minutos en silencio para leer lo que shippearon, con la checklist del ejercicio. No comentar nada mientras leen: dejar que pase la reacción. -->
 
 ---
 
 ## ¿Qué encontraron?
 
-<!-- Recolectar de la sala, no dar clase. Anotar en el pizarrón. Lo esperable: cero tests, secrets hardcodeados, input sin validar, código muerto, lógica duplicada, archivos que no sabían que existían. Si aparece UN agujero de seguridad concreto, mostrarlo (pedir permiso ANTES, no en el momento): el punto no es OWASP, es "el agente escribió esto y ninguno de los dos lo vio". -->
+<!-- Recolectar de la sala, no dar clase. Anotar en el pizarrón. Lo esperable: cero tests, secrets hardcodeados, input sin validar, código muerto, lógica duplicada, archivos que no sabían que existían. Si aparece UN agujero de seguridad concreto, mostrarlo (pedir permiso ANTES, no en el momento): el punto no es OWASP, es "el agente escribió esto y ninguno de los dos lo vio". Fallback si la sala sale demasiado limpia: exercise/proyecto-de-respaldo/. -->
 
 ---
 
@@ -413,19 +396,19 @@ Aclarar dos cosas para que nadie se vaya con la idea equivocada: son las MISMAS 
 
 ## Lo que hicimos hoy
 
-<!-- Cerramos el arco del día: entendieron cómo funciona la herramienta por abajo, la instalaron, y construyeron algo sin leer una línea. Eso último es el punto de partida del curso, no el destino. -->
+<!-- Cerramos el arco del día contra el objetivo de la sesión: ya saben qué es la ingeniería agéntica, tienen los fundamentos de cómo funciona un LLM, saben qué es el vibecoding, tienen Pi andando sobre un proyecto propio — y construyeron algo sin leer una línea. Eso último es el punto de partida del curso, no el destino. -->
 
 ---
 
 ## ¿Lo subirías a producción? ¿Lo mantendrías un año?
 
-<!-- La pregunta de cierre. NO resolverla. La Sesión 2 abre exactamente acá. -->
+<!-- La pregunta de cierre. NO resolverla. La sesión termina a propósito sin la solución; las próximas cinco son las prácticas que mejoran esto. La Sesión 2 abre exactamente acá. -->
 
 ---
 
 ## Para la próxima
 
-<!-- Tarea: seguir vibecodeando el proyecto durante la semana, sin cambiar las reglas. Anotar los momentos en que sintieron que perdieron el control — Agus abre la Sesión 2 con eso. -->
+<!-- Tarea: seguir vibecodeando el proyecto durante la semana, sin cambiar las reglas, hasta que se les vaya de las manos. Anotar los momentos en que sintieron que perdieron el control — Agus abre la Sesión 2 con eso, y ese es el debrief real: lo de hoy fueron 12 minutos. -->
 
 ---
 
