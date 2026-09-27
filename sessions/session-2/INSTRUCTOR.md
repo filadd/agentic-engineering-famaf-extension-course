@@ -178,17 +178,6 @@ Entre las dos demos hay ~20 minutos de herramienta en vivo. Es lo más frágil d
 - [`pi-subagents`](https://www.npmjs.com/package/pi-subagents) — `pi install npm:pi-subagents`. Delegación a subagentes. [Fuente](https://github.com/nicobailon/pi-subagents).
 - [hunk](https://github.com/anthropics/hunk) — revisión interactiva hunk por hunk.
 
-## Lo que dejamos afuera a propósito
-
-- **Cosas de LIDR** (Decision Closure Rule, tiers de verificación): demasiado sabor corporativo para esta audiencia.
-- **Checklist de code review**: reemplazada por el "espectro de superficies de revisión" — estrategias, no rúbrica.
-- **Bloque dedicado a debugging**: no hay teoría. Se dice caminando la sala cuando algo se rompe.
-- **Sidebar de seguridad**: se sacó. Si aparece un smell concreto durante la demo del diff, nombrarlo al pasar y seguir; no hay bloque reservado.
-- **Los números de METR**: Diego ya los presentó en la Sesión 1 como predicciones. Acá no se cobran con datos — el diagnóstico de la intro es cualitativo y sale del pizarrón del recap.
-- **`AGENTS.md`**: es de la Sesión 3 (Diego). No se toca hoy.
-- **Un segundo harness**: se evaluó y se descartó. Una herramienta, un proyecto, seis sesiones.
-- **Las capas de configuración de Plannotator** (`plannotator.json`, modelos por fase, `executionMode`): existen y son irrelevantes para un primer contacto. Saltear salvo que alguien pregunte.
-
 ## Pendientes (para próximas iteraciones)
 
 - **Pre-work**: pedir que instalen las dos extensiones antes de la clase. Igual reservamos 5 minutos al principio, porque no todos lo van a hacer.

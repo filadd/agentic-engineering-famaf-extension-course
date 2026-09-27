@@ -54,7 +54,8 @@ Agustín Carrasco
 
 ## Por qué pasó lo que pasó
 
-<!-- Diagnóstico, no reto. Tres problemas: (1) No sabés qué shippeaste — comprehension debt, el término de Diego; los intereses se acumulan porque cada feature nueva se apoya en algo que no entendés. (2) El cuello de botella se movió: escribir dejó de ser lo caro, ahora lo caro es verificar; si no verificás no ahorraste tiempo, te lo estás debiendo. (3) El 80% llega solo y el 20% es todo el trabajo — justo la parte donde hace falta entender el código. Cualitativo: los números de METR ya los dio Diego la semana pasada. -->
+<!-- Diagnóstico, no reto. Tres problemas: (1) No sabés qué shippeaste — comprehension debt, el término de Diego; los intereses se acumulan porque cada feature nueva se apoya en algo que no entendés. (2) El cuello de botella se movió: escribir dejó de ser lo caro, ahora lo caro es verificar; si no verificás no ahorraste tiempo, te lo estás debiendo. (3) El 80% llega solo y el 20% es todo el trabajo — justo la parte donde hace falta entender el código.
+-->
 
 ---
 

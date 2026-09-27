@@ -14,7 +14,7 @@ tags:
 > 📊 **Presentation** — a plain-language visual walkthrough of this document (the intern framing, the five-level spectrum, LLM + tools + harness, the six weeks, and the model swap): <https://claude.ai/code/artifact/977c4128-625f-42c0-a78d-02e4425a887b>
 > Private by default — share it from the page's share menu before sending it to anyone.
 
-Short course for university CS students with some project experience but little/no professional training. The goal is to walk them through the full spectrum of AI-assisted development — from pure "vibe coding" to structured agentic engineering — building concepts progressively over 6 weeks.
+Short course for university CS students and Junior programmers with some project experience but little/no professional training. The goal is to walk them through the full spectrum of AI-assisted development — from pure "vibe coding" to structured agentic engineering — building concepts progressively over 6 weeks.
 
 ## The Spectrum
 
@@ -42,43 +42,56 @@ Vibe coding is a great on-ramp — fast, fun, empowering. But professional softw
   - **Sessions 1 and 5 are the long ones**: Session 1 needs 3 h for introductions plus the install, Session 5 needs 2 h 30 because it opens with an hour of student demos.
   - **Base — sessions 1-4.** The fundamentals arc: *how do I work well with this thing?* Complete on its own terms, and **Session 4 closes it.**
   - **Advanced — sessions 5-6.** The internals arc: *what is this thing made of, and what if I swap its parts?* **Session 6 closes the course.**
-  - **Same cohort throughout** — "advanced" describes depth and register, not enrollment. Everyone attends all six.
+  - **Same cohort throughout** — "advanced" describes depth, not enrollment. Everyone attends all six.
   - **The split is announced to students in Session 1**, on the six-sessions slide, so they know where the base material ends and what changes after it.
   - The shape is not an accident of numbering: the course was originally 4 sessions, and 5-6 were added as a deeper technical arc rather than as more of the same.
 - Each session: theory → hands-on → show-and-tell discussion
 - **Same project across all 6 sessions** — students see their codebase evolve
 - Students bring their own project idea; default fallback is a small web app
 - Tool: **Pi** (`pi.dev`) — decided; installed by students in Session 1
-- Class size: ~20-30 students
+- Class size: ~30 students
 
 ## Topic Inventory
 
 These are the concepts to cover, roughly ordered by complexity:
 
 ### [Diego] Tier 1: Fundamentals
-- **Responsibility is the starting point**: accountability stays with the person, not the AI. "The agent wrote it" is not an excuse. Everything else in the course is a way of living up to that.
+- **Responsibility is the starting point**: accountability stays with the person, not the AI. "The agent wrote it" is not an excuse.
 - The AI-assisted coding spectrum (overview)
+  - History: https://www.coderabbit.ai/blog/a-very-brief-history-of-ai-coding-from-copilot-to-next-gen-agents
+     - 2017: **Paper:  Attention Is All You Need paper introduced the Transformer**, the architecture that made modern large language models possible.
+     - 2022: 
+       - **(Junio) Github Copilot (Tab Completions)**: Copilot officially becomes generally available to individual developers as a commercial product, standardizing ghost-text style code completions.
+       - **(Noviembre) ChatGPT** -- OpenAI releases ChatGPT (GPT-3.5). While built as a general conversational model, developers rapidly adopt it to write, debug, explain code snippets, and scaffold applications via natural language chat.
+     - 2023
+       - **Cursor:** A dedicated VS Code fork designed from the ground up for LLM integration, deep codebase indexing, and contextual code editing. 
+       - **Copilot Chat:** GitHub announces Copilot X, integrating ChatGPT-style sidebar chat and inline conversational editing directly inside the editor.
+    - 2024
+       - **Cursor Introduces Composer Mode**: Cursor breaks past single-file assistance with the introduction of multi-file reasoning and "Composer", allowing the agent to create and edit entire codebases simultaneously based on high-level instructions.
+       - **Windsurf**, a standalone AI-native IDE designed around "Cascade" and agentic flows, emphasizing bidirectional real-time awareness between the developer and the agent across the whole workspace.
+    - 2025
+      - Anthropic Launches **Claude Code**. Operating primarily as an agentic CLI tool in the terminal, it executes bash commands, searches repositories, edits multiple files, runs tests, and fixes build issues autonomously.
+    - 2025 / 2026
+      - OpenCode, Codex CLI, Gemini CLI, GLM Coding, Kimi CLI, Pi
+
 - Generative AI: what it is, where LLMs sit inside it
 - LLM fundamentals: how they work at a practical level — tokens, context windows, probability, why hallucinations happen.
 - The model landscape: Anthropic (Claude), OpenAI (GPT), Z.ai (GLM), Moonshot AI (Kimi). Reading a model page: modalities, context window, price. OpenAI's model-comparison page as a way to teach the base concepts in one pass.
 - Tokens as the unit of everything: input, output, and price. Multimodality — images and audio become tokens too.
 - Pricing shapes: per-token (API) vs subscription, and when each makes sense.
-- Context window as finite working memory — and the rule of thumb we actually use: **don't go past 50%** of what the model supports. Nothing persists between conversations.
+- Context window as finite working memory — and the context rot rule: **try to don't go past 50%** of what the model supports.
 - **Context hygiene as operations**, named in the Session 1 hands-on and used from day one: `/session` (tokens and cost so far), `/new` (clean context for an unrelated task), `/compact` (summarize the old part of a long task), `/tree` (rewind to before the agent dug the hole). Four commands, not a topic — the mechanism is Session 5's.
 - Chat vs agent: a chat returns text and you execute; an agent executes in a loop (reads, runs, edits, checks, retries).
-- A short timeline: tab completion (Copilot) → chat beside the editor → Cursor → terminal coding agents (Claude Code, Codex, Pi).
 - Vibe coding: prompt-and-accept workflow. Talk with the agent, don't open files — focus entirely on the output. Working definition: *programar sin pensar que el código existe*.
 - Analyzing AI output: what did it actually produce?
-- Code quality awareness: dead code, inconsistent patterns, missing tests
+- Code quality awareness: dead code? inconsistent patterns? missing tests? mantainability?
 - Comprehension debt: you shipped code you don't understand
-- The productivity illusion (METR study)
 - Anatomy of a coding agent (brief intro): LLM + tools + harness — just enough vocabulary to use these terms in later sessions
   - Tool: a function the LLM can invoke (read file, run shell, edit code)
-  - Coding agent: an LLM that takes actions on a codebase via tools, not just suggests text
+  - Coding agent: an LLM that takes actions on a codebase via tools in a loop
   - Harness: the program wrapping the LLM (context management, tool dispatch, permissions). Pi is a harness.
   - The catalogue by environment: web (Lovable, v0, Bolt, Claude Code web), desktop (Claude Code desktop), terminal (Claude Code, Codex, Pi, opencode)
 
-> `AGENTS.md` used to sit here as "first contact with project context". The step was dropped from Session 1 — it is introduced from scratch in Tier 3.
 
 ### [Agus] Tier 2: Planning & Review
 - Code review of AI output (reading diffs, understanding changes)
@@ -195,7 +208,7 @@ Not a dedicated session, but surfaced where relevant:
 - Tokens; multimodality (images and audio are tokens too); pricing per-token vs subscription
 - Context window as finite working memory, and the **50% rule of thumb**
 - Chat vs agent; short timeline from tab completion to terminal coding agents
-- What a coding agent is; the three words: LLM + tool + harness. **Pi is a harness.** Opened up in Session 3.
+- What a coding agent is; the three words: LLM + tool + harness. **Pi is a harness.**
 - The catalogue by environment: web / desktop / terminal
 - **Pi intro + live demo (Agus)** — what Pi is, why we picked it, install pointer, and one prompt narrating the agent loop out loud
 
@@ -205,7 +218,6 @@ Not a dedicated session, but surfaced where relevant:
 - Vibe coding is not an insult — present it honestly before critiquing it. Live demo.
 - Then the critique, framed as predictions for the hands-on:
   - Comprehension debt: you shipped code you don't understand
-  - The productivity illusion: METR (19% slower despite feeling 20% faster)
   - The 80% problem: the remaining rough edges are where the real effort lives — and where understanding the code matters
   - Agent failure modes: cascading errors, false success reporting ("tests pass" after editing the assertions), scope creep
 
@@ -512,7 +524,6 @@ For students who don't bring their own:
 - [OWASP Top 10 for Agentic Applications (2025)](https://genai.owasp.org/resource-center/security-guides/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/) — ASI01-ASI10: goal hijack, tool misuse, rogue agents, cascading failures
 - [OWASP GenAI Security Project](https://genai.owasp.org/) — broader LLM security resources, supply chain risks, prompt injection
 - Karpathy's progression from coining "vibe coding" to proposing "agentic engineering" — [original vibe coding tweet/thread (Feb 2025)](https://x.com/i/status/1886192184808149383) (same link as "The Spectrum" above; the two IDs previously disagreed)
-- METR: "Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity" — [metr.org](https://metr.org/) (devs 19% slower with AI despite feeling 20% faster)
 
 ### Session 1 — Vibecoding
 
