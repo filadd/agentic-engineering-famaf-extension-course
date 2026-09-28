@@ -39,7 +39,7 @@ Vibe coding is a great on-ramp — fast, fun, empowering. But professional softw
 ## Format
 
 - **6 sessions**, 1 per week, ~2-3 hours each, in two blocks:
-  - **Sessions 1 and 5 are the long ones**: Session 1 needs 3 h for introductions plus the install, Session 5 needs 2 h 30 because it opens with an hour of student demos.
+  - **Sessions 1 and 5 are the long ones**: Session 1 needs 3 h for introductions plus the install, Session 5 needs 2 h 30 because it opens with an hour of student demos. **Session 2 is the short one, 1 h 30**, the time available for it.
   - **Base — sessions 1-4.** The fundamentals arc: *how do I work well with this thing?* Complete on its own terms, and **Session 4 closes it.**
   - **Advanced — sessions 5-6.** The internals arc: *what is this thing made of, and what if I swap its parts?* **Session 6 closes the course.**
   - **Same cohort throughout** — "advanced" describes depth, not enrollment. Everyone attends all six.
@@ -94,22 +94,21 @@ These are the concepts to cover, roughly ordered by complexity:
 
 
 ### [Agus] Tier 2: Planning & Review
-- Code review of AI output (reading diffs, understanding changes)
-- Task decomposition: breaking work into reviewable units
-- Planning before executing: the plan always exists — the question is whether you can read it
-- Structured planning & review (`@plannotator/pi-extension`): file-based plan mode for Pi. Externalize, annotate, deny-with-annotations, Plan Diff, then `/plannotator-review` on the resulting diff. Plans and reviews as first-class artifacts
-- The harness enforces the discipline: planning mode restricts the toolset to read/search and blocks writes outside the plan file (seeds Tier 3's permissions/extension-points material)
-- Testing: test-first development, tests as guardrails
-- Debugging AI-generated code
-- Git workflow with AI (branching, reviewing diffs, reverting)
+- AI gets you to something that works, but decisions and details are missing, and you don't know where or how many
+- Planning as explore → design → document, then implement from the document. The design can be as light or as thorough as needed; more design gives better results
+- The design document as a first-class artifact: read, annotated, versioned, committed with the code. `@plannotator/pi-extension` as a small help (*una ayudita*) for annotating it (`/plannotator-annotate`) and the diff (`/plannotator-review`)
+- Plan mode (`pi --plan`) as an existing mechanism students can try, not a required step. The harness restricts the toolset to read/search while it is on (seeds Tier 3's permissions/extension-points material)
+- Testing: agents write many tests, and unattended you don't know if they test the right thing. Deciding the cases before the code with a simplified Classification Tree Method
+- Review is getting harder (more code, and code nobody on the team wrote) and the industry is still looking for ways to do it; moving it earlier, into the design, is one of them. Reading the diff to understand it and check it against the design. Capturing the corrections as learnings, with a sneak peek at automating it
+- Debugging AI-generated code: read it yourself before asking for a fix
 
 ### [Diego] Tier 3: Tooling & Skills
 
-> Prerequisite, not content: **Pi is installed in Session 1**, and Session 2 adds the Plannotator and `pi-subagents` extensions. Tier 3 goes deeper on the harness — it does not introduce it. `AGENTS.md` **is** introduced here from scratch: the Session 1 step that had students write one was dropped, and Session 2 does not touch it.
+> Prerequisite, not content: **Pi is installed in Session 1**, and Session 2 adds the Plannotator extension; `pi-subagents` is installed in Session 4, where subagents are taught. Tier 3 goes deeper on the harness — it does not introduce it. `AGENTS.md` **is** introduced here from scratch: the Session 1 step that had students write one was dropped, and Session 2 does not touch it.
 >
 > **Subagents moved to Tier 4** (decided while building Session 3): Agus opens them there with a documentation use case, so Tier 3 only names them — one row in the always-loaded vs. on-demand table, one row in the extension-points table. Session 2's "depth on subagents is Session 3" promise moves with them.
 >
-> **Worktrees are out of the course**, not relocated. They were only ever a one-line mention riding along with subagents, no session's hands-on needs them, and git-level parallel work is already named in Session 2's git block. Cut rather than parked.
+> **Worktrees are out of the course**, not relocated. They were only ever a one-line mention riding along with subagents, no session's hands-on needs them, and Session 2's git block no longer names them either. Cut rather than parked.
 
 - Tools deep dive: what tools are, how the LLM calls them, examples from Pi's toolbelt (read, write, edit, bash, grep, find, ls). Why tools are the unit of capability.
 - Harness deep dive: what Pi provides as a harness — context management, tool dispatch, permissions, extension points. Comparison with other harnesses (Claude Code, Cursor, Aider, OpenCode). Why the harness matters as much as the model.
@@ -169,7 +168,7 @@ These are the concepts to cover, roughly ordered by complexity:
 ### Cross-cutting: Security & Trust (woven throughout)
 Not a dedicated session, but surfaced where relevant:
 - **Session 1**: security issues found during code analysis (common vulnerabilities in AI output)
-- **Session 2**: reviewing code with a security lens, what to look for
+- **Session 2**: none dedicated — a security smell gets named in passing if one shows up in the demo's diff
 - **Session 3**: sandboxing, permission models, why tools have allowlists/denylists
 - **Session 4**: none dedicated — trust boundaries, prompt injection and supply chain moved out of this session and **landed in Session 5**, which now closes the thread with a block of its own
 - **Session 5**: the block that closes the thread. Threat models (prompt injection from repo content, malicious extensions/skills/MCP servers, the agent's own destructive mistakes, credential exfiltration), permission models as a design space, and the sandbox ladder. Placed after the hands-on so it lands on an extension they just wrote and installed themselves.
@@ -183,7 +182,7 @@ Not a dedicated session, but surfaced where relevant:
 
 ### Session 1: The Vibe Coding Experience
 
-> **This session runs 3 hours** (every other session is 2): ~2 h of introductions + theory, ~1 h of hands-on. It carries all the shared vocabulary for the course *and* the tool install, which is why the usual theory/hands-on ratio is inverted here.
+> **This session runs 3 hours** (the others run 1 h 30 to 2 h 30): ~2 h of introductions + theory, ~1 h of hands-on. It carries all the shared vocabulary for the course *and* the tool install, which is why the usual theory/hands-on ratio is inverted here.
 
 **Part 1 — Who we are (~10 min)**
 - Diego and Agus: academic and industry background, what we do now, and concretely how we use AI at Filadd
@@ -235,57 +234,56 @@ Not a dedicated session, but surfaced where relevant:
 
 ### Session 2: Planning & Review
 
-> Runs on **Pi**, plus two extensions installed at the start of class: `@plannotator/pi-extension` and `pi-subagents`. Session duration is 2 h. All session materials are in Spanish, including the instructor notes.
+> Runs on **Pi**, plus one extension installed in class: `@plannotator/pi-extension`, used as a small help (*una ayudita*) for annotating documents and diffs. **Session duration is 1 h 30.** All session materials are in Spanish, including the instructor notes. Per-block timings are set in rehearsal; the hands-on is not cut. The deck is an animated HTML file, `sessions/session-2/deck/index.html`, drawn on a fixed 1280×720 canvas that scales to any projector.
 
-**Recap & debrief from Session 1 (~12 min)**
-- Discussion, not slides. The material comes from the homework ("keep vibe coding until it gets away from you, and write down when"); Session 1's in-class reality check was only ~12 min on 15 min of building
-- Collect the moments it got away from them, onto the board. Ask who broke the no-reading rule, and what made them
-- Don't close with a conclusion — the board is raw material for the next block, which supplies it
+**Recap: ¿Cómo les fue?**
+- A short discussion, not slides. Four questions: how did it go, did you read the code, did you find issues in the app, do you understand what's happening underneath
+- Answers go on the board and feed the next block. Don't close with a conclusion
 
-**What we're doing today (~8 min)**
-- Takes what's on the board and orders it. First the diagnosis, as diagnosis and not scolding: **you don't know what you shipped** (comprehension debt, compounding because each new feature rests on something you don't understand); **the bottleneck moved** from writing code to verifying it, and skipping verification defers the cost rather than saving it; **the first 80% arrives on its own and the last 20% is all the work** — exactly the part that needs understanding
-- Then the three moves that are the skeleton of the day and of the rest of the course: **plan** (decide before it's built, while changing your mind costs a sentence instead of a refactor), **document** (the plan lives outside the agent's head and yours — a file you can read, annotate, version and show; a plan that only exists in a conversation can't be reviewed), **design** (the decisions that matter are yours; the agent executes — when the agent designs by default you get last week)
-- Closes on the session's line: *"Hoy no vamos a escribir menos código. Vamos a saber qué código escribimos."* Plus the honest warning that today will feel slower, and that's the point
+**Vibe coding: what happened**
+- One idea: **AI gets you to something that works, but decisions and details are missing, and you don't know where or how many.** The decisions you didn't make, the agent made silently
+- Visual: a progress bar fills with "anda" checkboxes, stalls, jerks back and forth, breaks and fills with question marks
+- One-line callback to Session 1's comprehension debt
+- Closes on the session's line: *"Hoy no vamos a escribir menos código. Vamos a saber qué código escribimos."* Plus the honest warning that today will feel slower, and that's the point (a snail crawls in, then a "¡A PROPÓSITO!" stamp)
 
-**Setup (~5 min)**
-- `pi install npm:@plannotator/pi-extension` and `pi install npm:pi-subagents`, everyone together, before any theory. Asked for as pre-work, but don't assume. Doing it here means an hour of theory to unblock stragglers instead of losing build time
+**Planificar: explorar, diseñar, documentar**
+- Planificar is a route with three stops before the finish line, which is the code: **explore** the existing code, if any, before deciding anything; **design**, where the student makes the decisions and the agent asks them one at a time; **document**, where the design lands in a file you can read, annotate, version and hand to the agent. Then the agent implements from the document
+- **The design can be as light or as thorough as you need, and more design gives better results.** Every decision you made is one the agent didn't invent
+- Done with plain prompts, no special tooling. The process is what transfers to the next harness
 
-**Git as your safety net (~5 min)**
-- A spectrum tied to context, not a rigid workflow: solo on your repo, `main` is fine; in a team, branches; parallel work, worktrees. AI doesn't change git, it just makes throwing the branch away cheaper
-- The reviewed diff is the gate before merging. Matters more than usual today, because the hands-on has students executing an agent-written plan step by step
+**Setup: Plannotator**
+- `pi install npm:@plannotator/pi-extension`, everyone together. Framed as a small help, not the method: `/plannotator-annotate` on the design document, `/plannotator-review` on the diff
+- **Plan mode as an aside**: Plannotator also ships a plan mode (`pi --plan`) where the harness restricts the agent to reading, searching and writing the plan file. Mentioned as an existing mechanism students can try, not something to use every time and not today's flow
 
-**Planning: theory + demo (~18 min)**
-- The plan always exists; the only question is whether you can read it. Pi has no built-in plan mode, so the extension *is* plan mode and the plan is a file from the first moment
-- The harness enforces the discipline: planning mode swaps the toolset to read/search, blocks destructive commands, restricts writes to the plan file. You cannot skip ahead
-- **Demo (~12 min)**: `pi --plan` → checklist → **deny with annotations** → Plan Diff → subagent reviews the plan → approve and execute. The diff it leaves behind is the material for the next demo
-- Decomposition is folded in: the plan is already a checklist. Point at it, don't teach a rubric
+**Demo: explorar → diseñar → documentar → implementar**
+- One continuous demo on the instructor's project: explore the part to be touched, design by answering the agent's questions out loud, have it write the document, annotate it with `/plannotator-annotate` and send it back, then implement from it
+- Show the design depth: a light versus a thorough design for the same change, or at least say where you'd go deeper
 
-**Review: theory + demo (~12 min)**
-- The spectrum of review surfaces, not a checklist: watch+steer, read in editor, `git diff`/hunk, `/plannotator-review`, delegate to a subagent
-- **Demo (~8 min)** on the diff the planning demo produced: `/plannotator-review`, annotate a concrete line, send it back. Closes on *"does this match the plan you approved?"* — the most useful review question, and one you can only ask because the plan is written down
+**Tests: the agent writes many, and you don't know if they test the right thing**
+- Agents produce lots of tests that test the implementation instead of the behavior, assert trivial things, mock everything, or get loosened until they pass
+- **Decide the cases before the code**, as part of the design, with a simplified **Classification Tree Method** (Grochtmann and Grimm, 1993): what varies, which values matter, which combinations to cover. The agent proposes the table, the student confirms, cuts or adds; each row is marked automated, manual or both
+- The agent installs the runner; the student decides the cases
 
-**Tests as guardrails (~5 min)**
-- Test-first development. Delegate the runner setup, never the assertion
+**Revisar (lower priority)**
+- **Code review is getting harder**: there is more code than ever, because the agent writes faster than anyone reads, and it is code nobody on the team wrote, so there is no one to ask why it looks the way it does. Line-by-line diff reading doesn't scale, and the industry is still looking for better ways. Said honestly: there is no settled answer, only attempts (reviewing agents, smaller diffs, tests that prove what matters, moving review earlier). Today uses the last one
+- Review moved earlier, shown one block at a time: before, code → review ("a thousand lines of diff"); now, design → review ("one page of design") → code. With the design done and annotated, most of it happened before the code existed. Reading the code now is for understanding what was done, against one question: *does it match the design?*
+- **Capture learnings**: every correction made to the agent is worth more than the fix, because otherwise the next conversation starts from zero. Shown as two cases side by side: without capturing, the next chat repeats the mistake; capturing, the next chat reads it from the file. Concept first; a short sneak peek at a skill that reads the session and proposes a rule for each correction. Skills themselves are Session 3's
 
-**Hands-on (~40 min)**
-- Rules invert from Session 1: nothing executes without a written plan; **reject the first plan**; read every diff; read broken code yourself before asking for a fix
-- Pick a small feature (4-5 files max), enter plan mode, iterate the plan through deny-with-annotations
-- Write one test yourself before executing; have the agent set up the runner if there isn't one
-- Execute the plan step by step, steering when it drifts
-- Review the diff via `/plannotator-review`; commit the plan file alongside the code
-- Debugging has no theory block — it's said while walking the room: read the code yourself before asking for a fix
+**Hands-on**
+- Rules invert from Session 1: nothing is implemented without a written design; annotate the design at least once before approving it; test cases are decided before code; read the diff to understand it, and read broken code yourself before asking for a fix
+- Pick a small feature (4-5 files max) → explore → design, including the test cases → document and annotate → implement → review and capture corrections → commit the code and the design document
 
-**Reflection & Discussion (~10 min)**
-- Compare with Session 1: what changed? Did the annotated plan surface something you'd missed?
-- What was the overhead? Was it worth it? (For a small feature, honestly: maybe not. Let them say so.)
+**Closing: ¿Qué aprendimos?**
+- A collage of everything the session covered, card by card: the bar that doesn't know what's missing, the explore → design → document → code route, more design and better results, annotating the design, cases before code, review moved earlier, capturing corrections, slower on purpose
+- Was designing first worth it? Did the annotated design surface something you'd missed? Do the tests prove what you decided? (For a small feature, honestly: maybe not. Let them say so.)
 - Homework for Session 3: where did the flow feel like pure ceremony, and what did you have to explain to the agent more than once? The second question sets up Session 3's `AGENTS.md` material.
 
 ### Session 3: Tooling & Skills
 
 **Recap & Sharing (~15-20 min)**
-- Show-and-tell: how did planning and review change the work?
+- Show-and-tell: how did designing first change the work?
 
-> Students arrive with **Pi plus the Plannotator and `pi-subagents` extensions** (Sessions 1 and 2). No setup block here. `AGENTS.md` is introduced here from scratch — neither Session 1 nor Session 2 touches it.
+> Students arrive with **Pi plus the Plannotator extension** (Sessions 1 and 2). No setup block here. `AGENTS.md` is introduced here from scratch — neither Session 1 nor Session 2 touches it.
 
 **Theory: "Teaching The Agent" (~20-30 min)**
 - Tools: the unit of agent capability. What a tool definition looks like (name + schema + handler), how the LLM decides which to call, examples from Pi's built-in toolbelt. Why a smarter tool often beats a smarter model.
@@ -499,10 +497,10 @@ For students who don't bring their own:
 ## Open Questions
 
 - **A channel for questions during the week — Google Chat group or Discord? To settle with Agus.** Its main purpose is students helping each other; **we do not promise to be watching it**. It replaces staying after class for questions, which is why Sessions 5 and 6 now point at it. If it happens, it gets announced in Session 1 and repeated at the end of Session 6 — and if it doesn't, both of those lines come out.
-- Exact session duration (2h vs 3h) — **Session 1 is 3 h and Session 5 is 2 h 30** (it opens with an hour of demos), the rest are 2 h. Confirm the room allows it.
+- Exact session duration (2h vs 3h) — **Session 1 is 3 h and Session 5 is 2 h 30** (it opens with an hour of demos), **Session 2 is 1 h 30**, the rest are 2 h. Confirm the room allows it.
 - ~~Claude Code vs alternatives~~ → **decided: Pi is the course tool.** Terminal-based, minimal, standard `AGENTS.md`.
-- ~~Session 2 is written against Claude Code and misaligned with the Pi decision~~ → **resolved: Session 2 runs on Pi.** Planning and review go through `@plannotator/pi-extension`, which adds file-based plan mode (`pi --plan`) and `/plannotator-review` to Pi. One harness for the whole course; students install two extensions at the start of Session 2.
-- ~~`pi-subagents` package is unpinned~~ → **decided: the unscoped `pi-subagents`** (`pi install npm:pi-subagents`), installed by students at the start of Session 2. There are at least six forks on npm (`@tintinweb/`, `@gotgenes/`, `@yassimba/`, `@nklisch/`, plus bridges) — the course standardizes on one. **Confirm with Agus** before Session 4 builds on it — the subagents block is his now, so it stays installed from Session 2 and unused until then.
+- ~~Session 2 is written against Claude Code and misaligned with the Pi decision~~ → **resolved: Session 2 runs on Pi.** Planning and review go through `@plannotator/pi-extension`, which adds file-based plan mode (`pi --plan`) and `/plannotator-review` to Pi. One harness for the whole course. **Revised 2026-09-27**: Session 2 no longer runs on plan mode. Planning is explore → design → document with plain prompts, Plannotator is kept as a crutch for annotating documents and diffs, and plan mode is an optional aside.
+- ~~`pi-subagents` package is unpinned~~ → **decided: the unscoped `pi-subagents`** (`pi install npm:pi-subagents`), installed by students in Session 4. There are at least six forks on npm (`@tintinweb/`, `@gotgenes/`, `@yassimba/`, `@nklisch/`, plus bridges) — the course standardizes on one. **Confirm with Agus** before Session 4 builds on it — the subagents block is his now. **Moved 2026-09-27**: Session 2 no longer installs it, so Session 4 does.
 - API keys: provide them or have students set up their own?
 - Pre-work: should students come to Session 1 with a project idea already?
 - ~~Do we want a final deliverable (repo + reflection) or is the journey enough?~~ → **half-answered: Session 5 opens with an hour of demos.** There is a public moment, but no deliverable and no grading — showing is voluntary. Still open: whether Session 6's retrospective wants a written reflection to go with it.
