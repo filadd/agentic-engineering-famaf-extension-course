@@ -2,18 +2,17 @@
 
 ## Objetivo
 
-Agregar **una feature** a tu proyecto con un plan escrito que vos revisaste antes de que el agente toque una línea, y revisar el diff antes de aceptarlo.
+Agregar **una feature** a tu proyecto con un diseño que decidiste vos y que quedó escrito antes de que el agente toque una línea.
 
 El objetivo no es que la feature sea grande ni perfecta. Es que **sientas la diferencia** entre tirarle un prompt al agente y aceptar lo que salga (Sesión 1) y trabajar con intención.
 
 ## Antes de empezar
 
 - Trabajá sobre **el mismo proyecto** que venís usando desde la Sesión 1.
-- Tené Pi andando sobre ese proyecto, con las dos extensiones que instalamos al principio de la clase:
+- Tené Pi andando sobre ese proyecto, con la extensión que instalamos en clase:
 
 ```
 pi install npm:@plannotator/pi-extension
-pi install npm:pi-subagents
 ```
 
 - Asegurate de tener todo commiteado antes de arrancar (`git status` limpio). El diff del final tiene que mostrar **solo** lo de hoy.
@@ -22,20 +21,18 @@ pi install npm:pi-subagents
 
 La semana pasada la regla era *no abras los archivos*. Hoy se da vuelta:
 
-1. **Nada se ejecuta sin un plan escrito.** El plan es un archivo, no una idea en la cabeza del agente.
-2. **Rechazá el primer plan.** Aunque te parezca bien. Buscá qué le falta y mandáselo de vuelta anotado.
-3. **No aceptes ningún cambio sin leer el diff.** Ninguno.
-4. **Si algo se rompe, leelo vos primero.** Recién después pedile al agente que lo arregle.
+1. **Nada se implementa sin un diseño escrito.** El diseño es un archivo, no una idea en la cabeza del agente.
+2. **Anotá el diseño al menos una vez antes de aprobarlo.** Aunque te parezca bien.
+3. **Los casos de test se deciden antes del código.**
+4. **Leé el diff para entenderlo.** Si algo se rompe, leelo vos primero.
 
 La regla 2 va a dar ganas de saltearla. Es la que más importa.
 
 ## Pasos
 
-Son 40 minutos y seis pasos. Van justos: si te trabás en uno, seguí.
+### 1. Elegí una feature
 
-### 1. Elegí una feature (~4 min)
-
-Algo chico que puedas terminar en ~35 minutos *incluyendo* la planificación y la revisión.
+Algo chico que puedas terminar en la práctica *incluyendo* el diseño y la revisión.
 
 Buenos ejemplos:
 - Agregar un campo "completado el" a tus todos.
@@ -45,90 +42,98 @@ Buenos ejemplos:
 
 Malos ejemplos: cualquier cosa que toque autenticación de cero, refactors grandes, o features que tocan más de 4-5 archivos. Si dudás, elegí lo más chico: el ejercicio es el flujo, no la feature.
 
-### 2. Entrá en plan mode (~3 min)
+### 2. Explorá
+
+Antes de decidir nada, entendé la parte del proyecto que vas a tocar. Pedile al agente que te cuente, sin escribir nada:
+
+> *"Contame cómo funciona [la parte que vas a tocar]. No escribas nada."*
+
+Preguntá de a una cosa. Si tu proyecto es vibecodeado, es probable que sea la primera vez que ves qué hay adentro.
+
+### 3. Diseñá
+
+Pedile que te pregunte las decisiones que hay que tomar, de a una:
+
+> *"Quiero agregar [la feature]. Preguntame las decisiones que hay que tomar, de a una."*
+
+Las decisiones las tomás vos. El agente te trae los datos que necesitás para decidir.
+
+El diseño puede ser tan liviano o tan profundo como quieras. Para algo chico alcanza con tres o cuatro decisiones. **Más diseño, mejores resultados.**
+
+### 4. Decidí los casos de test
+
+Antes de que exista el código, pedile que proponga los casos:
+
+1. **Qué varía**: las entradas y el estado que cambian el resultado.
+2. **Qué valores importan**: para cada cosa que varía, los grupos que el código trata distinto (vacío / uno / muchos; válido / inválido).
+3. **Qué combinaciones cubrir**: una fila por caso, eligiendo un grupo de cada cosa.
+
+**Vos confirmás, recortás o agregás.** Marcá cada fila como test automático, verificación manual, o las dos.
+
+**¿No tenés test runner?** Pedile al agente que te lo instale. Eso es mecánico, delegalo tranquila/o. Lo que no delegás es decidir los casos.
+
+### 5. Documentá y anotá
+
+Pedile que escriba el diseño, con la tabla de casos, en un archivo:
+
+> *"Escribí el diseño que acordamos, con los casos de test, en `docs/[feature].md`."*
+
+Abrilo con Plannotator:
 
 ```
-pi --plan
+/plannotator-annotate docs/[feature].md
 ```
 
-(o `/plannotator`, o `Ctrl+Alt+P` si ya estás en una sesión)
-
-**Antes de escribir nada, mirá qué cambió.** El indicador de estado dice `⏸ plan` y el agente se quedó con un conjunto de herramientas mucho más chico: puede leer y buscar, no puede escribir nada que no sea el archivo del plan, y los comandos destructivos están bloqueados.
-
-Eso no es decoración. **Aunque quieras, no podés saltear la planificación.** El harness te lo impide.
-
-### 3. Planificá — y rechazá el primer plan (~11 min)
-
-Describile la feature. Dejá que explore el proyecto y escriba el plan como checklist.
-
-Cuando termina, se abre Plannotator en el navegador. **No apruebes todavía.** Leé el plan paso por paso y anotá:
+**No apruebes todavía.** Leelo y anotá:
 
 - ¿Qué está suponiendo que vos no dijiste?
-- ¿Hay algún paso que dos personas implementarían distinto? Si la respuesta es sí, ahí hay un hueco.
+- ¿Hay algo que dos personas implementarían distinto? Ahí hay un hueco.
 - ¿Falta algo? ¿Sobra algo?
-- ¿Toca archivos que no esperabas?
 
-Después **"Deny with annotations"**: mandáselo de vuelta con tus comentarios.
+Mandáselo de vuelta con tus anotaciones. Iterá hasta que el documento **te sirva a vos**.
 
-Cuando lo reescriba, mirá el **Plan Diff** — te marca qué cambió respecto de la versión anterior. Ahí se ve si te entendió o si te contestó cualquier cosa.
+> **Opcional: plan mode.** Plannotator también trae un plan mode (`pi --plan`, o `Ctrl+Alt+P` en una sesión abierta). Mientras está activo, el agente solo puede leer, buscar y escribir el archivo del plan. No hace falta para este ejercicio; si querés, probalo en algún cambio de la semana y fijate qué te cambia.
 
-Iterá hasta que el plan **te sirva a vos**. Recién ahí, aprobá.
+> Si el primer documento te salió genial y no encontrás nada que anotar, buscá más. Siempre hay una decisión implícita.
 
-> Si el primer plan te salió genial y no encontrás nada que anotar, no aprobás: buscá más. Siempre hay una decisión implícita.
+### 6. Implementá
 
-### 4. El test primero (~6 min)
+> *"Implementá `docs/[feature].md`, empezando por los tests."*
 
-Antes de ejecutar, escribí **al menos un test** que describa lo que la feature tiene que hacer. Va a fallar — todavía no hay código. Está bien.
+Si ves que se va del diseño, **frenalo**.
 
-**¿No tenés test runner?** Pedile al agente que te lo instale y configure. Eso es mecánico, delegalo tranquila/o.
+Si algo se rompe: **leé el código vos antes de pedirle que lo arregle.** Pedirle que arregle algo que no entendiste te deja exactamente donde estabas la semana pasada.
 
-**Lo que no delegás es el assert.** Esa línea la escribís vos. La idea: el test es **el contrato que el agente no puede falsear**. Si lo escribe él después de implementar, puede aflojar el assert hasta que pase. Si lo escribiste vos antes, tiene que cumplirlo.
+### 7. Revisá y capturá
 
-### 5. Ejecutá el plan (~9 min)
-
-Aprobado el plan, el agente recupera todas sus herramientas y arranca.
-
-Andá siguiendo la checklist mientras avanza. Si ves que se va del plan, **frenalo** — eso también es revisar (es la primera superficie de revisión que vimos en la teoría, revisar mientras escribe).
-
-Si algo se rompe: **leé el código vos antes de pedirle que lo arregle.** Es la trampa más común — pedirle que arregle algo que no entendiste te deja exactamente donde estabas la semana pasada.
-
-### 6. Revisá el diff (~7 min)
-
-Antes de dar la feature por terminada:
+Leé el diff para entender qué se hizo:
 
 ```
 /plannotator-review
 ```
 
-Te abre los cambios del working tree en la UI de review. Podés anotar líneas concretas y mandarle el feedback directo al agente.
+(o `git diff`, o tu editor)
 
-Si preferís otra superficie, valen igual: `git diff`, tu IDE, o `hunk` para ir hunk por hunk.
+La pregunta principal: **¿coincide con el diseño?** Solo la podés hacer porque el diseño está escrito. Fijate también si los tests prueban los casos de la tabla.
 
-Buscá:
+Si le corregís algo, **anotá la corrección** en un archivo aparte. Si no la capturás, la próxima conversación arranca de cero y el agente vuelve a cometer el mismo error.
 
-- **¿Coincide con el plan que aprobaste?** Esta es la pregunta que solo podés hacer porque el plan está escrito.
-- ¿Hay código muerto, imports sin usar, comentarios narrativos de más?
-- ¿Tu test pasa?
-- ¿Hay algún smell de seguridad? (input sin validar, secrets expuestos, falta de auth)
-
-Si encontrás algo, **no le tires un "arreglá esto" sin pensar**. Decidí si querés que lo arregle, lo arreglás vos, o si el cambio quedaba mejor sin esa parte.
-
-Cuando estés conforme, commiteá. **Commiteá también el archivo del plan** — es parte del historial del proyecto.
+Cuando estés conforme, commiteá. **Commiteá también el documento de diseño**: es parte del historial del proyecto.
 
 ## Resultado esperado
 
 Al final del ejercicio deberías tener:
 
-- La feature andando, con al menos un test que escribiste vos.
-- Un archivo de plan commiteado, con las anotaciones que le hiciste.
-- Un diff que leíste entero antes de aceptarlo.
-- Una idea concreta de cuánto tarda esto comparado con la Sesión 1.
+- La feature andando, con tests que prueban casos que decidiste vos.
+- Un documento de diseño commiteado, con las anotaciones que le hiciste.
+- Un diff que leíste entero.
+- Una lista, aunque sea corta, de lo que le tuviste que corregir al agente.
 
 ## Para la semana
 
-Seguí agregando features a tu proyecto **con este flujo**: plan escrito, plan anotado, test primero, diff revisado.
+Seguí agregando features a tu proyecto **con este flujo**: explorar, diseñar, documentar, implementar, revisar.
 
 Anotá dos cosas para la Sesión 3:
 
-1. **Dónde el flujo te sobró.** Va a haber cambios donde planificar es puro trámite. Cuáles.
-2. **Qué le tuviste que explicar al agente más de una vez.** Cada conversación nueva arranca de cero y te vas a cansar de repetir lo mismo. Anotá qué. Ese es exactamente el material de la próxima sesión.
+1. **Dónde el flujo te sobró.** Va a haber cambios donde diseñar es puro trámite. Cuáles.
+2. **Qué le tuviste que explicar al agente más de una vez.** Cada conversación nueva arranca de cero y te vas a cansar de repetir lo mismo. Ese es exactamente el material de la próxima sesión.

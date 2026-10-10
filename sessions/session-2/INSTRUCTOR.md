@@ -1,188 +1,176 @@
 # Sesión 2 — Planificar y Revisar (Notas para el instructor)
 
 > A cargo: Agus. Estado: en armado. Todo el material de la sesión (estas notas, `slides.md`, `exercise/README.md`) está en español.
+>
+> 🎞️ **Slides**: `deck/index.html`, un deck HTML animado que se abre en cualquier navegador. Se navega con las flechas (cada click avanza una animación), `F` para pantalla completa y `H` para ocultar la barra de abajo. Dibuja en un lienzo fijo de 1280×720 que se escala a la pantalla, así que se ve igual en cualquier proyector. `slides.md` es el esqueleto con las notas de orador, en el mismo orden.
 
 ## Objetivo de la sesión (en una frase)
 
-Que salgan sabiendo **externalizar un plan y revisar un diff antes de aceptar** — con la idea internalizada de "no aceptes lo que no externalizaste y no revisaste".
+Que salgan sabiendo **diseñar un cambio y dejarlo escrito antes de que el agente toque una línea**: explorar, diseñar, documentar, y recién ahí implementar.
 
 ## Audiencia y supuestos
 
-- **Esta sesión dura 2 horas.** La Sesión 1 duró 3; esa hora extra pagó las presentaciones y la instalación de Pi. Acá no hay hora de setup: proteger el bloque de práctica.
-- Grupo heterogéneo — de primer año a graduados. Enseñar al medio, con puerta de entrada para los que arrancan y profundidad para los avanzados.
-- **Base de git**: asumir lo básico (commit, push). Enseñar explícitamente a leer diffs con ojo crítico y a usar branches como red de seguridad.
-- **Tests**: sin base previa. Plantearlo como "tests como guardrails", accesible para primer año.
-- **Con qué llegan**: Pi instalado, un repo git, y un proyecto que corre en el navegador que vibecodearon sin leer una línea. **La mayoría no va a tener test runner** — ver la nota en el bloque de tests.
-- **El estado con el que llegan es disparejo, y está previsto.** La tarea de la Sesión 1 era abierta ("seguí hasta que se te vaya de las manos"). Algunos van a traer una semana de trabajo y otros nada. El recap absorbe esa varianza y el ejercicio está escrito para que ambos puedan hacerlo.
-- **Herramienta**: **Pi**, la misma que la Sesión 1, más dos extensiones que se instalan al principio de la clase.
+- **Esta sesión dura 1 h 30.** No hay colchón: proteger la práctica.
+- Grupo heterogéneo — estudiantes avanzados de computación y programadores/as junior, cupo de 35. Enseñar al medio, con puerta de entrada para los que arrancan y profundidad para los que ya trabajan.
+- **Base de git**: asumir lo básico (commit, push). No hay bloque de git; el ejercicio solo pide arrancar con `git status` limpio.
+- **Tests**: sin base previa en la mayoría. Plantearlo como "decidir los casos antes del código", accesible para cualquiera.
+- **Con qué llegan**: Pi instalado, un repo git, y un proyecto que corre en el navegador que vibecodearon sin leer una línea. **La mayoría no va a tener test runner.**
+- **El estado con el que llegan es disparejo, y está previsto.** La tarea de la Sesión 1 era abierta ("seguí hasta que se te vaya de las manos"). Algunos van a traer una semana de trabajo y otros nada. El ejercicio está escrito para que ambos puedan hacerlo.
+- **Herramienta**: **Pi**, la misma que la Sesión 1, más **Plannotator** como ayudita para anotar documentos y diffs.
 
 ## La decisión de herramientas
 
-La Sesión 2 corre sobre **Pi**. No se instala un segundo harness.
+La Sesión 2 corre sobre **Pi**. No se instala un segundo harness, y plan mode aparece solo como comentario (ver "Setup").
 
-Sobre Pi se agregan dos extensiones, al principio de la clase (ver "Setup" abajo):
+El proceso de la sesión (explorar → diseñar → documentar → implementar) se hace **con prompts comunes**, sin ninguna herramienta especial. Lo único que se agrega es una extensión:
 
-- **`@plannotator/pi-extension`** — le agrega a Pi un plan mode basado en archivos: `pi --plan`, `/plannotator`, `Ctrl+Alt+P`, y `/plannotator-review` para revisar el diff del working tree.
-- **`pi-subagents`** — delegación a subagentes, que hoy se usa dos veces como subtema (revisar el plan, revisar el diff). La profundidad es la Sesión 4 (Agus), no la 3.
+- **`@plannotator/pi-extension`** — se usa como **ayudita**, no como método. Aporta dos comandos: `/plannotator-annotate` para anotar un archivo markdown (el documento de diseño) y `/plannotator-review` para anotar el diff del working tree. En los dos casos el feedback vuelve directo al agente. Se puede hacer lo mismo con un editor y un mensaje; Plannotator lo hace más cómodo.
 
-**Pi no trae plan mode propio, así que la extensión *es* el plan mode — y el plan es un archivo desde el minuto cero.** No existe la versión del flujo de hoy donde el plan vive solamente en la cabeza del agente. La tesis de la sesión deja de ser una recomendación y pasa a ser el único camino disponible.
-
-**El regalo que nos hace Pi.** La fase de planificación reconfigura el harness: cambia el toolset activo a `["grep", "find", "ls"]`, bloquea los comandos destructivos, y restringe la escritura al archivo del plan. Literalmente no podés ejecutar mientras planificás. Eso se merece una slide propia — *la disciplina la impone la herramienta* — y planta la semilla de permisos y extension points que Diego abre en la Sesión 3.
-
-**Un comentario de una línea que vale decir en voz alta**: hay harnesses que traen plan mode incorporado y otros, como Pi, que lo resuelven con una extensión. Esa diferencia no es un accidente, es el espacio de diseño de los harnesses — y es la Sesión 3. Decirlo y seguir; no enseñarlo hoy.
+Decirlo así en clase: **lo que importa es el proceso, no la herramienta.** Si mañana cambian de harness, el proceso se lleva igual.
 
 ## Plan tema por tema
 
-### Recap y debrief (~12 min) — abre la sesión
+### Recap: ¿Cómo les fue? — abre la sesión
 
-La versión que hizo Diego al final de la Sesión 1 duró apenas ~12 minutos — una primera pasada sobre 15 minutos de construcción, no un debrief. El material que importa lo generó la tarea: *seguí vibecodeando con las mismas reglas hasta que se te vaya de las manos, y anotá cuándo pasó.* A los estudiantes se les dijo que la Sesión 2 abría exactamente ahí. Abrir ahí.
+Corto y liviano. Una discusión, no un bloque de slides. Cuatro preguntas:
 
-**Coordinar con Diego antes de la clase** — con qué estado terminaron realmente la Sesión 1, cuántos se fueron con Pi andando, qué salió en sus 12 minutos de recolección. No volver a recolectar lo que él ya juntó.
+1. **¿Cómo les fue?**
+2. **¿Leyeron el código?** Romper la regla de la Sesión 1 es buena señal: preguntar qué los hizo romperla.
+3. **¿Encontraron problemas en la app que armaron?**
+4. **¿Entienden qué está pasando por abajo?**
 
-Manejarlo como discusión, no como slides. Dos disparadores:
+Lo que sale va al pizarrón y alimenta el bloque siguiente. No cerrarlo con conclusión.
 
-1. **"¿Se les fue de las manos? ¿Cuándo?"** El momento es lo que importa. Recolectar cuatro o cinco, anotarlos en el pizarrón. Esperables: el agente rompió algo que andaba, un fix que empeoró todo, tres intentos para el mismo bug, un archivo que no sabían que existía, el proyecto creció hasta que ya no podían decir qué hacía.
-2. **"¿Alguien abrió el código durante la semana?"** Varios van a haber roto la regla de no leer. Esa es una *buena* respuesta — preguntar qué los hizo romperla. Esa necesidad de mirar es el instinto sobre el que está construida toda la sesión.
+**Coordinar con Diego antes de la clase**: con qué estado terminaron realmente la Sesión 1 y qué recolectó en su reality check, para no volver a recolectar lo mismo.
 
-Lo que se junta en el pizarrón es la materia prima del bloque siguiente. No cerrarlo con una conclusión: la conclusión la damos nosotros en la intro.
+### Vibe coding: qué pasó
 
-### Qué vamos a ver hoy (~8 min)
+Toma lo del pizarrón y lo ordena en una idea: **la IA te lleva a algo que funciona, pero faltan decisiones y detalles, y no sabés dónde ni cuántos.**
 
-El bloque que le da forma al día. Toma lo que acaba de salir en el pizarrón y lo ordena.
+**La slide** ("Vibe coding"): una barra de progreso se llena mientras aparecen checkboxes de "anda", se traba cerca del 78%, se mueve para atrás y para adelante, se rompe en pedazos y la llenan signos de pregunta. No es que falte el último tramo: es que no sabés cuánto falta ni dónde. Las decisiones que no tomaste las tomó el agente, en silencio, y no sabés cuáles fueron.
 
-**Primero: por qué pasó lo que pasó.** No como reto, como diagnóstico. Los tres problemas, nombrados:
+Callback de una línea: eso es la deuda de comprensión que vieron en la clase de vibe coding.
 
-- **No sabés qué shippeaste.** Es comprehension debt, el término que Diego les dejó la semana pasada. El código existe, anda, y no lo podés explicar. Los intereses se acumulan: cada feature nueva se apoya en algo que no entendés.
-- **El cuello de botella se movió.** Escribir código dejó de ser lo caro. Ahora lo caro es *verificar* lo que salió. Y si no verificás, no es que ahorraste tiempo — es que te lo estás debiendo.
-- **El 80% llega solo; el 20% es todo el trabajo.** Y es justo la parte donde hace falta entender el código. Por eso la sensación de que arrancó volando y después se empantanó.
-
-**Después: qué hacemos al respecto.** Tres movimientos, que son el esqueleto del día y del resto del curso:
-
-- **Planificar.** Decidir qué se va a hacer *antes* de que se haga, en un momento en el que todavía es barato cambiar de idea. No es burocracia: es el único momento en que corregir cuesta una frase en vez de un refactor.
-- **Documentar.** El plan tiene que existir *afuera* de la cabeza del agente, y afuera de la tuya. Un archivo. Algo que puedas leer, anotar, versionar y mostrarle a otro. Un plan que solo existe en una conversación no se puede revisar.
-- **Diseñar la solución.** Las decisiones que importan — qué archivos se tocan, qué se rompe, qué queda para después — las tomás vos. El agente ejecuta. Cuando el agente diseña por default, terminás con lo de la semana pasada.
-
-Y el cierre del bloque, que es la frase de la sesión:
+Cerrar con la frase de la sesión:
 
 > *"Hoy no vamos a escribir menos código. Vamos a saber qué código escribimos."*
 
-Avisar también qué se siente: **hoy va a parecer más lento.** Es cierto y es el punto. Al final comparamos.
+Avisar también qué se siente: **hoy va a parecer más lento.** Es cierto y es el punto. En la slide, "menos código" se tacha a mano, entra un caracol desde la izquierda con "hoy va a parecer más lento…", y cae un sello de "¡A PROPÓSITO!".
 
-### Setup: instalar las extensiones (~5 min)
+### Planificar: explorar, diseñar, documentar
 
-Al principio, todos juntos, antes de la teoría:
+El bloque central. **Planificar** es un recorrido con tres paradas antes de la línea de llegada, que es el código (en la slide, cuatro cartas y el personaje saltando de una a otra hasta la bandera de llegada):
+
+1. **Explorar.** Entender el código que ya existe, si existe, antes de decidir nada. El agente lee y te cuenta; vos preguntás de a una cosa. Sin escribir nada todavía. Con un proyecto vibecodeado es además la primera vez que ven qué hay adentro.
+2. **Diseñar.** Tomar las decisiones: qué cambia, qué se guarda, qué reglas aplican, qué queda afuera. Las decisiones las tomás vos; el agente te las pregunta de a una y te trae los datos que necesitás para decidir. Cuando el agente diseña por default, pasa lo de la semana pasada.
+3. **Documentar.** El diseño queda en un archivo. Algo que podés leer, anotar, versionar, mostrarle a otro y pasarle al agente. Un diseño que solo vive en una conversación no se puede revisar.
+
+Y recién ahí: **el agente implementa, trabajando desde el documento.**
+
+**El diseño puede ser tan liviano o tan profundo como necesites.** La slide tiene un slider manual de "liviano" a "profundo": cada punto pasa una decisión de la fila del agente (?) a la tuya (✓). Para un cambio chico alcanza con tres decisiones escritas; para algo con datos nuevos o reglas complicadas conviene ir más a fondo. La regla práctica: **más diseño, mejores resultados.** Cada decisión que tomaste vos es una que el agente no inventó.
+
+Prompts de ejemplo para la slide o para decir en voz alta (no son una receta):
+
+- Explorar: *"Contame cómo funciona X en este proyecto. No escribas nada."*
+- Diseñar: *"Quiero agregar Y. Preguntame las decisiones que hay que tomar, de a una."*
+- Documentar: *"Escribí el diseño que acordamos en `docs/y.md`."*
+- Implementar: *"Implementá `docs/y.md`."*
+
+### Setup: Plannotator
+
+Todos juntos:
 
 ```
 pi install npm:@plannotator/pi-extension
-pi install npm:pi-subagents
 ```
 
-Es el único setup del día y está en el camino crítico de la práctica. Hacerlo acá y no al empezar el ejercicio: si alguien se traba, hay una hora de teoría por delante para destrabarlo sin perder tiempo de construcción. Pedirlo también como pre-work, pero **no asumir que lo hicieron**.
+Presentarlo como **ayudita**: una forma cómoda de anotar el documento de diseño (`/plannotator-annotate docs/y.md`) y, más tarde, el diff (`/plannotator-review`). No es el método; el método es el de recién.
 
-### Git con AI (~5 min)
+La slide muestra el flujo completo en cuatro clicks: el comando en la terminal abre el documento en el navegador, se pegan dos anotaciones, se mandan con "Enviar anotaciones", el agente las recibe y el documento se actualiza con líneas nuevas en verde.
 
-Los cimientos: antes del flujo de planificar y revisar, poner la red de seguridad. Plantearlo como un **espectro atado al contexto**, no como un workflow rígido:
+**Un comentario, no un paso: plan mode.** Plannotator también trae un plan mode (`pi --plan`, `/plannotator` o `Ctrl+Alt+P`). Mientras está activo, el harness le restringe al agente las herramientas a leer y buscar, bloquea los comandos destructivos y solo lo deja escribir el archivo del plan. Mencionarlo como un mecanismo que existe y que pueden probar, no como algo para usar siempre ni como el flujo de hoy. Si alguien lo prueba durante la semana, la Sesión 3 explica cómo hace el harness para bloquear.
 
-- **Solo, en tu propio repo**: trabajar sobre `main` está bien.
-- **En equipo**: branches por feature.
-- **Trabajo en paralelo**: worktrees.
+### Demo: explorar → diseñar → documentar → implementar
 
-Principio clave: la AI no cambia git; solo hace que "tirar la branch" salga más barato. **El diff revisado es la puerta antes del merge** — enseñar explícitamente a leer diffs con ojo crítico (¿coincide con el plan? ¿hay código sin usar? ¿hay smells de seguridad?).
+Una sola demo continua, sobre el proyecto del instructor:
 
-Ponerlo acá fija la expectativa: "todo lo que viene asume que tenés cómo volver atrás". Hoy importa más que de costumbre, porque en la práctica van a ejecutar un plan escrito por un agente paso por paso — necesitan saber que lo pueden tirar entero.
+1. **Explorar.** Preguntarle cómo funciona la parte que vamos a tocar. Dos o tres preguntas, sin que escriba nada.
+2. **Diseñar.** Pedirle que pregunte las decisiones de a una. Contestarlas en voz alta, explicando por qué.
+3. **Documentar.** Que escriba el documento. Abrirlo con `/plannotator-annotate`, anotar al menos una cosa (algo vago, una decisión que falta, algo que dos personas implementarían distinto) y mandarlo de vuelta.
+4. **Implementar** desde el documento. Dejarlo correr mientras seguís hablando.
 
-### Planificar: teoría + demo (~18 min)
+**Mostrar la profundidad del diseño**: o bien el mismo cambio con un diseño liviano y uno profundo, o al menos decir en voz alta dónde irías más a fondo y por qué.
 
-**Teoría (~6 min).**
+### Tests: el agente escribe muchos, y no sabés si testean lo correcto
 
-**El plan siempre existe. La única pregunta es si lo podés leer.** Cuando le tirás un prompt en frío, el agente planifica igual — en silencio, adentro de su contexto, y vos te enterás de lo que decidió mirando el destrozo. Externalizarlo cuesta unos minutos y te deja un plan que se puede leer, anotar, versionar, commitear y pasarle a otro.
+El problema, dicho sin vueltas: **los agentes escriben muchísimos tests, y si no les prestás atención, no sabés si testean lo correcto.** En la slide llueven checkmarks y "142 passed 🎉"; después pasa una lupa y unos dos tercios de los ✓ se convierten en signos de pregunta, mientras el personaje pasa de contento a confundido. Testean la implementación en lugar del comportamiento, afirman cosas triviales, mockean todo, o aflojan el assert hasta que pasa. Un montón de tests en verde no dice nada si nadie decidió qué tenían que probar.
 
-**El harness te obliga.** En plan mode el toolset cambia: solo lectura y búsqueda, sin escritura fuera del archivo del plan, comandos destructivos bloqueados. Mostrar el indicador `⏸ plan`. No es decoración — aunque quieras, no podés saltear la planificación. *La disciplina la impone la herramienta.* (Semilla para la Sesión 3: permisos y extension points.)
+La propuesta: **decidir los casos antes del código**, como parte del diseño. La técnica de base es el **Classification Tree Method** (Grochtmann y Grimm, 1993), que extiende la partición en clases de equivalencia. En versión simplificada:
 
-**Demo (~12 min), sobre el proyecto del instructor:**
+1. **Qué varía**: las entradas y el estado que cambian el resultado (el input, el estado de partida, quién hace la acción).
+2. **Qué valores importan**: cada cosa que varía se parte en clases que el código trata distinto (vacío / uno / muchos; válido / inválido).
+3. **Qué combinaciones cubrir**: una fila por caso, eligiendo una clase de cada cosa. Cada clase aparece en al menos una fila.
 
-1. **Entrar en plan mode.** Señalar el `⏸ plan` y el toolset restringido. "El harness me está obligando. Aunque quisiera, no puedo saltear esto."
-2. **Describir una feature.** Dejarlo explorar el proyecto y escribir el plan como checklist. Mientras corre, narrar: el plan es un archivo en disco, en una ruta que elegiste vos.
-3. **Rechazar el plan con anotaciones.** *Este es el beat que importa.* No aprobar en la primera pasada aunque el plan esté bien. Anotar un paso vago, una decisión que dos personas implementarían distinto, un paso que falta. Mandarlo de vuelta.
-4. **Mostrar el Plan Diff** en el reenvío — qué cambió respecto de la versión anterior. Ahí se ve si procesó las anotaciones o si contestó cualquier cosa.
-5. **Delegar la revisión del plan a un subagente** (~2 min). Que lo lea y reporte huecos: qué está flojo, qué falta, qué dos personas implementarían distinto. Mención corta — la profundidad de subagentes es la Sesión 4.
-6. **Aprobar y dejarlo ejecutar.** Recupera todas las herramientas. Dejar que avance mientras seguís hablando; el diff que produzca es el material de la demo siguiente.
+El agente propone la tabla; **vos confirmás, recortás o agregás.** Cada fila se marca como test automático, verificación manual, o las dos. La tabla va en el documento de diseño y el agente escribe los tests desde ahí.
 
-**Sobre la descomposición**: no es un tema aparte. El plan ya salió descompuesto en un checklist. Apuntar a la estructura del plan y decir "esto es descomposición", recorriéndolo estilo *entrypoint* (arrancar por el archivo principal que toca y ramificar). Es leer el flujo, no aplicar una rúbrica.
+Casi nadie va a tener test runner: **que se lo instale el agente, es mecánico.** Lo que no se delega es decidir los casos. En la slide, el árbol crece nivel por nivel y cada fila de la tabla ilumina las hojas que combina.
 
-### Revisar: teoría + demo (~12 min)
+### Revisar
 
-**Teoría (~4 min).** No dar una checklist: dar el **espectro de superficies**. Cuál usás depende del tamaño del cambio y de cuánto confiás en él.
+**Primero, el problema: revisar código es cada vez más difícil.** La slide es un gráfico en el tiempo: una línea plana, "lo que alcanzás a leer", y una curva que se dispara, "lo que se escribe", con robots encima; el espacio entre las dos se sombrea como "sin revisar". Hay más código que nunca, porque el agente escribe mucho más rápido de lo que cualquiera lee. Y es código que no escribió nadie del equipo: no hay a quién preguntarle por qué está así. Leer diffs línea por línea no escala, y la industria todavía está buscando cómo resolverlo. Decirlo con honestidad: no hay una respuesta cerrada. Hay intentos: agentes que revisan, diffs más chicos, tests que prueban lo que importa, y **mover la revisión para adelante**. Hoy usamos este último.
 
-1. **Mirar mientras escribe**: la revisión pasa *durante* la generación. Frenar al agente en medio del stream y redirigirlo. La más barata; agarra temprano la dirección equivocada, se le escapa el detalle.
-2. **Leer en el editor**: abrir los archivos modificados. La más directa; no escala más allá de unos pocos archivos.
-3. **Diff tools**: `git diff`, o [hunk](https://github.com/anthropics/hunk) para ir hunk por hunk. Cuando el cambio es grande, el diff te da la forma.
-4. **`/plannotator-review`**: abre los cambios del working tree en la UI de review. Anotás líneas concretas y el feedback vuelve directo al agente. Sirve cuando querés que la revisión *se convierta en la próxima instrucción*, no solo aceptar o rechazar.
-5. **Delegarlo a un subagente**: que un agente lea el diff y reporte issues, smells y desvíos respecto del plan. Segunda vez que aparece "esto se puede delegar" — profundidad en la Sesión 4.
+**Mover la revisión para adelante.** En la slide, de a un bloque por click: antes, *código → revisar* ("mil líneas de diff"); ahora, *diseño → revisar* ("una página de diseño") *→ código*. Prioridad más baja que antes para la revisión del código, y decirlo: con el diseño hecho y anotado, la mayor parte de la revisión ya pasó antes de que existiera el código. Revisar un documento de diseño de una página es mucho más barato que revisar el diff de mil líneas que sale de él.
 
-**Demo (~8 min)**, sobre el diff que dejó la demo anterior:
+Leer el código ahora sirve para **entender qué se hizo** y chequear una cosa: *¿esto coincide con el diseño?* Esa pregunta solo existe porque el diseño está escrito. `/plannotator-review`, `git diff` o el editor: cualquiera sirve.
 
-1. **`/plannotator-review`.** Recorrer el diff, anotar una línea concreta y mandarla de vuelta al agente.
-2. **Frenarlo en vivo una vez**, si el momento se da, para mostrar el "mirar mientras escribe" sin una slide aparte.
-3. **La pregunta que cierra todo**: *"¿esto coincide con el plan que aprobaste?"* Es la pregunta más útil de la revisión, y solo la podés hacer porque el plan está escrito. Ese es el puente entre los dos bloques: el plan aprobado es la especificación contra la que revisás.
+**Capturar aprendizajes.** Cuando en la revisión le corregís algo al agente, esa corrección vale más que el fix: si no la capturás, la próxima conversación arranca de cero y el agente vuelve a cometer el mismo error. El concepto: **ir juntando lo que aprendés mientras trabajás**, para que la próxima vez esté escrito.
 
-### Tests como guardrails (~5 min)
+La slide compara los dos casos, de a un bloque por click. Sin capturar: *corregís → chat nuevo → "uso fetch acá" 🔁*, el mismo error. Capturando: *corregís → lo anotás → chat nuevo → "uso el cliente de api/" ✓*, porque lo leyó del archivo.
 
-Agnóstico de framework. Posición: **"el test es la especificación que el agente no puede falsear".** Si le pedís el comportamiento X y el agente escribe el código *y* el test que dice que X anda, te puede engañar: afloja el assert hasta que pase. Si el assert lo escribiste vos antes, tiene que cumplirlo.
+**Adelanto, sin profundizar**: se puede automatizar con una skill que al final de una sesión de trabajo lee la conversación, encuentra los puntos donde tuviste que corregir al agente, y propone una regla o una skill para cada uno. Mostrarla como adelanto y seguir. Las skills son Herramientas y Skills; hoy importa el concepto.
 
-Saltear la disciplina estricta de TDD. La ganancia es "existe un test y lo escribiste vos antes de la implementación", no el ciclo red → green → refactor.
+## Práctica
 
-> **Una realidad que hay que decir en voz alta**: casi nadie va a tener test runner. Vibecodearon una semana sin leer nada. Que esto no se coma la práctica — **delegarle el setup del runner al agente está bien y es correcto**, es mecánico. Lo que el estudiante no puede delegar es el assert. Decirlo así: *"que te lo instale el agente; el `expect` lo escribís vos"*.
-
-## Práctica (~40 min)
-
-Seis pasos en `exercise/README.md`. Caminar la sala. Lo que hay que hacer cumplir es **el paso 3: que rechacen el plan al menos una vez.** Van a aprobar el primer plan por cortesía con la máquina, y eso saltea toda la lección.
+Pasos en `exercise/README.md`. En la slide de los pasos, el personaje recorre las etapas solo, a veces se frustra y vuelve una para atrás, llega a la meta y arranca de nuevo; el reloj de la esquina corre desde que se entra a la slide (click para reiniciarlo). Caminar la sala. Lo que hay que hacer cumplir: **que anoten el documento de diseño al menos una vez antes de implementar.** Van a aprobar el primer diseño por cortesía con la máquina, y eso saltea la lección.
 
 Otras cosas para vigilar:
 
-- **El scope de la feature.** Quien elija algo que toca 5 archivos o más no termina. Recortarlos temprano, en los primeros cinco minutos.
-- Quien saltee el test "porque es más rápido". Es cierto y ese es el punto — preguntarle al final si habría agarrado el bug sin él.
-- Cuando algo se rompe, la lección es **"leé el código vos antes de pedirle al agente que lo arregle"**. Hoy, a diferencia de la semana pasada, tienen permitido leerlo. No hay bloque de teoría para esto: se dice caminando la sala, cuando pasa.
+- **El scope de la feature.** Quien elija algo que toca 5 archivos o más no termina. Recortarlos temprano.
+- Quien saltee la tabla de casos "porque es más rápido". Preguntarle al final si los tests que escribió el agente prueban algo.
+- Cuando algo se rompe, la lección es **"leé el código vos antes de pedirle al agente que lo arregle"**. Se dice caminando la sala.
 
-## Timing de la sesión (~2 h)
+## Cierre: ¿Qué aprendimos?
 
-| Bloque | Tiempo |
-|---|---|
-| Recap y debrief de la Sesión 1 | 12 min |
-| Qué vamos a ver hoy | 8 min |
-| Setup: instalar las dos extensiones | 5 min |
-| Teoría: git con AI | 5 min |
-| **Planificar: teoría + demo** | **18 min** |
-| **Revisar: teoría + demo** | **12 min** |
-| Teoría: tests como guardrails | 5 min |
-| Pausa | 5 min |
-| **Práctica** | **40 min** |
-| Cierre: discusión + qué viene | 10 min |
+La última slide es un collage con todo lo que vimos, que cae carta por carta: la barra que no sabés cuánto le falta, el recorrido explorar → diseñar → documentar → código, más diseño y mejores resultados, anotar el diseño, los casos antes del código, la revisión para adelante, capturar lo que corregís, y el caracol del "más lento, a propósito". Recorrerlo rápido y abrir la discusión: ¿valió la pena diseñar primero? Dejar que digan que para algo chico sobró.
 
-Da 120 justos, así que no hay colchón. **Si se estira, recortar del recap** — es el bloque más elástico. No recortar de la práctica, y nunca del review del diff que la cierra, que es donde aterriza la sesión.
+El segundo click deja la tarea abajo: seguir con el flujo, y anotar qué le tuvieron que explicar al agente más de una vez, que es el material de Herramientas y Skills.
 
-Entre las dos demos hay ~20 minutos de herramienta en vivo. Es lo más frágil del día: ensayarlo con reloj.
+## Timing de la sesión (1 h 30)
+
+Pendiente: los tiempos por bloque se ajustan mientras armamos las slides. Lo fijo: **no recortar de la práctica**, y el recap es el bloque elástico.
 
 ## Puentes entre sesiones
 
-- **Desde la Sesión 1**: el debrief de la tarea es el bloque que abre esta sesión. **Coordinar con Diego antes de la clase.** Comprehension debt se plantó allá; acá recibe su mecanismo en la intro.
-- **El harness restringe el toolset durante la planificación** → Sesión 3 (Diego). Hoy es algo que *notan*; allá se convierte en permisos y extension points. Plantarlo, no explicarlo.
-- **Subagentes** → Sesión 4 (Agus), que los abre con un caso de uso de documentación. Hoy aparecen dos veces como subtema (revisar el plan, revisar el diff), instalados pero usados de a poco, para que lleguen con "esto se puede delegar" ya visto. La Sesión 3 solo los nombra. **Coordinar con Agus y Diego**: la sesión de hoy fija `pi-subagents` como el paquete del curso.
-- **`AGENTS.md`** → Sesión 3 (Diego). **No se toca hoy.** La tarea de la semana ("¿qué le tuviste que explicar más de una vez?") es la que le arma el terreno.
-- **El plan como contexto para la AI** → Sesión 4 (Agus). El plan que externalizamos hoy es la especificación que trabajamos allá. Anticiparlo en el cierre.
+- **Desde la Sesión 1**: el recap abre con la tarea. Deuda de comprensión se plantó allá; acá recibe el diagnóstico de la barra con signo de pregunta. **Coordinar con Diego antes de la clase.**
+- **La captura de aprendizajes** → Sesión 3 (Diego). Hoy es el concepto y un adelanto; allá se convierte en `AGENTS.md` y skills. La tarea de la semana ("¿qué le tuviste que explicar más de una vez?") le arma el terreno.
+- **`AGENTS.md`** → Sesión 3. No se toca hoy.
+- **Plan mode** → Sesión 3. Hoy es un comentario; allá, el ejemplo de cómo un harness bloquea herramientas.
+- **El documento de diseño** → Sesión 4 (Agus). Hoy es un documento por cambio; allá la documentación del proyecto, que sobrevive a los cambios.
+- **Subagentes** → Sesión 4. No se instalan ni se mencionan hoy.
 
 ## Herramientas y recursos referenciados
 
 - [Pi](https://pi.dev/docs/latest/quickstart) — el harness del curso. Ya instalado en la Sesión 1.
-- [`@plannotator/pi-extension`](https://www.npmjs.com/package/@plannotator/pi-extension) — `pi install npm:@plannotator/pi-extension`. Aporta `pi --plan`, `/plannotator`, `Ctrl+Alt+P`, `/plannotator-review`, `/plannotator-annotate`. [Fuente](https://github.com/backnotprop/plannotator).
-- [`pi-subagents`](https://www.npmjs.com/package/pi-subagents) — `pi install npm:pi-subagents`. Delegación a subagentes. [Fuente](https://github.com/nicobailon/pi-subagents).
-- [hunk](https://github.com/anthropics/hunk) — revisión interactiva hunk por hunk.
+- [`@plannotator/pi-extension`](https://www.npmjs.com/package/@plannotator/pi-extension) — `pi install npm:@plannotator/pi-extension`. Hoy se usan `/plannotator-annotate` y `/plannotator-review`; plan mode (`pi --plan`) se menciona como opcional. [Fuente](https://github.com/backnotprop/plannotator).
+- Classification Tree Method — M. Grochtmann y K. Grimm, *Classification Trees for Partition Testing* (1993).
 
 ## Pendientes (para próximas iteraciones)
 
-- **Pre-work**: pedir que instalen las dos extensiones antes de la clase. Igual reservamos 5 minutos al principio, porque no todos lo van a hacer.
-- **Probar las dos instalaciones en una máquina limpia**, incluyendo si la UI de Plannotator abre bien en el navegador con 20-30 personas en la red del aula. La misma disciplina que aplicó Diego con la instalación de Pi.
-- **Elegir el proyecto para la demo** — tiene que tener suficiente forma como para que un plan no sea trivial, y ser seguro de mostrar en el proyector. Las dos demos corren sobre el mismo proyecto y la segunda depende del diff que deja la primera.
-- **Tener un plan malo escrito de antemano.** La demo depende de que el agente produzca un plan que valga la pena anotar. Si escribe uno prolijo, el beat de "rechazar con anotaciones" se cae — abrir el plan malo en su lugar.
-- **Ensayar las dos demos con reloj**, encadenadas. Son ~20 minutos de herramienta en vivo con un navegador de por medio.
-- **Confirmar con Diego** con qué estado terminaron realmente la Sesión 1, y qué recolectó en sus 12 minutos de reality check.
+- **Probar la instalación en una máquina limpia**, incluyendo si la UI de Plannotator abre bien en el navegador con ~35 personas en la red del aula.
+- **Elegir el proyecto para la demo** — con suficiente forma como para que el diseño no sea trivial, y seguro de mostrar en el proyector.
+- **Elegir la feature de la demo** y decidir si se muestra el contraste diseño liviano / diseño profundo.
+- **Empaquetar las fuentes del deck.** Hoy se cargan de Google Fonts; sin internet en el aula cae a las fuentes del sistema.
+- **Tener un documento de diseño flojo escrito de antemano**, por si el agente escribe uno demasiado prolijo para anotar.
+- **Preparar el adelanto de la skill de aprendizajes**: qué se muestra y cuánto dura.
+- **Ensayar la demo con reloj.**
+- **Confirmar con Diego** con qué estado terminaron realmente la Sesión 1.

@@ -1,0 +1,1666 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sesión 2 — Planificar y Revisar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=DM+Sans:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ───────────── Palette (pop noche) ───────────── */
+
+:root {
+  --radius: 20px;
+  --title-size: 58px;
+}
+
+:root {
+  --bg: #15153a;
+  --bg-pattern: radial-gradient(#ffffff16 2px, transparent 2px);
+  --bg-size: 28px 28px;
+  --ink: #fdf6e3;
+  --muted: #a9a6d6;
+  --card: #262660;
+  --line: #fdf6e3;
+  --border: 3px solid #fdf6e3;
+  --shadow: 8px 8px 0 #05051a;
+  --a1: #ff5c8a;
+  --a2: #5b8cff;
+  --a3: #ffd166;
+  --a4: #06d6a0;
+  --good: #06d6a0;
+  --bad: #ff5c5c;
+  --mascot: #ffd166;
+  --mascot-ink: #15153a;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --term-bg: #05051a;
+  --term-ink: #fdf6e3;
+}
+
+/* ───────────── Stage ───────────── */
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  overflow: hidden;
+  font-family: var(--font-body);
+  transition: background .4s, color .4s;
+}
+
+body {
+  background-image: var(--bg-pattern);
+  background-size: var(--bg-size);
+}
+
+#deck {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1280px;
+  height: 720px;
+  transform-origin: center;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  padding: 50px 72px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(60px) scale(.98);
+  transition: opacity .45s, transform .55s cubic-bezier(.2, .9, .3, 1.2);
+}
+
+.slide.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+.slide.past { transform: translateX(-60px) scale(.98); }
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  margin: 0 0 22px;
+  line-height: 1.1;
+  letter-spacing: -.02em;
+}
+
+h1 { font-size: 104px; }
+h2 { font-size: var(--title-size); white-space: nowrap; }
+h3 { font-size: 30px; }
+
+p { margin: 0; }
+
+.big { font-size: 40px; line-height: 1.25; }
+.mid { font-size: 30px; }
+.small { font-size: 22px; color: var(--muted); }
+.mono { font-family: var(--font-mono); }
+.center { text-align: center; }
+.hl { color: var(--a1); }
+
+.card {
+  background: var(--card);
+  border: var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px 26px;
+}
+
+.slide > .mascot { position: absolute; right: 80px; bottom: 50px; --size: 130px; }
+
+/* ───────────── Fragments ───────────── */
+
+[data-step] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .45s, transform .6s cubic-bezier(.2, .9, .3, 1.4);
+}
+
+[data-step].on { opacity: 1; transform: none; }
+
+.f-drop { transform: translateY(-120px) rotate(-8deg); }
+.f-drop.on { transform: rotate(var(--r, 0deg)); }
+.f-flip { transform: perspective(900px) rotateY(-95deg); transform-origin: left center; }
+.f-flip.on { transform: perspective(900px) rotateY(0); }
+.f-pop { transform: scale(.3); }
+.f-pop.on { transform: scale(1); }
+
+/* ───────────── Mascot ───────────── */
+
+.mascot {
+  width: var(--size, 120px);
+  height: var(--size, 120px);
+  display: inline-block;
+}
+
+.mascot svg { width: 100%; height: 100%; overflow: visible; animation: bob 2.4s ease-in-out infinite; }
+.mascot.jump svg { animation: jump .6s cubic-bezier(.3, 1.5, .5, 1) 1, bob 2.4s ease-in-out .6s infinite; }
+.mascot.bigjump svg { animation: bigjump .9s cubic-bezier(.3, 1.5, .5, 1) 1, bob 2.4s ease-in-out .9s infinite; }
+.mascot.shake svg { animation: shake .12s linear infinite; }
+
+@keyframes bob { 50% { transform: translateY(-5px) scaleY(1.02); } }
+@keyframes jump { 0% { transform: none; } 15% { transform: scale(1.15, .85); } 50% { transform: translateY(-90px) scale(.92, 1.1) rotate(-6deg); } 85% { transform: scale(1.12, .88); } 100% { transform: none; } }
+@keyframes bigjump { 0% { transform: none; } 15% { transform: scale(1.2, .8); } 45% { transform: translateY(-150px) rotate(-200deg); } 70% { transform: translateY(-40px) rotate(-360deg); } 85% { transform: scale(1.15, .85) rotate(-360deg); } 100% { transform: rotate(-360deg); } }
+@keyframes shake { 25% { transform: translateX(-3px) rotate(-2deg); } 75% { transform: translateX(3px) rotate(2deg); } }
+@keyframes wave { 50% { transform: rotate(-22deg); } }
+
+.mascot .arm { transform-origin: 84px 60px; animation: wave .5s ease-in-out infinite; }
+.mascot .drop { animation: drip 1.1s ease-in infinite; }
+.mascot .qmark { animation: qbob 1s ease-in-out infinite alternate; transform-origin: 80px 4px; }
+.mascot .steam { animation: steam .35s ease-in-out infinite alternate; }
+@keyframes qbob { to { transform: translateY(-4px) rotate(12deg); } }
+@keyframes steam { to { opacity: .4; transform: translate(2px, -2px); } }
+@keyframes drip { 0% { transform: translateY(-4px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(14px); opacity: 0; } }
+
+.confetti { position: absolute; width: 12px; height: 18px; border-radius: 3px; pointer-events: none; animation: confetti 1.4s cubic-bezier(.2, .6, .4, 1) forwards; }
+@keyframes confetti { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); opacity: 0; } }
+
+/* ───────────── Track ───────────── */
+
+.track {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-top: 64px;
+}
+
+.track .stop {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 22px;
+  text-align: center;
+}
+
+.track .stop::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  right: 50%;
+  width: 100%;
+  height: 6px;
+  background: var(--line);
+  opacity: .18;
+}
+
+.track .stop:first-child::before { display: none; }
+.track .stop.lit::before { background: var(--a2); opacity: 1; }
+
+.track .dot {
+  position: relative;
+  z-index: 1;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--card);
+  border: var(--border);
+  transition: background .3s, transform .4s cubic-bezier(.2, .9, .3, 1.8);
+}
+
+.track .stop.lit .dot { background: var(--a2); transform: scale(1.2); }
+
+.track .stop.finish .dot {
+  width: 44px;
+  height: 44px;
+  margin-top: -5px;
+  border-radius: 8px;
+  background: conic-gradient(#111 25%, #fff 0 50%, #111 0 75%, #fff 0) 0 0 / 14px 14px;
+}
+
+.track .stop.finish.lit .dot { transform: scale(1.3) rotate(-8deg); }
+
+.track .rider {
+  position: absolute;
+  top: -18px;
+  --size: 78px;
+  transform: translateX(-50%);
+  z-index: 20;
+  transition: left .6s cubic-bezier(.3, 1.3, .5, 1), opacity .3s;
+}
+
+.track.draw .stop { opacity: 0; animation: stopIn .5s cubic-bezier(.2, .9, .3, 1.6) forwards; }
+@keyframes stopIn { from { opacity: 0; transform: translateY(20px) scale(.6); } to { opacity: 1; transform: none; } }
+
+.track.mini { padding-top: 0; transform: scale(.72); transform-origin: top left; width: 139%; margin-bottom: -18px; }
+.track.mini .rider { top: -70px; --size: 60px; }
+.steps-slide .track .rider { --size: 100px; top: -44px; }
+
+/* ───────────── Slide-specific ───────────── */
+
+/* portada */
+.cover { display: flex; flex-direction: column; justify-content: center; height: 100%; }
+.cover .kicker { font-size: 32px; color: var(--muted); }
+.cover h1 { white-space: nowrap; }
+.cover h1 .cursor { display: inline-block; width: .45em; height: .85em; background: var(--a1); vertical-align: -.06em; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.cover .mascot { position: absolute; right: 110px; bottom: 90px; --size: 220px; }
+.cover .mascot.enter { animation: dropIn .9s cubic-bezier(.3, 1.5, .5, 1) both; }
+@keyframes dropIn { from { transform: translateY(-600px) rotate(-20deg); } to { transform: none; } }
+
+/* cómo les fue */
+.notes4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-top: 60px; }
+.notes4 .card { height: 250px; display: flex; flex-direction: column; justify-content: space-between; font-size: 32px; font-weight: 700; }
+.notes4 .card .emo { font-size: 60px; align-self: flex-end; }
+.notes4 .card:nth-child(1) { background: color-mix(in srgb, var(--a3) 45%, var(--card)); }
+.notes4 .card:nth-child(2) { background: color-mix(in srgb, var(--a2) 30%, var(--card)); }
+.notes4 .card:nth-child(3) { background: color-mix(in srgb, var(--a1) 32%, var(--card)); }
+.notes4 .card:nth-child(4) { background: color-mix(in srgb, var(--a4) 32%, var(--card)); }
+
+/* qué aprendimos */
+.checks { display: flex; gap: 60px; height: 50px; margin: 30px 0 16px 8px; font-size: 32px; }
+.checks span { opacity: 0; transform: scale(.4); transition: .35s cubic-bezier(.2, .9, .3, 1.8); }
+.checks span.on { opacity: 1; transform: none; }
+.barwrap { position: relative; display: flex; align-items: center; gap: 24px; }
+.bar { display: flex; gap: 5px; padding: 8px; border: var(--border); border-radius: var(--radius); background: var(--card); box-shadow: var(--shadow); width: 900px; height: 72px; }
+.bar .seg { flex: 1; border-radius: 6px; background: transparent; transition: background .08s; }
+.bar .seg.lit { background: var(--a2); }
+.bar.chaos { animation: shake .09s linear infinite; }
+.bar.chaos .seg.lit { background: var(--a1); }
+.bar .seg.fall { transition: transform 1.1s cubic-bezier(.5, 0, .9, .5), opacity 1.1s; opacity: 0; }
+.pct { font-family: var(--font-mono); font-size: 48px; min-width: 150px; }
+.qs { position: absolute; inset: 0; pointer-events: none; }
+.qs span { position: absolute; font-family: var(--font-display); font-weight: 700; color: var(--a1); animation: qpop .5s cubic-bezier(.2, .9, .3, 1.8) both, qfloat 3s ease-in-out infinite alternate; }
+@keyframes qpop { from { transform: scale(0) rotate(-40deg); } }
+@keyframes qfloat { to { translate: 0 -18px; rotate: 12deg; } }
+.learned .msg { margin-top: 80px; }
+.learned > .mascot { --size: 150px; }
+.tagline { display: inline-block; margin-top: 18px; padding: 6px 14px; border: var(--border); border-radius: 999px; font-size: 22px; }
+
+/* frase */
+.phrase { display: flex; flex-direction: column; justify-content: center; height: 100%; gap: 36px; padding-bottom: 170px; }
+.phrase p { font-family: var(--font-display); font-weight: 700; font-size: 56px; line-height: 1.1; letter-spacing: -.02em; }
+.strike { position: relative; display: inline-block; white-space: nowrap; }
+.strike svg { position: absolute; left: -12px; top: 8%; width: calc(100% + 24px); height: 84%; overflow: visible; pointer-events: none; }
+.strike path { fill: none; stroke: var(--a1); stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1400; stroke-dashoffset: 1400; transition: stroke-dashoffset .9s cubic-bezier(.6, 0, .3, 1); }
+.strike.on path { stroke-dashoffset: 0; }
+.strike[data-step] { opacity: 1; transform: none; }
+
+.slowmo { position: absolute; left: 0; right: 0; bottom: 40px; height: 190px; pointer-events: none; }
+.slowmo .trail { position: absolute; left: 0; bottom: 12px; height: 12px; width: 0; border-radius: 0 8px 8px 0; background: color-mix(in srgb, var(--a4) 45%, transparent); }
+.slowmo .snail { position: absolute; left: 0; bottom: 6px; width: 200px; transform: translateX(-260px); }
+.slowmo .snail svg { width: 200px; height: 130px; overflow: visible; }
+.slowmo .body-g { transform-origin: 100px 118px; }
+.slowmo .shell { transform-origin: 88px 110px; }
+.slowmo .bubble { position: absolute; left: 290px; bottom: 150px; padding: 14px 22px; font-size: 28px; opacity: 0; transform: scale(.3); transform-origin: left bottom; }
+.stamp { position: absolute; right: 50px; bottom: 10px; padding: 14px 30px; font-family: var(--font-display); font-weight: 700; font-size: 52px; color: var(--a1); border: 7px solid var(--a1); border-radius: 14px; transform: rotate(-12deg) scale(3); opacity: 0; letter-spacing: .04em; }
+
+.slowmo.go .snail { animation: crawl 3.2s linear forwards; }
+.slowmo.go .body-g { animation: squish .53s ease-in-out 6; }
+.slowmo.go .shell { animation: wobble .53s ease-in-out 6; }
+.slowmo.go .trail { animation: trail 3.2s linear forwards; }
+.slowmo.go .bubble { animation: popin .45s cubic-bezier(.2, .9, .3, 1.8) 3.2s forwards; }
+.slowmo.go .stamp { animation: stamp .45s cubic-bezier(.5, 0, .7, 1.4) 4.1s forwards; }
+
+.slowmo.done .snail { transform: translateX(300px); }
+.slowmo.done .trail { width: 340px; }
+.slowmo.done .bubble { opacity: 1; transform: none; }
+.slowmo.done .stamp { opacity: .92; transform: rotate(-12deg); }
+
+/* inching: move while stretched, pause while bunching up */
+@keyframes crawl { 0% { transform: translateX(-260px); } 16% { transform: translateX(-170px); } 25% { transform: translateX(-160px); } 41% { transform: translateX(-60px); } 50% { transform: translateX(-50px); } 66% { transform: translateX(60px); } 75% { transform: translateX(70px); } 91% { transform: translateX(290px); } 100% { transform: translateX(300px); } }
+@keyframes trail { 0%, 16% { width: 0; } 41% { width: 0; } 50% { width: 10px; } 66% { width: 110px; } 75% { width: 120px; } 91% { width: 330px; } 100% { width: 340px; } }
+@keyframes squish { 50% { transform: scaleX(1.12) scaleY(.9); } }
+@keyframes wobble { 50% { transform: rotate(-5deg) translateY(-3px); } }
+@keyframes popin { to { opacity: 1; transform: none; } }
+@keyframes stamp { 0% { transform: rotate(-12deg) scale(3); opacity: 0; } 70% { transform: rotate(-12deg) scale(.92); opacity: 1; } 100% { transform: rotate(-12deg) scale(1); opacity: .92; } }
+.phrase-slide.thud { animation: thud .25s ease-out; }
+@keyframes thud { 30% { transform: translate(4px, 5px); } 60% { transform: translate(-3px, -2px); } }
+
+/* planificar */
+.section { display: flex; flex-direction: column; justify-content: center; height: 100%; }
+.section h1 { margin-bottom: 10px; }
+.section .track { margin-top: 40px; }
+
+/* recorrido */
+.route { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px; margin-top: 150px; }
+.route .card { min-height: 300px; display: flex; flex-direction: column; gap: 12px; font-size: 24px; line-height: 1.3; padding: 24px 22px; }
+.route .card .ico { font-size: 50px; line-height: 1; }
+.route .card h3 { margin: 0; }
+.route .card.finish { background: color-mix(in srgb, var(--a3) 45%, var(--card)); }
+.route .card.bump { animation: bump .35s ease-out; }
+@keyframes bump { 40% { transform: translateY(8px) scaleY(.97); } }
+.route .hopper { position: absolute; --size: 110px; left: -140px; top: -96px; opacity: 0; transition: left .6s cubic-bezier(.4, 0, .4, 1), opacity .3s; z-index: 3; }
+.route-slide h2 { margin-bottom: 0; }
+
+/* slider */
+.slider-row { display: flex; align-items: center; gap: 24px; font-size: 30px; margin: 50px 0 40px; }
+input[type=range] { -webkit-appearance: none; appearance: none; flex: 1; height: 16px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 15%, transparent); outline: none; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 48px; height: 48px; border-radius: 50%; background: var(--a1); border: var(--border); box-shadow: 4px 4px 0 var(--line); cursor: grab; }
+input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 50%; background: var(--a1); border: var(--border); cursor: grab; }
+.dec { display: grid; grid-template-columns: 330px 1fr; align-items: center; gap: 18px; margin: 22px 0; font-size: 30px; }
+.chips { display: flex; gap: 12px; min-height: 62px; }
+.chip { width: 58px; height: 58px; display: grid; place-items: center; font-size: 34px; font-weight: 700; border: var(--border); border-radius: 14px; background: var(--card); animation: chipIn .35s cubic-bezier(.2, .9, .3, 1.8) both; }
+.chip.yes { background: color-mix(in srgb, var(--good) 35%, var(--card)); }
+.chip.no { background: color-mix(in srgb, var(--a1) 30%, var(--card)); font-family: var(--font-display); }
+@keyframes chipIn { from { transform: scale(0) rotate(-30deg); } }
+
+/* terminal */
+.term { background: var(--term-bg); color: var(--term-ink); border-radius: 16px; border: var(--border); box-shadow: var(--shadow); padding: 0 0 22px; font-family: var(--font-mono); font-size: 26px; overflow: hidden; }
+.term .bar3 { display: flex; gap: 10px; padding: 14px 18px; background: #ffffff14; margin-bottom: 16px; }
+.term .bar3 i { width: 16px; height: 16px; border-radius: 50%; background: #ff5f57; }
+.term .bar3 i:nth-child(2) { background: #febc2e; }
+.term .bar3 i:nth-child(3) { background: #28c840; }
+.term .line { padding: 6px 28px; min-height: 46px; display: flex; gap: 14px; align-items: baseline; }
+.term .line .p { color: var(--a3); }
+.term .line .tag { margin-left: auto; font-size: 30px; }
+.term .caret { display: inline-block; width: 13px; height: 28px; background: var(--term-ink); animation: blink 1s steps(1) infinite; vertical-align: middle; }
+.prompts-slide .term { margin-top: 30px; }
+
+/* ayudita */
+.install { display: inline-block; font-family: var(--font-mono); font-size: 20px; padding: 8px 16px; border-radius: 10px; background: var(--term-bg); color: var(--term-ink); margin-top: -8px; }
+.flow { position: relative; display: grid; grid-template-columns: 450px 1fr; gap: 40px; margin-top: 26px; height: 400px; }
+.flow .term { font-size: 19px; height: 100%; }
+.flow .term .line { min-height: 34px; padding: 4px 22px; }
+.flow .term .msg { color: var(--a4); }
+.browser { position: relative; background: var(--card); border: var(--border); border-radius: 16px; box-shadow: var(--shadow); overflow: visible; transform-origin: left center; }
+.browser .chrome { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: var(--border); font-family: var(--font-mono); font-size: 16px; color: var(--muted); }
+.browser .chrome i { width: 13px; height: 13px; border-radius: 50%; background: color-mix(in srgb, var(--ink) 25%, transparent); }
+.browser .url { margin-left: 8px; padding: 4px 12px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.browser .page { padding: 18px 26px; font-family: var(--font-mono); font-size: 19px; line-height: 1.75; }
+.browser .page .h { font-weight: 700; color: var(--a2); }
+.browser .page .ln { position: relative; border-radius: 6px; transition: background .4s; padding: 0 6px; margin: 0 -6px; }
+.browser .page .ln.marked { background: color-mix(in srgb, var(--a3) 55%, transparent); }
+.browser .page .ln.fixed { background: color-mix(in srgb, var(--good) 30%, transparent); }
+.browser .page .ln.add { display: none; color: var(--good); font-weight: 700; }
+.browser .page .ln.add.show { display: block; animation: chipIn .4s both; background: color-mix(in srgb, var(--good) 22%, transparent); }
+.browser .page { line-height: 1.6; }
+.browser .send { position: absolute; right: 22px; bottom: 18px; padding: 10px 18px; border: var(--border); border-radius: 12px; background: var(--a2); color: #fff; font-weight: 700; font-size: 18px; box-shadow: 4px 4px 0 var(--line); }
+.browser .send.press { animation: press .5s ease-out; }
+@keyframes press { 40% { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--line); } }
+.note { position: absolute; width: 190px; padding: 10px 14px; font-size: 18px; line-height: 1.3; background: var(--a3); color: #111; border: var(--border); box-shadow: 4px 4px 0 var(--line); border-radius: 6px; }
+.note.f-drop { transform: translate(120px, -160px) rotate(35deg); }
+.note.f-drop.on { transform: rotate(var(--r)); }
+.note.done { background: color-mix(in srgb, var(--good) 45%, #fff); }
+.envelope { position: absolute; font-size: 54px; opacity: 0; left: 780px; top: 330px; z-index: 5; }
+.envelope.go { animation: fly 1.2s cubic-bezier(.4, 0, .3, 1) forwards; }
+@keyframes fly { 0% { opacity: 1; transform: none; } 50% { transform: translate(-300px, -160px) rotate(-25deg); } 90% { opacity: 1; } 100% { opacity: 0; transform: translate(-560px, -60px) rotate(-10deg) scale(.5); } }
+.flow-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 26px; font-size: 22px; }
+.flow-foot .psst { color: var(--muted); }
+
+/* line drawing */
+.sketch { stroke-dasharray: 1400; stroke-dashoffset: 1400; transition: stroke-dashoffset 1.4s ease-out; }
+.sketch.on { stroke-dashoffset: 0; }
+
+/* demo */
+.live { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 88%; gap: 30px; }
+.live .rec { display: flex; align-items: center; gap: 18px; font-family: var(--font-display); font-weight: 700; font-size: 84px; }
+.live .rec i { width: 44px; height: 44px; border-radius: 50%; background: var(--bad); animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 50% { transform: scale(1.3); opacity: .6; } }
+
+/* tests */
+.rain { position: absolute; left: 72px; top: 150px; width: 760px; height: 360px; }
+.rain span { position: absolute; font-size: 40px; color: var(--good); font-weight: 700; animation: fall .7s cubic-bezier(.5, 0, .7, 1.4) both; }
+@keyframes fall { from { transform: translateY(-420px) rotate(-60deg); opacity: 0; } 30% { opacity: 1; } }
+.passed { position: absolute; right: 110px; top: 170px; font-size: 42px; font-family: var(--font-display); font-weight: 700; padding: 18px 28px; transition: filter .6s, transform .6s; }
+.passed.sad { filter: grayscale(1) opacity(.5); transform: scale(.85) rotate(-4deg); }
+.lens { position: absolute; left: 60px; top: 250px; width: 220px; height: 220px; border-radius: 50%; border: 12px solid var(--line); background: #ffffff55; opacity: 0; }
+.lens::after { content: ""; position: absolute; width: 90px; height: 22px; background: var(--line); right: -78px; bottom: -8px; transform: rotate(45deg); border-radius: 10px; }
+.lens.go { animation: scan 1.8s ease-in-out forwards; }
+@keyframes scan { 0% { opacity: 1; transform: translateX(0); } 92% { opacity: 1; } 100% { opacity: 0; transform: translateX(640px); } }
+.rain span.q { color: var(--a1); font-family: var(--font-display); animation: qflip .35s cubic-bezier(.2, .9, .3, 1.8) both; }
+@keyframes qflip { from { transform: scale(.2) rotate(-90deg); } }
+.bad-tests { position: absolute; left: 860px; top: 310px; font-size: 20px; }
+.bad-tests div { margin: 6px 0; }
+.tests-slide .verdict { position: absolute; left: 72px; bottom: 44px; }
+
+/* ctm */
+.ctm svg { width: 100%; height: 250px; overflow: visible; }
+.ctm .edge { stroke: var(--line); stroke-width: 4; opacity: .5; }
+.ctm .node rect { fill: var(--card); stroke: var(--line); stroke-width: 3; rx: 12; transition: fill .3s; }
+.ctm .node.root rect { fill: color-mix(in srgb, var(--a3) 50%, var(--card)); }
+.ctm .node.cls rect { fill: color-mix(in srgb, var(--a2) 35%, var(--card)); }
+.ctm .node.hot rect { fill: var(--a1); }
+.ctm .node.dim { opacity: .35; }
+.ctm .node text { font-family: var(--font-body); font-size: 26px; fill: var(--ink); text-anchor: middle; dominant-baseline: middle; }
+.ctm .node, .ctm .edge { transition: opacity .3s; }
+.ctm table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 22px; margin-top: 6px; }
+.ctm th { text-align: left; color: var(--muted); font-weight: 400; padding: 4px 10px; }
+.ctm td { padding: 4px 10px; border-top: 2px solid color-mix(in srgb, var(--ink) 15%, transparent); }
+.ctm tr.hot td { background: color-mix(in srgb, var(--a1) 20%, transparent); }
+.ctm .cite { position: absolute; right: 72px; top: 24px; font-size: 18px; color: var(--muted); }
+
+/* review hard */
+.chart { position: relative; }
+.chart svg { width: 100%; height: 360px; overflow: visible; }
+.chart .axis { stroke: var(--line); stroke-width: 4; fill: none; stroke-linecap: round; }
+.chart .read { stroke: var(--a2); stroke-width: 8; fill: none; stroke-linecap: round; }
+.chart .code { stroke: var(--a1); stroke-width: 8; fill: none; stroke-linecap: round; }
+.chart .gap { fill: var(--a1); opacity: 0; transition: opacity .8s; }
+.chart .gap.on { opacity: .18; }
+.chart text { font-family: var(--font-body); font-size: 24px; fill: var(--ink); }
+.chart .lbl-code { fill: var(--a1); font-weight: 700; }
+.chart .lbl-read { fill: var(--a2); font-weight: 700; }
+.chart .bots text { font-size: 34px; }
+.chart .gaplbl { font-family: var(--font-display); font-weight: 700; font-size: 34px; fill: var(--a1); }
+.tries { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 14px; font-size: 22px; margin-top: 0; }
+.tries .q { font-weight: 700; flex-basis: 100%; }
+.tries span.t { padding: 8px 16px; border: var(--border); border-radius: 999px; background: var(--card); transition: transform .4s cubic-bezier(.2, .9, .3, 1.8), background .3s, box-shadow .3s; }
+.tries span.t.star { background: var(--a3); color: #111; transform: scale(1.12) rotate(-2deg); box-shadow: 4px 4px 0 var(--line); }
+.dificil-slide > .mascot { --size: 100px; right: 70px; top: 40px; bottom: auto; }
+
+/* adelante */
+.lanes { display: flex; flex-direction: column; gap: 60px; margin-top: 60px; font-size: 32px; }
+.lane { display: grid; grid-template-columns: 130px 1fr; align-items: center; }
+.lane .row { display: flex; align-items: center; gap: 26px; min-height: 120px; }
+.blk { padding: 20px 28px; border: var(--border); border-radius: 16px; background: var(--card); box-shadow: var(--shadow); white-space: nowrap; font-weight: 700; }
+.blk small { display: block; margin-top: 4px; font-size: 19px; font-weight: 400; color: var(--muted); }
+.blk.rev { background: color-mix(in srgb, var(--a1) 40%, var(--card)); }
+.blk.calm { background: color-mix(in srgb, var(--a4) 35%, var(--card)); }
+.blk.des { background: color-mix(in srgb, var(--a2) 35%, var(--card)); }
+.arrow { font-size: 48px; font-weight: 700; color: var(--muted); }
+
+/* capturalo */
+.lanes.tight { gap: 34px; margin-top: 30px; font-size: 24px; }
+.lanes.tight .lane { grid-template-columns: 1fr; gap: 10px; }
+.lanes.tight .lane .small { font-weight: 700; }
+.lanes.tight .row { gap: 14px; min-height: 0; }
+.lanes.tight .blk { padding: 14px 18px; white-space: normal; max-width: 270px; }
+.lanes.tight .blk small { font-size: 17px; }
+.lanes.tight .arrow { font-size: 36px; }
+.skill-tip { position: absolute; left: 72px; bottom: 60px; padding: 10px 16px; font-size: 22px; font-weight: 700; background: var(--a3); color: #111; border: var(--border); border-radius: 10px; box-shadow: 4px 4px 0 var(--line); }
+.skill-tip.on { transform: rotate(-2deg); }
+
+/* reglas */
+.rules { display: flex; flex-direction: column; gap: 16px; margin-top: 26px; }
+.rule { perspective: 1200px; height: 92px; }
+.rule .inner { position: relative; height: 100%; transform-style: preserve-3d; transition: transform .8s cubic-bezier(.3, 1.3, .5, 1); transition-delay: calc(var(--i) * .18s); }
+.rules.flipped .rule .inner { transform: rotateX(180deg); }
+.rule .face { position: absolute; inset: 0; display: flex; align-items: center; gap: 24px; padding: 0 28px; backface-visibility: hidden; font-size: 30px; border: var(--border); border-radius: 16px; background: var(--card); }
+.rule .face.old { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--a1); }
+.rule .face.new { transform: rotateX(180deg); background: color-mix(in srgb, var(--a2) 20%, var(--card)); }
+.rule .n { font-family: var(--font-display); font-weight: 700; font-size: 44px; width: 40px; }
+.rules.flipped .rule.wiggle .face.new { animation: wig 1.4s ease-in-out 1.8s infinite; }
+@keyframes wig { 0%, 70%, 100% { transform: rotateX(180deg) rotate(0); } 78% { transform: rotateX(180deg) rotate(1.2deg); } 86% { transform: rotateX(180deg) rotate(-1.2deg); } }
+
+/* pasos */
+.timer { position: absolute; right: 72px; top: 50px; font-family: var(--font-mono); font-size: 40px; padding: 8px 18px; border: var(--border); border-radius: 12px; background: var(--card); box-shadow: 4px 4px 0 var(--line); cursor: pointer; user-select: none; }
+.steps-slide .track { margin-top: 170px; }
+
+/* balanza */
+.scale svg { width: 100%; height: 400px; overflow: visible; }
+.scale .beam { transform-origin: 640px 120px; transform-box: view-box; animation: teeter 3.2s ease-in-out infinite; }
+@keyframes teeter { 0%, 100% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); } }
+.scale line, .scale path { stroke: var(--line); stroke-width: 6; fill: none; stroke-linecap: round; }
+.scale .pan { fill: var(--card); }
+.scale text { font-family: var(--font-body); font-size: 34px; fill: var(--ink); text-anchor: middle; }
+.scale .emo { font-size: 56px; }
+
+/* qué aprendimos */
+.collage { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px 22px; margin-top: 6px; }
+.tile { display: flex; flex-direction: column; justify-content: space-between; gap: 10px; height: 205px; padding: 16px 18px; font-size: 21px; font-weight: 700; }
+.tile.f-drop { transition-delay: calc(var(--i) * .16s); }
+.tile:nth-child(4n + 1) { background: color-mix(in srgb, var(--a1) 22%, var(--card)); }
+.tile:nth-child(4n + 2) { background: color-mix(in srgb, var(--a2) 26%, var(--card)); }
+.tile:nth-child(4n + 3) { background: color-mix(in srgb, var(--a3) 22%, var(--card)); }
+.tile:nth-child(4n + 4) { background: color-mix(in srgb, var(--a4) 22%, var(--card)); }
+.tile .viz { flex: 1; display: flex; align-items: center; justify-content: center; gap: 12px; }
+.tile .viz.big { font-size: 30px; white-space: nowrap; }
+.tile .ok { color: var(--good); }
+.mbar { display: flex; gap: 4px; padding: 5px; width: 150px; height: 36px; border: var(--border); border-radius: 10px; }
+.mbar i { flex: 1; border-radius: 3px; background: var(--a2); }
+.mbar i.off { background: transparent; }
+.tile .viz b.hl { font-size: 30px; white-space: nowrap; }
+.mslider { position: relative; width: 110px; height: 10px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 20%, transparent); }
+.mslider i { position: absolute; right: 14px; top: -9px; width: 28px; height: 28px; border-radius: 50%; background: var(--a1); border: var(--border); }
+.mchips { display: flex; gap: 4px; font-size: 20px; }
+.mchips b { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 6px; background: color-mix(in srgb, var(--good) 40%, var(--card)); }
+.mchips b.no { background: color-mix(in srgb, var(--a1) 40%, var(--card)); }
+.mdoc { position: relative; display: flex; flex-direction: column; gap: 8px; width: 120px; padding: 12px; border: var(--border); border-radius: 8px; background: var(--card); }
+.mdoc i { height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--ink) 35%, transparent); }
+.mdoc i:nth-child(2) { width: 70%; }
+.mdoc em { position: absolute; right: -58px; top: -12px; padding: 4px 8px; font-size: 15px; font-style: normal; background: var(--a3); color: #111; border: 2px solid var(--line); border-radius: 4px; transform: rotate(6deg); }
+.snailcopy svg { width: 130px; height: 85px; overflow: visible; }
+.homework { position: absolute; left: 60px; right: 60px; bottom: 40px; font-size: 21px; text-align: center; }
+.homework b { color: var(--a3); }
+
+/* ───────────── HUD ───────────── */
+
+#hud {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  font: 14px/1 system-ui, sans-serif;
+  color: var(--muted);
+  opacity: .25;
+  transition: opacity .3s;
+  z-index: 60;
+}
+
+#hud:hover { opacity: 1; }
+#hud.hidden { display: none; }
+#hud .stepdots i { display: inline-block; width: 7px; height: 7px; margin: 0 2px; border-radius: 50%; background: currentColor; opacity: .3; }
+#hud .stepdots i.on { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div id="deck">
+
+  <!-- 1 · Portada -->
+  <section class="slide" data-id="portada">
+    <div class="cover">
+      <div class="kicker">Sesión 2</div>
+      <h1><span class="typed"></span><span class="cursor"></span></h1>
+      <p class="mid">De Vibe Coding a Agentic Engineering · FaMAF</p>
+      <p class="small" style="margin-top: 10px">Agustín Carrasco</p>
+      <div class="mascot" data-mood="wave"></div>
+    </div>
+  </section>
+
+  <!-- 2 · Hoy -->
+  <section class="slide" data-id="hoy">
+    <h2>Hoy</h2>
+    <div class="track draw" style="margin-top: 110px"
+         data-stops="¿cómo les fue?|vibe coding|planificar + demo|tests|revisar|práctica|cierre"></div>
+  </section>
+
+  <!-- 3 · Cómo les fue -->
+  <section class="slide" data-id="comoles">
+    <h2>¿Cómo les fue?</h2>
+    <div class="notes4">
+      <div class="card f-drop" data-step="1" style="--r: -3deg">¿Cómo les fue?<span class="emo">😅</span></div>
+      <div class="card f-drop" data-step="2" style="--r: 2deg">¿Leyeron el código?<span class="emo">👀</span></div>
+      <div class="card f-drop" data-step="3" style="--r: -1deg">¿Encontraron problemas?<span class="emo">🐛</span></div>
+      <div class="card f-drop" data-step="4" style="--r: 3deg">¿Entienden qué pasa por abajo?<span class="emo">🤔</span></div>
+    </div>
+  </section>
+
+  <!-- 4 · Qué aprendimos -->
+  <section class="slide learned" data-id="aprendimos" data-steps="3">
+    <h2>Vibe coding</h2>
+    <div class="checks">
+      <span>☑️ anda</span><span>☑️ anda</span><span>☑️ anda</span><span>☑️ anda</span>
+    </div>
+    <div class="barwrap">
+      <div class="bar"></div>
+      <div class="pct">0%</div>
+    </div>
+    <div class="msg" data-step="3">
+      <p class="big">Faltan decisiones y detalles.<br><span class="hl">No sabés dónde ni cuántos.</span></p>
+      <span class="tagline">deuda de comprensión</span>
+    </div>
+    <div class="qs"></div>
+    <div class="mascot" data-mood="happy"></div>
+  </section>
+
+  <!-- 5 · Frase -->
+  <section class="slide phrase-slide" data-id="frase" data-steps="3">
+    <div class="phrase">
+      <p>Hoy no vamos a escribir <span class="strike" data-step="1">menos código<svg viewBox="0 0 400 100" preserveAspectRatio="none"><path d="M4 62 C80 40, 150 70, 230 48 S 350 30, 396 52 M20 78 C120 56, 260 74, 380 38" /></svg></span>.</p>
+      <p data-step="2">Vamos a saber <span class="hl">qué código escribimos</span>.</p>
+    </div>
+    <div class="slowmo">
+      <div class="trail"></div>
+      <div class="snail">
+        <svg viewBox="0 0 200 130">
+          <g class="body-g">
+            <path d="M18 118 C8 118 8 104 26 102 L140 98 C146 66 188 62 192 96 C194 112 184 118 170 118 Z" fill="var(--a4)" stroke="var(--line)" stroke-width="4" />
+            <path class="stalk" d="M170 74 L162 42 M180 74 L186 40" stroke="var(--line)" stroke-width="4" stroke-linecap="round" />
+            <circle cx="162" cy="40" r="8" fill="#fff" stroke="var(--line)" stroke-width="3" /><circle cx="164" cy="41" r="3.5" fill="#111" />
+            <circle cx="186" cy="38" r="8" fill="#fff" stroke="var(--line)" stroke-width="3" /><circle cx="188" cy="39" r="3.5" fill="#111" />
+            <path d="M168 96 Q176 103 184 96" fill="none" stroke="var(--line)" stroke-width="3" stroke-linecap="round" />
+            <circle cx="160" cy="92" r="4" fill="#ff7a93" opacity=".6" />
+          </g>
+          <g class="shell">
+            <circle cx="88" cy="70" r="44" fill="var(--a3)" stroke="var(--line)" stroke-width="4" />
+            <path d="M88 70 m-5 0 a5 5 0 1 1 10 0 a11 11 0 1 1 -22 0 a18 18 0 1 1 36 0 a26 26 0 1 1 -52 0" fill="none" stroke="var(--line)" stroke-width="4" stroke-linecap="round" />
+          </g>
+        </svg>
+      </div>
+      <div class="card bubble">hoy va a parecer más lento…</div>
+      <div class="stamp">¡A PROPÓSITO!</div>
+    </div>
+  </section>
+
+  <!-- 7 · Recorrido -->
+  <section class="slide route-slide" data-id="recorrido" data-steps="4">
+    <h2>Explorar · Diseñar · Documentar · Código</h2>
+    <div class="route">
+      <div class="card f-flip" data-step="1"><span class="ico">🔍</span><h3>Explorar</h3>entendé lo que existe antes de decidir nada</div>
+      <div class="card f-flip" data-step="2"><span class="ico">✏️</span><h3>Diseñar</h3>vos tomás las decisiones; el agente te pregunta de a una</div>
+      <div class="card f-flip" data-step="3"><span class="ico">📄</span><h3>Documentar</h3>un archivo para leer, anotar y pasarle al agente</div>
+      <div class="card f-flip finish" data-step="4"><span class="ico">🏁</span><h3>Código</h3>recién acá: el agente implementa el documento</div>
+      <div class="mascot hopper" data-mood="happy"></div>
+    </div>
+  </section>
+
+  <!-- 8 · Más diseño -->
+  <section class="slide slider-slide" data-id="slider">
+    <h2>Más diseño, mejores resultados</h2>
+    <div class="slider-row">
+      <span>liviano</span>
+      <input type="range" min="0" max="10" value="2" class="design-range">
+      <span>profundo</span>
+    </div>
+    <div class="dec"><span>decisiones tuyas</span><div class="chips yours"></div></div>
+    <div class="dec"><span>decisiones del agente</span><div class="chips agents"></div></div>
+    <div class="mascot" data-mood="skeptic"></div>
+  </section>
+
+  <!-- 9 · Cómo se le pide -->
+  <section class="slide prompts-slide" data-id="prompts" data-steps="4">
+    <div class="track mini" data-stops="explorar|diseñar|documentar|código" data-finish></div>
+    <div class="term">
+      <div class="bar3"><i></i><i></i><i></i></div>
+      <div class="line" data-text="Contame cómo funciona X. No escribas nada." data-tag="🔍"></div>
+      <div class="line" data-text="Quiero agregar Y. Preguntame las decisiones, de a una." data-tag="✏️"></div>
+      <div class="line" data-text="Escribí el diseño en docs/y.md" data-tag="📄"></div>
+      <div class="line" data-text="Implementá docs/y.md" data-tag="🏁"></div>
+    </div>
+  </section>
+
+  <!-- 10 · Una ayudita -->
+  <section class="slide ayudita-slide" data-id="ayudita" data-steps="4">
+    <h2>Una ayudita: Plannotator</h2>
+    <span class="install">$ pi install npm:@plannotator/pi-extension</span>
+    <div class="flow">
+      <div class="term">
+        <div class="bar3"><i></i><i></i><i></i></div>
+        <div class="line"><span class="p">&gt;</span><span class="cmd1"></span></div>
+        <div class="line msg m1" data-step="1">↗ abriendo el navegador…</div>
+        <div class="line msg m2" data-step="3">📝 2 anotaciones recibidas</div>
+        <div class="line msg m3" data-step="3">✎ actualizando docs/y.md…</div>
+        <div class="line msg m4" data-step="3">✓ listo, ¿otra vuelta?</div>
+      </div>
+      <div class="browser f-pop" data-step="1">
+        <div class="chrome"><i></i><i></i><i></i><span class="url">localhost · plannotator</span></div>
+        <div class="page">
+          <div class="h"># Agregar fecha de vencimiento</div>
+          <div class="h">## Decisiones</div>
+          <div class="ln l1">- se guarda en tareas</div>
+          <div class="ln add a1">+ las viejas quedan sin fecha</div>
+          <div class="ln l2">- es opcional</div>
+          <div class="ln l3">- se valida en el form</div>
+          <div class="ln add a3">+ y también en el server</div>
+          <div class="h">## Casos</div>
+          <div class="ln">- fecha pasada → error</div>
+        </div>
+        <div class="note f-drop n1" data-step="2" style="--r: 4deg; right: -46px; top: 96px">¿y las tareas que ya existen?</div>
+        <div class="note f-drop n2" data-step="2" style="--r: -3deg; right: -20px; top: 222px">validá también en el server</div>
+        <div class="send">Enviar anotaciones</div>
+      </div>
+      <div class="envelope">✉️</div>
+    </div>
+    <div class="flow-foot">
+      <span data-step="4">con el diff es igual: <span class="mono">/plannotator-review</span></span>
+      <span class="psst" data-step="4">psst: también trae plan mode (<span class="mono">pi --plan</span>). probalo si querés.</span>
+    </div>
+  </section>
+
+  <!-- 12 · Demo -->
+  <section class="slide" data-id="demo">
+    <div class="track mini" data-stops="explorar|diseñar|documentar|código" data-finish></div>
+    <div class="live">
+      <div class="rec"><i></i>EN VIVO</div>
+      <div class="term" style="width: 520px; padding-top: 18px"><div class="line"><span class="p">$</span> pi <span class="caret"></span></div></div>
+    </div>
+    <div class="mascot" data-mood="wave"></div>
+  </section>
+
+  <!-- 13 · Tests -->
+  <section class="slide tests-slide" data-id="tests" data-steps="2">
+    <h2>El agente escribe muchos tests.</h2>
+    <div class="rain"></div>
+    <div class="card passed" data-step="1">142 passed 🎉</div>
+    <div class="lens"></div>
+    <div class="bad-tests mono" data-step="2">
+      <div>expect(true).toBe(true)</div>
+      <div>expect(mockSave).toHaveBeenCalled()</div>
+      <div>expect(result).toBeDefined()</div>
+    </div>
+    <p class="big verdict" data-step="2">No sabés si testean <span class="hl">lo correcto</span>.</p>
+    <div class="mascot" data-mood="happy"></div>
+  </section>
+
+  <!-- 14 · Casos antes del código -->
+  <section class="slide ctm" data-id="ctm" data-steps="7">
+    <h2>Los casos se deciden antes del código</h2>
+    <svg viewBox="0 0 1136 300">
+      <g data-step="2">
+        <line class="edge" x1="568" y1="78" x2="330" y2="112" /><line class="edge" x1="568" y1="78" x2="820" y2="112" />
+      </g>
+      <g data-step="3">
+        <line class="edge" x1="330" y1="168" x2="170" y2="212" /><line class="edge" x1="330" y1="168" x2="330" y2="212" /><line class="edge" x1="330" y1="168" x2="490" y2="212" />
+        <line class="edge" x1="820" y1="168" x2="730" y2="212" /><line class="edge" x1="820" y1="168" x2="920" y2="212" />
+      </g>
+      <g class="node root" data-step="1"><rect x="448" y="22" width="240" height="56" /><text x="568" y="51">agregar tarea</text></g>
+      <g data-step="2">
+        <g class="node cls"><rect x="250" y="112" width="160" height="56" /><text x="330" y="141">título</text></g>
+        <g class="node cls"><rect x="740" y="112" width="160" height="56" /><text x="820" y="141">usuario</text></g>
+      </g>
+      <g data-step="3">
+        <g class="node leaf" data-leaf="vacio"><rect x="100" y="212" width="140" height="56" /><text x="170" y="241">vacío</text></g>
+        <g class="node leaf" data-leaf="ok"><rect x="260" y="212" width="140" height="56" /><text x="330" y="241">ok</text></g>
+        <g class="node leaf" data-leaf="largo"><rect x="420" y="212" width="140" height="56" /><text x="490" y="241">muy largo</text></g>
+        <g class="node leaf" data-leaf="logueado"><rect x="650" y="212" width="160" height="56" /><text x="730" y="241">logueado</text></g>
+        <g class="node leaf" data-leaf="anonimo"><rect x="840" y="212" width="160" height="56" /><text x="920" y="241">anónimo</text></g>
+      </g>
+    </svg>
+    <table>
+      <tr data-step="4"><th>#</th><th>título</th><th>usuario</th><th>esperado</th><th>tipo</th></tr>
+      <tr data-step="4" data-leaves="vacio logueado"><td>1</td><td>vacío</td><td>logueado</td><td>error</td><td>test</td></tr>
+      <tr data-step="5" data-leaves="ok logueado"><td>2</td><td>ok</td><td>logueado</td><td>se guarda</td><td>test + manual</td></tr>
+      <tr data-step="6" data-leaves="ok anonimo"><td>3</td><td>ok</td><td>anónimo</td><td>pide login</td><td>manual</td></tr>
+      <tr data-step="7" data-leaves="largo logueado"><td>4</td><td>muy largo</td><td>logueado</td><td>error</td><td>test</td></tr>
+    </table>
+    <div class="cite">Classification Tree Method · Grochtmann y Grimm, 1993</div>
+  </section>
+
+  <!-- 15 · Revisar es cada vez más difícil -->
+  <section class="slide dificil-slide" data-id="dificil" data-steps="4">
+    <h2>Revisar código es cada vez más difícil</h2>
+    <div class="chart">
+      <svg viewBox="0 0 1136 360">
+        <path class="axis" d="M40 20 V320 H1000" />
+        <text x="1010" y="328">tiempo</text>
+        <text x="-4" y="14" style="font-size: 20px">código</text>
+        <path class="gap" d="M300 262 C520 250, 760 190, 960 30 L960 262 Z" data-gap />
+        <path class="read sketch" data-step="1" d="M40 262 H960" />
+        <text class="lbl-read" x="600" y="298" data-step="1">lo que alcanzás a leer</text>
+        <path class="code sketch" data-step="1" d="M40 305 C300 275, 520 250, 760 190 S 920 70, 960 30" />
+        <text class="lbl-code" x="975" y="52" data-step="1">lo que se escribe</text>
+        <g class="bots" data-step="2">
+          <text x="560" y="228">🤖</text><text x="700" y="190">🤖</text><text x="820" y="136">🤖</text><text x="900" y="76">🤖</text>
+        </g>
+        <text x="80" y="60" data-step="2" style="font-size: 26px">y cada vez más lo escribe un agente:</text>
+        <text x="80" y="94" data-step="2" style="font-size: 26px">no hay a quién preguntarle por qué</text>
+        <text class="gaplbl" x="790" y="240" data-step="3">sin revisar</text>
+      </svg>
+    </div>
+    <div class="tries" data-step="3">
+      <span class="q">¿Cómo revisamos esto? Todavía no sabemos:</span>
+      <span class="t">agentes que revisan</span><span class="t">diffs más chicos</span><span class="t">tests que prueban lo que importa</span><span class="t mv">mover la revisión para adelante →</span>
+    </div>
+    <div class="mascot" data-mood="skeptic"></div>
+  </section>
+
+  <!-- 16 · Para adelante -->
+  <section class="slide" data-id="adelante" data-steps="5">
+    <h2>La revisión se corrió para adelante</h2>
+    <div class="lanes">
+      <div class="lane"><span class="small">antes</span>
+        <div class="row">
+          <div class="blk f-pop" data-step="1">💻 código</div>
+          <span class="arrow" data-step="2">→</span>
+          <div class="blk rev f-pop" data-step="2">🔍 revisar 😰<small>mil líneas de diff</small></div>
+        </div>
+      </div>
+      <div class="lane"><span class="small">ahora</span>
+        <div class="row">
+          <div class="blk des f-pop" data-step="3">✏️ diseño</div>
+          <span class="arrow" data-step="4">→</span>
+          <div class="blk calm f-pop" data-step="4">🔍 revisar 😌<small>una página de diseño</small></div>
+          <span class="arrow" data-step="5">→</span>
+          <div class="blk f-pop" data-step="5">💻 código</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 17 · Capturalo -->
+  <section class="slide" data-id="capturalo" data-steps="7">
+    <h2>Lo que corregís, capturalo</h2>
+    <div class="lanes tight">
+      <div class="lane"><span class="small">sin capturar</span>
+        <div class="row">
+          <div class="blk f-pop" data-step="1">💬 corregís<small>"usá el cliente de api/"</small></div>
+          <span class="arrow" data-step="2">→</span>
+          <div class="blk f-pop" data-step="2">🆕 chat nuevo</div>
+          <span class="arrow" data-step="3">→</span>
+          <div class="blk rev f-pop" data-step="3">"uso fetch acá" 🔁<small>el mismo error</small></div>
+        </div>
+      </div>
+      <div class="lane"><span class="small">capturando</span>
+        <div class="row">
+          <div class="blk f-pop" data-step="4">💬 corregís<small>"usá el cliente de api/"</small></div>
+          <span class="arrow" data-step="5">→</span>
+          <div class="blk des f-pop" data-step="5">📝 lo anotás<small>aprendizajes</small></div>
+          <span class="arrow" data-step="6">→</span>
+          <div class="blk f-pop" data-step="6">🆕 chat nuevo</div>
+          <span class="arrow" data-step="7">→</span>
+          <div class="blk calm f-pop" data-step="7">"uso el cliente de api/" ✓<small>lo leyó del archivo</small></div>
+        </div>
+      </div>
+    </div>
+    <span class="skill-tip" data-step="7">✨ una skill puede juntarlo sola · Herramientas y Skills</span>
+    <div class="mascot" data-mood="happy"></div>
+  </section>
+
+  <!-- 18 · Reglas -->
+  <section class="slide" data-id="reglas" data-steps="1">
+    <h2>Las reglas de hoy</h2>
+    <div class="rules">
+      <div class="rule" style="--i: 0"><div class="inner"><div class="face old"><span class="n">1</span>hablale al agente, describí lo que querés</div><div class="face new"><span class="n">1</span>nada se implementa sin diseño escrito</div></div></div>
+      <div class="rule wiggle" style="--i: 1"><div class="inner"><div class="face old"><span class="n">2</span>no abras los archivos</div><div class="face new"><span class="n">2</span>anotá el diseño antes de aprobarlo</div></div></div>
+      <div class="rule" style="--i: 2"><div class="inner"><div class="face old"><span class="n">3</span>si algo se rompe, describí el síntoma</div><div class="face new"><span class="n">3</span>los casos de test, antes del código</div></div></div>
+      <div class="rule" style="--i: 3"><div class="inner"><div class="face old"><span class="n">4</span>juzgá solo por el output</div><div class="face new"><span class="n">4</span>leé el diff · si se rompe, leelo vos</div></div></div>
+    </div>
+  </section>
+
+  <!-- 19 · Pasos -->
+  <section class="slide steps-slide" data-id="pasos">
+    <h2>Los pasos</h2>
+    <div class="timer" title="click: reiniciar">⏱ 00:00</div>
+    <div class="track draw" data-stops="elegir|explorar|diseñar|casos|documentar|implementar|revisar + commit" data-finish></div>
+  </section>
+
+  <!-- 20 · Valió la pena -->
+  <section class="slide scale" data-id="balanza" data-steps="1">
+    <h2>¿Valió la pena diseñar primero?</h2>
+    <svg viewBox="0 0 1280 400" style="margin-left: -72px">
+      <path d="M640 120 L600 330 H680 Z" class="pan" />
+      <g class="beam">
+        <line x1="380" y1="120" x2="900" y2="120" />
+        <line x1="380" y1="120" x2="330" y2="230" /><line x1="380" y1="120" x2="430" y2="230" />
+        <line x1="900" y1="120" x2="850" y2="230" /><line x1="900" y1="120" x2="950" y2="230" />
+        <path d="M320 230 Q380 280 440 230 Z" class="pan" />
+        <path d="M840 230 Q900 280 960 230 Z" class="pan" />
+        <text x="380" y="215" class="emo">⏳</text><text x="900" y="215" class="emo">🧠</text>
+        <text x="380" y="320">tiempo</text><text x="900" y="320">entender</text>
+      </g>
+    </svg>
+    <p class="big center" data-step="1">depende de cuánto te importe poder explicar el código después</p>
+  </section>
+
+  <!-- 21 · Qué aprendimos -->
+  <section class="slide recap-slide" data-id="recap" data-steps="2">
+    <h2>¿Qué aprendimos?</h2>
+    <div class="collage">
+      <div class="card tile f-drop" data-step="1" style="--r: -3deg; --i: 0">
+        <div class="viz"><div class="mbar"><i></i><i></i><i></i><i></i><i class="off"></i><i class="off"></i></div><b class="hl">??%</b></div>
+        <span>anda, pero no sabés qué falta</span>
+      </div>
+      <div class="card tile f-drop" data-step="1" style="--r: 2deg; --i: 1">
+        <div class="viz big">🔍→✏️→📄→🏁</div>
+        <span>explorar, diseñar, documentar, código</span>
+      </div>
+      <div class="card tile f-drop" data-step="1" style="--r: -1deg; --i: 2">
+        <div class="viz"><div class="mslider"><i></i></div><div class="mchips"><b>✓</b><b>✓</b><b>✓</b><b>✓</b><b class="no">?</b></div></div>
+        <span>más diseño, mejores resultados</span>
+      </div>
+      <div class="card tile f-drop" data-step="1" style="--r: 3deg; --i: 3">
+        <div class="viz"><div class="mdoc"><i></i><i></i><i></i><em>¿y si…?</em></div></div>
+        <span>anotá el diseño antes de aprobarlo</span>
+      </div>
+      <div class="card tile f-drop" data-step="1" style="--r: 2deg; --i: 4">
+        <div class="viz big"><b class="ok">✓</b> <b class="hl">?</b> <b class="ok">✓</b> <b class="hl">?</b> <b class="ok">✓</b></div>
+        <span>los casos, antes del código</span>
+      </div>
+      <div class="card tile f-drop" data-step="1" style="--r: -2deg; --i: 5">
+        <div class="viz big">✏️→🔍→💻</div>
+        <span>la revisión se corrió para adelante</span>
+      </div>
+      <div class="card tile f-drop" data-step="1" style="--r: 1deg; --i: 6">
+        <div class="viz big">💬→📝→✓</div>
+        <span>lo que corregís, capturalo</span>
+      </div>
+      <div class="card tile f-drop" data-step="1" style="--r: -3deg; --i: 7">
+        <div class="viz snailcopy"></div>
+        <span>más lento, a propósito</span>
+      </div>
+    </div>
+    <div class="homework" data-step="2">📌 para la semana: seguí con el flujo, y anotá qué le explicaste al agente más de una vez → <b>Herramientas y Skills</b></div>
+  </section>
+
+</div>
+
+<div id="hud">
+  <div><span class="count"></span> &nbsp; <span class="stepdots"></span></div>
+  <div>← → navegar · F pantalla completa · H ocultar</div>
+</div>
+
+<script>
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+const rand = (a, b) => a + Math.random() * (b - a);
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/* ───────────── Mascot ───────────── */
+
+const EYES = {
+  open: '<ellipse cx="38" cy="52" rx="5" ry="6.5" fill="var(--mascot-ink)"/><ellipse cx="62" cy="52" rx="5" ry="6.5" fill="var(--mascot-ink)"/><circle cx="40" cy="50" r="1.8" fill="#fff"/><circle cx="64" cy="50" r="1.8" fill="#fff"/>',
+  wide: '<circle cx="38" cy="51" r="8" fill="#fff" stroke="var(--mascot-ink)" stroke-width="2.5"/><circle cx="62" cy="51" r="8" fill="#fff" stroke="var(--mascot-ink)" stroke-width="2.5"/><circle cx="39" cy="52" r="3.5" fill="var(--mascot-ink)"/><circle cx="61" cy="52" r="3.5" fill="var(--mascot-ink)"/>',
+  half: '<path d="M32 51 h12 M56 51 h12" stroke="var(--mascot-ink)" stroke-width="3" stroke-linecap="round"/><path d="M33 52 q5 6 10 0 M57 52 q5 6 10 0" fill="var(--mascot-ink)"/><path d="M31 42 l12 3 M69 42 l-12 3" stroke="var(--mascot-ink)" stroke-width="3" stroke-linecap="round"/>',
+  x: '<path d="M33 47 l10 10 M43 47 l-10 10 M57 47 l10 10 M67 47 l-10 10" stroke="var(--mascot-ink)" stroke-width="3.5" stroke-linecap="round"/>',
+  happy: '<path d="M32 54 q6 -9 12 0 M56 54 q6 -9 12 0" fill="none" stroke="var(--mascot-ink)" stroke-width="3.5" stroke-linecap="round"/>',
+  odd: '<circle cx="38" cy="53" r="4" fill="var(--mascot-ink)"/><circle cx="62" cy="50" r="8" fill="#fff" stroke="var(--mascot-ink)" stroke-width="2.5"/><circle cx="61" cy="51" r="3.5" fill="var(--mascot-ink)"/><path d="M30 44 l14 -3 M55 36 l14 4" stroke="var(--mascot-ink)" stroke-width="3" stroke-linecap="round"/>',
+};
+
+const MOUTH = {
+  smile: '<path d="M42 64 Q50 73 58 64" fill="none" stroke="var(--mascot-ink)" stroke-width="3.5" stroke-linecap="round"/>',
+  grin: '<path d="M40 63 Q50 78 60 63 Z" fill="var(--mascot-ink)"/><path d="M45 69 Q50 73 55 69" fill="#ff7a93"/>',
+  worried: '<path d="M43 69 Q50 63 57 69" fill="none" stroke="var(--mascot-ink)" stroke-width="3.5" stroke-linecap="round"/>',
+  flat: '<path d="M44 67 h12" stroke="var(--mascot-ink)" stroke-width="3.5" stroke-linecap="round"/>',
+  wow: '<ellipse cx="50" cy="68" rx="4.5" ry="5.5" fill="var(--mascot-ink)"/>',
+  squiggle: '<path d="M40 68 q3 -4 6 0 t6 0 t6 0" fill="none" stroke="var(--mascot-ink)" stroke-width="3" stroke-linecap="round"/>',
+};
+
+const MOODS = {
+  happy: { eyes: "open", mouth: "smile" },
+  wave: { eyes: "happy", mouth: "grin", arm: true },
+  joy: { eyes: "happy", mouth: "grin" },
+  sweat: { eyes: "wide", mouth: "worried", drop: true },
+  dizzy: { eyes: "x", mouth: "squiggle" },
+  skeptic: { eyes: "half", mouth: "flat" },
+  wow: { eyes: "wide", mouth: "wow" },
+  confused: { eyes: "odd", mouth: "squiggle", q: true },
+  frustrated: { eyes: "half", mouth: "worried", steam: true },
+};
+
+const mascotSVG = (mood) => {
+  const m = MOODS[mood] || MOODS.happy;
+
+  return `<svg viewBox="0 0 100 100">
+    <ellipse cx="50" cy="94" rx="30" ry="4" fill="#000" opacity=".12"/>
+    ${m.arm ? '<path class="arm" d="M84 60 q14 -8 10 -26" fill="none" stroke="var(--mascot)" stroke-width="9" stroke-linecap="round"/>' : ""}
+    <path d="M50 12 C78 12 90 34 90 58 C90 80 74 90 50 90 C26 90 10 80 10 58 C10 34 22 12 50 12Z" fill="var(--mascot)" stroke="var(--mascot-ink)" stroke-width="2.5"/>
+    <ellipse cx="34" cy="28" rx="9" ry="5" fill="#fff" opacity=".45" transform="rotate(-25 34 28)"/>
+    <circle cx="28" cy="63" r="5" fill="#ff7a93" opacity=".45"/><circle cx="72" cy="63" r="5" fill="#ff7a93" opacity=".45"/>
+    ${EYES[m.eyes]}${MOUTH[m.mouth]}
+    ${m.q ? '<text class="qmark" x="74" y="12" font-size="30" font-weight="700" fill="var(--a1)" font-family="var(--font-display)">?</text>' : ""}
+    ${m.steam ? '<path class="steam" d="M84 22 l8 -8 M90 32 l11 -3 M76 16 l2 -11" stroke="var(--a1)" stroke-width="4" stroke-linecap="round"/>' : ""}
+    ${m.drop ? '<path class="drop" d="M80 26 q-5 8 0 11 q5 -3 0 -11Z" fill="#6ec3ff" stroke="var(--mascot-ink)" stroke-width="1.5"/>' : ""}
+  </svg>`;
+};
+
+const setMood = (el, mood) => {
+  if (el == null || el.dataset.cur === mood) {
+    return;
+  }
+
+  el.dataset.cur = mood;
+  el.innerHTML = mascotSVG(mood);
+};
+
+const replay = (el, cls) => {
+  el.classList.remove(cls);
+  void el.offsetWidth;
+  el.classList.add(cls);
+};
+
+const confetti = (container, x, y, count = 28) => {
+  const colors = ["--a1", "--a2", "--a3", "--a4"];
+
+  for (let i = 0; i < count; i += 1) {
+    const c = document.createElement("div");
+    c.className = "confetti";
+    c.style.left = `${x}px`;
+    c.style.top = `${y}px`;
+    c.style.background = `var(${colors[i % colors.length]})`;
+    c.style.setProperty("--dx", `${rand(-220, 220)}px`);
+    c.style.setProperty("--dy", `${rand(-200, 160)}px`);
+    c.style.setProperty("--rot", `${rand(-540, 540)}deg`);
+    container.appendChild(c);
+    setTimeout(() => c.remove(), 1500);
+  }
+};
+
+/* ───────────── Track ───────────── */
+
+const buildTrack = (track) => {
+  const stops = track.dataset.stops.split("|");
+
+  track.innerHTML = stops.map((label, i) => {
+    const finish = track.hasAttribute("data-finish") && i === stops.length - 1;
+
+    return `<div class="stop${finish ? " finish" : ""}" style="animation-delay: ${i * .18}s; z-index: ${stops.length - i}"><div class="dot"></div><span>${label}</span></div>`;
+  }).join("") + '<div class="mascot rider" data-mood="happy"></div>';
+};
+
+const setTrack = (track, pos) => {
+  const stops = $$(".stop", track);
+  const rider = $(".rider", track);
+
+  stops.forEach((s, i) => s.classList.toggle("lit", i <= pos));
+
+  const target = stops[Math.max(pos, 0)];
+  rider.style.left = `${target.offsetLeft + target.offsetWidth / 2}px`;
+  rider.style.opacity = pos < 0 ? 0 : 1;
+};
+
+const redraw = (track) => replay(track, "draw");
+
+/* ───────────── Slide hooks ───────────── */
+
+let run = 0;
+let visit = 0;
+
+const typeInto = async (el, text, speed, token, clock = () => run) => {
+  el.textContent = "";
+
+  for (const ch of text) {
+    if (token !== clock()) {
+      return;
+    }
+
+    el.textContent += ch;
+    await sleep(speed);
+  }
+};
+
+const hooks = {
+  portada: (step, el, { entered }) => {
+    const m = $(".mascot", el);
+
+    if (!entered) {
+      return;
+    }
+
+    // Tied to the visit, not the render: the re-render after the web fonts load must not cut the typing
+    const token = visit;
+    m.classList.remove("enter");
+    m.style.opacity = 0;
+
+    typeInto($(".typed", el), "Planificar y Revisar", 70, token, () => visit).then(() => {
+      if (token !== visit) {
+        return;
+      }
+
+      m.style.opacity = 1;
+      m.classList.add("enter");
+    });
+  },
+
+  hoy: (step, el, { entered }) => {
+    const track = $(".track", el);
+
+    if (entered) {
+      redraw(track);
+    }
+
+    setTrack(track, 0);
+  },
+
+  aprendimos: async (step, el, { forward }) => {
+    const bar = $(".bar", el);
+    const segs = $$(".seg", bar);
+    const pct = $(".pct", el);
+    const checks = $$(".checks span", el);
+    const qs = $(".qs", el);
+    const m = $(".mascot", el);
+    const token = run;
+
+    const light = (n) => segs.forEach((s, i) => s.classList.toggle("lit", i < n));
+
+    const reset = (n, p) => {
+      bar.classList.remove("chaos");
+      segs.forEach((seg) => { seg.classList.remove("fall"); seg.style.transform = ""; seg.style.transitionDuration = ""; seg.style.transitionDelay = ""; });
+      qs.innerHTML = "";
+      light(n);
+      pct.textContent = `${p}%`;
+    };
+
+    const spawnQ = (animate) => {
+      const q = document.createElement("span");
+      q.textContent = "?";
+      q.style.left = `${rand(52, 88)}%`;
+      q.style.top = `${rand(40, 78)}%`;
+      q.style.fontSize = `${rand(44, 110)}px`;
+      q.style.animationDelay = `${animate ? 0 : -1}s, ${rand(0, 1.5)}s`;
+      qs.appendChild(q);
+    };
+
+    const scatter = (animate) => segs.forEach((seg) => {
+      seg.classList.add("fall");
+      seg.style.transitionDelay = animate ? `${rand(0, .35)}s` : "0s";
+      seg.style.transitionDuration = animate ? "" : "0s";
+      seg.style.transform = `translate(${rand(-60, 60)}px, ${rand(220, 420)}px) rotate(${rand(-160, 160)}deg)`;
+    });
+
+    if (step === 0) {
+      reset(0, 0);
+      checks.forEach((c) => c.classList.remove("on"));
+      setMood(m, "happy");
+      return;
+    }
+
+    if (step === 1) {
+      reset(0, 0);
+      setMood(m, "joy");
+
+      if (!forward) {
+        light(15);
+        pct.textContent = "78%";
+        checks.forEach((c) => c.classList.add("on"));
+        return;
+      }
+
+      checks.forEach((c) => c.classList.remove("on"));
+
+      for (let p = 0; p <= 78; p += 1) {
+        if (token !== run) {
+          return;
+        }
+
+        light(Math.floor(p / 5));
+        pct.textContent = `${p}%`;
+        checks.forEach((c, i) => c.classList.toggle("on", p >= 12 + i * 20));
+        await sleep(p > 60 ? 45 : 22);
+      }
+
+      return;
+    }
+
+    if (!forward) {
+      reset(0, 0);
+      checks.forEach((c) => c.classList.add("on"));
+      pct.textContent = "??%";
+      scatter(false);
+      Array.from({ length: 16 }, () => spawnQ(false));
+      setMood(m, "sweat");
+      return;
+    }
+
+    if (step === 2) {
+      checks.forEach((c) => c.classList.add("on"));
+      setMood(m, "wow");
+      bar.classList.add("chaos");
+      m.classList.add("shake");
+
+      for (let t = 0; t < 26; t += 1) {
+        if (token !== run) {
+          m.classList.remove("shake");
+          return;
+        }
+
+        light(Math.floor(rand(4, 20)));
+        pct.textContent = `${Math.floor(rand(8, 99))}%`;
+        await sleep(t < 12 ? 110 : 70);
+      }
+
+      m.classList.remove("shake");
+      bar.classList.remove("chaos");
+      setMood(m, "dizzy");
+      pct.textContent = "??%";
+      scatter(true);
+
+      for (let i = 0; i < 16; i += 1) {
+        if (token !== run) {
+          return;
+        }
+
+        spawnQ(true);
+        await sleep(70);
+      }
+
+      await sleep(900);
+
+      if (token === run) {
+        setMood(m, "sweat");
+      }
+    }
+  },
+
+  frase: (step, el, { forward }) => {
+    const slow = $(".slowmo", el);
+    const token = run;
+
+    slow.classList.remove("go", "done");
+
+    if (step < 3) {
+      return;
+    }
+
+    if (!forward) {
+      slow.classList.add("done");
+      return;
+    }
+
+    replay(slow, "go");
+    setTimeout(() => token === run && replay(el, "thud"), 4400);
+  },
+
+  recorrido: (step, el, { forward }) => {
+    const route = $(".route", el);
+    const cards = $$(".card", route);
+    const hopper = $(".hopper", route);
+    const size = hopper.offsetWidth;
+
+    if (step === 0) {
+      hopper.style.opacity = 0;
+      hopper.style.left = "-140px";
+      setMood(hopper, "happy");
+      return;
+    }
+
+    const card = cards[step - 1];
+    hopper.style.opacity = 1;
+    hopper.style.left = `${card.offsetLeft + card.offsetWidth / 2 - size / 2}px`;
+    setMood(hopper, step === 4 ? "wave" : "happy");
+
+    if (!forward) {
+      return;
+    }
+
+    replay(hopper, step === 4 ? "bigjump" : "jump");
+    setTimeout(() => replay(card, "bump"), step === 4 ? 850 : 520);
+
+    if (step === 4) {
+      setTimeout(() => confetti(route, card.offsetLeft + card.offsetWidth / 2, -20, 40), 800);
+    }
+  },
+
+  prompts: async (step, el, { forward }) => {
+    const track = $(".track", el);
+    const lines = $$(".line", el);
+    const token = run;
+    const full = (line) => `<span class="p">&gt;</span><span>${line.dataset.text}</span><span class="tag">${line.dataset.tag}</span>`;
+    const caret = '<span class="p">&gt;</span><span class="caret"></span>';
+
+    setTrack(track, step - 1);
+
+    lines.forEach((line, i) => {
+      if (i < step - (forward ? 1 : 0)) {
+        line.innerHTML = full(line);
+      } else if (i >= step) {
+        line.innerHTML = i === step ? caret : "";
+      }
+    });
+
+    if (!forward || step === 0) {
+      return;
+    }
+
+    const line = lines[step - 1];
+    line.innerHTML = '<span class="p">&gt;</span><span class="t"></span><span class="caret"></span>';
+    await typeInto($(".t", line), line.dataset.text, 28, token);
+
+    if (token !== run) {
+      return;
+    }
+
+    line.innerHTML = full(line);
+
+    if (lines[step] != null) {
+      lines[step].innerHTML = caret;
+    }
+  },
+
+  ayudita: async (step, el, { forward }) => {
+    const cmd = $(".cmd1", el);
+    const env = $(".envelope", el);
+    const notes = $$(".note", el);
+    const lines = [$(".l1", el), $(".l3", el)];
+    const token = run;
+    const text = "/plannotator-annotate docs/y.md";
+
+    const applyFix = (on) => {
+      lines.forEach((l) => l.classList.toggle("fixed", on));
+      notes.forEach((n) => n.classList.toggle("done", on));
+      $$(".ln.add", el).forEach((l) => l.classList.toggle("show", on));
+    };
+
+    const animating = forward && step === 3;
+
+    lines.forEach((l) => l.classList.toggle("marked", step === 2 || animating));
+    applyFix(step >= 3 && !animating);
+    env.classList.remove("go");
+
+    if (step === 0) {
+      cmd.innerHTML = '<span class="caret"></span>';
+      return;
+    }
+
+    if (step === 1 && forward) {
+      await typeInto(cmd, text, 35, token);
+      return;
+    }
+
+    cmd.textContent = text;
+
+    if (!animating) {
+      return;
+    }
+
+    $$(".m2, .m3, .m4", el).forEach((m) => m.classList.remove("on"));
+    replay($(".send", el), "press");
+    await sleep(350);
+    replay(env, "go");
+    await sleep(1100);
+
+    const steps = [
+      () => $(".m2", el).classList.add("on"),
+      () => $(".m3", el).classList.add("on"),
+      () => { lines.forEach((l) => l.classList.remove("marked")); applyFix(true); },
+      () => $(".m4", el).classList.add("on"),
+    ];
+
+    for (const fn of steps) {
+      if (token !== run) {
+        return;
+      }
+
+      fn();
+      await sleep(550);
+    }
+  },
+
+  demo: (step, el) => setTrack($(".track", el), 0),
+
+  tests: (step, el, { forward }) => {
+    const rain = $(".rain", el);
+    const lens = $(".lens", el);
+    const passed = $(".passed", el);
+    const m = $(".mascot", el);
+    const token = run;
+
+    if (step === 0) {
+      rain.innerHTML = "";
+    }
+
+    if (step >= 1 && (rain.childElementCount === 0 || (forward && step === 1))) {
+      rain.innerHTML = "";
+
+      for (let i = 0; i < 72; i += 1) {
+        const c = document.createElement("span");
+        c.textContent = "✓";
+        c.style.left = `${(i % 12) * 62 + rand(-6, 6)}px`;
+        c.style.top = `${Math.floor(i / 12) * 56 + rand(-6, 6)}px`;
+        c.style.animationDelay = forward ? `${rand(0, 1.1)}s` : "0s";
+        c.dataset.doubt = Math.random() < .65 ? "1" : "";
+        rain.appendChild(c);
+      }
+    }
+
+    const checks = $$("span", rain);
+    const doubtful = checks.filter((c) => c.dataset.doubt === "1");
+    const toQ = (c) => { c.textContent = "?"; c.classList.add("q"); };
+    const sad = (on) => {
+      passed.classList.toggle("sad", on);
+      passed.textContent = on ? "142 passed 🤔" : "142 passed 🎉";
+    };
+
+    lens.classList.remove("go");
+
+    if (step < 2) {
+      checks.forEach((c) => { c.textContent = "✓"; c.classList.remove("q"); });
+      sad(false);
+      setMood(m, step === 1 ? "joy" : "happy");
+      return;
+    }
+
+    if (!forward) {
+      doubtful.forEach(toQ);
+      sad(true);
+      setMood(m, "confused");
+      return;
+    }
+
+    setMood(m, "joy");
+    replay(lens, "go");
+
+    // The lens center crosses x = 170 → 810 (slide coordinates) in 1.8s; flip each check as it passes
+    doubtful.forEach((c) => {
+      const x = 72 + parseFloat(c.style.left);
+      setTimeout(() => token === run && toQ(c), Math.max(0, (x - 170) / 640) * 1650 + 150);
+    });
+
+    setTimeout(() => token === run && setMood(m, "wow"), 700);
+
+    setTimeout(() => {
+      if (token === run) {
+        sad(true);
+        setMood(m, "confused");
+      }
+    }, 1900);
+  },
+
+  ctm: (step, el) => {
+    const rows = $$("tr[data-leaves]", el);
+    const current = rows.filter((r) => r.classList.contains("on")).pop();
+    const hot = current == null ? [] : current.dataset.leaves.split(" ");
+
+    rows.forEach((r) => r.classList.toggle("hot", r === current));
+
+    $$(".leaf", el).forEach((l) => {
+      l.classList.toggle("hot", hot.includes(l.dataset.leaf));
+      l.classList.toggle("dim", hot.length > 0 && !hot.includes(l.dataset.leaf));
+    });
+  },
+
+  dificil: (step, el) => {
+    $("[data-gap]", el).classList.toggle("on", step >= 3);
+    $(".mv", el).classList.toggle("star", step >= 4);
+    setMood($(".mascot", el), step >= 4 ? "joy" : step >= 2 ? "sweat" : "skeptic");
+  },
+
+  capturalo: (step, el) => setMood($(".mascot", el), step === 3 ? "dizzy" : step >= 7 ? "joy" : "happy"),
+
+  reglas: (step, el) => $(".rules", el).classList.toggle("flipped", step >= 1),
+
+  pasos: (step, el, { entered }) => {
+    const track = $(".track", el);
+
+    if (!entered) {
+      return;
+    }
+
+    redraw(track);
+    setTrack(track, 0);
+    startTimer($(".timer", el));
+    walkSteps(track, visit);
+  },
+};
+
+/* ───────────── Walking the steps ───────────── */
+
+// Forward most of the time, a frustrated step back now and then, then the finish line
+const WALK = [0, 1, 2, 3, 2, 3, 4, 5, 4, 5, 6];
+
+const walkSteps = async (track, token) => {
+  const rider = $(".rider", track);
+
+  await sleep(1600);
+
+  while (token === visit) {
+    for (let i = 0; i < WALK.length; i += 1) {
+      if (token !== visit) {
+        return;
+      }
+
+      const pos = WALK[i];
+      const backNext = WALK[i + 1] != null && WALK[i + 1] < pos;
+      const wentBack = i > 0 && pos < WALK[i - 1];
+
+      if (i > 0) {
+        replay(rider, "jump");
+      }
+
+      setTrack(track, pos);
+      setMood(rider, wentBack ? "sweat" : pos === 6 ? "joy" : "happy");
+
+      if (backNext) {
+        await sleep(700);
+        setMood(rider, "frustrated");
+        await sleep(900);
+      } else {
+        await sleep(pos === 6 ? 300 : 1100);
+      }
+    }
+
+    if (token !== visit) {
+      return;
+    }
+
+    setMood(rider, "wave");
+    confetti(track, rider.offsetLeft, 20, 36);
+    await sleep(2600);
+  }
+};
+
+/* ───────────── Timer ───────────── */
+
+let timerStart = null;
+let timerTick = null;
+
+const startTimer = (el) => {
+  if (timerStart != null) {
+    return;
+  }
+
+  timerStart = Date.now();
+  clearInterval(timerTick);
+
+  timerTick = setInterval(() => {
+    const s = Math.floor((Date.now() - timerStart) / 1000);
+    el.textContent = `⏱ ${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+  }, 250);
+};
+
+$(".timer").addEventListener("click", (e) => {
+  timerStart = null;
+  e.currentTarget.textContent = "⏱ 00:00";
+  startTimer(e.currentTarget);
+});
+
+/* ───────────── Slider ───────────── */
+
+const range = $(".design-range");
+
+const renderSlider = (animate) => {
+  const v = Number(range.value);
+  const yours = $(".chips.yours");
+  const prevYours = yours.childElementCount;
+
+  yours.innerHTML = Array.from({ length: v }, (_, i) => `<div class="chip yes" style="${!animate || i < prevYours ? "animation: none" : ""}">✓</div>`).join("");
+  $(".chips.agents").innerHTML = Array.from({ length: 10 - v }, () => '<div class="chip no" style="animation: none">?</div>').join("");
+  setMood($(".slider-slide .mascot"), v >= 8 ? "joy" : v >= 4 ? "happy" : "skeptic");
+};
+
+range.addEventListener("input", () => renderSlider(true));
+range.addEventListener("keydown", (e) => (e.key === "Escape" ? range.blur() : e.stopPropagation()));
+
+/* ───────────── Titles ───────────── */
+
+// Titles stay on one line: shrink the ones that would overflow the slide width
+const fitTitles = () => $$(".slide h2").forEach((h) => {
+  h.style.fontSize = "";
+
+  let size = parseFloat(getComputedStyle(h).fontSize);
+
+  while (h.scrollWidth > h.clientWidth && size > 30) {
+    size -= 2;
+    h.style.fontSize = `${size}px`;
+  }
+});
+
+/* ───────────── Navigation ───────────── */
+
+const slides = $$(".slide");
+let idx = 0;
+let step = 0;
+
+const stepsOf = (s) => Number(s.dataset.steps || Math.max(0, ...$$("[data-step]", s).map((e) => Number(e.dataset.step))));
+
+const show = (entered, forward) => {
+  run += 1;
+
+  if (entered) {
+    visit += 1;
+  }
+
+  slides.forEach((s, i) => {
+    s.classList.toggle("active", i === idx);
+    s.classList.toggle("past", i < idx);
+  });
+
+  const slide = slides[idx];
+  slide.dataset.step = step;
+  $$("[data-step]", slide).forEach((e) => e.classList.toggle("on", Number(e.dataset.step) <= step));
+
+  const hook = hooks[slide.dataset.id];
+
+  if (hook != null) {
+    hook(step, slide, { entered, forward });
+  }
+
+  $(".count").textContent = `${idx + 1} / ${slides.length}`;
+  $(".stepdots").innerHTML = Array.from({ length: stepsOf(slide) }, (_, i) => `<i class="${i < step ? "on" : ""}"></i>`).join("");
+  history.replaceState(null, "", `${location.search}#${idx + 1}${step > 0 ? `.${step}` : ""}`);
+};
+
+const next = () => {
+  if (step < stepsOf(slides[idx])) {
+    step += 1;
+    show(false, true);
+  } else if (idx < slides.length - 1) {
+    idx += 1;
+    step = 0;
+    show(true, true);
+  }
+};
+
+const prev = () => {
+  if (step > 0) {
+    step -= 1;
+    show(false, false);
+  } else if (idx > 0) {
+    idx -= 1;
+    step = stepsOf(slides[idx]);
+    show(true, false);
+  }
+};
+
+document.addEventListener("keydown", (e) => {
+  if (["ArrowRight", " ", "PageDown", "Enter"].includes(e.key)) {
+    e.preventDefault();
+    next();
+  } else if (["ArrowLeft", "PageUp", "Backspace"].includes(e.key)) {
+    e.preventDefault();
+    prev();
+  } else if (e.key === "f" || e.key === "F") {
+    document.fullscreenElement == null ? document.documentElement.requestFullscreen() : document.exitFullscreen();
+  } else if (e.key === "h" || e.key === "H") {
+    $("#hud").classList.toggle("hidden");
+  }
+});
+
+const fit = () => {
+  const k = Math.min(innerWidth / 1280, innerHeight / 720);
+  $("#deck").style.transform = `translate(-50%, -50%) scale(${k})`;
+};
+
+addEventListener("resize", fit);
+
+/* ───────────── Init ───────────── */
+
+$(".snailcopy").innerHTML = $(".slowmo .snail svg").outerHTML;
+
+$(".bar").innerHTML = '<div class="seg"></div>'.repeat(20);
+$$(".track").forEach(buildTrack);
+$$(".mascot").forEach((m) => setMood(m, m.dataset.mood));
+renderSlider(false);
+fit();
+
+fitTitles();
+
+const [hashSlide, hashStep] = location.hash.slice(1).split(".").map(Number);
+idx = Math.min(Math.max((hashSlide || 1) - 1, 0), slides.length - 1);
+step = Math.min(hashStep || 0, stepsOf(slides[idx]));
+show(true, step === 0);
+
+document.fonts.ready.then(() => {
+  fitTitles();
+  show(false, false);
+});
+</script>
+</body>
+</html>
