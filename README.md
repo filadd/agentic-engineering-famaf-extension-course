@@ -9,7 +9,7 @@ The six run as two blocks. Same cohort throughout — "advanced" describes depth
 ### Base — *how do I work well with this thing?*
 
 1. **The Vibe Coding Experience** — prompt-and-accept workflow, anatomy of a coding agent (tool + harness + LLM), analyze what the AI actually produced
-2. **Planning & Review** — explore, design and document before implementing; deciding test cases up front; review moved earlier; capturing corrections
+2. **Planning & Review** — explore, design and document before implementing; review moved earlier; the test pyramid and deciding cases up front; verifying with the agent, against the API and on screen
 3. **Tooling & Skills** — tools and harness deep dive, AGENTS.md in depth, custom skills, MCP, documentation tools
 4. **Context Engineering** — spec-driven development, subagents, agent orchestration (Teams pattern), full workflow integration. **Closes the base arc.**
 

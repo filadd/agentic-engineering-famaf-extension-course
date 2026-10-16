@@ -10,7 +10,7 @@ Que los estudiantes recorran el espectro del desarrollo asistido por IA, del *vi
 
 1. Explicar el funcionamiento práctico de un modelo de lenguaje: tokens, ventana de contexto, predicción del siguiente token, alucinaciones.
 2. Reconocer los costos ocultos del desarrollo sin estructura: deuda de comprensión, errores en cascada, ilusión de productividad.
-3. Planificar antes de ejecutar y revisar críticamente el código generado.
+3. Planificar antes de ejecutar, revisar críticamente el código generado y verificar que funciona.
 4. Configurar y extender un agente: instrucciones persistentes, habilidades reutilizables y herramientas externas (MCP).
 5. Practicar ingeniería de contexto: distinguir problema de solución, mantener documentación viva y encadenar documento → plan → implementación → revisión.
 6. Describir los componentes de un agente de código: el ciclo de ejecución, la gestión del contexto, los permisos y los puntos de extensión.
@@ -23,7 +23,7 @@ Seis unidades, una por encuentro. Las unidades 1 a 4 forman el **módulo base** 
 
 **Unidad 1. La experiencia del vibe coding.** IA generativa y modelos de lenguaje: predicción del siguiente token, alucinaciones, multimodalidad, precios. La ventana de contexto como memoria de trabajo finita, y la higiene de contexto. Diferencia entre un chat y un agente. Anatomía de un agente: el modelo, las herramientas y el programa que los coordina. Vibe coding: definición, origen y crítica (deuda de comprensión e ilusión de productividad). Práctica: instalación, proyecto propio y sesión de vibe coding con reglas estrictas; luego revisión del código producido.
 
-**Unidad 2. Planificación y revisión.** El desplazamiento del cuello de botella de escribir a verificar. Uso de `git` y revisión de diffs. Planificación previa e iteración del plan con anotaciones. Descomposición de tareas.
+**Unidad 2. Planificación, revisión y verificación.** Las decisiones que el agente toma sin preguntar. Planificar antes de implementar: explorar el código, diseñar el cambio con el agente preguntando y la persona decidiendo, y dejarlo documentado. El documento de diseño como artefacto que se anota y se versiona. El desplazamiento del cuello de botella de escribir a revisar y verificar: mover la revisión al diseño y revisar diffs contra él. Tests: la pirámide de tests y decidir los casos antes del código. Verificación por el agente contra la API y en el navegador. Práctica: una funcionalidad del proyecto propio, de punta a punta con este flujo.
 
 **Unidad 3. Herramientas y habilidades.** Las herramientas como unidad de capacidad del agente. Instrucciones persistentes del proyecto. Habilidades y comandos reutilizables según el estándar abierto Agent Skills.
 

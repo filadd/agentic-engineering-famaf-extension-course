@@ -95,16 +95,17 @@ These are the concepts to cover, roughly ordered by complexity:
 
 ### [Agus] Tier 2: Planning & Review
 - AI gets you to something that works, but decisions and details are missing, and you don't know where or how many
-- Planning as explore → design → document, then implement from the document. The design can be as light or as thorough as needed; more design gives better results
-- The design document as a first-class artifact: read, annotated, versioned, committed with the code. `@plannotator/pi-extension` as a small help (*una ayudita*) for annotating it (`/plannotator-annotate`) and the diff (`/plannotator-review`)
+- Planning as explore → design → document, then implement from the document. The design can be as light or as thorough as needed; more design costs time up front and buys less rework and more understanding of what comes out
+- The design document as a first-class artifact: drafted, read and corrected before it is saved, annotated, versioned, committed with the code. It can carry diagrams, not only prose. `@plannotator/pi-extension` as a small help (*una ayudita*) for annotating it (`/plannotator-annotate`) and the diff (`/plannotator-review`)
 - Plan mode (`pi --plan`) as an existing mechanism students can try, not a required step. The harness restricts the toolset to read/search while it is on (seeds Tier 3's permissions/extension-points material)
-- Testing: agents write many tests, and unattended you don't know if they test the right thing. Deciding the cases before the code with a simplified Classification Tree Method
-- Review is getting harder (more code, and code nobody on the team wrote) and the industry is still looking for ways to do it; moving it earlier, into the design, is one of them. Reading the diff to understand it and check it against the design. Capturing the corrections as learnings, with a sneak peek at automating it
+- Review is getting harder (more code, and code nobody on the team wrote) and the industry is still looking for ways to do it. Two of them used here: moving review earlier, into the design, and verifying that the result works. Reading the diff to understand it and check it against the design
+- Testing: the test pyramid (unit, integration, e2e) as vocabulary, and the agent can write all of them. Unattended, you don't know if they test the right thing. Deciding the cases before the code with a simplified Classification Tree Method, each case marked as covered by a test, by the agent's verification, or both
+- Verification: the agent exercises what it built. Against an API with `curl`; on screen with a browser-driving CLI (`agent-browser`), introduced in one line since tools are Tier 3's. Verifying becomes the fifth stop after explore → design → document → code
 - Debugging AI-generated code: read it yourself before asking for a fix
 
 ### [Diego] Tier 3: Tooling & Skills
 
-> Prerequisite, not content: **Pi is installed in Session 1**, and Session 2 adds the Plannotator extension; `pi-subagents` is installed in Session 4, where subagents are taught. Tier 3 goes deeper on the harness — it does not introduce it. `AGENTS.md` **is** introduced here from scratch: the Session 1 step that had students write one was dropped, and Session 2 does not touch it.
+> Prerequisite, not content: **Pi is installed in Session 1**, and Session 2 adds the Plannotator extension and the `agent-browser` CLI; `pi-subagents` is installed in Session 4, where subagents are taught. Tier 3 goes deeper on the harness — it does not introduce it. `AGENTS.md` **is** introduced here from scratch: the Session 1 step that had students write one was dropped, and Session 2 does not touch it.
 >
 > **Subagents moved to Tier 4** (decided while building Session 3): Agus opens them there with a documentation use case, so Tier 3 only names them — one row in the always-loaded vs. on-demand table, one row in the extension-points table. Session 2's "depth on subagents is Session 3" promise moves with them.
 >
@@ -234,7 +235,7 @@ Not a dedicated session, but surfaced where relevant:
 
 ### Session 2: Planning & Review
 
-> Runs on **Pi**, plus one extension installed in class: `@plannotator/pi-extension`, used as a small help (*una ayudita*) for annotating documents and diffs. **Session duration is 1 h 30.** All session materials are in Spanish, including the instructor notes. Per-block timings are set in rehearsal; the hands-on is not cut. The deck is an animated HTML file, `sessions/session-2/deck/index.html`, drawn on a fixed 1280×720 canvas that scales to any projector.
+> Runs on **Pi**, plus one extension installed in class: `@plannotator/pi-extension`, used as a small help (*una ayudita*) for annotating documents and diffs. The hands-on also installs `agent-browser`, a CLI the agent uses to drive a browser for verification. **Session duration is 1 h 30.** All session materials are in Spanish, including the instructor notes. Per-block timings are set in rehearsal; the hands-on is not cut. The deck is an animated HTML file, `sessions/session-2/deck/index.html`, drawn on a fixed 1280×720 canvas that scales to any projector.
 
 **Recap: ¿Cómo les fue?**
 - A short discussion, not slides. Four questions: how did it go, did you read the code, did you find issues in the app, do you understand what's happening underneath
@@ -244,37 +245,45 @@ Not a dedicated session, but surfaced where relevant:
 - One idea: **AI gets you to something that works, but decisions and details are missing, and you don't know where or how many.** The decisions you didn't make, the agent made silently
 - Visual: a progress bar fills with "anda" checkboxes, stalls, jerks back and forth, breaks and fills with question marks
 - One-line callback to Session 1's comprehension debt
-- Closes on the session's line: *"Hoy no vamos a escribir menos código. Vamos a saber qué código escribimos."* Plus the honest warning that today will feel slower, and that's the point (a snail crawls in, then a "¡A PROPÓSITO!" stamp)
+- Said over the same slide: *"Hoy no vamos a escribir menos código. Vamos a saber qué código escribimos."* Plus the honest warning that today will feel slower, and that's the point
 
 **Planificar: explorar, diseñar, documentar**
 - Planificar is a route with three stops before the finish line, which is the code: **explore** the existing code, if any, before deciding anything; **design**, where the student makes the decisions and the agent asks them one at a time; **document**, where the design lands in a file you can read, annotate, version and hand to the agent. Then the agent implements from the document
-- **The design can be as light or as thorough as you need, and more design gives better results.** Every decision you made is one the agent didn't invent
+- **The design can be as light or as thorough as you need, and more design gives better results.** A slider from "nada de diseño" to "todo diseñado" moves decisions from the agent's row to yours, and drives two charts over time spent designing: the chance of rework drops steeply and flattens, understanding of the output climbs fast and saturates. Every decision you made is one the agent didn't invent
+- Shown as one scrolling Pi conversation adding reminders to a todo app: explore, design four decisions one at a time, ask for a draft with a diagram, correct it twice, save it, then implement with the diffs and the test run on screen
 - Done with plain prompts, no special tooling. The process is what transfers to the next harness
 
 **Setup: Plannotator**
 - `pi install npm:@plannotator/pi-extension`, everyone together. Framed as a small help, not the method: `/plannotator-annotate` on the design document, `/plannotator-review` on the diff
-- **Plan mode as an aside**: Plannotator also ships a plan mode (`pi --plan`) where the harness restricts the agent to reading, searching and writing the plan file. Mentioned as an existing mechanism students can try, not something to use every time and not today's flow
+- **Plan mode as an aside**, said out loud: Plannotator also ships a plan mode (`pi --plan`) where the harness restricts the agent to reading, searching and writing the plan file. Mentioned as an existing mechanism students can try, not something to use every time and not today's flow
 
 **Demo: explorar → diseñar → documentar → implementar**
 - One continuous demo on the instructor's project: explore the part to be touched, design by answering the agent's questions out loud, have it write the document, annotate it with `/plannotator-annotate` and send it back, then implement from it
 - Show the design depth: a light versus a thorough design for the same change, or at least say where you'd go deeper
 
-**Tests: the agent writes many, and you don't know if they test the right thing**
-- Agents produce lots of tests that test the implementation instead of the behavior, assert trivial things, mock everything, or get loosened until they pass
-- **Decide the cases before the code**, as part of the design, with a simplified **Classification Tree Method** (Grochtmann and Grimm, 1993): what varies, which values matter, which combinations to cover. The agent proposes the table, the student confirms, cuts or adds; each row is marked automated, manual or both
+**Revisar**
+- **Code review is getting harder**: there is more code than ever, because the agent writes faster than anyone reads, and it is code nobody on the team wrote, so there is no one to ask why it looks the way it does. Line-by-line diff reading doesn't scale, and the industry is still looking for better ways. Said honestly: there is no settled answer, only attempts, shown one at a time (adversarial reviews, smaller changes, not reviewing at all, moving review earlier, verifying that it works). Today uses the last two
+- **Review, before and after**, as two work cycles on a feature. Before, with a colleague: design (a chat) → code → verify (tests + by hand) → review (by hand) → ship, with an arrow back to the code from both verify and review, since both find problems, and several trips around. Now, with an agent, the same cycle: design (written and annotated) → code → verify (tests + the agent) → light review (agent + human) → ship, with the same arrows back, shorter. The loops still exist, but they are smaller. With the design done and annotated, most of the review happened before the code existed. Reading the code now is for understanding what was done, against one question: *does it match the design?*
+
+**Tests**
+- What tests are for (code that tests your code: they write down what it must do, run on their own on every change, and tell you before the user does when something breaks), then the test pyramid as vocabulary: unit (one function; many and fast), integration (several pieces together), e2e (the whole app, as a person would use it; few and slow). Said out loud: the agent can write all of them
+- Then the catch: agents produce lots of tests that test the implementation instead of the behavior, assert trivial things, mock everything, or get loosened until they pass
+- **Decide the cases before the code**, as part of the design, with a simplified **Classification Tree Method** (Grochtmann and Grimm, 1993): what varies, which values matter, which combinations to cover. The agent proposes the table, the student confirms, cuts or adds; each row is marked test, agent, or both
 - The agent installs the runner; the student decides the cases
 
-**Revisar (lower priority)**
-- **Code review is getting harder**: there is more code than ever, because the agent writes faster than anyone reads, and it is code nobody on the team wrote, so there is no one to ask why it looks the way it does. Line-by-line diff reading doesn't scale, and the industry is still looking for better ways. Said honestly: there is no settled answer, only attempts (reviewing agents, smaller diffs, tests that prove what matters, moving review earlier). Today uses the last one
-- Review moved earlier, shown one block at a time: before, code → review ("a thousand lines of diff"); now, design → review ("one page of design") → code. With the design done and annotated, most of it happened before the code existed. Reading the code now is for understanding what was done, against one question: *does it match the design?*
-- **Capture learnings**: every correction made to the agent is worth more than the fix, because otherwise the next conversation starts from zero. Shown as two cases side by side: without capturing, the next chat repeats the mistake; capturing, the next chat reads it from the file. Concept first; a short sneak peek at a skill that reads the session and proposes a rule for each correction. Skills themselves are Session 3's
+**Verificar**
+- The route from the first half gains a fifth step, **verify**, said out loud. Compiling and passing tests isn't enough: someone has to use it, and that someone can be the agent. Three ways, in the order the next slides show them: hit the API, look at the stored data, drive the screen
+- The responsibility stays with the person: look at what the agent did to verify. It is far cheaper than reading the diff, and it tells you whether the thing works
+- API: the reminders example again, with a sequence diagram between agent and server drawn alongside the terminal; one `curl` per case in the design document, "3 of 3 cases behave as the doc says"
+- Data: after the `curl` calls, `jq` over `db.json` next to a table view of it. The 400 wrote nothing, the last PATCH left `null`, and `vencido` isn't stored because the design says it is computed on load. Catches what the API response doesn't show
+- Screen: `agent-browser` introduced in one line and not explored, since tools are Session 3's. What's worth showing is how the agent sees the page, as a list of elements with refs it then clicks and fills. A terminal and a simulated browser side by side: the pointer moves on its own, a screenshot closes it
 
 **Hands-on**
-- Rules invert from Session 1: nothing is implemented without a written design; annotate the design at least once before approving it; test cases are decided before code; read the diff to understand it, and read broken code yourself before asking for a fix
-- Pick a small feature (4-5 files max) → explore → design, including the test cases → document and annotate → implement → review and capture corrections → commit the code and the design document
+- Rules invert from Session 1, in the order the session taught them: design before you code; discuss the test cases with the agent; write the design document; implement; verify
+- Pick a small feature (4-5 files max) → explore → design, including the cases → draft, correct and save the document, and annotate it → implement → verify with `curl` or `agent-browser` and look at what it did → review → commit the code and the design document
 
 **Closing: ¿Qué aprendimos?**
-- A collage of everything the session covered, card by card: the bar that doesn't know what's missing, the explore → design → document → code route, more design and better results, annotating the design, cases before code, review moved earlier, capturing corrections, slower on purpose
+- A collage of everything the session covered, card by card: the bar that doesn't know what's missing, the five-stop route, more design and better results, annotating the design, the pyramid (the agent writes the tests, you decide the cases), verifying the API, verifying the screen, and the scale between time and understanding
 - Was designing first worth it? Did the annotated design surface something you'd missed? Do the tests prove what you decided? (For a small feature, honestly: maybe not. Let them say so.)
 - Homework for Session 3: where did the flow feel like pure ceremony, and what did you have to explain to the agent more than once? The second question sets up Session 3's `AGENTS.md` material.
 
@@ -283,7 +292,7 @@ Not a dedicated session, but surfaced where relevant:
 **Recap & Sharing (~15-20 min)**
 - Show-and-tell: how did designing first change the work?
 
-> Students arrive with **Pi plus the Plannotator extension** (Sessions 1 and 2). No setup block here. `AGENTS.md` is introduced here from scratch — neither Session 1 nor Session 2 touches it.
+> Students arrive with **Pi plus the Plannotator extension and `agent-browser`** (Sessions 1 and 2). No setup block here. `AGENTS.md` is introduced here from scratch — neither Session 1 nor Session 2 touches it.
 
 **Theory: "Teaching The Agent" (~20-30 min)**
 - Tools: the unit of agent capability. What a tool definition looks like (name + schema + handler), how the LLM decides which to call, examples from Pi's built-in toolbelt. Why a smarter tool often beats a smarter model.

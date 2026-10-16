@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Agregar **una feature** a tu proyecto con un diseño que decidiste vos y que quedó escrito antes de que el agente toque una línea.
+Agregar **una feature** a tu proyecto con un diseño que decidiste vos y que quedó escrito antes de que el agente toque una línea, y verificar que funciona.
 
 El objetivo no es que la feature sea grande ni perfecta. Es que **sientas la diferencia** entre tirarle un prompt al agente y aceptar lo que salga (Sesión 1) y trabajar con intención.
 
@@ -15,24 +15,32 @@ El objetivo no es que la feature sea grande ni perfecta. Es que **sientas la dif
 pi install npm:@plannotator/pi-extension
 ```
 
+- Instalá `agent-browser`, para que el agente pueda usar tu app en un navegador:
+
+```
+npm install -g agent-browser
+agent-browser install
+```
+
 - Asegurate de tener todo commiteado antes de arrancar (`git status` limpio). El diff del final tiene que mostrar **solo** lo de hoy.
 
 ## Las reglas de hoy
 
 La semana pasada la regla era *no abras los archivos*. Hoy se da vuelta:
 
-1. **Nada se implementa sin un diseño escrito.** El diseño es un archivo, no una idea en la cabeza del agente.
-2. **Anotá el diseño al menos una vez antes de aprobarlo.** Aunque te parezca bien.
-3. **Los casos de test se deciden antes del código.**
-4. **Leé el diff para entenderlo.** Si algo se rompe, leelo vos primero.
+1. **Diseñá antes de escribir código.** Las decisiones las tomás vos; el agente te las pregunta de a una.
+2. **Discutí los casos de test con el agente.** Él propone, vos decidís, y cada caso dice cómo se verifica: con un test, con el agente usando la app, o las dos.
+3. **Escribí el documento de diseño.** El diseño es un archivo, no una idea en la cabeza del agente. Anotalo al menos una vez antes de aprobarlo, aunque te parezca bien.
+4. **Implementá**, desde el documento. Si algo se rompe, leé el código vos primero.
+5. **Verificá.** Que el agente use lo que construyó, y después leé el diff.
 
-La regla 2 va a dar ganas de saltearla. Es la que más importa.
+Anotar el documento en la regla 3 va a dar ganas de saltearlo. Es lo que más importa.
 
 ## Pasos
 
 ### 1. Elegí una feature
 
-Algo chico que puedas terminar en la práctica *incluyendo* el diseño y la revisión.
+Algo chico que puedas terminar en la práctica *incluyendo* el diseño, la verificación y la revisión.
 
 Buenos ejemplos:
 - Agregar un campo "completado el" a tus todos.
@@ -60,23 +68,25 @@ Las decisiones las tomás vos. El agente te trae los datos que necesitás para d
 
 El diseño puede ser tan liviano o tan profundo como quieras. Para algo chico alcanza con tres o cuatro decisiones. **Más diseño, mejores resultados.**
 
-### 4. Decidí los casos de test
-
-Antes de que exista el código, pedile que proponga los casos:
+**Los casos de test son parte del diseño.** Antes de que exista el código, pedile que proponga los casos:
 
 1. **Qué varía**: las entradas y el estado que cambian el resultado.
 2. **Qué valores importan**: para cada cosa que varía, los grupos que el código trata distinto (vacío / uno / muchos; válido / inválido).
 3. **Qué combinaciones cubrir**: una fila por caso, eligiendo un grupo de cada cosa.
 
-**Vos confirmás, recortás o agregás.** Marcá cada fila como test automático, verificación manual, o las dos.
+**Vos confirmás, recortás o agregás.** Marcá cada fila como **test** (un test automático), **agente** (lo verifica el agente usando la app), o las dos.
 
 **¿No tenés test runner?** Pedile al agente que te lo instale. Eso es mecánico, delegalo tranquila/o. Lo que no delegás es decidir los casos.
 
-### 5. Documentá y anotá
+### 4. Documentá y anotá
 
-Pedile que escriba el diseño, con la tabla de casos, en un archivo:
+Pedile primero un borrador, y leelo antes de que lo guarde:
 
-> *"Escribí el diseño que acordamos, con los casos de test, en `docs/[feature].md`."*
+> *"Armame un borrador del diseño que acordamos, con la tabla de casos y un diagrama. Todavía no lo guardes."*
+
+Corregí lo que no coincide con lo que decidiste. Cuando te sirva, guardalo:
+
+> *"Guardalo en `docs/[feature].md`."*
 
 Abrilo con Plannotator:
 
@@ -96,7 +106,7 @@ Mandáselo de vuelta con tus anotaciones. Iterá hasta que el documento **te sir
 
 > Si el primer documento te salió genial y no encontrás nada que anotar, buscá más. Siempre hay una decisión implícita.
 
-### 6. Implementá
+### 5. Implementá
 
 > *"Implementá `docs/[feature].md`, empezando por los tests."*
 
@@ -104,7 +114,21 @@ Si ves que se va del diseño, **frenalo**.
 
 Si algo se rompe: **leé el código vos antes de pedirle que lo arregle.** Pedirle que arregle algo que no entendiste te deja exactamente donde estabas la semana pasada.
 
-### 7. Revisá y capturá
+### 6. Verificá
+
+Que pasen los tests no alcanza: pedile al agente que **use** lo que construyó, contra los casos de la tabla marcados como "agente".
+
+Si tu feature tiene API:
+
+> *"Verificá [la feature] con curl, contra los casos de `docs/[feature].md`. Mostrame cada pedido y su respuesta."*
+
+Si se ve en la pantalla:
+
+> *"Usá agent-browser para abrir la app y probar [la feature]. Sacá una captura de cada caso."*
+
+**Mirá lo que hizo**: las respuestas, las capturas. Si no lo miraste, no verificaste nada. Si algo no se comporta como dice el documento, volvé al paso 5.
+
+### 7. Revisá
 
 Leé el diff para entender qué se hizo:
 
@@ -116,8 +140,6 @@ Leé el diff para entender qué se hizo:
 
 La pregunta principal: **¿coincide con el diseño?** Solo la podés hacer porque el diseño está escrito. Fijate también si los tests prueban los casos de la tabla.
 
-Si le corregís algo, **anotá la corrección** en un archivo aparte. Si no la capturás, la próxima conversación arranca de cero y el agente vuelve a cometer el mismo error.
-
 Cuando estés conforme, commiteá. **Commiteá también el documento de diseño**: es parte del historial del proyecto.
 
 ## Resultado esperado
@@ -126,12 +148,12 @@ Al final del ejercicio deberías tener:
 
 - La feature andando, con tests que prueban casos que decidiste vos.
 - Un documento de diseño commiteado, con las anotaciones que le hiciste.
+- La feature verificada por el agente: las respuestas de la API o las capturas, que miraste.
 - Un diff que leíste entero.
-- Una lista, aunque sea corta, de lo que le tuviste que corregir al agente.
 
 ## Para la semana
 
-Seguí agregando features a tu proyecto **con este flujo**: explorar, diseñar, documentar, implementar, revisar.
+Seguí agregando features a tu proyecto **con este flujo**: explorar, diseñar, documentar, implementar, verificar, revisar.
 
 Anotá dos cosas para la Sesión 3:
 
