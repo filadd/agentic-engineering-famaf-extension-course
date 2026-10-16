@@ -279,46 +279,6 @@ p { margin: 0; }
 .learned > .mascot { --size: 150px; }
 .tagline { display: inline-block; margin-top: 18px; padding: 6px 14px; border: var(--border); border-radius: 999px; font-size: 22px; }
 
-/* frase */
-.phrase { display: flex; flex-direction: column; justify-content: center; height: 100%; gap: 36px; padding-bottom: 170px; }
-.phrase p { font-family: var(--font-display); font-weight: 700; font-size: 56px; line-height: 1.1; letter-spacing: -.02em; }
-.strike { position: relative; display: inline-block; white-space: nowrap; }
-.strike svg { position: absolute; left: -12px; top: 8%; width: calc(100% + 24px); height: 84%; overflow: visible; pointer-events: none; }
-.strike path { fill: none; stroke: var(--a1); stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1400; stroke-dashoffset: 1400; transition: stroke-dashoffset .9s cubic-bezier(.6, 0, .3, 1); }
-.strike.on path { stroke-dashoffset: 0; }
-.strike[data-step] { opacity: 1; transform: none; }
-
-.slowmo { position: absolute; left: 0; right: 0; bottom: 40px; height: 190px; pointer-events: none; }
-.slowmo .trail { position: absolute; left: 0; bottom: 12px; height: 12px; width: 0; border-radius: 0 8px 8px 0; background: color-mix(in srgb, var(--a4) 45%, transparent); }
-.slowmo .snail { position: absolute; left: 0; bottom: 6px; width: 200px; transform: translateX(-260px); }
-.slowmo .snail svg { width: 200px; height: 130px; overflow: visible; }
-.slowmo .body-g { transform-origin: 100px 118px; }
-.slowmo .shell { transform-origin: 88px 110px; }
-.slowmo .bubble { position: absolute; left: 290px; bottom: 150px; padding: 14px 22px; font-size: 28px; opacity: 0; transform: scale(.3); transform-origin: left bottom; }
-.stamp { position: absolute; right: 50px; bottom: 10px; padding: 14px 30px; font-family: var(--font-display); font-weight: 700; font-size: 52px; color: var(--a1); border: 7px solid var(--a1); border-radius: 14px; transform: rotate(-12deg) scale(3); opacity: 0; letter-spacing: .04em; }
-
-.slowmo.go .snail { animation: crawl 3.2s linear forwards; }
-.slowmo.go .body-g { animation: squish .53s ease-in-out 6; }
-.slowmo.go .shell { animation: wobble .53s ease-in-out 6; }
-.slowmo.go .trail { animation: trail 3.2s linear forwards; }
-.slowmo.go .bubble { animation: popin .45s cubic-bezier(.2, .9, .3, 1.8) 3.2s forwards; }
-.slowmo.go .stamp { animation: stamp .45s cubic-bezier(.5, 0, .7, 1.4) 4.1s forwards; }
-
-.slowmo.done .snail { transform: translateX(300px); }
-.slowmo.done .trail { width: 340px; }
-.slowmo.done .bubble { opacity: 1; transform: none; }
-.slowmo.done .stamp { opacity: .92; transform: rotate(-12deg); }
-
-/* inching: move while stretched, pause while bunching up */
-@keyframes crawl { 0% { transform: translateX(-260px); } 16% { transform: translateX(-170px); } 25% { transform: translateX(-160px); } 41% { transform: translateX(-60px); } 50% { transform: translateX(-50px); } 66% { transform: translateX(60px); } 75% { transform: translateX(70px); } 91% { transform: translateX(290px); } 100% { transform: translateX(300px); } }
-@keyframes trail { 0%, 16% { width: 0; } 41% { width: 0; } 50% { width: 10px; } 66% { width: 110px; } 75% { width: 120px; } 91% { width: 330px; } 100% { width: 340px; } }
-@keyframes squish { 50% { transform: scaleX(1.12) scaleY(.9); } }
-@keyframes wobble { 50% { transform: rotate(-5deg) translateY(-3px); } }
-@keyframes popin { to { opacity: 1; transform: none; } }
-@keyframes stamp { 0% { transform: rotate(-12deg) scale(3); opacity: 0; } 70% { transform: rotate(-12deg) scale(.92); opacity: 1; } 100% { transform: rotate(-12deg) scale(1); opacity: .92; } }
-.phrase-slide.thud { animation: thud .25s ease-out; }
-@keyframes thud { 30% { transform: translate(4px, 5px); } 60% { transform: translate(-3px, -2px); } }
-
 /* planificar */
 .section { display: flex; flex-direction: column; justify-content: center; height: 100%; }
 .section h1 { margin-bottom: 10px; }
@@ -340,15 +300,29 @@ p { margin: 0; }
 input[type=range] { -webkit-appearance: none; appearance: none; flex: 1; height: 16px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 15%, transparent); outline: none; }
 input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 48px; height: 48px; border-radius: 50%; background: var(--a1); border: var(--border); box-shadow: 4px 4px 0 var(--line); cursor: grab; }
 input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 50%; background: var(--a1); border: var(--border); cursor: grab; }
-.dec { display: grid; grid-template-columns: 330px 1fr; align-items: center; gap: 18px; margin: 22px 0; font-size: 30px; }
+.dec { display: grid; grid-template-columns: 330px 1fr; align-items: center; gap: 18px; margin: 14px 0; font-size: 30px; }
 .chips { display: flex; gap: 12px; min-height: 62px; }
 .chip { width: 58px; height: 58px; display: grid; place-items: center; font-size: 34px; font-weight: 700; border: var(--border); border-radius: 14px; background: var(--card); animation: chipIn .35s cubic-bezier(.2, .9, .3, 1.8) both; }
 .chip.yes { background: color-mix(in srgb, var(--good) 35%, var(--card)); }
 .chip.no { background: color-mix(in srgb, var(--a1) 30%, var(--card)); font-family: var(--font-display); }
 @keyframes chipIn { from { transform: scale(0) rotate(-30deg); } }
 
+.slider-slide .slider-row { margin: 26px 0 22px; }
+.slider-slide > .mascot { --size: 100px; top: 40px; right: 70px; bottom: auto; }
+.curves { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 62px; }
+.curve { width: 100%; height: 232px; overflow: visible; }
+.curve .axis { fill: none; stroke: var(--line); stroke-width: 3; stroke-linecap: round; }
+.curve .fn { fill: none; stroke-width: 6; stroke-linecap: round; }
+.curve[data-f="retrabajo"] .fn, .curve[data-f="retrabajo"] .pt circle { stroke: var(--a1); }
+.curve[data-f="entender"] .fn, .curve[data-f="entender"] .pt circle { stroke: var(--a4); }
+.curve .guide { fill: none; stroke: var(--muted); stroke-width: 2.5; stroke-dasharray: 6 7; transition: d .35s cubic-bezier(.3, 1.2, .5, 1); }
+.curve .pt { transition: transform .35s cubic-bezier(.3, 1.2, .5, 1); }
+.curve .pt circle { fill: var(--ink); stroke-width: 5; }
+.curve text { font-family: var(--font-body); font-size: 22px; fill: var(--ink); }
+.curve .xlbl { fill: var(--muted); text-anchor: end; }
+
 /* terminal */
-.term { background: var(--term-bg); color: var(--term-ink); border-radius: 16px; border: var(--border); box-shadow: var(--shadow); padding: 0 0 22px; font-family: var(--font-mono); font-size: 26px; overflow: hidden; }
+.term { font-variant-ligatures: none; background: var(--term-bg); color: var(--term-ink); border-radius: 16px; border: var(--border); box-shadow: var(--shadow); padding: 0 0 22px; font-family: var(--font-mono); font-size: 26px; overflow: hidden; }
 .term .bar3 { display: flex; gap: 10px; padding: 14px 18px; background: #ffffff14; margin-bottom: 16px; }
 .term .bar3 i { width: 16px; height: 16px; border-radius: 50%; background: #ff5f57; }
 .term .bar3 i:nth-child(2) { background: #febc2e; }
@@ -358,6 +332,34 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
 .term .line .tag { margin-left: auto; font-size: 30px; }
 .term .caret { display: inline-block; width: 13px; height: 28px; background: var(--term-ink); animation: blink 1s steps(1) infinite; vertical-align: middle; }
 .prompts-slide .term { margin-top: 30px; }
+.term .bar3 .title { margin-left: 12px; font-size: 17px; color: var(--muted); }
+.chat .viewport { height: 418px; overflow: hidden; }
+.chat .feed { transition: transform .45s cubic-bezier(.3, 1, .4, 1); }
+.chat .line { min-height: 0; padding: 4px 28px; font-size: 22px; transition: opacity .4s; }
+.chat .line.gap { margin-top: 14px; }
+.chat .line.old { opacity: .35; }
+.chat .line.ag { color: var(--muted); }
+.chat .line.ag .p { color: var(--muted); }
+.chat .line.q .p { color: var(--a1); }
+.chat .line.q { color: var(--term-ink); }
+.chat .line.ok .p { color: var(--a4); }
+.chat .line.ans { padding-left: 64px; }
+.chat .line.hide { display: none; }
+.chat .line.add, .chat .line.del, .chat .line.cmd, .chat .line.out { padding: 0 28px 0 64px; font-size: 19px; }
+.chat .line.add { color: var(--good); }
+.chat .line.add .p { color: var(--good); }
+.chat .line.del { color: var(--a1); }
+.chat .line.del .p { color: var(--a1); }
+.chat .line.cmd { padding-left: 28px; padding-top: 6px; color: var(--term-ink); }
+.chat .line.cmd .p { color: var(--a2); }
+.chat .line.out { color: var(--muted); }
+.chat .line.wait .p { color: var(--a3); }
+.chat .line.wait.done .p { color: var(--a4); }
+.chat .line .t { overflow-wrap: anywhere; }
+.chat .line.doc { padding: 0 28px 0 64px; font-size: 19px; color: var(--term-ink); }
+.chat .line.doc .p { color: var(--a2); }
+.chat .line.doc .t { white-space: pre; }
+.chat .line.doc.h { color: var(--a2); font-weight: 700; }
 
 /* ayudita */
 .install { display: inline-block; font-family: var(--font-mono); font-size: 20px; padding: 8px 16px; border-radius: 10px; background: var(--term-bg); color: var(--term-ink); margin-top: -8px; }
@@ -387,8 +389,6 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
 .envelope { position: absolute; font-size: 54px; opacity: 0; left: 780px; top: 330px; z-index: 5; }
 .envelope.go { animation: fly 1.2s cubic-bezier(.4, 0, .3, 1) forwards; }
 @keyframes fly { 0% { opacity: 1; transform: none; } 50% { transform: translate(-300px, -160px) rotate(-25deg); } 90% { opacity: 1; } 100% { opacity: 0; transform: translate(-560px, -60px) rotate(-10deg) scale(.5); } }
-.flow-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 26px; font-size: 22px; }
-.flow-foot .psst { color: var(--muted); }
 
 /* line drawing */
 .sketch { stroke-dasharray: 1400; stroke-dashoffset: 1400; transition: stroke-dashoffset 1.4s ease-out; }
@@ -445,45 +445,139 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
 .chart .lbl-read { fill: var(--a2); font-weight: 700; }
 .chart .bots text { font-size: 34px; }
 .chart .gaplbl { font-family: var(--font-display); font-weight: 700; font-size: 34px; fill: var(--a1); }
-.tries { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 14px; font-size: 22px; margin-top: 0; }
+.tries { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 24px; font-size: 19px; margin-top: 0; }
 .tries .q { font-weight: 700; flex-basis: 100%; }
-.tries span.t { padding: 8px 16px; border: var(--border); border-radius: 999px; background: var(--card); transition: transform .4s cubic-bezier(.2, .9, .3, 1.8), background .3s, box-shadow .3s; }
+.tries span.t { padding: 6px 13px; border: var(--border); border-radius: 999px; background: var(--card); transition: opacity .3s, transform .4s cubic-bezier(.2, .9, .3, 1.8), background .3s, box-shadow .3s; }
 .tries span.t.star { background: var(--a3); color: #111; transform: scale(1.12) rotate(-2deg); box-shadow: 4px 4px 0 var(--line); }
 .dificil-slide > .mascot { --size: 100px; right: 70px; top: 40px; bottom: auto; }
 
-/* adelante */
-.lanes { display: flex; flex-direction: column; gap: 60px; margin-top: 60px; font-size: 32px; }
-.lane { display: grid; grid-template-columns: 130px 1fr; align-items: center; }
-.lane .row { display: flex; align-items: center; gap: 26px; min-height: 120px; }
-.blk { padding: 20px 28px; border: var(--border); border-radius: 16px; background: var(--card); box-shadow: var(--shadow); white-space: nowrap; font-weight: 700; }
-.blk small { display: block; margin-top: 4px; font-size: 19px; font-weight: 400; color: var(--muted); }
+/* antes y después */
+.cycles { display: flex; flex-direction: column; gap: 34px; margin-top: 30px; }
+.cycle .small { display: block; margin-bottom: 12px; font-weight: 700; }
+.cycle .row { display: flex; align-items: flex-start; gap: 8px; }
+.cycle .stg { opacity: 0; transform: scale(.6); transition: opacity .35s, transform .45s cubic-bezier(.2, .9, .3, 1.6); transition-delay: calc(var(--i) * .22s); }
+.cycle.on .stg { opacity: 1; transform: none; }
+.blk { padding: 12px 12px; border: var(--border); border-radius: 14px; background: var(--card); box-shadow: 5px 5px 0 #05051a; white-space: nowrap; font-size: 21px; font-weight: 700; }
+.blk small { display: block; margin-top: 3px; font-size: 15px; font-weight: 400; color: var(--muted); }
 .blk.rev { background: color-mix(in srgb, var(--a1) 40%, var(--card)); }
 .blk.calm { background: color-mix(in srgb, var(--a4) 35%, var(--card)); }
 .blk.des { background: color-mix(in srgb, var(--a2) 35%, var(--card)); }
-.arrow { font-size: 48px; font-weight: 700; color: var(--muted); }
+.blk.ship { background: color-mix(in srgb, var(--good) 40%, var(--card)); }
+.arrow { padding-top: 12px; font-size: 28px; font-weight: 700; color: var(--muted); }
+.loop { position: relative; display: flex; align-items: flex-start; gap: 8px; padding-bottom: 94px; }
+.loop svg { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.loop .back, .loop .head { fill: none; stroke: var(--a1); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.loop .back { stroke-dasharray: 10 9; animation: loopflow .9s linear infinite; }
+.loop .loopnote { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; font-size: 16px; color: var(--muted); }
+@keyframes loopflow { to { stroke-dashoffset: -19; } }
+.after .loop { padding-bottom: 64px; }
+.after .loop .back { stroke: var(--a4); stroke-width: 3; animation-duration: 1.8s; }
+.after .loop .head { stroke: var(--a4); stroke-width: 3; }
 
-/* capturalo */
-.lanes.tight { gap: 34px; margin-top: 30px; font-size: 24px; }
-.lanes.tight .lane { grid-template-columns: 1fr; gap: 10px; }
-.lanes.tight .lane .small { font-weight: 700; }
-.lanes.tight .row { gap: 14px; min-height: 0; }
-.lanes.tight .blk { padding: 14px 18px; white-space: normal; max-width: 270px; }
-.lanes.tight .blk small { font-size: 17px; }
-.lanes.tight .arrow { font-size: 36px; }
-.skill-tip { position: absolute; left: 72px; bottom: 60px; padding: 10px 16px; font-size: 22px; font-weight: 700; background: var(--a3); color: #111; border: var(--border); border-radius: 10px; box-shadow: 4px 4px 0 var(--line); }
-.skill-tip.on { transform: rotate(-2deg); }
+/* pirámide */
+.pyr-wrap { display: grid; grid-template-columns: 440px 1fr; gap: 30px; align-items: center; margin-top: 30px; }
+.pyr-why .big { margin-bottom: 26px; }
+.pyr-why ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 20px; font-size: 26px; line-height: 1.3; }
+.pyr-why li { display: flex; gap: 14px; }
+.pyr-why .ico { font-size: 30px; }
+.pyramid { width: 100%; overflow: visible; }
+.pyramid[data-step] { opacity: 1; transform: none; }
+.pyramid .lvl { opacity: 0; transform: translateY(30px); transition: opacity .4s, transform .5s cubic-bezier(.2, .9, .3, 1.5); transition-delay: calc(var(--i) * .35s); }
+.pyramid.on .lvl { opacity: 1; transform: none; }
+.pyramid .lvl path { stroke: var(--line); stroke-width: 4; stroke-linejoin: round; }
+.pyramid .l1 path { fill: color-mix(in srgb, var(--a4) 45%, var(--card)); }
+.pyramid .l2 path { fill: color-mix(in srgb, var(--a2) 45%, var(--card)); }
+.pyramid .l3 path { fill: color-mix(in srgb, var(--a1) 45%, var(--card)); }
+.pyramid .name { font-family: var(--font-display); font-weight: 700; font-size: 28px; fill: var(--ink); text-anchor: middle; dominant-baseline: middle; }
+.pyramid .cap { font-family: var(--font-body); font-size: 20px; fill: var(--muted); }
+
+/* verificar */
+.verify-slide .lead { color: var(--muted); font-size: 26px; }
+.vcards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; margin-top: 28px; }
+.vcards .card { display: flex; flex-direction: column; gap: 8px; min-height: 190px; font-size: 23px; line-height: 1.3; padding: 20px 22px; }
+.vcards .card h3 { margin: 0; }
+.vcards .card .ico { font-size: 42px; line-height: 1; }
+
+/* verificar la api */
+.api-flow { display: grid; grid-template-columns: 1fr 440px; gap: 28px; margin-top: 6px; height: 480px; }
+.api-flow .term { height: 100%; padding-bottom: 0; }
+.api-flow .chat .viewport { height: 420px; }
+.api-flow .chat .line { font-size: 18px; padding: 3px 20px; }
+.api-flow .chat .line.cmd, .api-flow .chat .line.out { font-size: 15px; padding-left: 20px; }
+.api-flow .chat .line.out { padding-left: 42px; }
+.seq { width: 440px; height: 480px; padding: 0; overflow: visible; }
+.seq .actor rect { fill: color-mix(in srgb, var(--a2) 35%, var(--card)); stroke: var(--line); stroke-width: 3; }
+.seq .actor.server rect { fill: color-mix(in srgb, var(--a4) 35%, var(--card)); }
+.seq .actor text { font-family: var(--font-display); font-weight: 700; font-size: 20px; fill: var(--ink); text-anchor: middle; dominant-baseline: middle; }
+.seq .life { stroke: var(--muted); stroke-width: 2; stroke-dasharray: 6 6; }
+.seq .act-bar { fill: color-mix(in srgb, var(--a4) 55%, var(--card)); stroke: var(--line); stroke-width: 2; }
+.seq text { font-family: var(--font-mono); font-size: 14px; fill: var(--ink); text-anchor: middle; }
+.seq .note { fill: var(--muted); font-size: 13px; paint-order: stroke; stroke: var(--card); stroke-width: 6px; }
+.seq .msg { opacity: 0; transition: opacity .3s; }
+.seq .msg.on { opacity: 1; }
+.seq .msg line { stroke: var(--ink); stroke-width: 2.5; marker-end: url(#seq-head); stroke-dasharray: 262; stroke-dashoffset: 0; }
+.seq .msg.back line { stroke-dasharray: 7 6; }
+.seq .msg.fresh:not(.back) line { animation: seqdraw .5s ease-out; }
+.seq .msg.ok text { fill: var(--good); }
+.seq .msg.bad text { fill: var(--a1); }
+.seq marker path { fill: var(--ink); }
+@keyframes seqdraw { from { stroke-dashoffset: 262; } }
+
+/* verificar los datos */
+.data-slide .api-flow { grid-template-columns: 1fr 480px; }
+.dbview { display: flex; flex-direction: column; gap: 16px; padding: 22px 20px; font-size: 14px; }
+.dbtitle { font-size: 15px; color: var(--muted); }
+.dbview table { border-collapse: collapse; width: 100%; }
+.dbview th { text-align: left; font-weight: 700; color: var(--muted); padding: 6px 8px; border-bottom: 2px solid color-mix(in srgb, var(--ink) 30%, transparent); }
+.dbview td { white-space: nowrap; padding: 9px 8px; border-bottom: 1px solid color-mix(in srgb, var(--ink) 15%, transparent); transition: background .3s; }
+.dbview tr.hot td { background: color-mix(in srgb, var(--a3) 30%, transparent); }
+.dbview tr.hot td.rec { color: var(--a3); font-weight: 700; }
+.dbview .ghost { align-self: flex-start; padding: 6px 12px; font-size: 14px; color: var(--muted); text-decoration: line-through; text-decoration-color: var(--a1); border: 2px dashed color-mix(in srgb, var(--ink) 35%, transparent); border-radius: 8px; opacity: 0; transform: scale(.6); transition: opacity .3s, transform .4s cubic-bezier(.2, .9, .3, 1.8); }
+.dbview .ghost b { display: inline-block; margin-left: 8px; color: var(--a1); text-decoration: none; }
+.dbview .dbok { margin-top: auto; padding: 10px 14px; font-weight: 700; color: #111; background: var(--good); border-radius: 10px; opacity: 0; transform: scale(.6); transition: opacity .3s, transform .4s cubic-bezier(.2, .9, .3, 1.8); }
+.dbview.ghosted .ghost, .dbview.done .dbok { opacity: 1; transform: none; }
+
+/* verificar la pantalla */
+.vflow { display: grid; grid-template-columns: 540px 1fr; gap: 30px; margin-top: 22px; height: 430px; }
+.vflow .term { height: 100%; padding-bottom: 0; }
+.vflow .chat .viewport { height: 370px; }
+.vflow .chat .line { font-size: 16px; padding: 3px 18px; }
+.vflow .chat .line.cmd, .vflow .chat .line.out { font-size: 15px; padding-left: 18px; }
+.vflow .chat .line.out { padding-left: 40px; }
+.vbrowser { opacity: 0; transform: scale(.3); transition: opacity .4s, transform .5s cubic-bezier(.2, .9, .3, 1.6); overflow: hidden; }
+.vbrowser.on { opacity: 1; transform: none; }
+.app { position: relative; padding: 18px 22px; font-size: 22px; }
+.app-h { font-family: var(--font-display); font-weight: 700; font-size: 28px; margin-bottom: 14px; }
+.app .task { position: relative; display: flex; align-items: center; gap: 12px; padding: 11px 14px; margin-bottom: 10px; border: 2px solid color-mix(in srgb, var(--ink) 25%, transparent); border-radius: 12px; }
+.app .task s { color: var(--muted); }
+.app .sp { flex: 1; }
+.app .box { position: relative; width: 26px; height: 26px; display: grid; place-items: center; font-size: 16px; border: 2px solid var(--ink); border-radius: 6px; }
+.app .rem { position: relative; padding: 2px 8px; font-size: 18px; border: 2px solid color-mix(in srgb, var(--ink) 40%, transparent); border-radius: 8px; }
+.app .badge { padding: 3px 10px; font-size: 16px; font-weight: 700; border-radius: 999px; }
+.app .badge.late { background: var(--a1); color: #fff; }
+.app .badge.when { display: none; background: var(--a2); color: #fff; }
+.app.saved .badge.when { display: inline-block; animation: chipIn .4s both; }
+.app .picker { display: none; align-items: center; gap: 10px; margin: -2px 0 12px 52px; }
+.app.picking .picker { display: flex; animation: chipIn .35s both; }
+.app .field { position: relative; min-width: 170px; padding: 5px 12px; font-family: var(--font-mono); font-size: 18px; color: var(--muted); border: 2px solid var(--ink); border-radius: 8px; }
+.app .field.filled { color: var(--ink); }
+.app .save { position: relative; padding: 5px 14px; font-size: 18px; font-weight: 700; color: #111; background: var(--a4); border-radius: 8px; }
+.pointer { position: absolute; left: 60%; top: 70%; z-index: 5; width: 30px; height: 30px; opacity: 0; transition: left .6s cubic-bezier(.4, 0, .2, 1), top .6s cubic-bezier(.4, 0, .2, 1), opacity .3s; }
+.pointer path { fill: #fff; stroke: #111; stroke-width: 1.6; stroke-linejoin: round; }
+.pointer.on { opacity: 1; }
+.pointer.click { animation: press .3s ease-out; }
+.vbrowser .flash { position: absolute; inset: 0; z-index: 6; background: #fff; opacity: 0; pointer-events: none; }
+.vbrowser .flash.go { animation: flash .6s ease-out; }
+@keyframes flash { 15% { opacity: .9; } 100% { opacity: 0; } }
+
+/* recap mini pyramid */
+.mpyr { width: 120px; height: 90px; }
+.mpyr path { fill: color-mix(in srgb, var(--good) 40%, var(--card)); stroke: var(--line); stroke-width: 3; stroke-linejoin: round; }
 
 /* reglas */
 .rules { display: flex; flex-direction: column; gap: 16px; margin-top: 26px; }
-.rule { perspective: 1200px; height: 92px; }
-.rule .inner { position: relative; height: 100%; transform-style: preserve-3d; transition: transform .8s cubic-bezier(.3, 1.3, .5, 1); transition-delay: calc(var(--i) * .18s); }
-.rules.flipped .rule .inner { transform: rotateX(180deg); }
-.rule .face { position: absolute; inset: 0; display: flex; align-items: center; gap: 24px; padding: 0 28px; backface-visibility: hidden; font-size: 30px; border: var(--border); border-radius: 16px; background: var(--card); }
-.rule .face.old { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--a1); }
-.rule .face.new { transform: rotateX(180deg); background: color-mix(in srgb, var(--a2) 20%, var(--card)); }
+.rule { display: flex; align-items: center; gap: 24px; height: 82px; padding: 0 28px; font-size: 30px; border: var(--border); border-radius: 16px; background: color-mix(in srgb, var(--a2) 20%, var(--card)); }
 .rule .n { font-family: var(--font-display); font-weight: 700; font-size: 44px; width: 40px; }
-.rules.flipped .rule.wiggle .face.new { animation: wig 1.4s ease-in-out 1.8s infinite; }
-@keyframes wig { 0%, 70%, 100% { transform: rotateX(180deg) rotate(0); } 78% { transform: rotateX(180deg) rotate(1.2deg); } 86% { transform: rotateX(180deg) rotate(-1.2deg); } }
 
 /* pasos */
 .timer { position: absolute; right: 72px; top: 50px; font-family: var(--font-mono); font-size: 40px; padding: 8px 18px; border: var(--border); border-radius: 12px; background: var(--card); box-shadow: 4px 4px 0 var(--line); cursor: pointer; user-select: none; }
@@ -522,9 +616,6 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
 .mdoc i { height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--ink) 35%, transparent); }
 .mdoc i:nth-child(2) { width: 70%; }
 .mdoc em { position: absolute; right: -58px; top: -12px; padding: 4px 8px; font-size: 15px; font-style: normal; background: var(--a3); color: #111; border: 2px solid var(--line); border-radius: 4px; transform: rotate(6deg); }
-.snailcopy svg { width: 130px; height: 85px; overflow: visible; }
-.homework { position: absolute; left: 60px; right: 60px; bottom: 40px; font-size: 21px; text-align: center; }
-.homework b { color: var(--a3); }
 
 /* ───────────── HUD ───────────── */
 
@@ -554,7 +645,7 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
 
 <div id="deck">
 
-  <!-- 1 · Portada -->
+  <!-- Portada -->
   <section class="slide" data-id="portada">
     <div class="cover">
       <div class="kicker">Sesión 2</div>
@@ -565,14 +656,14 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
     </div>
   </section>
 
-  <!-- 2 · Hoy -->
+  <!-- Hoy -->
   <section class="slide" data-id="hoy">
     <h2>Hoy</h2>
     <div class="track draw" style="margin-top: 110px"
-         data-stops="¿cómo les fue?|vibe coding|planificar + demo|tests|revisar|práctica|cierre"></div>
+         data-stops="¿cómo les fue?|vibe coding|planificar + demo|revisar|tests|verificar|práctica|cierre"></div>
   </section>
 
-  <!-- 3 · Cómo les fue -->
+  <!-- Cómo les fue -->
   <section class="slide" data-id="comoles">
     <h2>¿Cómo les fue?</h2>
     <div class="notes4">
@@ -583,7 +674,7 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
     </div>
   </section>
 
-  <!-- 4 · Qué aprendimos -->
+  <!-- Qué aprendimos -->
   <section class="slide learned" data-id="aprendimos" data-steps="3">
     <h2>Vibe coding</h2>
     <div class="checks">
@@ -601,36 +692,7 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
     <div class="mascot" data-mood="happy"></div>
   </section>
 
-  <!-- 5 · Frase -->
-  <section class="slide phrase-slide" data-id="frase" data-steps="3">
-    <div class="phrase">
-      <p>Hoy no vamos a escribir <span class="strike" data-step="1">menos código<svg viewBox="0 0 400 100" preserveAspectRatio="none"><path d="M4 62 C80 40, 150 70, 230 48 S 350 30, 396 52 M20 78 C120 56, 260 74, 380 38" /></svg></span>.</p>
-      <p data-step="2">Vamos a saber <span class="hl">qué código escribimos</span>.</p>
-    </div>
-    <div class="slowmo">
-      <div class="trail"></div>
-      <div class="snail">
-        <svg viewBox="0 0 200 130">
-          <g class="body-g">
-            <path d="M18 118 C8 118 8 104 26 102 L140 98 C146 66 188 62 192 96 C194 112 184 118 170 118 Z" fill="var(--a4)" stroke="var(--line)" stroke-width="4" />
-            <path class="stalk" d="M170 74 L162 42 M180 74 L186 40" stroke="var(--line)" stroke-width="4" stroke-linecap="round" />
-            <circle cx="162" cy="40" r="8" fill="#fff" stroke="var(--line)" stroke-width="3" /><circle cx="164" cy="41" r="3.5" fill="#111" />
-            <circle cx="186" cy="38" r="8" fill="#fff" stroke="var(--line)" stroke-width="3" /><circle cx="188" cy="39" r="3.5" fill="#111" />
-            <path d="M168 96 Q176 103 184 96" fill="none" stroke="var(--line)" stroke-width="3" stroke-linecap="round" />
-            <circle cx="160" cy="92" r="4" fill="#ff7a93" opacity=".6" />
-          </g>
-          <g class="shell">
-            <circle cx="88" cy="70" r="44" fill="var(--a3)" stroke="var(--line)" stroke-width="4" />
-            <path d="M88 70 m-5 0 a5 5 0 1 1 10 0 a11 11 0 1 1 -22 0 a18 18 0 1 1 36 0 a26 26 0 1 1 -52 0" fill="none" stroke="var(--line)" stroke-width="4" stroke-linecap="round" />
-          </g>
-        </svg>
-      </div>
-      <div class="card bubble">hoy va a parecer más lento…</div>
-      <div class="stamp">¡A PROPÓSITO!</div>
-    </div>
-  </section>
-
-  <!-- 7 · Recorrido -->
+  <!-- Recorrido -->
   <section class="slide route-slide" data-id="recorrido" data-steps="4">
     <h2>Explorar · Diseñar · Documentar · Código</h2>
     <div class="route">
@@ -642,33 +704,34 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
     </div>
   </section>
 
-  <!-- 8 · Más diseño -->
+  <!-- Más diseño -->
   <section class="slide slider-slide" data-id="slider">
     <h2>Más diseño, mejores resultados</h2>
     <div class="slider-row">
-      <span>liviano</span>
+      <span>nada de diseño</span>
       <input type="range" min="0" max="10" value="2" class="design-range">
-      <span>profundo</span>
+      <span>todo diseñado</span>
     </div>
     <div class="dec"><span>decisiones tuyas</span><div class="chips yours"></div></div>
     <div class="dec"><span>decisiones del agente</span><div class="chips agents"></div></div>
+    <div class="curves">
+      <svg class="curve" data-f="retrabajo" data-label="chances de retrabajo" viewBox="0 0 520 250"></svg>
+      <svg class="curve" data-f="entender" data-label="entendés lo que salió" viewBox="0 0 520 250"></svg>
+    </div>
     <div class="mascot" data-mood="skeptic"></div>
   </section>
 
-  <!-- 9 · Cómo se le pide -->
+  <!-- Cómo se le pide -->
   <section class="slide prompts-slide" data-id="prompts" data-steps="4">
     <div class="track mini" data-stops="explorar|diseñar|documentar|código" data-finish></div>
-    <div class="term">
-      <div class="bar3"><i></i><i></i><i></i></div>
-      <div class="line" data-text="Contame cómo funciona X. No escribas nada." data-tag="🔍"></div>
-      <div class="line" data-text="Quiero agregar Y. Preguntame las decisiones, de a una." data-tag="✏️"></div>
-      <div class="line" data-text="Escribí el diseño en docs/y.md" data-tag="📄"></div>
-      <div class="line" data-text="Implementá docs/y.md" data-tag="🏁"></div>
+    <div class="term chat">
+      <div class="bar3"><i></i><i></i><i></i><span class="title">todo-app · pi</span></div>
+      <div class="viewport"><div class="feed" data-chat="prompts"></div></div>
     </div>
   </section>
 
-  <!-- 10 · Una ayudita -->
-  <section class="slide ayudita-slide" data-id="ayudita" data-steps="4">
+  <!-- Una ayudita -->
+  <section class="slide ayudita-slide" data-id="ayudita" data-steps="3">
     <h2>Una ayudita: Plannotator</h2>
     <span class="install">$ pi install npm:@plannotator/pi-extension</span>
     <div class="flow">
@@ -699,13 +762,9 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
       </div>
       <div class="envelope">✉️</div>
     </div>
-    <div class="flow-foot">
-      <span data-step="4">con el diff es igual: <span class="mono">/plannotator-review</span></span>
-      <span class="psst" data-step="4">psst: también trae plan mode (<span class="mono">pi --plan</span>). probalo si querés.</span>
-    </div>
   </section>
 
-  <!-- 12 · Demo -->
+  <!-- Demo -->
   <section class="slide" data-id="demo">
     <div class="track mini" data-stops="explorar|diseñar|documentar|código" data-finish></div>
     <div class="live">
@@ -715,7 +774,88 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
     <div class="mascot" data-mood="wave"></div>
   </section>
 
-  <!-- 13 · Tests -->
+  <!-- Revisar es cada vez más difícil -->
+  <section class="slide dificil-slide" data-id="dificil" data-steps="9">
+    <h2>Revisar código es cada vez más difícil</h2>
+    <div class="chart">
+      <svg viewBox="0 0 1136 360">
+        <path class="axis" d="M40 20 V320 H1000" />
+        <text x="1010" y="328">tiempo</text>
+        <text x="-4" y="14" style="font-size: 20px">código</text>
+        <path class="gap" d="M300 262 C520 250, 760 190, 960 30 L960 262 Z" data-gap />
+        <path class="read sketch" data-step="1" d="M40 262 H960" />
+        <text class="lbl-read" x="600" y="298" data-step="1">lo que alcanzás a leer</text>
+        <path class="code sketch" data-step="1" d="M40 305 C300 275, 520 250, 760 190 S 920 70, 960 30" />
+        <text class="lbl-code" x="975" y="52" data-step="1">lo que se escribe</text>
+        <g class="bots" data-step="2">
+          <text x="560" y="228">🤖</text><text x="700" y="190">🤖</text><text x="820" y="136">🤖</text><text x="900" y="76">🤖</text>
+        </g>
+        <text x="80" y="60" data-step="2" style="font-size: 26px">y cada vez más lo escribe un agente:</text>
+        <text x="80" y="94" data-step="2" style="font-size: 26px">no hay a quién preguntarle por qué</text>
+        <text class="gaplbl" x="790" y="240" data-step="3">sin revisar</text>
+      </svg>
+    </div>
+    <div class="tries" data-step="3">
+      <span class="q">¿Cómo revisamos esto? Todavía no sabemos:</span>
+      <span class="t f-pop" data-step="4">adversarial reviews</span><span class="t f-pop" data-step="5">cambios más chicos</span><span class="t f-pop" data-step="6">no revisar nada</span><span class="t f-pop mv" data-step="7">mover la revisión para adelante</span><span class="t f-pop mv" data-step="8">verificar que funciona</span>
+    </div>
+    <div class="mascot" data-mood="skeptic"></div>
+  </section>
+
+  <!-- Para adelante -->
+  <section class="slide cycles-slide" data-id="adelante" data-steps="2">
+    <h2>Revisión: antes y después</h2>
+    <div class="cycles">
+      <div class="cycle before" data-step="1"><span class="small">antes, con un colega</span>
+        <div class="row">
+          <div class="blk des stg" style="--i: 0">✏️ diseño<small>una charla</small></div>
+          <span class="arrow stg" style="--i: 1">→</span>
+          <div class="loop stg" style="--i: 2">
+            <div class="blk">💻 código</div><span class="arrow">→</span><div class="blk ">🔬 verificar<small>tests + a mano</small></div><span class="arrow">→</span><div class="blk rev">🔍 revisión<small>a mano</small></div>
+            <svg><path class="back" /><path class="back" /><path class="head" /></svg>
+            <span class="loopnote">los dos encuentran problemas: vuelta al código, varias veces</span>
+          </div>
+          <span class="arrow stg" style="--i: 3">→</span>
+          <div class="blk ship stg" style="--i: 4">🚀 ship</div>
+        </div>
+      </div>
+      <div class="cycle after" data-step="2"><span class="small">ahora, con un agente</span>
+        <div class="row">
+          <div class="blk des stg" style="--i: 0">✏️ diseño<small>escrito y anotado</small></div>
+          <span class="arrow stg" style="--i: 1">→</span>
+          <div class="loop stg" style="--i: 2">
+            <div class="blk">💻 código</div><span class="arrow">→</span><div class="blk calm">🔬 verificar<small>tests + el agente</small></div><span class="arrow">→</span><div class="blk rev">🔍 revisión liviana<small>agente + humano</small></div>
+            <svg><path class="back" /><path class="back" /><path class="head" /></svg>
+            <span class="loopnote">las mismas vueltas, más cortas</span>
+          </div>
+          <span class="arrow stg" style="--i: 3">→</span>
+          <div class="blk ship stg" style="--i: 4">🚀 ship</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tests: la pirámide -->
+  <section class="slide pyramid-slide" data-id="piramide" data-steps="1">
+    <h2>Tests</h2>
+    <div class="pyr-wrap">
+      <div class="pyr-why">
+        <p class="big">Código que prueba tu código.</p>
+        <ul>
+          <li><span class="ico">🎯</span>dejan escrito qué tiene que hacer</li>
+          <li><span class="ico">🔁</span>se corren solos, cada vez que cambiás algo</li>
+          <li><span class="ico">🛟</span>si algo se rompe, te enterás vos antes que quien lo usa</li>
+        </ul>
+      </div>
+      <svg class="pyramid" viewBox="0 0 700 400" data-step="1">
+        <g class="lvl l1" style="--i: 0"><path d="M10 390 H400 L342 286 H68 Z" /><text class="name" x="205" y="340">unitarios</text><text class="cap" x="420" y="330">una función sola</text><text class="cap" x="420" y="356">muchos y rápidos</text></g>
+        <g class="lvl l2" style="--i: 1"><path d="M74 276 H336 L276 168 H134 Z" /><text class="name" x="205" y="224">integración</text><text class="cap" x="356" y="212">varias piezas juntas</text><text class="cap" x="356" y="238">la ruta, la validación, la base</text></g>
+        <g class="lvl l3" style="--i: 2"><path d="M139 158 H271 L205 40 Z" /><text class="name" x="205" y="122">e2e</text><text class="cap" x="292" y="96">la app entera, como una persona</text><text class="cap" x="292" y="122">pocos y lentos</text></g>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Tests -->
   <section class="slide tests-slide" data-id="tests" data-steps="2">
     <h2>El agente escribe muchos tests.</h2>
     <div class="rain"></div>
@@ -730,7 +870,7 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
     <div class="mascot" data-mood="happy"></div>
   </section>
 
-  <!-- 14 · Casos antes del código -->
+  <!-- Casos antes del código -->
   <section class="slide ctm" data-id="ctm" data-steps="7">
     <h2>Los casos se deciden antes del código</h2>
     <svg viewBox="0 0 1136 300">
@@ -757,112 +897,116 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
     <table>
       <tr data-step="4"><th>#</th><th>título</th><th>usuario</th><th>esperado</th><th>tipo</th></tr>
       <tr data-step="4" data-leaves="vacio logueado"><td>1</td><td>vacío</td><td>logueado</td><td>error</td><td>test</td></tr>
-      <tr data-step="5" data-leaves="ok logueado"><td>2</td><td>ok</td><td>logueado</td><td>se guarda</td><td>test + manual</td></tr>
-      <tr data-step="6" data-leaves="ok anonimo"><td>3</td><td>ok</td><td>anónimo</td><td>pide login</td><td>manual</td></tr>
+      <tr data-step="5" data-leaves="ok logueado"><td>2</td><td>ok</td><td>logueado</td><td>se guarda</td><td>test + agente</td></tr>
+      <tr data-step="6" data-leaves="ok anonimo"><td>3</td><td>ok</td><td>anónimo</td><td>pide login</td><td>agente</td></tr>
       <tr data-step="7" data-leaves="largo logueado"><td>4</td><td>muy largo</td><td>logueado</td><td>error</td><td>test</td></tr>
     </table>
     <div class="cite">Classification Tree Method · Grochtmann y Grimm, 1993</div>
   </section>
 
-  <!-- 15 · Revisar es cada vez más difícil -->
-  <section class="slide dificil-slide" data-id="dificil" data-steps="4">
-    <h2>Revisar código es cada vez más difícil</h2>
-    <div class="chart">
-      <svg viewBox="0 0 1136 360">
-        <path class="axis" d="M40 20 V320 H1000" />
-        <text x="1010" y="328">tiempo</text>
-        <text x="-4" y="14" style="font-size: 20px">código</text>
-        <path class="gap" d="M300 262 C520 250, 760 190, 960 30 L960 262 Z" data-gap />
-        <path class="read sketch" data-step="1" d="M40 262 H960" />
-        <text class="lbl-read" x="600" y="298" data-step="1">lo que alcanzás a leer</text>
-        <path class="code sketch" data-step="1" d="M40 305 C300 275, 520 250, 760 190 S 920 70, 960 30" />
-        <text class="lbl-code" x="975" y="52" data-step="1">lo que se escribe</text>
-        <g class="bots" data-step="2">
-          <text x="560" y="228">🤖</text><text x="700" y="190">🤖</text><text x="820" y="136">🤖</text><text x="900" y="76">🤖</text>
-        </g>
-        <text x="80" y="60" data-step="2" style="font-size: 26px">y cada vez más lo escribe un agente:</text>
-        <text x="80" y="94" data-step="2" style="font-size: 26px">no hay a quién preguntarle por qué</text>
-        <text class="gaplbl" x="790" y="240" data-step="3">sin revisar</text>
+  <!-- Verificar -->
+  <section class="slide verify-slide" data-id="verificar" data-steps="3">
+    <h2>Verificar: usar lo que se construyó</h2>
+    <p class="mid lead">Que compile y pasen los tests no alcanza: alguien tiene que usarlo. Ese alguien puede ser el agente.</p>
+    <div class="vcards">
+      <div class="card f-flip" data-step="1"><span class="ico">🌐</span><h3>la API</h3>levantar el server y pegarle con curl</div>
+      <div class="card f-flip" data-step="2"><span class="ico">🗄️</span><h3>los datos</h3>mirar qué quedó guardado en la base</div>
+      <div class="card f-flip" data-step="3"><span class="ico">🖥️</span><h3>la pantalla</h3>abrir el navegador, hacer click, sacar una captura</div>
+    </div>
+  </section>
+
+  <!-- Verificar la API -->
+  <section class="slide api-slide" data-id="api" data-steps="3">
+    <h2>Verificar la API</h2>
+    <div class="api-flow">
+      <div class="term chat">
+        <div class="bar3"><i></i><i></i><i></i><span class="title">todo-app · pi</span></div>
+        <div class="viewport"><div class="feed" data-chat="api"></div></div>
+      </div>
+      <svg class="seq card" viewBox="0 0 440 470">
+        <defs><marker id="seq-head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" /></marker></defs>
+        <g class="actor"><rect x="20" y="18" width="130" height="44" rx="10" /><text x="85" y="41">🤖 agente</text></g>
+        <g class="actor server"><rect x="290" y="18" width="130" height="44" rx="10" /><text x="355" y="41">🖥️ server</text></g>
+        <line class="life" x1="85" y1="62" x2="85" y2="456" />
+        <line class="life" x1="355" y1="62" x2="355" y2="68" /><line class="life" x1="355" y1="90" x2="355" y2="456" />
+        <rect class="msg act-bar" data-msg="start" x="347" y="96" width="16" height="356" rx="4" />
+        <text class="msg note" data-msg="start" x="355" y="82">escuchando en :3000</text>
+        <g class="msg" data-msg="q1"><line x1="85" y1="176" x2="347" y2="176" /><text x="216" y="166">PATCH /tareas/7 · 20/10/2026</text></g>
+        <g class="msg back ok" data-msg="a1"><line x1="347" y1="212" x2="85" y2="212" /><text x="216" y="202">200 · guardado</text></g>
+        <g class="msg" data-msg="q2"><line x1="85" y1="276" x2="347" y2="276" /><text x="216" y="266">PATCH /tareas/7 · 01/01/2020</text></g>
+        <g class="msg back bad" data-msg="a2"><line x1="347" y1="312" x2="85" y2="312" /><text x="216" y="302">400 · el recordatorio ya pasó</text></g>
+        <g class="msg" data-msg="q3"><line x1="85" y1="376" x2="347" y2="376" /><text x="216" y="366">PATCH /tareas/7 · sin fecha</text></g>
+        <g class="msg back ok" data-msg="a3"><line x1="347" y1="412" x2="85" y2="412" /><text x="216" y="402">200 · sin recordatorio</text></g>
       </svg>
     </div>
-    <div class="tries" data-step="3">
-      <span class="q">¿Cómo revisamos esto? Todavía no sabemos:</span>
-      <span class="t">agentes que revisan</span><span class="t">diffs más chicos</span><span class="t">tests que prueban lo que importa</span><span class="t mv">mover la revisión para adelante →</span>
-    </div>
-    <div class="mascot" data-mood="skeptic"></div>
   </section>
 
-  <!-- 16 · Para adelante -->
-  <section class="slide" data-id="adelante" data-steps="5">
-    <h2>La revisión se corrió para adelante</h2>
-    <div class="lanes">
-      <div class="lane"><span class="small">antes</span>
-        <div class="row">
-          <div class="blk f-pop" data-step="1">💻 código</div>
-          <span class="arrow" data-step="2">→</span>
-          <div class="blk rev f-pop" data-step="2">🔍 revisar 😰<small>mil líneas de diff</small></div>
-        </div>
+  <!-- Verificar los datos -->
+  <section class="slide data-slide" data-id="datos" data-steps="3">
+    <h2>Verificar los datos</h2>
+    <div class="api-flow">
+      <div class="term chat">
+        <div class="bar3"><i></i><i></i><i></i><span class="title">todo-app · pi</span></div>
+        <div class="viewport"><div class="feed" data-chat="datos"></div></div>
       </div>
-      <div class="lane"><span class="small">ahora</span>
-        <div class="row">
-          <div class="blk des f-pop" data-step="3">✏️ diseño</div>
-          <span class="arrow" data-step="4">→</span>
-          <div class="blk calm f-pop" data-step="4">🔍 revisar 😌<small>una página de diseño</small></div>
-          <span class="arrow" data-step="5">→</span>
-          <div class="blk f-pop" data-step="5">💻 código</div>
-        </div>
+      <div class="dbview card">
+        <div class="dbtitle mono">db.json · tareas</div>
+        <table class="mono">
+          <tr><th>id</th><th>titulo</th><th>hecha</th><th>recordatorio</th></tr>
+          <tr data-row="3"><td>3</td><td>pagar la luz</td><td>false</td><td>14/10 09:00</td></tr>
+          <tr data-row="5"><td>5</td><td>llamar a la abuela</td><td>true</td><td>null</td></tr>
+          <tr data-row="7"><td>7</td><td>comprar pan</td><td>false</td><td class="rec">null</td></tr>
+        </table>
+        <div class="ghost mono">vencido <b>✗ no está guardado</b></div>
+        <div class="dbok">✓ coincide con docs/recordatorios.md</div>
       </div>
     </div>
   </section>
 
-  <!-- 17 · Capturalo -->
-  <section class="slide" data-id="capturalo" data-steps="7">
-    <h2>Lo que corregís, capturalo</h2>
-    <div class="lanes tight">
-      <div class="lane"><span class="small">sin capturar</span>
-        <div class="row">
-          <div class="blk f-pop" data-step="1">💬 corregís<small>"usá el cliente de api/"</small></div>
-          <span class="arrow" data-step="2">→</span>
-          <div class="blk f-pop" data-step="2">🆕 chat nuevo</div>
-          <span class="arrow" data-step="3">→</span>
-          <div class="blk rev f-pop" data-step="3">"uso fetch acá" 🔁<small>el mismo error</small></div>
-        </div>
+  <!-- Verificar la pantalla -->
+  <section class="slide visual-slide" data-id="visual" data-steps="4">
+    <h2>Verificar la pantalla</h2>
+    <span class="install">$ npm install -g agent-browser</span>
+    <div class="vflow">
+      <div class="term chat">
+        <div class="bar3"><i></i><i></i><i></i><span class="title">todo-app · pi</span></div>
+        <div class="viewport"><div class="feed" data-chat="visual"></div></div>
       </div>
-      <div class="lane"><span class="small">capturando</span>
-        <div class="row">
-          <div class="blk f-pop" data-step="4">💬 corregís<small>"usá el cliente de api/"</small></div>
-          <span class="arrow" data-step="5">→</span>
-          <div class="blk des f-pop" data-step="5">📝 lo anotás<small>aprendizajes</small></div>
-          <span class="arrow" data-step="6">→</span>
-          <div class="blk f-pop" data-step="6">🆕 chat nuevo</div>
-          <span class="arrow" data-step="7">→</span>
-          <div class="blk calm f-pop" data-step="7">"uso el cliente de api/" ✓<small>lo leyó del archivo</small></div>
+      <div class="browser vbrowser">
+        <div class="chrome"><i></i><i></i><i></i><span class="url">localhost:3000</span></div>
+        <div class="app">
+          <div class="app-h">Mis tareas</div>
+          <div class="task"><span class="box">&nbsp;</span>pagar la luz<span class="sp"></span><span class="badge late">vencida</span><span class="rem">⏰</span></div>
+          <div class="task"><span class="box">&nbsp;</span>comprar pan<span class="sp"></span><span class="badge when">⏰ 16/10 18:00</span><span class="rem r4">⏰</span></div>
+          <div class="picker"><span class="field">dd/mm hh:mm</span><span class="save">guardar</span></div>
+          <div class="task"><span class="box">✓</span><s>llamar a la abuela</s></div>
         </div>
+        <svg class="pointer" viewBox="0 0 24 24"><path d="M3 2 L3 19 L8 14.5 L11.5 22 L14.5 20.6 L11 13.2 L18 13 Z" /></svg>
+        <div class="flash"></div>
       </div>
     </div>
-    <span class="skill-tip" data-step="7">✨ una skill puede juntarlo sola · Herramientas y Skills</span>
-    <div class="mascot" data-mood="happy"></div>
   </section>
 
-  <!-- 18 · Reglas -->
-  <section class="slide" data-id="reglas" data-steps="1">
+  <!-- Reglas -->
+  <section class="slide" data-id="reglas" data-steps="5">
     <h2>Las reglas de hoy</h2>
     <div class="rules">
-      <div class="rule" style="--i: 0"><div class="inner"><div class="face old"><span class="n">1</span>hablale al agente, describí lo que querés</div><div class="face new"><span class="n">1</span>nada se implementa sin diseño escrito</div></div></div>
-      <div class="rule wiggle" style="--i: 1"><div class="inner"><div class="face old"><span class="n">2</span>no abras los archivos</div><div class="face new"><span class="n">2</span>anotá el diseño antes de aprobarlo</div></div></div>
-      <div class="rule" style="--i: 2"><div class="inner"><div class="face old"><span class="n">3</span>si algo se rompe, describí el síntoma</div><div class="face new"><span class="n">3</span>los casos de test, antes del código</div></div></div>
-      <div class="rule" style="--i: 3"><div class="inner"><div class="face old"><span class="n">4</span>juzgá solo por el output</div><div class="face new"><span class="n">4</span>leé el diff · si se rompe, leelo vos</div></div></div>
+      <div class="rule f-pop" data-step="1"><span class="n">1</span>diseñá antes de escribir código</div>
+      <div class="rule f-pop" data-step="2"><span class="n">2</span>discutí los casos de test con el agente</div>
+      <div class="rule f-pop" data-step="3"><span class="n">3</span>escribí el documento de diseño</div>
+      <div class="rule f-pop" data-step="4"><span class="n">4</span>implementá</div>
+      <div class="rule f-pop" data-step="5"><span class="n">5</span>verificá</div>
     </div>
   </section>
 
-  <!-- 19 · Pasos -->
+  <!-- Pasos -->
   <section class="slide steps-slide" data-id="pasos">
     <h2>Los pasos</h2>
     <div class="timer" title="click: reiniciar">⏱ 00:00</div>
-    <div class="track draw" data-stops="elegir|explorar|diseñar|casos|documentar|implementar|revisar + commit" data-finish></div>
+    <div class="track draw" data-stops="elegir|explorar|diseñar|documentar|implementar|verificar|revisar + commit" data-finish></div>
   </section>
 
-  <!-- 20 · Valió la pena -->
+  <!-- Valió la pena -->
   <section class="slide scale" data-id="balanza" data-steps="1">
     <h2>¿Valió la pena diseñar primero?</h2>
     <svg viewBox="0 0 1280 400" style="margin-left: -72px">
@@ -880,8 +1024,8 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
     <p class="big center" data-step="1">depende de cuánto te importe poder explicar el código después</p>
   </section>
 
-  <!-- 21 · Qué aprendimos -->
-  <section class="slide recap-slide" data-id="recap" data-steps="2">
+  <!-- Qué aprendimos -->
+  <section class="slide recap-slide" data-id="recap" data-steps="1">
     <h2>¿Qué aprendimos?</h2>
     <div class="collage">
       <div class="card tile f-drop" data-step="1" style="--r: -3deg; --i: 0">
@@ -889,8 +1033,8 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
         <span>anda, pero no sabés qué falta</span>
       </div>
       <div class="card tile f-drop" data-step="1" style="--r: 2deg; --i: 1">
-        <div class="viz big">🔍→✏️→📄→🏁</div>
-        <span>explorar, diseñar, documentar, código</span>
+        <div class="viz big" style="font-size: 22px">🔍→✏️→📄→💻→🔬</div>
+        <span>explorar, diseñar, documentar, código, verificar</span>
       </div>
       <div class="card tile f-drop" data-step="1" style="--r: -1deg; --i: 2">
         <div class="viz"><div class="mslider"><i></i></div><div class="mchips"><b>✓</b><b>✓</b><b>✓</b><b>✓</b><b class="no">?</b></div></div>
@@ -901,23 +1045,22 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
         <span>anotá el diseño antes de aprobarlo</span>
       </div>
       <div class="card tile f-drop" data-step="1" style="--r: 2deg; --i: 4">
-        <div class="viz big"><b class="ok">✓</b> <b class="hl">?</b> <b class="ok">✓</b> <b class="hl">?</b> <b class="ok">✓</b></div>
-        <span>los casos, antes del código</span>
+        <div class="viz"><svg class="mpyr" viewBox="0 0 120 90"><path d="M8 86 H112 L94 60 H26 Z" /><path d="M30 54 H90 L74 32 H46 Z" /><path d="M50 26 H70 L60 8 Z" /></svg></div>
+        <span>el agente escribe los tests; vos decidís los casos</span>
       </div>
       <div class="card tile f-drop" data-step="1" style="--r: -2deg; --i: 5">
-        <div class="viz big">✏️→🔍→💻</div>
-        <span>la revisión se corrió para adelante</span>
+        <div class="viz big"><span class="mono" style="font-size: 22px">$ curl</span> → 200</div>
+        <span>verificar la API: el agente le pega</span>
       </div>
       <div class="card tile f-drop" data-step="1" style="--r: 1deg; --i: 6">
-        <div class="viz big">💬→📝→✓</div>
-        <span>lo que corregís, capturalo</span>
+        <div class="viz big">🖥️ 🖱️ 📸</div>
+        <span>verificar la pantalla: el agente la usa</span>
       </div>
       <div class="card tile f-drop" data-step="1" style="--r: -3deg; --i: 7">
-        <div class="viz snailcopy"></div>
-        <span>más lento, a propósito</span>
+        <div class="viz big">⏳ ⚖️ 🧠</div>
+        <span>tiempo contra entender: ¿valió la pena?</span>
       </div>
     </div>
-    <div class="homework" data-step="2">📌 para la semana: seguí con el flujo, y anotá qué le explicaste al agente más de una vez → <b>Herramientas y Skills</b></div>
   </section>
 
 </div>
@@ -1209,25 +1352,6 @@ const hooks = {
     }
   },
 
-  frase: (step, el, { forward }) => {
-    const slow = $(".slowmo", el);
-    const token = run;
-
-    slow.classList.remove("go", "done");
-
-    if (step < 3) {
-      return;
-    }
-
-    if (!forward) {
-      slow.classList.add("done");
-      return;
-    }
-
-    replay(slow, "go");
-    setTimeout(() => token === run && replay(el, "thud"), 4400);
-  },
-
   recorrido: (step, el, { forward }) => {
     const route = $(".route", el);
     const cards = $$(".card", route);
@@ -1258,40 +1382,100 @@ const hooks = {
     }
   },
 
-  prompts: async (step, el, { forward }) => {
-    const track = $(".track", el);
-    const lines = $$(".line", el);
-    const token = run;
-    const full = (line) => `<span class="p">&gt;</span><span>${line.dataset.text}</span><span class="tag">${line.dataset.tag}</span>`;
-    const caret = '<span class="p">&gt;</span><span class="caret"></span>';
+  prompts: (step, el, { forward }) => {
+    setTrack($(".track", el), step - 1);
+    playChat(step, el, forward);
+  },
 
-    setTrack(track, step - 1);
+  api: (step, el, { forward }) => {
+    $$(".seq .msg", el).forEach((m) => m.classList.remove("on", "fresh"));
 
-    lines.forEach((line, i) => {
-      if (i < step - (forward ? 1 : 0)) {
-        line.innerHTML = full(line);
-      } else if (i >= step) {
-        line.innerHTML = i === step ? caret : "";
-      }
+    playChat(step, el, forward, async (name, animate) => {
+      $$(`.seq [data-msg="${name}"]`, el).forEach((m) => {
+        m.classList.add("on");
+
+        if (animate) {
+          replay(m, "fresh");
+        }
+      });
     });
+  },
 
-    if (!forward || step === 0) {
-      return;
-    }
+  datos: (step, el, { forward }) => {
+    const view = $(".dbview", el);
 
-    const line = lines[step - 1];
-    line.innerHTML = '<span class="p">&gt;</span><span class="t"></span><span class="caret"></span>';
-    await typeInto($(".t", line), line.dataset.text, 28, token);
+    view.classList.remove("ghosted", "done");
+    $$("tr", view).forEach((r) => r.classList.remove("hot"));
 
-    if (token !== run) {
-      return;
-    }
+    const ACTS = {
+      row7: () => $('tr[data-row="7"]', view).classList.add("hot"),
+      ghost: () => {
+        $$("tr", view).forEach((r) => r.classList.remove("hot"));
+        view.classList.add("ghosted");
+      },
+      done: () => view.classList.add("done"),
+    };
 
-    line.innerHTML = full(line);
+    playChat(step, el, forward, async (name) => ACTS[name]());
+  },
 
-    if (lines[step] != null) {
-      lines[step].innerHTML = caret;
-    }
+  visual: (step, el, { forward }) => {
+    const browser = $(".vbrowser", el);
+    const app = $(".app", el);
+    const field = $(".field", el);
+    const pointer = $(".pointer", el);
+
+    browser.classList.remove("on");
+    app.classList.remove("picking", "saved");
+    field.classList.remove("filled");
+    field.firstChild.textContent = "dd/mm hh:mm";
+    pointer.classList.remove("on");
+
+    const pointAt = async (target, animate) => {
+      const b = browser.getBoundingClientRect();
+      const r = target.getBoundingClientRect();
+      const k = b.width / browser.offsetWidth;
+
+      pointer.classList.add("on");
+      pointer.style.left = `${(r.left - b.left + r.width / 2) / k}px`;
+      pointer.style.top = `${(r.top - b.top + r.height / 2) / k}px`;
+
+      if (animate) {
+        await sleep(650);
+        replay(pointer, "click");
+        await sleep(250);
+      }
+    };
+
+    const ACTS = {
+      open: async () => browser.classList.add("on"),
+      clickRem: async (animate) => {
+        await pointAt($(".r4", el), animate);
+        app.classList.add("picking");
+      },
+      fill: async (animate) => {
+        await pointAt(field, animate);
+        field.classList.add("filled");
+
+        if (animate) {
+          await typeInto(field.firstChild, "16/10 18:00", 60, run);
+        } else {
+          field.firstChild.textContent = "16/10 18:00";
+        }
+      },
+      clickSave: async (animate) => {
+        await pointAt($(".save", el), animate);
+        app.classList.remove("picking");
+        app.classList.add("saved");
+      },
+      shot: async (animate) => {
+        if (animate) {
+          replay($(".flash", el), "go");
+        }
+      },
+    };
+
+    playChat(step, el, forward, (name, animate) => ACTS[name](animate));
   },
 
   ayudita: async (step, el, { forward }) => {
@@ -1353,7 +1537,16 @@ const hooks = {
     }
   },
 
-  demo: (step, el) => setTrack($(".track", el), 0),
+  demo: (step, el, { entered }) => {
+    const track = $(".track", el);
+
+    if (!entered) {
+      return;
+    }
+
+    setTrack(track, 0);
+    walkSteps(track, visit, DEMO_WALK);
+  },
 
   tests: (step, el, { forward }) => {
     const rain = $(".rain", el);
@@ -1438,13 +1631,11 @@ const hooks = {
 
   dificil: (step, el) => {
     $("[data-gap]", el).classList.toggle("on", step >= 3);
-    $(".mv", el).classList.toggle("star", step >= 4);
-    setMood($(".mascot", el), step >= 4 ? "joy" : step >= 2 ? "sweat" : "skeptic");
+    $$(".mv", el).forEach((m) => m.classList.toggle("star", step >= 9));
+    setMood($(".mascot", el), step >= 9 ? "joy" : step >= 2 ? "sweat" : "skeptic");
   },
 
-  capturalo: (step, el) => setMood($(".mascot", el), step === 3 ? "dizzy" : step >= 7 ? "joy" : "happy"),
-
-  reglas: (step, el) => $(".rules", el).classList.toggle("flipped", step >= 1),
+  adelante: (step, el) => $$(".loop", el).forEach(drawLoop),
 
   pasos: (step, el, { entered }) => {
     const track = $(".track", el);
@@ -1456,43 +1647,68 @@ const hooks = {
     redraw(track);
     setTrack(track, 0);
     startTimer($(".timer", el));
-    walkSteps(track, visit);
+    walkSteps(track, visit, STEPS_WALK);
   },
+};
+
+/* ───────────── Review loops ───────────── */
+
+// Verifying and reviewing can both send you back to the code: one arc from each, deeper when the loop is longer
+const drawLoop = (loop) => {
+  const [code, ...finders] = $$(".blk", loop);
+  const svg = $("svg", loop);
+  const backs = $$(".back", svg);
+  const top = Math.max(...[code, ...finders].map((b) => b.offsetTop + b.offsetHeight)) + 6;
+  const depth = loop.closest(".after") == null ? 30 : 14;
+  const to = code.offsetLeft + code.offsetWidth / 2;
+
+  svg.setAttribute("width", loop.offsetWidth);
+  svg.setAttribute("height", top + depth * finders.length + 10);
+
+  finders.forEach((b, i) => {
+    const from = b.offsetLeft + b.offsetWidth / 2;
+    const d = depth * (i + 1);
+    backs[i].setAttribute("d", `M${from} ${top} C${from} ${top + d}, ${to} ${top + d}, ${to} ${top + 4}`);
+  });
+
+  $(".head", svg).setAttribute("d", `M${to - 9} ${top + 12} L${to} ${top} L${to + 9} ${top + 12}`);
 };
 
 /* ───────────── Walking the steps ───────────── */
 
 // Forward most of the time, a frustrated step back now and then, then the finish line
-const WALK = [0, 1, 2, 3, 2, 3, 4, 5, 4, 5, 6];
+const STEPS_WALK = [0, 1, 2, 1, 2, 3, 4, 5, 4, 5, 6];
+const DEMO_WALK = [0, 1, 2, 1, 2, 3];
 
-const walkSteps = async (track, token) => {
+const walkSteps = async (track, token, walk) => {
   const rider = $(".rider", track);
+  const finish = walk[walk.length - 1];
 
   await sleep(1600);
 
   while (token === visit) {
-    for (let i = 0; i < WALK.length; i += 1) {
+    for (let i = 0; i < walk.length; i += 1) {
       if (token !== visit) {
         return;
       }
 
-      const pos = WALK[i];
-      const backNext = WALK[i + 1] != null && WALK[i + 1] < pos;
-      const wentBack = i > 0 && pos < WALK[i - 1];
+      const pos = walk[i];
+      const backNext = walk[i + 1] != null && walk[i + 1] < pos;
+      const wentBack = i > 0 && pos < walk[i - 1];
 
       if (i > 0) {
         replay(rider, "jump");
       }
 
       setTrack(track, pos);
-      setMood(rider, wentBack ? "sweat" : pos === 6 ? "joy" : "happy");
+      setMood(rider, wentBack ? "sweat" : pos === finish ? "joy" : "happy");
 
       if (backNext) {
         await sleep(700);
         setMood(rider, "frustrated");
         await sleep(900);
       } else {
-        await sleep(pos === 6 ? 300 : 1100);
+        await sleep(pos === finish ? 300 : 1100);
       }
     }
 
@@ -1503,6 +1719,235 @@ const walkSteps = async (track, token) => {
     setMood(rider, "wave");
     confetti(track, rider.offsetLeft, 20, 36);
     await sleep(2600);
+  }
+};
+
+/* ───────────── Chat ───────────── */
+
+// One group per click: [kind, text, extra]. "me" and "cmd" lines are typed, the rest appear.
+// "wait" lines spin for extra.ms and then settle on extra.done; extra.act runs a slide action
+const CHATS = {
+  prompts: [
+    [
+      ["me", "Contame cómo funcionan las tareas hoy. No escribas nada.", { tag: "🔍" }],
+      ["ag", "Se guardan en db.json: id, título, hecha."],
+      ["ag", "server.js expone GET, POST y PATCH /tareas."],
+      ["ag", "No hay nada que se ejecute solo con el tiempo."],
+    ],
+    [
+      ["me", "Quiero agregar recordatorios. Preguntame las decisiones, de a una.", { tag: "✏️" }],
+      ["q", "¿Solo fecha, o fecha y hora?"],
+      ["ans", "fecha y hora"],
+      ["q", "¿Quién avisa, el navegador o el servidor?"],
+      ["ans", "el navegador, con una notificación"],
+      ["q", "¿Y si la pestaña está cerrada a esa hora?"],
+      ["ans", "no avisa; al abrir la app se marca como vencido"],
+      ["q", "¿Y si la tarea ya está hecha?"],
+      ["ans", "no avisa"],
+    ],
+    [
+      ["me", "Armame un borrador del diseño. Todavía no lo guardes.", { tag: "📄" }],
+      ["doc", "# Recordatorios"],
+      ["doc", "Cada tarea puede tener un recordatorio con fecha y hora."],
+      ["doc", "Cuando llega la hora:"],
+      ["doc", "  ├─ tarea hecha ──────▶ nada"],
+      ["doc", "  ├─ pestaña cerrada ──▶ vencido, se ve al abrir"],
+      ["doc", "  └─ si no ────────────▶ notificación del navegador"],
+      ["doc", "Se guarda: recordatorio, vencido (true/false)"],
+      ["me", "vencido no se guarda: es fecha pasada y no hecha"],
+      ["ag", "✎ vencido pasa a calcularse al cargar"],
+      ["me", "faltan casos: sin recordatorio, y fecha pasada al crear"],
+      ["ag", "✎ + 2 casos"],
+      ["me", "Guardalo en docs/recordatorios.md"],
+      ["ok", "docs/recordatorios.md · 4 decisiones, 5 casos"],
+    ],
+    [
+      ["me", "Implementá docs/recordatorios.md", { tag: "🏁" }],
+      ["wait", "leyendo docs/recordatorios.md…", { done: "leí docs/recordatorios.md", ms: 1200 }],
+      ["ag", "✎ server.js"],
+      ["add", "app.patch('/tareas/:id/recordatorio', guardarRecordatorio)"],
+      ["add", "if (new Date(cuando) < new Date()) return res.status(400).json(error)"],
+      ["wait", "pensando…", { done: "server.js listo", ms: 1400 }],
+      ["ag", "✎ public/app.js"],
+      ["del", "render(tareas)"],
+      ["add", "render(tareas, { vencido })"],
+      ["add", "const vencido = (t) => !t.hecha && t.recordatorio < Date.now()"],
+      ["add", "setTimeout(() => new Notification(t.titulo), t.recordatorio - Date.now())"],
+      ["wait", "corriendo tests…", { done: "5 tests pasan", ms: 2200 }],
+    ],
+  ],
+
+  api: [
+    [
+      ["me", "Verificá la API de recordatorios con curl, contra los casos de docs/recordatorios.md", { tag: "🌐" }],
+      ["cmd", "npm start &"],
+      ["wait", "levantando el server…", { done: "server en localhost:3000", ms: 1400, act: "start" }],
+    ],
+    [
+      ["cmd", "curl -X PATCH localhost:3000/tareas/7/recordatorio -d '{\"cuando\":\"2026-10-20T09:00\"}'", { act: "q1" }],
+      ["out", "200 {\"id\":7,\"recordatorio\":\"2026-10-20T09:00\"}", { act: "a1" }],
+      ["cmd", "curl -X PATCH localhost:3000/tareas/7/recordatorio -d '{\"cuando\":\"2020-01-01T09:00\"}'", { act: "q2" }],
+      ["out", "400 {\"error\":\"el recordatorio ya pasó\"}", { act: "a2" }],
+      ["cmd", "curl -X PATCH localhost:3000/tareas/7/recordatorio -d '{\"cuando\":null}'", { act: "q3" }],
+      ["out", "200 {\"id\":7,\"recordatorio\":null}", { act: "a3" }],
+    ],
+    [
+      ["ok", "3 de 3 casos se comportan como dice el doc"],
+    ],
+  ],
+
+  datos: [
+    [
+      ["me", "Fijate en db.json que lo guardado coincida con el doc", { tag: "🗄️" }],
+      ["cmd", "jq '.tareas[] | select(.id == 7)' db.json"],
+      ["out", "{ \"id\": 7, \"titulo\": \"comprar pan\", \"hecha\": false, \"recordatorio\": null }", { act: "row7" }],
+      ["ok", "el 400 no escribió nada; el último PATCH dejó null"],
+    ],
+    [
+      ["cmd", "jq '[.tareas[] | has(\"vencido\")] | any' db.json"],
+      ["out", "false", { act: "ghost" }],
+      ["ok", "vencido no se guarda: se calcula al cargar, como dice el doc"],
+    ],
+    [
+      ["ok", "los datos coinciden con docs/recordatorios.md", { act: "done" }],
+    ],
+  ],
+
+  visual: [
+    [
+      ["me", "Abrí la app y probá ponerle un recordatorio a una tarea", { tag: "🖥️" }],
+      ["cmd", "agent-browser open localhost:3000", { act: "open" }],
+    ],
+    [
+      ["cmd", "agent-browser snapshot -i"],
+      ["out", "checkbox \"pagar la luz\" [ref=e1]"],
+      ["out", "button \"recordatorio\" [ref=e2]"],
+      ["out", "checkbox \"comprar pan\" [ref=e3]"],
+      ["out", "button \"recordatorio\" [ref=e4]"],
+    ],
+    [
+      ["cmd", "agent-browser click @e4", { act: "clickRem" }],
+      ["cmd", "agent-browser fill @e6 \"16/10 18:00\"", { act: "fill" }],
+      ["cmd", "agent-browser click @e7", { act: "clickSave" }],
+    ],
+    [
+      ["cmd", "agent-browser screenshot recordatorio.png", { act: "shot" }],
+      ["ok", "el recordatorio aparece en \"comprar pan\""],
+      ["ok", "\"pagar la luz\" se ve vencida"],
+    ],
+  ],
+};
+
+const CHAT_MARK = { me: "&gt;", ans: "&gt;", ag: "·", q: "?", ok: "✓", doc: "│", add: "+", del: "-", cmd: "$", out: "", wait: "⠋" };
+const SPIN = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏";
+
+const esc = (s) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+
+const buildChat = (feed) => {
+  feed.innerHTML = CHATS[feed.dataset.chat].flatMap((group, g) => group.map(([kind, text, extra = {}], i) => {
+    const cls = ["line", kind === "ans" ? "me ans" : kind, text.startsWith("#") ? "h" : "", i === 0 && g > 0 ? "gap" : ""].join(" ");
+    const tag = extra.tag == null ? "" : `<span class="tag">${extra.tag}</span>`;
+    const data = [
+      `data-group="${g}"`,
+      `data-text="${esc(text)}"`,
+      extra.done == null ? "" : `data-done="${esc(extra.done)}" data-ms="${extra.ms}"`,
+      extra.act == null ? "" : `data-act="${extra.act}"`,
+    ].join(" ");
+
+    return `<div class="${cls}" ${data}><span class="p">${CHAT_MARK[kind]}</span><span class="t"></span>${tag}</div>`;
+  })).join("");
+};
+
+const settleLine = (l) => {
+  $(".t", l).textContent = l.dataset.done ?? l.dataset.text;
+
+  if (l.classList.contains("wait")) {
+    $(".p", l).textContent = "✓";
+    l.classList.add("done");
+  }
+};
+
+const PAUSE = { q: 900, doc: 140, add: 220, del: 220, out: 260 };
+
+// Plays the group of the current click; everything before it is rendered settled, actions included
+const playChat = async (step, el, forward, act = async () => {}) => {
+  const viewport = $(".viewport", el);
+  const feed = $(".feed", viewport);
+  const lines = $$(".line", feed);
+  const token = run;
+  const current = step - 1;
+
+  const scroll = () => {
+    const last = lines.filter((l) => !l.classList.contains("hide")).pop();
+    const bottom = last == null ? 0 : last.offsetTop + last.offsetHeight;
+    feed.style.transform = `translateY(${Math.min(0, viewport.clientHeight - bottom - 12)}px)`;
+  };
+
+  lines.forEach((l) => {
+    const g = Number(l.dataset.group);
+    l.classList.toggle("hide", g > current || (forward && g === current));
+    l.classList.toggle("old", g < current && el.dataset.id === "prompts");
+    l.classList.remove("done");
+    $(".p", l).innerHTML = CHAT_MARK[l.classList[1]];
+    settleLine(l);
+  });
+
+  for (const l of lines.filter((x) => !x.classList.contains("hide") && x.dataset.act != null)) {
+    await act(l.dataset.act, false);
+  }
+
+  scroll();
+
+  if (!forward || step === 0) {
+    return;
+  }
+
+  for (const l of lines.filter((x) => Number(x.dataset.group) === current)) {
+    if (token !== run) {
+      return;
+    }
+
+    const typed = l.classList.contains("me") || l.classList.contains("cmd");
+
+    if (typed) {
+      $(".t", l).textContent = "";
+    } else if (l.classList.contains("wait")) {
+      $(".t", l).textContent = l.dataset.text;
+    }
+
+    l.classList.remove("hide");
+    scroll();
+
+    if (typed) {
+      const speed = l.classList.contains("cmd") ? 14 : l.classList.contains("ans") ? 40 : 22;
+      await typeInto($(".t", l), l.dataset.text, speed, token);
+      await sleep(250);
+    } else if (l.classList.contains("wait")) {
+      const end = Date.now() + Number(l.dataset.ms);
+
+      for (let f = 0; Date.now() < end; f += 1) {
+        if (token !== run) {
+          return;
+        }
+
+        $(".p", l).textContent = SPIN[f % SPIN.length];
+        await sleep(80);
+      }
+
+      settleLine(l);
+      await sleep(300);
+    } else {
+      await sleep(PAUSE[l.classList[1]] ?? 450);
+    }
+
+    if (token !== run) {
+      return;
+    }
+
+    if (l.dataset.act != null) {
+      await act(l.dataset.act, true);
+      await sleep(400);
+    }
   }
 };
 
@@ -1533,6 +1978,36 @@ $(".timer").addEventListener("click", (e) => {
 
 /* ───────────── Slider ───────────── */
 
+// Rework falls hard with the first decisions and flattens out; understanding climbs fast and saturates
+const CURVES = {
+  retrabajo: (v) => 1 / (1 + .9 * v),
+  entender: (v) => 1.2 * v / (v + 2),
+};
+
+const curveX = (v) => 56 + v * 44;
+const curveY = (y) => 206 - y * 186;
+
+const buildCurve = (svg) => {
+  const f = CURVES[svg.dataset.f];
+  const d = Array.from({ length: 101 }, (_, i) => `${i === 0 ? "M" : "L"}${curveX(i / 10).toFixed(1)} ${curveY(f(i / 10)).toFixed(1)}`).join(" ");
+
+  svg.innerHTML = `<path class="axis" d="M56 6 V206 H504" />
+    <text x="70" y="14">${svg.dataset.label}</text>
+    <text class="xlbl" x="504" y="238">tiempo diseñando →</text>
+    <path class="guide" />
+    <path class="fn" d="${d}" />
+    <g class="pt"><circle r="11" /></g>`;
+};
+
+const setCurve = (svg, v) => {
+  const x = curveX(v);
+  const y = curveY(CURVES[svg.dataset.f](v));
+
+  $(".pt", svg).style.transform = `translate(${x}px, ${y}px)`;
+  $(".guide", svg).style.d = `path("M56 ${y} H${x} V206")`;
+};
+
+
 const range = $(".design-range");
 
 const renderSlider = (animate) => {
@@ -1543,6 +2018,7 @@ const renderSlider = (animate) => {
   yours.innerHTML = Array.from({ length: v }, (_, i) => `<div class="chip yes" style="${!animate || i < prevYours ? "animation: none" : ""}">✓</div>`).join("");
   $(".chips.agents").innerHTML = Array.from({ length: 10 - v }, () => '<div class="chip no" style="animation: none">?</div>').join("");
   setMood($(".slider-slide .mascot"), v >= 8 ? "joy" : v >= 4 ? "happy" : "skeptic");
+  $$(".curve").forEach((svg) => setCurve(svg, v));
 };
 
 range.addEventListener("input", () => renderSlider(true));
@@ -1642,10 +2118,10 @@ addEventListener("resize", fit);
 
 /* ───────────── Init ───────────── */
 
-$(".snailcopy").innerHTML = $(".slowmo .snail svg").outerHTML;
-
 $(".bar").innerHTML = '<div class="seg"></div>'.repeat(20);
 $$(".track").forEach(buildTrack);
+$$(".chat .feed").forEach(buildChat);
+$$(".curve").forEach(buildCurve);
 $$(".mascot").forEach((m) => setMood(m, m.dataset.mood));
 renderSlider(false);
 fit();
