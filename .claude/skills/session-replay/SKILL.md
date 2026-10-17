@@ -65,7 +65,7 @@ node replay.mjs shot <dir> "<caption>" --type "<selector>" "<text>"
    ```bash
    node replay.mjs export <dir> <out>
    ```
-   `<out>` gets `player.html`, `script.js`, and only the captures that the script uses. Commit that folder, not `<dir>`.
+   `<out>` gets `player.html`, `script.js`, and only the captures that the script uses. Commit that folder, not `<dir>`. The captures are PNGs: if the repo does not track images with Git LFS yet, set it up first (`git lfs track "*.png"`) so they do not go into the repo as regular blobs.
 
 `player.html` reads `script.js`, which also works when opened as `file://`. The player puts a terminal on the left, which fills from the top and scrolls once it is full. On the right it shows the browser, empty until the first capture, with the caption above it. The space bar or a click works like in a visual novel: while a user prompt is typing, it completes the prompt; once the prompt is complete, it continues; during the agent's turn, it draws the rest of the turn at once and jumps to the next prompt. Only the pause button pauses. The controls bar at the bottom is always visible, with a speed dropdown, and shows one dot per prompt, with the passed prompts filled in and the current one highlighted; hovering a dot shows the prompt text and clicking it jumps there; ⏮/⏭ and the ←/→ keys move between prompts.
 
