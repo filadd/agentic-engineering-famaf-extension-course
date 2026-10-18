@@ -23,7 +23,17 @@ Run this once, when the user asks to start recording:
 node replay.mjs start <dir> --url http://localhost:<port>
 ```
 
-It detects the harness (only Claude Code for now) and saves the transcript path and the start time in `<dir>/session.json`. The video only includes what happens after this point.
+It detects the harness (Claude Code or pi) and saves the transcript path and the start time in `<dir>/session.json` as the recording's first segment. The video only includes what happens after this point.
+
+### Resume
+
+When the user asks to continue an earlier recording from a new session, in the same harness or another one, add the new session as a segment instead of starting over:
+
+```bash
+node replay.mjs resume <dir> --since <iso-time>
+```
+
+`--since` is the timestamp of the session's first prompt that belongs in the video; without it the segment starts now. `condense` joins the segments in order, and each one ends where the next one starts. When the earlier transcript also holds work after the recording that should stay out of the video, set that segment's `endedAt` in `session.json`.
 
 ### After every change to the app
 

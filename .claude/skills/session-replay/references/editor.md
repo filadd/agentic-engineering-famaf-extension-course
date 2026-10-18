@@ -21,7 +21,7 @@ Each beat is `{ time, kind, text }` with `kind` one of `user | assistant | tool 
 
 Each type of beat follows these rules:
 
-- **user**: the user's prompts verbatim. An interruption (`[Request interrupted by user]`) becomes `{ kind: "note", text: "Interrupted by user" }`.
+- **user**: the user's prompts verbatim. Merge consecutive user messages into one beat: keep the first message's `time` and join the texts with a blank line. An interruption (`[Request interrupted by user]`) becomes `{ kind: "note", text: "Interrupted by user" }`.
 - **tool**: one short line in the style of Claude Code's terminal, `Name(target)`, with paths relative to the app folder: `Write(src/server.js)`, `Bash(pnpm add express cookie-parser qrcode)`, `Bash(levanta el servidor)`. Use the Bash description to infer the action. For browser actions that check the app, use a line like `Browser(prueba el login de admin)`, placed right before the captures that action produced.
 - **assistant**: compress each message to 1 to 3 short sentences (at most ~220 characters) about what the agent decided or built for the app, or what surprised it about the app. Drop anything about the recording.
 - **screenshot**: one per line of the manifest, in the same order, with `src`, `url`, `caption` and `action` copied unchanged. Use the manifest's `time`, and slot each capture into the transcript by that time.
