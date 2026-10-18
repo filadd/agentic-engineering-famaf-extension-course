@@ -696,8 +696,9 @@
       skipTyping = true;
     } else if (advance != null) {
       advance();
-    } else {
-      // During the agent's turn: draw the rest of it at once and land on the next prompt.
+    } else if (index < rec.beats.length) {
+      // During the agent's turn: draw the rest of it at once and land on the next prompt. At the end
+      // there is nothing left to draw, and re-seeking would redraw the whole video from the top.
       seekTo(promptIndexes.find((i) => i > index) ?? rec.beats.length);
     }
   };
