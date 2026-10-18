@@ -56,7 +56,7 @@ Antes de decidir nada, entendé la parte del proyecto que vas a tocar. Pedile al
 
 > *"Contame cómo funciona [la parte que vas a tocar]. No escribas nada."*
 
-Preguntá de a una cosa. Si tu proyecto es vibecodeado, es probable que sea la primera vez que ves qué hay adentro.
+Preguntá de a una cosa: cómo funciona la lógica existente, qué implica el cambio que vas a hacer y qué impacto tiene en otras partes del sistema. Si hay documentos de diseño de cambios anteriores en `docs/`, leelos también. Si tu proyecto es vibecodeado, es probable que sea la primera vez que ves qué hay adentro.
 
 ### 3. Diseñá
 
@@ -65,6 +65,12 @@ Pedile que te pregunte las decisiones que hay que tomar, de a una:
 > *"Quiero agregar [la feature]. Preguntame las decisiones que hay que tomar, de a una."*
 
 Las decisiones las tomás vos. El agente te trae los datos que necesitás para decidir.
+
+Decidí, con texto y diagramas:
+
+- **Qué cambio hay que hacer**: cómo encaja con lo que existe, cómo funciona, qué data manejás.
+- **Qué interfaces va a tener**: cómo se ven las pantallas que toca el cambio.
+- **Los flujos de usuario**: cómo va a interactuar el usuario con el sistema, de una pantalla a otra.
 
 El diseño puede ser tan liviano o tan profundo como quieras. Para algo chico alcanza con tres o cuatro decisiones. **Más diseño, mejores resultados.**
 
@@ -79,6 +85,8 @@ El diseño puede ser tan liviano o tan profundo como quieras. Para algo chico al
 **¿No tenés test runner?** Pedile al agente que te lo instale. Eso es mecánico, delegalo tranquila/o. Lo que no delegás es decidir los casos.
 
 ### 4. Documentá y anotá
+
+El documento queda en el repo cuando cerrás la sesión. Sirve para recordar por qué decidiste lo que decidiste, para que el agente tenga contexto de cómo funciona y no solo el código, y para que cualquiera que se sume al proyecto pueda leer y entender.
 
 Pedile primero un borrador, y leelo antes de que lo guarde:
 

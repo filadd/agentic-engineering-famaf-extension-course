@@ -331,13 +331,11 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
 .term .line .p { color: var(--a3); }
 .term .line .tag { margin-left: auto; font-size: 30px; }
 .term .caret { display: inline-block; width: 13px; height: 28px; background: var(--term-ink); animation: blink 1s steps(1) infinite; vertical-align: middle; }
-.prompts-slide .term { margin-top: 30px; }
 .term .bar3 .title { margin-left: 12px; font-size: 17px; color: var(--muted); }
 .chat .viewport { height: 418px; overflow: hidden; }
 .chat .feed { transition: transform .45s cubic-bezier(.3, 1, .4, 1); }
 .chat .line { min-height: 0; padding: 4px 28px; font-size: 22px; transition: opacity .4s; }
 .chat .line.gap { margin-top: 14px; }
-.chat .line.old { opacity: .35; }
 .chat .line.ag { color: var(--muted); }
 .chat .line.ag .p { color: var(--muted); }
 .chat .line.q .p { color: var(--a1); }
@@ -360,6 +358,86 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
 .chat .line.doc .p { color: var(--a2); }
 .chat .line.doc .t { white-space: pre; }
 .chat .line.doc.h { color: var(--a2); font-weight: 700; }
+
+/* pasos del recorrido */
+.walk-slide h2 { font-size: 46px; margin: 4px 0 20px; }
+.stagger > * { opacity: 0; transform: translateX(-16px); transition: opacity .35s, transform .45s cubic-bezier(.2, .9, .3, 1.6); transition-delay: calc(var(--i) * .18s + .25s); }
+.on .stagger > * { opacity: 1; transform: none; }
+
+.ex { position: absolute; left: 72px; right: 72px; bottom: 40px; padding: 10px 0; }
+.ex .viewport { height: 112px; }
+.ex .line { font-size: 18px; padding: 2px 24px; }
+.ex .line.ans { padding-left: 54px; }
+.ex .line.add, .ex .line.del { padding-left: 54px; font-size: 16px; }
+.ex .label { position: absolute; right: 16px; top: 10px; z-index: 1; padding: 2px 10px; font-family: var(--font-body); font-size: 15px; color: var(--muted); border: 2px solid var(--muted); border-radius: 999px; }
+
+.explore { display: grid; grid-template-columns: 1fr 1.25fr; gap: 30px; align-items: start; }
+.explore .card { padding: 20px 26px; }
+.explore h3 { margin: 0 0 14px; }
+.explore ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; font-size: 23px; line-height: 1.3; }
+.explore .new { background: color-mix(in srgb, var(--a4) 22%, var(--card)); }
+.explore .old { background: color-mix(in srgb, var(--a2) 24%, var(--card)); }
+
+.design { display: grid; grid-template-columns: 506px 1fr; gap: 34px; align-items: start; }
+.bp { position: relative; width: 506px; height: 316px; border: var(--border); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; background-color: #1c4f8c; background-image: linear-gradient(#ffffff1c 1px, transparent 1px), linear-gradient(90deg, #ffffff1c 1px, transparent 1px); background-size: 20px 20px; }
+.bp svg { position: absolute; left: 0; top: 0; width: 500px; height: 310px; overflow: visible; }
+.bp .layer { opacity: 0; transition: opacity .4s; }
+.walk-slide[data-step="1"] .bp .l1, .walk-slide[data-step="2"] .bp .l2, .walk-slide[data-step="3"] .bp .l3, .walk-slide[data-step="4"] .bp .l3 { opacity: 1; }
+.bp .ln { fill: none; stroke: #eaf2ff; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.bp .ln.thin { stroke-width: 6; opacity: .45; }
+.bp .ln.arrow { stroke: var(--a3); stroke-width: 3; }
+.bp .draw { stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset 1.2s ease-out; }
+.walk-slide[data-step="1"] .l1 .draw, .walk-slide[data-step="2"] .l2 .draw, .walk-slide[data-step="3"] .l3 .draw, .walk-slide[data-step="4"] .l3 .draw { stroke-dashoffset: 0; }
+.bp .l1 .arrow, .bp .l3 .link { transition-delay: .9s; }
+.bp .l3 .link + .link { transition-delay: 1.6s; }
+.bp circle { fill: #eaf2ff; opacity: .6; }
+.bp .hot { fill: var(--a3); opacity: .7; }
+.bp .btn { fill: var(--a2); stroke: #eaf2ff; stroke-width: 3; }
+.bp text { font-family: var(--font-mono); font-size: 15px; fill: #eaf2ff; text-anchor: middle; }
+.bp text.emo { font-size: 26px; }
+.bp text.note { font-size: 13px; fill: #b8cdf0; }
+.bp text.title { font-family: var(--font-display); font-weight: 700; font-size: 24px; text-anchor: start; }
+.bp text.btntxt { font-family: var(--font-body); font-weight: 700; font-size: 16px; }
+.points { display: flex; flex-direction: column; gap: 14px; }
+.point { display: grid; grid-template-columns: 46px 1fr; gap: 2px 14px; align-items: center; padding: 12px 20px; font-size: 21px; line-height: 1.3; }
+.point .ico { grid-row: span 2; font-size: 34px; text-align: center; }
+.point b { font-family: var(--font-display); font-size: 26px; }
+.point span:last-child { color: var(--muted); }
+
+.document { display: grid; grid-template-columns: 340px 1fr; gap: 40px; align-items: start; }
+.ddoc { display: flex; flex-direction: column; gap: 9px; padding: 18px 24px; font-family: var(--font-mono); font-size: 19px; }
+.ddoc .path { margin-bottom: 4px; font-size: 15px; color: var(--muted); }
+.ddoc .h { margin-top: 6px; font-weight: 700; color: var(--a2); }
+.ddoc .h.why { color: var(--a3); }
+.ddoc i { height: 7px; border-radius: 4px; background: color-mix(in srgb, var(--ink) 30%, transparent); }
+.ddoc i:nth-of-type(even) { width: 70%; }
+.dright { display: flex; flex-direction: column; gap: 26px; padding-top: 6px; }
+.fate { display: flex; align-items: center; gap: 18px; font-size: 22px; }
+.fate .gone { padding: 8px 16px; color: var(--muted); border: 2px dashed var(--muted); border-radius: 12px; }
+.fate.on .gone { animation: gone .8s .7s forwards; }
+@keyframes gone { to { opacity: .35; text-decoration: line-through; } }
+.fate .stays { padding: 8px 16px; font-weight: 700; border: var(--border); border-radius: 12px; background: color-mix(in srgb, var(--good) 35%, var(--card)); }
+.readers .small { display: block; margin-bottom: 12px; }
+.readers .stagger { display: flex; flex-direction: column; gap: 10px; font-size: 24px; }
+.loopback { align-self: flex-start; padding: 14px 22px; font-size: 24px; font-weight: 700; color: #111; background: var(--a3); }
+
+.build { display: grid; grid-template-columns: 290px 60px 300px 60px 290px; justify-content: center; align-items: center; gap: 12px; margin-top: 16px; }
+.ins, .outs { display: flex; flex-direction: column; gap: 14px; }
+.chipc { padding: 12px 18px; font-size: 22px; font-weight: 700; border: var(--border); border-radius: 14px; box-shadow: 5px 5px 0 #05051a; background: color-mix(in srgb, var(--a2) 30%, var(--card)); }
+.chipc.bump { animation: bump .35s ease-out; }
+.outs .chipc { opacity: 0; transform: scale(.4); background: color-mix(in srgb, var(--good) 30%, var(--card)); transition: opacity .3s, transform .45s cubic-bezier(.2, .9, .3, 1.8); }
+.outs .chipc.on { opacity: 1; transform: none; }
+.pipe { text-align: center; font-size: 48px; font-weight: 700; color: var(--muted); transition: color .3s; }
+.pipe.live { color: var(--a3); animation: nudge .5s ease-in-out infinite; }
+@keyframes nudge { 50% { transform: translateX(8px); } }
+.agentbox { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 20px; }
+.agentbox .mascot { --size: 110px; }
+.agentbox .status { display: flex; gap: 10px; font-family: var(--font-mono); font-size: 19px; color: var(--muted); }
+.agentbox .status .p { color: var(--a3); }
+.agentbox.done .status { color: var(--ink); }
+.agentbox.done .status .p { color: var(--good); }
+.punch { margin-top: 30px; text-align: center; opacity: 0; transform: translateY(18px); transition: opacity .45s, transform .6s cubic-bezier(.2, .9, .3, 1.4); }
+.punch.show { opacity: 1; transform: none; }
 
 /* ayudita */
 .install { display: inline-block; font-family: var(--font-mono); font-size: 20px; padding: 8px 16px; border-radius: 10px; background: var(--term-bg); color: var(--term-ink); margin-top: -8px; }
@@ -692,18 +770,6 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
     <div class="mascot" data-mood="happy"></div>
   </section>
 
-  <!-- Recorrido -->
-  <section class="slide route-slide" data-id="recorrido" data-steps="4">
-    <h2>Explorar · Diseñar · Documentar · Código</h2>
-    <div class="route">
-      <div class="card f-flip" data-step="1"><span class="ico">🔍</span><h3>Explorar</h3>entendé lo que existe antes de decidir nada</div>
-      <div class="card f-flip" data-step="2"><span class="ico">✏️</span><h3>Diseñar</h3>vos tomás las decisiones; el agente te pregunta de a una</div>
-      <div class="card f-flip" data-step="3"><span class="ico">📄</span><h3>Documentar</h3>un archivo para leer, anotar y pasarle al agente</div>
-      <div class="card f-flip finish" data-step="4"><span class="ico">🏁</span><h3>Código</h3>recién acá: el agente implementa el documento</div>
-      <div class="mascot hopper" data-mood="happy"></div>
-    </div>
-  </section>
-
   <!-- Más diseño -->
   <section class="slide slider-slide" data-id="slider">
     <h2>Más diseño, mejores resultados</h2>
@@ -721,12 +787,168 @@ input[type=range]::-moz-range-thumb { width: 48px; height: 48px; border-radius: 
     <div class="mascot" data-mood="skeptic"></div>
   </section>
 
-  <!-- Cómo se le pide -->
-  <section class="slide prompts-slide" data-id="prompts" data-steps="4">
+  <!-- Recorrido -->
+  <section class="slide route-slide" data-id="recorrido" data-steps="4">
+    <h2>Explorar · Diseñar · Documentar · Código</h2>
+    <div class="route">
+      <div class="card f-flip" data-step="1"><span class="ico">🔍</span><h3>Explorar</h3>entendé lo que existe antes de decidir nada</div>
+      <div class="card f-flip" data-step="2"><span class="ico">✏️</span><h3>Diseñar</h3>vos tomás las decisiones; el agente te pregunta de a una</div>
+      <div class="card f-flip" data-step="3"><span class="ico">📄</span><h3>Documentar</h3>un archivo para leer, anotar y pasarle al agente</div>
+      <div class="card f-flip finish" data-step="4"><span class="ico">🏁</span><h3>Código</h3>recién acá: el agente implementa el documento</div>
+      <div class="mascot hopper" data-mood="happy"></div>
+    </div>
+  </section>
+
+  <!-- Paso: Explorar -->
+  <section class="slide walk-slide" data-id="explorar" data-steps="3">
     <div class="track mini" data-stops="explorar|diseñar|documentar|código" data-finish></div>
-    <div class="term chat">
-      <div class="bar3"><i></i><i></i><i></i><span class="title">todo-app · pi</span></div>
-      <div class="viewport"><div class="feed" data-chat="prompts"></div></div>
+    <h2>🔍 Explorar</h2>
+    <div class="explore">
+      <div class="card new f-drop" data-step="1" style="--r: -1deg">
+        <h3>🌱 Proyecto nuevo</h3>
+        <ul class="stagger">
+          <li style="--i: 0">proyectos parecidos: qué resuelven, qué evitan</li>
+          <li style="--i: 1">el stack tecnológico: ventajas, desventajas, trade-offs</li>
+          <li style="--i: 2">prioridades: qué es más importante y por dónde arrancar</li>
+        </ul>
+      </div>
+      <div class="card old f-drop" data-step="2" style="--r: 1deg">
+        <h3>🏠 Proyecto existente</h3>
+        <ul class="stagger">
+          <li style="--i: 0">cómo funciona la lógica existente</li>
+          <li style="--i: 1">qué implica el cambio que vamos a hacer</li>
+          <li style="--i: 2">qué impacto tiene el cambio en otras partes del sistema</li>
+        </ul>
+      </div>
+    </div>
+    <div class="term chat ex" data-step="3">
+      <span class="label">ejemplo</span>
+      <div class="viewport"><div class="feed" data-chat="explorar"></div></div>
+    </div>
+  </section>
+
+  <!-- Paso: Diseñar -->
+  <section class="slide walk-slide" data-id="disenar" data-steps="4">
+    <div class="track mini" data-stops="explorar|diseñar|documentar|código" data-finish></div>
+    <h2>✏️ Diseñar</h2>
+    <div class="design">
+      <div class="bp">
+        <svg viewBox="0 0 500 310">
+          <g class="layer l1">
+            <rect class="ln draw" pathLength="100" x="20" y="110" width="125" height="80" rx="10" />
+            <rect class="ln draw" pathLength="100" x="187" y="110" width="125" height="80" rx="10" />
+            <path class="ln draw" pathLength="100" d="M355 120 A62 12 0 0 1 480 120 V180 A62 12 0 0 1 355 180 Z M355 120 A62 12 0 0 0 480 120" />
+            <text class="emo" x="82" y="146">🖥️</text>
+            <text x="82" y="176">navegador</text>
+            <text class="emo" x="250" y="146">⚙️</text>
+            <text x="250" y="176">servidor</text>
+            <text class="emo" x="417" y="152">🗄️</text>
+            <text x="417" y="178">base de datos</text>
+            <path class="ln arrow draw" pathLength="100" d="M147 138 H183 M176 132 L183 138 L176 144 M185 162 H149 M156 156 L149 162 L156 168" />
+            <path class="ln arrow draw" pathLength="100" d="M314 138 H351 M344 132 L351 138 L344 144 M353 162 H316 M323 156 L316 162 L323 168" />
+            <text class="note" x="166" y="100">JSON</text>
+            <text class="note" x="333" y="100">SQL</text>
+            <text class="note" x="82" y="218">muestra</text>
+            <text class="note" x="250" y="218">valida y decide</text>
+            <text class="note" x="417" y="218">guarda</text>
+          </g>
+          <g class="layer l2">
+            <path class="ln draw" pathLength="100" d="M120 30 H380 Q390 30 390 40 V270 Q390 280 380 280 H120 Q110 280 110 270 V40 Q110 30 120 30 M110 52 H390" />
+            <circle cx="126" cy="41" r="4" /><circle cx="140" cy="41" r="4" /><circle cx="154" cy="41" r="4" />
+            <text class="title" x="132" y="88">Mis tareas</text>
+            <rect class="ln draw" pathLength="100" x="132" y="108" width="20" height="20" rx="4" />
+            <rect class="ln draw" pathLength="100" x="132" y="146" width="20" height="20" rx="4" />
+            <rect class="ln draw" pathLength="100" x="132" y="184" width="20" height="20" rx="4" />
+            <path class="ln thin draw" pathLength="100" d="M166 118 H316" /><path class="ln thin draw" pathLength="100" d="M166 156 H286" /><path class="ln thin draw" pathLength="100" d="M166 194 H306" />
+            <rect class="btn" x="132" y="226" width="120" height="34" rx="8" />
+            <text class="btntxt" x="192" y="248">+ agregar</text>
+          </g>
+          <g class="layer l3">
+            <path class="ln draw" pathLength="100" d="M25 60 H135 Q145 60 145 70 V220 Q145 230 135 230 H25 Q15 230 15 220 V70 Q15 60 25 60 M15 82 H145" />
+            <path class="ln thin draw" pathLength="100" d="M31 110 H129" /><path class="ln thin draw" pathLength="100" d="M31 138 H129" /><path class="ln thin draw" pathLength="100" d="M31 166 H129" /><path class="ln thin draw" pathLength="100" d="M31 194 H129" />
+            <text x="80" y="258">lista</text>
+            <path class="ln draw" pathLength="100" d="M195 60 H305 Q315 60 315 70 V220 Q315 230 305 230 H195 Q185 230 185 220 V70 Q185 60 195 60 M185 82 H315" />
+            <path class="ln thin draw" pathLength="100" d="M201 110 H299" /><path class="ln thin draw" pathLength="100" d="M201 138 H299" /><path class="ln thin draw" pathLength="100" d="M201 166 H299" /><path class="ln thin draw" pathLength="100" d="M201 194 H299" />
+            <text x="250" y="258">tarea</text>
+            <path class="ln draw" pathLength="100" d="M365 60 H475 Q485 60 485 70 V220 Q485 230 475 230 H365 Q355 230 355 220 V70 Q355 60 365 60 M355 82 H485" />
+            <path class="ln thin draw" pathLength="100" d="M371 110 H469" /><path class="ln thin draw" pathLength="100" d="M371 138 H469" /><path class="ln thin draw" pathLength="100" d="M371 166 H469" /><path class="ln thin draw" pathLength="100" d="M371 194 H469" />
+            <text x="420" y="258">recordatorio</text>
+            <rect class="hot" x="31" y="134" width="98" height="16" rx="4" />
+            <rect class="hot" x="201" y="190" width="98" height="16" rx="4" />
+            <path class="ln arrow link draw" pathLength="100" d="M130 142 H180 M172 135 L180 142 L172 149" />
+            <path class="ln arrow link draw" pathLength="100" d="M300 198 H350 M342 191 L350 198 L342 205" />
+          </g>
+        </svg>
+      </div>
+      <div class="points">
+        <div class="card point" data-step="1"><span class="ico">🧩</span><b>Qué cambio hay que hacer</b><span>cómo encaja con lo que existe, cómo funciona, qué data manejamos</span></div>
+        <div class="card point" data-step="2"><span class="ico">🖼️</span><b>Qué interfaces va a tener</b><span>UI y UX de las interfaces de usuario</span></div>
+        <div class="card point" data-step="3"><span class="ico">🚶</span><b>Flujos de usuario</b><span>cómo va a interactuar el usuario con el sistema</span></div>
+      </div>
+    </div>
+    <div class="term chat ex" data-step="4">
+      <span class="label">ejemplo</span>
+      <div class="viewport"><div class="feed" data-chat="disenar"></div></div>
+    </div>
+  </section>
+
+  <!-- Paso: Documentar -->
+  <section class="slide walk-slide" data-id="documentar" data-steps="4">
+    <div class="track mini" data-stops="explorar|diseñar|documentar|código" data-finish></div>
+    <h2>📄 Documentar</h2>
+    <div class="document">
+      <div class="card ddoc f-flip" data-step="1">
+        <div class="path">docs/diseño.md</div>
+        <div class="h">## Decisiones</div><i></i><i></i>
+        <div class="h why">## Por qué</div><i></i><i></i>
+        <div class="h">## Cómo encaja</div><i></i>
+        <div class="h">## Casos</div><i></i>
+      </div>
+      <div class="dright">
+        <div class="fate" data-step="1"><span class="gone">💬 la sesión se cierra</span><span class="stays">📄 el documento se persiste en el tiempo</span></div>
+        <div class="readers" data-step="2">
+          <div class="small">sirve de trazabilidad para entender las decisiones, sirve para</div>
+          <div class="stagger">
+            <div style="--i: 0">🧑 recordar las decisiones que tomaste hace 2 días</div>
+            <div style="--i: 1">🤖 que el agente tenga contexto de cómo funciona, no solo el código</div>
+            <div style="--i: 2">👥 que cualquiera que se sume al proyecto pueda leer y entender</div>
+          </div>
+        </div>
+        <div class="card loopback f-pop" data-step="3">↺ 🔍 en el próximo cambio, lo leés al explorar</div>
+      </div>
+    </div>
+    <div class="term chat ex" data-step="4">
+      <span class="label">ejemplo</span>
+      <div class="viewport"><div class="feed" data-chat="documentar"></div></div>
+    </div>
+  </section>
+
+  <!-- Paso: Código -->
+  <section class="slide walk-slide" data-id="codigo" data-steps="2">
+    <div class="track mini" data-stops="explorar|diseñar|documentar|código" data-finish></div>
+    <h2>🏁 Código</h2>
+    <div class="build">
+      <div class="ins">
+        <div class="chipc">📄 docs/diseño.md</div>
+        <div class="chipc">📐 diagramas</div>
+        <div class="chipc">✓ decisiones y casos</div>
+      </div>
+      <div class="pipe">→</div>
+      <div class="card agentbox">
+        <div class="mascot" data-mood="happy"></div>
+        <div class="status"><span class="p">·</span><span class="t">esperando el diseño</span></div>
+      </div>
+      <div class="pipe">→</div>
+      <div class="outs">
+        <div class="chipc">📁 el código</div>
+        <div class="chipc">🧪 los tests</div>
+        <div class="chipc">🏁 lo que diseñaste</div>
+      </div>
+    </div>
+    <p class="mid punch">El agente usa todo el contexto que le pasamos para implementar algo <span class="hl">más cerca de lo que planeamos</span>.</p>
+    <div class="term chat ex" data-step="2">
+      <span class="label">ejemplo</span>
+      <div class="viewport"><div class="feed" data-chat="codigo"></div></div>
     </div>
   </section>
 
@@ -1199,6 +1421,35 @@ const typeInto = async (el, text, speed, token, clock = () => run) => {
   }
 };
 
+// One slide per stop of the route: the rider hops in from the previous stop and the example chat plays on the last click
+const walkStep = (pos, extra = () => {}) => (step, el, ctx) => {
+  const track = $(".track", el);
+  const rider = $(".rider", track);
+  const last = stepsOf(el);
+
+  if (ctx.entered) {
+    const token = visit;
+
+    rider.style.transition = "none";
+    setTrack(track, ctx.forward ? pos - 1 : pos);
+    void rider.offsetWidth;
+    rider.style.transition = "";
+    setMood(rider, "happy");
+
+    if (ctx.forward) {
+      setTimeout(() => {
+        if (token === visit) {
+          replay(rider, "jump");
+          setTrack(track, pos);
+        }
+      }, 500);
+    }
+  }
+
+  playChat(step === last ? 1 : 0, el, ctx.forward && step === last);
+  extra(step, el, ctx);
+};
+
 const hooks = {
   portada: (step, el, { entered }) => {
     const m = $(".mascot", el);
@@ -1382,10 +1633,86 @@ const hooks = {
     }
   },
 
-  prompts: (step, el, { forward }) => {
-    setTrack($(".track", el), step - 1);
-    playChat(step, el, forward);
-  },
+  explorar: walkStep(0),
+
+  disenar: walkStep(1),
+
+  documentar: walkStep(2),
+
+  codigo: walkStep(3, async (step, el, { forward }) => {
+    const box = $(".agentbox", el);
+    const m = $(".mascot", box);
+    const status = $(".status", box);
+    const pipes = $$(".pipe", el);
+    const outs = $$(".outs .chipc", el);
+    const rider = $(".track .rider", el);
+    const token = run;
+
+    const setStatus = (mark, text) => {
+      $(".p", status).textContent = mark;
+      $(".t", status).textContent = text;
+    };
+
+    const finish = () => {
+      pipes.forEach((p) => p.classList.remove("live"));
+      outs.forEach((o) => o.classList.add("on"));
+      box.classList.add("done");
+      setStatus("✓", "implementado");
+      setMood(m, "joy");
+      $(".punch", el).classList.add("show");
+    };
+
+    box.classList.remove("done");
+    pipes.forEach((p) => p.classList.remove("live"));
+    outs.forEach((o) => o.classList.remove("on"));
+    $(".punch", el).classList.remove("show");
+
+    if (step === 0) {
+      setStatus("·", "esperando el diseño");
+      setMood(m, "happy");
+      return;
+    }
+
+    if (!forward || step > 1) {
+      finish();
+      return;
+    }
+
+    pipes[0].classList.add("live");
+
+    for (const chip of $$(".ins .chipc", el)) {
+      replay(chip, "bump");
+      await sleep(250);
+    }
+
+    setMood(m, "wow");
+
+    for (let f = 0; f < 22; f += 1) {
+      if (token !== run) {
+        return;
+      }
+
+      setStatus(SPIN[f % SPIN.length], "implementando…");
+      await sleep(80);
+    }
+
+    pipes[0].classList.remove("live");
+    pipes[1].classList.add("live");
+
+    for (const out of outs) {
+      if (token !== run) {
+        return;
+      }
+
+      out.classList.add("on");
+      await sleep(300);
+    }
+
+    finish();
+    setMood(m, "wave");
+    setMood(rider, "wave");
+    confetti(el, box.offsetLeft + box.offsetWidth / 2, box.offsetTop + 40, 40);
+  }),
 
   api: (step, el, { forward }) => {
     $$(".seq .msg", el).forEach((m) => m.classList.remove("on", "fresh"));
@@ -1727,15 +2054,18 @@ const walkSteps = async (track, token, walk) => {
 // One group per click: [kind, text, extra]. "me" and "cmd" lines are typed, the rest appear.
 // "wait" lines spin for extra.ms and then settle on extra.done; extra.act runs a slide action
 const CHATS = {
-  prompts: [
+  explorar: [
     [
-      ["me", "Contame cómo funcionan las tareas hoy. No escribas nada.", { tag: "🔍" }],
+      ["me", "Contame cómo funcionan las tareas hoy. No escribas nada."],
       ["ag", "Se guardan en db.json: id, título, hecha."],
       ["ag", "server.js expone GET, POST y PATCH /tareas."],
       ["ag", "No hay nada que se ejecute solo con el tiempo."],
     ],
+  ],
+
+  disenar: [
     [
-      ["me", "Quiero agregar recordatorios. Preguntame las decisiones, de a una.", { tag: "✏️" }],
+      ["me", "Quiero agregar recordatorios. Preguntame las decisiones, de a una."],
       ["q", "¿Solo fecha, o fecha y hora?"],
       ["ans", "fecha y hora"],
       ["q", "¿Quién avisa, el navegador o el servidor?"],
@@ -1745,15 +2075,12 @@ const CHATS = {
       ["q", "¿Y si la tarea ya está hecha?"],
       ["ans", "no avisa"],
     ],
+  ],
+
+  documentar: [
     [
-      ["me", "Armame un borrador del diseño. Todavía no lo guardes.", { tag: "📄" }],
-      ["doc", "# Recordatorios"],
-      ["doc", "Cada tarea puede tener un recordatorio con fecha y hora."],
-      ["doc", "Cuando llega la hora:"],
-      ["doc", "  ├─ tarea hecha ──────▶ nada"],
-      ["doc", "  ├─ pestaña cerrada ──▶ vencido, se ve al abrir"],
-      ["doc", "  └─ si no ────────────▶ notificación del navegador"],
-      ["doc", "Se guarda: recordatorio, vencido (true/false)"],
+      ["me", "Armame un borrador del diseño. Todavía no lo guardes."],
+      ["ag", "borrador: 4 decisiones, 3 casos y qué pasa cuando llega la hora"],
       ["me", "vencido no se guarda: es fecha pasada y no hecha"],
       ["ag", "✎ vencido pasa a calcularse al cargar"],
       ["me", "faltan casos: sin recordatorio, y fecha pasada al crear"],
@@ -1761,19 +2088,17 @@ const CHATS = {
       ["me", "Guardalo en docs/recordatorios.md"],
       ["ok", "docs/recordatorios.md · 4 decisiones, 5 casos"],
     ],
+  ],
+
+  codigo: [
     [
-      ["me", "Implementá docs/recordatorios.md", { tag: "🏁" }],
+      ["me", "Implementá docs/recordatorios.md"],
       ["wait", "leyendo docs/recordatorios.md…", { done: "leí docs/recordatorios.md", ms: 1200 }],
       ["ag", "✎ server.js"],
       ["add", "app.patch('/tareas/:id/recordatorio', guardarRecordatorio)"],
-      ["add", "if (new Date(cuando) < new Date()) return res.status(400).json(error)"],
-      ["wait", "pensando…", { done: "server.js listo", ms: 1400 }],
       ["ag", "✎ public/app.js"],
-      ["del", "render(tareas)"],
-      ["add", "render(tareas, { vencido })"],
       ["add", "const vencido = (t) => !t.hecha && t.recordatorio < Date.now()"],
-      ["add", "setTimeout(() => new Notification(t.titulo), t.recordatorio - Date.now())"],
-      ["wait", "corriendo tests…", { done: "5 tests pasan", ms: 2200 }],
+      ["wait", "corriendo tests…", { done: "5 tests pasan", ms: 2000 }],
     ],
   ],
 
@@ -1886,7 +2211,6 @@ const playChat = async (step, el, forward, act = async () => {}) => {
   lines.forEach((l) => {
     const g = Number(l.dataset.group);
     l.classList.toggle("hide", g > current || (forward && g === current));
-    l.classList.toggle("old", g < current && el.dataset.id === "prompts");
     l.classList.remove("done");
     $(".p", l).innerHTML = CHAT_MARK[l.classList[1]];
     settleLine(l);
