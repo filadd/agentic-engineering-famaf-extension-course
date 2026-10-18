@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Prototipo · Admin de la sesión</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  :root { --window: #FBF3EE; --ink: #1F1B18; --muted: #8A7E75; --line: #EADFD8; --side: #F3E8E1; --slide: #FFFFFF; --pill: #FFFFFF; }
+  .dark { --window: #161413; --ink: #F2EDE9; --muted: #9C918A; --line: #34302D; --side: #1F1C1A; --slide: #24211F; --pill: #2A2623; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9e6e3; font-family: 'Atkinson Hyperlegible', sans-serif; color: #1F1B18; }
+  h1, h2, h3, h4 { font-family: 'Rubik', sans-serif; margin: 0; }
+  .intro, .alt { max-width: 1240px; margin: 24px auto; padding: 0 20px; }
+  .intro p { margin: 6px 0 0; color: #6b625c; }
+  .strip { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; font-size: 14px; }
+  .strip button { font: inherit; border: 1px solid #cfc8c2; background: #fff; border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+  .strip button.on { background: #1F1B18; color: #fff; border-color: #1F1B18; }
+
+  .i { display: inline-grid; place-items: center; flex: none; }
+  .i svg { width: 100%; height: 100%; }
+
+  .app { background: var(--window); color: var(--ink); border-radius: 12px; height: 760px; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+
+  /* Same header as the student side: back arrow, big title, avatar that opens the user menu. */
+  .top { display: flex; align-items: center; gap: 14px; padding: 26px 32px 4px; }
+  .back { width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; color: var(--ink); cursor: pointer; display: grid; place-items: center; }
+  .back:hover { background: var(--line); }
+  .top h1 { font-size: 30px; flex: 1; }
+  .me { position: relative; }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; background: #CCC4F0; display: grid; place-items: center; font-size: 22px; border: 0; cursor: pointer; }
+  .menu { position: absolute; right: 0; top: 54px; width: 250px; background: var(--window); border: 1.5px solid var(--line); border-radius: 18px; padding: 14px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18); z-index: 5; }
+  .menu .who { font-family: 'Rubik', sans-serif; font-weight: 700; }
+  .menu .mail { color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .menu hr { border: 0; border-top: 1.5px solid var(--line); margin: 12px 0; }
+  .switch { display: flex; justify-content: space-between; align-items: center; width: 100%; font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  .knob { width: 40px; height: 22px; border-radius: 999px; background: var(--line); position: relative; flex: none; }
+  .knob::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--ink); transition: left 0.15s; }
+  .knob.on { background: #9DCBC2; }
+  .knob.on::after { left: 21px; background: #1F1B18; }
+
+  .maintabs { display: flex; gap: 8px; padding: 10px 32px 0 86px; }
+  .pt { position: relative; display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 14px; border: 1.5px solid var(--line); background: transparent; color: var(--ink); border-radius: 999px; padding: 7px 16px; cursor: pointer; }
+  .pt.on { background: var(--ink); color: var(--window); border-color: var(--ink); }
+  .badge { position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; border-radius: 999px; background: #E8505B; color: #fff; font-size: 11px; display: grid; place-items: center; padding: 0 5px; }
+
+  .page { flex: 1; overflow: auto; padding: 18px 32px 28px 86px; }
+  .stack { display: flex; flex-direction: column; gap: 18px; max-width: 760px; }
+  .card { background: #F8D0A0; color: #1F1B18; border-radius: 22px; padding: 22px; }
+  .kicker { font-size: 14px; opacity: 0.75; }
+  .field { display: block; margin-top: 12px; font-size: 13px; }
+  .field input, .field textarea, .field select { display: block; width: 100%; margin-top: 4px; font: inherit; font-size: 15px; border: 0; border-radius: 12px; padding: 9px 12px; background: #fff; color: #1F1B18; }
+  .field textarea { min-height: 70px; resize: vertical; }
+  .enable { display: flex; align-items: center; gap: 10px; margin-top: 16px; font-size: 14px; }
+
+  .box { background: var(--side); border-radius: 22px; padding: 18px; }
+  .box-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .box-head h3 { font-size: 17px; display: flex; gap: 8px; align-items: center; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 14px; border: 1.5px solid var(--line); background: transparent; color: var(--ink); border-radius: 999px; padding: 7px 12px; cursor: pointer; }
+  .btn.dark { background: #1F1B18; color: #fff; border-color: #1F1B18; }
+  .btn.danger { color: #B5485A; border-color: #E9B3BC; background: #fff; }
+  .btn.danger.solid { background: #B5485A; color: #fff; border-color: #B5485A; }
+  .file { display: flex; align-items: center; gap: 10px; background: #fff; color: #1F1B18; border-radius: 12px; padding: 9px 8px 9px 12px; margin-bottom: 6px; font-size: 14px; }
+  .file .grow { flex: 1; }
+  .file small { display: block; color: #8A7E75; font-size: 12px; }
+  .chip { font-size: 11px; border-radius: 999px; padding: 1px 8px; background: #CCC4F0; color: #1F1B18; }
+  .iconbtn { width: 34px; height: 34px; border-radius: 50%; border: 0; background: transparent; color: inherit; cursor: pointer; display: grid; place-items: center; position: relative; flex: none; }
+  .iconbtn:hover { background: rgba(0, 0, 0, 0.06); }
+  .note { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+  /* Polls: every card folds; active ones start open. */
+  .poll { background: #fff; color: #1F1B18; border-radius: 16px; margin-bottom: 10px; }
+  .poll-head { display: flex; align-items: center; gap: 10px; width: 100%; font: inherit; text-align: left; background: none; border: 0; padding: 12px 14px; cursor: pointer; color: inherit; }
+  .poll-head .grow { flex: 1; }
+  .poll-head small { display: block; color: #8A7E75; font-size: 12px; }
+  .state { font-size: 12px; border-radius: 999px; padding: 2px 9px; flex: none; }
+  .state.draft { background: #EFE6E0; }
+  .state.active { background: #B4E8CC; }
+  .state.closed { background: #CCC4F0; }
+  .poll-body { padding: 0 14px 14px; }
+  .opt { display: flex; gap: 6px; margin-top: 6px; }
+  .opt input, .ends input, .poll-body > input { flex: 1; font: inherit; font-size: 14px; border: 1.5px solid #EADFD8; border-radius: 10px; padding: 7px 10px; }
+  .poll-body > input { width: 100%; }
+  .ends { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; font-size: 12px; color: #8A7E75; }
+  .ends label input { display: block; width: 100%; margin-top: 3px; color: #1F1B18; }
+  .add { margin-top: 8px; font: inherit; font-size: 13px; background: none; border: 1.5px dashed #D9C9BF; border-radius: 10px; padding: 6px 10px; cursor: pointer; width: 100%; color: #1F1B18; display: flex; gap: 6px; align-items: center; justify-content: center; }
+  .dd { position: relative; }
+  .dd-menu { position: absolute; right: 0; top: 44px; background: var(--window); border: 1.5px solid var(--line); border-radius: 14px; padding: 6px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); z-index: 4; min-width: 190px; }
+  .dd-menu button { display: block; width: 100%; text-align: left; font: inherit; font-size: 14px; background: none; border: 0; border-radius: 10px; padding: 8px 10px; cursor: pointer; color: var(--ink); }
+  .dd-menu button:hover { background: var(--line); }
+  .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+  .row { position: relative; overflow: hidden; display: flex; justify-content: space-between; border: 2px solid #EADFD8; border-radius: 10px; padding: 6px 10px; margin-top: 6px; font-size: 13px; }
+  .row i { position: absolute; inset: 0 auto 0 0; background: #F8D0A0; opacity: 0.6; }
+  .row span { position: relative; }
+  .cloud { display: flex; flex-wrap: wrap; gap: 4px 12px; justify-content: center; padding: 6px; }
+  .cloud span { font-family: 'Rubik', sans-serif; font-weight: 700; }
+
+  /* Aula: the C layout with the student's panel. */
+  .aula { flex: 1; display: flex; min-height: 0; }
+  .stage { flex: 1; display: flex; flex-direction: column; padding: 14px 32px 22px 86px; gap: 12px; min-width: 0; }
+  .aula.folded .stage { padding-right: 4px; }
+  .slide { flex: 1; background: var(--slide); border-radius: 18px; border: 1.5px solid var(--line); display: flex; flex-direction: column; justify-content: center; padding: 40px 56px; }
+  .slide h3 { font-size: 34px; }
+  .slide p { font-size: 18px; color: var(--muted); margin: 14px 0 0; line-height: 1.5; }
+  .slide ul { font-size: 18px; margin: 14px 0 0; line-height: 1.7; }
+  .controls { display: flex; align-items: center; gap: 10px; }
+  .controls .count { color: var(--muted); font-size: 14px; min-width: 60px; text-align: center; }
+  .controls .present { margin-left: auto; }
+  .side { width: 340px; background: var(--side); border-radius: 18px 0 0 18px; margin: 14px 0 22px; display: flex; flex-direction: column; min-height: 0; }
+  .side.rail { width: 46px; background: transparent; }
+  .side-head { display: flex; padding: 10px 10px 4px; }
+  .side.rail .side-head { padding: 10px 6px 4px 2px; }
+  .ptabs { display: flex; gap: 6px; padding: 0 16px 10px; }
+  .ptabs .pt { flex: 1; justify-content: center; font-size: 13px; padding: 6px 0; }
+  .side-scroll { overflow: auto; padding: 0 12px 16px 16px; margin-right: 4px; flex: 1; }
+  .people { display: flex; flex-direction: column; gap: 6px; max-height: 210px; overflow: auto; padding: 0 12px 0 16px; margin-right: 4px; }
+  .side-scroll, .people { scrollbar-width: thin; scrollbar-color: #D9C9BF transparent; }
+  .dark .side-scroll, .dark .people { scrollbar-color: #4A423D transparent; }
+  .person { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+  .person .face { width: 30px; height: 30px; border-radius: 50%; background: #CCC4F0; display: grid; place-items: center; font-size: 16px; flex: none; }
+  .person .role { font-size: 11px; color: var(--muted); background: var(--window); border-radius: 999px; padding: 1px 8px; }
+  .person .raised { margin-left: auto; margin-right: 2px; width: 26px; height: 26px; border-radius: 50%; background: #F8D0A0; color: #1F1B18; display: grid; place-items: center; border: 0; cursor: pointer; }
+  .person .raised:hover { box-shadow: 0 0 0 2px #1F1B18; }
+  .room-wrap { padding: 10px 0 14px; border-top: 1.5px solid var(--line); }
+  .fold { width: 100%; display: flex; align-items: center; gap: 6px; font: inherit; font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 15px; color: var(--ink); background: none; border: 0; padding: 0 16px 8px; cursor: pointer; }
+  .fold .chev { margin-left: auto; display: inline-grid; }
+  /* Every badge is the same red circle with a number; inline ones sit next to their title. */
+  .badge.inline { position: static; font-family: 'Atkinson Hyperlegible', sans-serif; font-weight: 400; }
+  .question { display: flex; gap: 10px; align-items: flex-start; background: #fff; color: #1F1B18; border-radius: 14px; padding: 10px 12px; margin-bottom: 8px; font-size: 13px; }
+  .votes { display: flex; flex-direction: column; align-items: center; min-width: 34px; font-size: 12px; border: 1.5px solid #EADFD8; border-radius: 10px; padding: 3px 0; }
+  .empty { color: var(--muted); font-size: 14px; }
+  .subfold { display: flex; justify-content: space-between; align-items: center; width: 100%; font: inherit; font-family: 'Rubik', sans-serif; font-weight: 500; font-size: 13px; color: var(--muted); background: none; border: 0; padding: 8px 2px; cursor: pointer; }
+  .question .qtext { flex: 1; }
+  .question.done { opacity: 0.5; }
+  .question.done .qtext { text-decoration: line-through; }
+
+  .scrim { position: absolute; inset: 0; background: rgba(31, 27, 24, 0.45); display: grid; place-items: center; z-index: 10; }
+  .modal { background: var(--window); color: var(--ink); border-radius: 22px; width: 480px; padding: 22px 24px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .drop { border: 2px dashed var(--line); border-radius: 16px; padding: 18px; text-align: center; color: var(--muted); font-size: 14px; }
+  .picks { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 10px; }
+  .picks button { font: inherit; font-size: 13px; border: 1.5px solid var(--line); background: var(--pill); color: var(--ink); border-radius: 999px; padding: 4px 10px; cursor: pointer; }
+  .picks button.on { background: var(--ink); color: var(--window); }
+  .check { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 14px; }
+  .error { display: flex; gap: 8px; align-items: flex-start; margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: #F9DDE1; color: #8A2E3D; font-size: 14px; }
+  .tabmarks { display: inline-flex; align-items: center; gap: 4px; margin-left: 4px; }
+</style>
+</head>
+<body>
+<div class="intro">
+  <h1>Admin de la sesión · profe</h1>
+  <p>Tres pestañas: Contenido, Encuestas y Aula. El switch de habilitar está en la card de la sesión. Subir un archivo abre un modal; si el archivo es HTML se puede marcar como slides del aula. Cada encuesta se expande con un click y las activas arrancan abiertas. La pestaña Aula es la slide grande con el panel del estudiante, que para el profe no se oculta, y las slides se abren en otra pestaña para presentar. Desde el panel del aula también se activan, cierran y borran encuestas; una encuesta se borra en cualquier estado, y borrar una encuesta o un material pide confirmación. El profe baja una mano tocándola y marca una pregunta como respondida. Fuera de la pestaña Aula, esa pestaña muestra los badges de preguntas nuevas y de manos levantadas. Si el HTML marcado como slides no respeta la API de las slides, el modal de subida muestra un error y el archivo no queda como slides. La barra simula a un estudiante que levanta la mano o hace una pregunta.</p>
+</div>
+<section class="alt" id="admin">
+  <div class="strip"></div>
+  <div class="stagewrap"></div>
+</section>
+
+<script>
+const ICONS = {"trash":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m18 9l-.84 8.398c-.127 1.273-.19 1.909-.48 2.39a2.5 2.5 0 0 1-1.075.973C15.098 21 14.46 21 13.18 21h-2.36c-1.279 0-1.918 0-2.425-.24a2.5 2.5 0 0 1-1.076-.973c-.288-.48-.352-1.116-.48-2.389L6 9m7.5 6.5v-5m-3 5v-5m-6-4h4.615m0 0l.386-2.672c.112-.486.516-.828.98-.828h3.038c.464 0 .867.342.98.828l.386 2.672m-5.77 0h5.77m0 0H19.5\"/></svg>","download":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4 16.004V17a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1M12 4.5v11m3.5-3.5L12 15.5L8.5 12\"/></svg>","upload":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4 16.004V17a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1m-8-.5v-11M15.5 8L12 4.5L8.5 8\"/></svg>","code":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m17.09 7.974l.23.23c1.789 1.79 2.684 2.684 2.684 3.796s-.895 2.006-2.684 3.796l-.23.23M13.876 5l-3.751 14M6.91 7.974l-.23.23C4.892 9.994 3.997 10.888 3.997 12s.895 2.006 2.685 3.796l.23.23\"/></svg>","file-text":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M9.478 3H7.25A2.25 2.25 0 0 0 5 5.25v13.5A2.25 2.25 0 0 0 7.25 21h9a2.25 2.25 0 0 0 2.25-2.25V12M9.478 3c1.243 0 2.272 1.007 2.272 2.25V7.5A2.25 2.25 0 0 0 14 9.75h2.25A2.25 2.25 0 0 1 18.5 12M9.478 3c3.69 0 9.022 5.36 9.022 9M9 16.5h6m-6-3h4\"/></svg>","x":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 6L6 18M6 6l12 12\"/></svg>","plus":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 12h-6m0 0H6m6 0V6m0 6v6\"/></svg>","chart-bar":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 21H9.4c-2.24 0-3.36 0-4.216-.436a4 4 0 0 1-1.748-1.748C3 17.96 3 16.84 3 14.6V3m4 13.5h5M7 12h10M7 7.5h7\"/></svg>","chevron-down":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m6 9l6 6l6-6\"/></svg>","hand":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\"><path d=\"M17.428 11.212v-4.5c0-2.213-3.572-2.35-3.572 0\"/><path d=\"M13.857 10V4.712c0-2.213-3.572-2.35-3.572 0v1.8m-.001 4.25v-4.05c0-2.213-3.747-2.35-3.747 0V13\"/><path d=\"M17.428 9.312c0-2.35 3.572-2.213 3.572 0v4.4c0 6.843-9.799 9.578-14.278 5.094l-3.215-3.24C2.018 13.904 4.044 10.5 6.537 13l1 1\"/></g></svg>","arrow-up":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M12 19.5v-15m6 5.625L12 4.5l-6 5.625\"/></svg>","check":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m6 13.626l1.606 1.722c.886.95 1.329 1.424 1.825 1.574c.436.131.9.096 1.315-.1c.473-.224.852-.761 1.612-1.836L18 7\"/></svg>","chat-messages":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M5 12a5 5 0 0 1 7 7m-7-7a5 5 0 0 0-2 4a5 5 0 0 0 .224 1.483c.272.88.076 1.86-.099 2.784a.468.468 0 0 0 .592.539c.848-.232 1.691-.43 2.557-.112A5 5 0 0 0 8 21a4.99 4.99 0 0 0 4-2m-7-7c0-4.685 2.875-9 8-9a8 8 0 0 1 7.532 10.7c-.476 1.326.037 3.102.337 4.568a.451.451 0 0 1-.584.526c-1.312-.41-2.852-.986-4.085-.466c-1.334.562-2.736.672-4.2.672\"/></svg>","users":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 19.75c0-2.09-1.67-5.068-4-5.727m-2 5.727c0-2.651-2.686-6-6-6s-6 3.349-6 6m9-12.5a3 3 0 1 1-6 0a3 3 0 0 1 6 0m3 3a3 3 0 1 0 0-6\"/></svg>","chevron-left":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m15 6l-6 6l6 6\"/></svg>","chevron-right":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m9 18l6-6l-6-6\"/></svg>","external-link":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 9.75V3h-6.75M21 3l-8.25 8.25M9.4 3c-2.24 0-3.36 0-4.216.436a4 4 0 0 0-1.748 1.748C3 6.04 3 7.16 3 9.4v5.2c0 2.24 0 3.36.436 4.216a4 4 0 0 0 1.748 1.748C6.04 21 7.16 21 9.4 21h5.2c2.24 0 3.36 0 4.216-.436a4 4 0 0 0 1.748-1.748C21 17.96 21 16.84 21 14.6v-1.1\"/></svg>","danger-circle":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 12a9 9 0 1 1-18 0a9 9 0 0 1 18 0m-9-4.373v5.5m0 3.246v-.5\"/></svg>","arrow-left":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M19.5 12h-15m5.625 6L4.5 12l5.625-6\"/></svg>","presentation":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M3 4h18m-1.9 0v9.778c0 .471-.19.923-.527 1.257c-.338.333-.796.52-1.273.52H6.7c-.477 0-.935-.187-1.273-.52a1.77 1.77 0 0 1-.527-1.257V4m2.6 16l4.5-4.444L16.5 20\"/></svg>"};
+const ic = (n, s = 20) => `<span class="i" style="width:${s}px;height:${s}px">${ICONS[n]}</span>`;
+
+const SLIDES = [
+  { title: 'Planificación y revisión', text: 'Sesión 2 de 6' },
+  { title: 'El problema del vibe coding', list: ['El agente decide por vos', 'No sabés qué cambió', 'Los errores aparecen tarde'] },
+  { title: 'Explorar antes de pedir', text: 'Leer el código y los docs, hacer preguntas, y recién después decidir qué cambiar.' },
+  { title: 'Un plan que se pueda revisar', list: ['Pasos chicos', 'Cada paso dice cómo se verifica', 'Lo que queda afuera, escrito'] },
+  { title: 'Revisar lo que produce el agente', text: 'El diff, los tests y la app andando. En ese orden.' },
+];
+
+const PEOPLE = [['🐼', 'Mateo'], ['🐸', 'Sofía'], ['🦊', 'Lucía'], ['🐨', 'Tomás'], ['🦁', 'Valentina'], ['🐧', 'Joaquín'], ['🐙', 'Camila'], ['🦄', 'Benjamín']];
+
+const UPLOADABLE = [
+  { name: 'slides-sesion-2.html', type: 'HTML', size: '84 KB', label: 'Slides de la sesión' },
+  { name: 'presentacion-vieja.html', type: 'HTML', size: '62 KB', label: 'Presentación vieja', broken: true },
+  { name: 'guia-planificacion.pdf', type: 'PDF', size: '480 KB', label: 'Guía de planificación' },
+  { name: 'ejercicio.zip', type: 'ZIP', size: '1,1 MB', label: 'Ejercicio' },
+];
+
+const fresh = () => ({
+  tab: 'content', enabled: true, menu: false, dark: false, modal: false, pick: null, asSlides: false, fname: '', slidesError: false, confirm: null,
+  files: [
+    { name: 'Slides de la sesión', type: 'HTML', size: '84 KB', slides: true },
+    { name: 'Guía de planificación', type: 'PDF', size: '480 KB' },
+    { name: 'Ejercicio', type: 'ZIP', size: '1,1 MB' },
+    { name: 'Lectura: Plan, then code', type: 'PDF', size: '260 KB' },
+  ],
+  polls: [
+    { id: 'p1', type: 'choice', state: 'active', question: '¿Cuánto código de tu último proyecto escribió un agente?', options: ['Nada', 'Algo', 'La mitad', 'Casi todo'], results: [18, 41, 27, 14], total: 22 },
+    { id: 'p2', type: 'cloud', state: 'draft', question: 'Una palabra para trabajar con agentes', words: [] },
+    { id: 'p3', type: 'scale', state: 'draft', question: '¿Qué tan cómodo te sentís revisando código generado?', ends: ['Nada cómodo', 'Muy cómodo'] },
+    { id: 'p4', type: 'choice', state: 'closed', question: '¿Usaste un agente para planificar antes de esta clase?', options: ['Sí', 'No'], results: [38, 62], total: 21 },
+  ],
+  open: ['p1'],
+  slide: 1, side: true, sideTab: 'polls', peopleOpen: true, hands: [], questions: [['¿Cuánto detalle tiene que tener un plan antes de pasárselo al agente?', 9], ['¿Conviene revisar el diff o correr los tests primero?', 6]], closedOpen: false, unseenQ: 0,
+});
+
+let v = fresh();
+
+const TYPE = { choice: 'Opción múltiple', cloud: 'Word cloud', scale: 'Escala 1 a 5' };
+const STATE = { draft: 'Borrador', active: 'Activa', closed: 'Cerrada' };
+
+const userMenu = () => `
+  <div class="me">
+    <button class="avatar" data-menu title="Tu cuenta">🦉</button>
+    ${v.menu ? `<div class="menu"><div class="who">Agustín</div><div class="mail">agustin@famaf.unc.edu.ar</div><hr><button class="switch" data-darkmode>Modo oscuro <span class="knob ${v.dark ? 'on' : ''}"></span></button></div>` : ''}
+  </div>`;
+
+const content = () => `
+  <div class="stack">
+    <div class="card">
+      <div class="kicker">Sesión 2 de 6</div>
+      <label class="field">Título<input value="Planificación y revisión"></label>
+      <label class="field">Resumen<textarea>Antes de escribir código: explorar, planificar y revisar lo que el agente produce.</textarea></label>
+      <button class="switch enable" data-enable><span>${v.enabled ? 'Habilitada' : 'Deshabilitada'}</span><span class="knob ${v.enabled ? 'on' : ''}"></span></button>
+      ${v.enabled ? '' : `<div class="actions"><button class="btn danger" data-delsession>${ic('trash', 16)} Borrar sesión</button></div>`}
+    </div>
+    <div class="box">
+      <div class="box-head"><h3>${ic('download', 18)} Material</h3><button class="btn" data-upload>${ic('upload', 16)} Subir archivo</button></div>
+      ${v.files.map((f, i) => `
+        <div class="file">${f.type === 'HTML' ? ic('code', 20) : ic('file-text', 20)}<div class="grow"><b>${f.name}</b><small>${f.type} · ${f.size}</small></div>${f.slides ? '<span class="chip">Slides del aula</span>' : ''}<button class="iconbtn" data-delfile="${i}" title="Borrar">${ic('trash', 16)}</button></div>`).join('')}
+    </div>
+  </div>`;
+
+const delPoll = (p) => `<button class="btn" data-delpoll="${p.id}">${ic('trash', 16)} Borrar</button>`;
+
+const pollBody = (p) => {
+  if (p.state === 'draft') {
+    const extra = p.type === 'choice'
+      ? `${p.options.map((o, i) => `<div class="opt"><input value="${o}" placeholder="Opción ${i + 1}"><button class="iconbtn" data-delopt="${p.id}|${i}" title="Quitar">${ic('x', 16)}</button></div>`).join('')}<button class="add" data-addopt="${p.id}">${ic('plus', 16)} Agregar opción</button>`
+      : p.type === 'scale'
+        ? `<div class="ends"><label>Qué significa el 1<input value="${p.ends[0]}"></label><label>Qué significa el 5<input value="${p.ends[1]}"></label></div>`
+        : '';
+
+    return `<input value="${p.question}" placeholder="Pregunta">${extra}<div class="actions">${delPoll(p)}<button class="btn dark" data-activate="${p.id}">Activar</button></div>`;
+  }
+
+  const res = p.type === 'choice'
+    ? p.options.map((o, i) => `<div class="row"><i style="width:${p.results[i]}%"></i><span>${o}</span><span>${p.results[i]}%</span></div>`).join('')
+    : p.type === 'scale' ? `<div class="note">Todavía sin respuestas · 1 = ${p.ends[0]}, 5 = ${p.ends[1]}</div>` : '<div class="note">Todavía sin palabras.</div>';
+
+  return `<div class="note">${p.total ?? 0} respuestas</div>${res}<div class="actions">${delPoll(p)}${p.state === 'active' ? `<button class="btn" data-close="${p.id}">Cerrar</button>` : ''}</div>`;
+};
+
+const pollCard = (p) => `
+  <div class="poll">
+    <button class="poll-head" data-toggle="${p.id}"><span class="state ${p.state}">${STATE[p.state]}</span><span class="grow"><b>${p.question || 'Nueva encuesta'}</b><small>${TYPE[p.type]}</small></span>${ic(v.open.includes(p.id) ? 'chevron-up' : 'chevron-down', 18)}</button>
+    ${v.open.includes(p.id) ? `<div class="poll-body">${pollBody(p)}</div>` : ''}
+  </div>`;
+
+const pollsTab = () => `
+  <div style="max-width: 760px">
+    <div class="box-head"><h3>${ic('chart-bar', 18)} Encuestas</h3>
+      <span class="dd">
+        <button class="btn dark" data-newmenu>${ic('plus', 16)} Nueva encuesta ${ic('chevron-down', 16)}</button>
+        ${v.newMenu ? `<div class="dd-menu">${Object.entries(TYPE).map(([k, l]) => `<button data-new="${k}">${l}</button>`).join('')}</div>` : ''}
+      </span>
+    </div>
+    ${['active', 'draft', 'closed'].flatMap((s) => v.polls.filter((p) => p.state === s)).map(pollCard).join('')}
+  </div>`;
+
+const people = () => `<div class="people">
+  <div class="person"><span class="face">🦉</span><span>Agustín</span><span class="role">Vos</span></div>
+  ${PEOPLE.map(([a, n]) => `<div class="person"><span class="face">${a}</span><span>${n}</span>${v.hands.includes(n) ? `<button class="raised" data-lower="${n}" title="Bajar la mano">${ic('hand', 16)}</button>` : ''}</div>`).join('')}
+</div>`;
+
+// Answered questions drop to the bottom, dimmed, so the open ones stay on top.
+const questionsList = () => [...v.questions.map((q, i) => ({ q, i })).filter(({ q }) => !q[2]), ...v.questions.map((q, i) => ({ q, i })).filter(({ q }) => q[2])].map(({ q: [text, n, done], i }) => `
+  <div class="question ${done ? 'done' : ''}"><div class="votes">${ic('arrow-up', 14)}${n}</div><div class="qtext">${text}</div>
+    <button class="iconbtn" data-answer="${i}" title="${done ? 'Volver a abrir' : 'Marcar como respondida'}">${ic('check', 16)}</button></div>`).join('');
+
+// Closed polls fold into their own section; each one opens to its results.
+const closedSection = () => {
+  const closed = v.polls.filter((p) => p.state === 'closed');
+
+  return closed.length === 0 ? '' : `
+    <button class="subfold" data-closedopen>Cerradas (${closed.length}) ${ic(v.closedOpen ? 'chevron-up' : 'chevron-down', 16)}</button>
+    ${v.closedOpen ? closed.map(pollCard).join('') : ''}`;
+};
+
+// The professor's panel never folds: hands, polls and questions must stay in sight.
+const side = () => `<div class="side">
+      <div class="ptabs" style="padding-top:14px">
+        <button class="pt ${v.sideTab === 'polls' ? 'on' : ''}" data-sidetab="polls">${ic('chart-bar', 15)} Encuestas</button>
+        <button class="pt ${v.sideTab === 'qa' ? 'on' : ''}" data-sidetab="qa">${ic('chat-messages', 15)} Preguntas${v.unseenQ > 0 ? `<span class="badge">${v.unseenQ}</span>` : ''}</button>
+      </div>
+      <div class="side-scroll">${v.sideTab === 'polls'
+        ? `${['active', 'draft'].flatMap((s) => v.polls.filter((p) => p.state === s)).map(pollCard).join('') || '<div class="empty">No hay encuestas.</div>'}${closedSection()}`
+        : questionsList()}</div>
+      <div class="room-wrap">
+        <button class="fold" data-people>${ic('users', 18)} Presentes (${PEOPLE.length + 1})${!v.peopleOpen && v.hands.length > 0 ? `<span class="badge inline">${v.hands.length}</span>` : ''}<span class="chev">${ic(v.peopleOpen ? 'chevron-down' : 'chevron-up', 16)}</span></button>
+        ${v.peopleOpen ? people() : ''}
+      </div>
+    </div>`;
+
+const slide = (s) => `<div class="slide"><h3>${s.title}</h3>${s.text ? `<p>${s.text}</p>` : ''}${s.list ? `<ul>${s.list.map((l) => `<li>${l}</li>`).join('')}</ul>` : ''}</div>`;
+
+const aula = () => `
+  <div class="aula">
+    <div class="stage">
+      ${slide(SLIDES[v.slide])}
+      <div class="controls">
+        <button class="btn" data-prev>${ic('chevron-left', 18)}</button>
+        <span class="count">${v.slide + 1} / ${SLIDES.length}</span>
+        <button class="btn" data-next>${ic('chevron-right', 18)}</button>
+        <button class="btn present" data-present>${ic('external-link', 16)} Presentar en otra pestaña</button>
+      </div>
+    </div>
+    ${side()}
+  </div>`;
+
+const CONFIRM = {
+  session: () => ['¿Borrar "Planificación y revisión"?', 'Se borran su material, sus encuestas y sus preguntas.'],
+  file: (i) => [`¿Borrar "${v.files[i].name}"?`, v.files[i].slides ? 'El aula se queda sin slides hasta que subas otras.' : 'Los estudiantes dejan de verlo en el material.'],
+  poll: (id) => [`¿Borrar "${v.polls.find((p) => p.id === id).question || 'Nueva encuesta'}"?`, v.polls.find((p) => p.id === id).state === 'draft' ? 'Se pierde lo que cargaste.' : 'Se borran sus respuestas y los estudiantes dejan de verla.'],
+};
+
+const confirmDelete = () => {
+  if (v.confirm == null) {
+    return '';
+  }
+
+  const [title, text] = CONFIRM[v.confirm.kind](v.confirm.id);
+
+  return `
+  <div class="scrim" data-nodel>
+    <div class="modal" data-stay>
+      <h3>${title}</h3>
+      <p style="margin:10px 0 0">${text}</p>
+      <div class="actions"><button class="btn" data-nodel>Cancelar</button><button class="btn danger solid" data-yesdel>Borrar</button></div>
+    </div>
+  </div>`;
+};
+
+const modal = () => v.modal ? `
+  <div class="scrim" data-shut>
+    <div class="modal" data-stay>
+      <div class="modal-head"><h3>Subir archivo</h3><button class="iconbtn" data-shut>${ic('x', 18)}</button></div>
+      <div class="drop">${ic('upload', 26)}<div style="margin-top:6px">Arrastrá un archivo o elegí uno</div>
+        <div class="picks">${UPLOADABLE.map((f, i) => `<button class="${v.pick === i ? 'on' : ''}" data-pick="${i}">${f.name}</button>`).join('')}</div>
+      </div>
+      ${v.pick != null ? `<label class="field">Nombre<input data-fname value="${v.fname}"></label>` : ''}
+      ${v.pick != null && UPLOADABLE[v.pick].type === 'HTML' ? `<button class="switch check" data-asslides><span>Usar como slides del aula</span><span class="knob ${v.asSlides ? 'on' : ''}"></span></button>` : ''}
+      ${v.slidesError ? `<div class="error">${ic('danger-circle', 18)}<span>Este HTML no respeta la API de las slides, así que no se puede usar como slides del aula. Podés subirlo como material.</span></div>` : ''}
+      <div class="actions"><button class="btn" data-shut>Cancelar</button><button class="btn dark" data-doupload ${v.pick == null ? 'disabled' : ''}>Subir</button></div>
+    </div>
+  </div>` : '';
+
+// Away from the Aula tab, new questions and raised hands show on the tab itself, each next to its icon.
+const aulaMarks = () => {
+  const marks = v.tab === 'aula' ? [] : [['chat-messages', v.unseenQ], ['hand', v.hands.length]].filter(([, n]) => n > 0);
+
+  return marks.length === 0 ? '' : `<span class="tabmarks">${marks.map(([i, n]) => `${ic(i, 15)}<span class="badge inline">${n}</span>`).join('')}</span>`;
+};
+
+const app = () => `
+  <div class="app ${v.dark ? 'dark' : ''}">
+    <div class="top">
+      <button class="back" title="Volver a las sesiones">${ic('arrow-left', 22)}</button>
+      <h1>Planificación y revisión</h1>
+      ${userMenu()}
+    </div>
+    <div class="maintabs">
+      <button class="pt ${v.tab === 'content' ? 'on' : ''}" data-tab="content">${ic('file-text', 16)} Contenido</button>
+      <button class="pt ${v.tab === 'polls' ? 'on' : ''}" data-tab="polls">${ic('chart-bar', 16)} Encuestas</button>
+      <button class="pt ${v.tab === 'aula' ? 'on' : ''}" data-tab="aula">${ic('presentation', 16)} Aula${aulaMarks()}</button>
+    </div>
+    ${v.tab === 'aula' ? aula() : `<div class="page">${v.tab === 'content' ? content() : pollsTab()}</div>`}
+    ${modal()}
+    ${confirmDelete()}
+    ${v.deleted ? '<div class="scrim"><div class="modal"><h3>Sesión borrada</h3><div class="actions"><a class="btn dark" href="admin-sesiones.html" style="text-decoration:none">Volver a las sesiones</a></div></div></div>' : ''}
+  </div>`;
+
+const render = () => {
+  const root = document.getElementById('admin');
+
+  root.querySelector('.strip').innerHTML = `
+    <button data-simhand class="${v.hands.includes('Tomás') ? 'on' : ''}">Tomás levanta la mano</button>
+    <button data-simq>Llega una pregunta</button>
+    <button data-reset>Reiniciar</button>`;
+  root.querySelector('.stagewrap').innerHTML = app();
+};
+
+const presentWindow = () => {
+  const w = window.open('', '_blank');
+
+  if (w == null) {
+    return;
+  }
+
+  w.document.write(`<html><head><title>Presentación</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@700&family=Atkinson+Hyperlegible&display=swap"></head>
+    <body style="margin:0;height:100vh;display:flex;flex-direction:column;justify-content:center;padding:0 10vw;font-family:'Atkinson Hyperlegible';background:#fff">
+    <h1 style="font-family:Rubik;font-size:6vw;margin:0">${SLIDES[v.slide].title}</h1>
+    <p style="font-size:2.4vw;color:#8A7E75">${SLIDES[v.slide].text ?? (SLIDES[v.slide].list ?? []).join(' · ')}</p></body></html>`);
+};
+
+document.getElementById('admin').addEventListener('click', (e) => {
+  const t = e.target.closest('button, [data-shut], [data-nodel], [data-stay]');
+
+  if (t == null || t.disabled || (t.hasAttribute('data-stay') && !t.matches('button'))) {
+    return;
+  }
+
+  const d = t.dataset;
+  const poll = (id) => v.polls.find((p) => p.id === id);
+
+  if (d.tab) {
+    v.tab = d.tab;
+
+    if (d.tab === 'aula' && v.sideTab === 'qa') {
+      v.unseenQ = 0;
+    }
+
+  } else if (t.hasAttribute('data-menu')) {
+    v.menu = !v.menu;
+  } else if (t.hasAttribute('data-darkmode')) {
+    v.dark = !v.dark;
+  } else if (t.hasAttribute('data-delsession')) {
+    v.confirm = { kind: 'session' };
+  } else if (t.hasAttribute('data-nodel')) {
+    v.confirm = null;
+  } else if (t.hasAttribute('data-yesdel')) {
+    const { kind, id } = v.confirm;
+
+    if (kind === 'session') {
+      v.deleted = true;
+    } else if (kind === 'file') {
+      v.files = v.files.filter((_, i) => i !== id);
+    } else {
+      v.polls = v.polls.filter((p) => p.id !== id);
+    }
+
+    v.confirm = null;
+  } else if (t.hasAttribute('data-enable')) {
+    v.enabled = !v.enabled;
+  } else if (t.hasAttribute('data-upload')) {
+    Object.assign(v, { modal: true, pick: null, asSlides: false, slidesError: false });
+  } else if (t.hasAttribute('data-shut')) {
+    v.modal = false;
+  } else if (d.pick != null) {
+    Object.assign(v, { pick: Number(d.pick), asSlides: false, slidesError: false, fname: UPLOADABLE[Number(d.pick)].label });
+  } else if (t.hasAttribute('data-asslides')) {
+    Object.assign(v, { asSlides: !v.asSlides, slidesError: false });
+  } else if (t.hasAttribute('data-doupload')) {
+    const f = UPLOADABLE[v.pick];
+
+    // The server checks the HTML against the slides API; on failure the modal stays open and the file is not saved as slides.
+    if (v.asSlides && f.broken) {
+      Object.assign(v, { asSlides: false, slidesError: true });
+      render();
+
+      return;
+    }
+
+    v.files = [...v.files.map((x) => (v.asSlides ? { ...x, slides: false } : x)), { ...f, name: v.fname || f.name, slides: v.asSlides }];
+    v.modal = false;
+  } else if (d.delfile != null) {
+    v.confirm = { kind: 'file', id: Number(d.delfile) };
+  } else if (d.toggle) {
+    v.open = v.open.includes(d.toggle) ? v.open.filter((x) => x !== d.toggle) : [...v.open, d.toggle];
+  } else if (t.hasAttribute('data-closedopen')) {
+    v.closedOpen = !v.closedOpen;
+  } else if (d.delpoll) {
+    v.confirm = { kind: 'poll', id: d.delpoll };
+  } else if (d.lower) {
+    v.hands = v.hands.filter((n) => n !== d.lower);
+  } else if (d.answer != null) {
+    const q = v.questions[Number(d.answer)];
+
+    q[2] = !q[2];
+  } else if (d.addopt) {
+    poll(d.addopt).options.push('');
+  } else if (d.delopt) {
+    const [id, i] = d.delopt.split('|');
+
+    poll(id).options.splice(Number(i), 1);
+  } else if (d.activate) {
+    Object.assign(poll(d.activate), { state: 'active', total: 0, results: (poll(d.activate).options ?? []).map(() => 0) });
+    v.open = [...new Set([...v.open, d.activate])];
+  } else if (d.close) {
+    poll(d.close).state = 'closed';
+    v.open = v.open.filter((x) => x !== d.close);
+  } else if (t.hasAttribute('data-newmenu')) {
+    v.newMenu = !v.newMenu;
+  } else if (d.new) {
+    v.newMenu = false;
+    const id = `p${Date.now()}`;
+
+    v.polls = [{ id, type: d.new, state: 'draft', question: '', options: d.new === 'choice' ? ['', ''] : undefined, ends: d.new === 'scale' ? ['', ''] : undefined }, ...v.polls];
+    v.open = [...v.open, id];
+  } else if (t.hasAttribute('data-prev') || t.hasAttribute('data-next')) {
+    v.slide = Math.max(0, Math.min(SLIDES.length - 1, v.slide + (t.hasAttribute('data-next') ? 1 : -1)));
+  } else if (t.hasAttribute('data-present')) {
+    presentWindow();
+
+    return;
+  } else if (t.hasAttribute('data-side')) {
+    v.side = !v.side;
+  } else if (d.sidetab) {
+    v.sideTab = d.sidetab;
+
+    if (d.sidetab === 'qa') {
+      v.unseenQ = 0;
+    }
+  } else if (t.hasAttribute('data-people')) {
+    v.peopleOpen = !v.peopleOpen;
+  } else if (t.hasAttribute('data-simhand')) {
+    const raising = !v.hands.includes('Tomás');
+
+    v.hands = raising ? [...v.hands, 'Tomás'] : v.hands.filter((n) => n !== 'Tomás');
+  } else if (t.hasAttribute('data-simq')) {
+    v.questions = [...v.questions, ['¿Qué hacemos si el agente ignora el plan?', 0]];
+
+    // The badge stays until the professor looks at the questions tab.
+    if (v.tab !== 'aula' || v.sideTab !== 'qa') {
+      v.unseenQ += 1;
+    }
+  } else if (t.hasAttribute('data-reset')) {
+    v = fresh();
+  } else {
+    return;
+  }
+
+  render();
+});
+
+document.getElementById('admin').addEventListener('input', (e) => {
+  if (e.target.matches('[data-fname]')) {
+    v.fname = e.target.value;
+  }
+});
+
+render();
+</script>
+</body>
+</html>

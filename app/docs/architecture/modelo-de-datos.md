@@ -1,0 +1,137 @@
+---
+title: "Modelo de datos"
+summary: "Las entidades que kurasu guarda en D1: usuarios, sesiones con su material, encuestas, preguntas y manos levantadas, y los códigos de registro y de los links del mail."
+created: "2026-10-18"
+---
+
+# Modelo de datos
+
+## 🔭 Resumen
+
+La app guarda usuarios, sesiones y lo que cuelga de cada sesión: su material, sus encuestas con sus respuestas, sus preguntas con sus votos, las manos levantadas y la slide en la que está el profe. Todo vive en D1, salvo los archivos del material, que viven en R2 (ver [componentes](componentes.md)). Solo las sesiones y las encuestas quedan guardadas al borrarse: cada una guarda en `deleted_at` la fecha en que se borró, conserva lo que cuelga de ella y nadie la ve. Un material o una pregunta propia se borran definitivamente, el código de un link se borra al usarse y una mano se baja. Los códigos de registro y los de los links del mail son filas de la misma entidad, `Code`. Todos los ids son ULID.
+
+## 💽 Entidades y relaciones
+
+```mermaid
+erDiagram
+    SESSION ||--o{ MATERIAL : has
+    SESSION ||--o{ POLL : has
+    SESSION ||--o{ QUESTION : has
+    SESSION ||--o{ RAISED_HAND : has
+    POLL ||--o{ RESPONSE : receives
+    QUESTION ||--o{ QUESTION_VOTE : receives
+    USER ||--o{ RESPONSE : gives
+    USER ||--o{ QUESTION : asks
+    USER ||--o{ QUESTION_VOTE : casts
+    USER ||--o{ RAISED_HAND : raises
+    USER ||--o| CODE : "is sent"
+
+    USER {
+        ulid id PK
+        string email UK
+        string name "nullable until setup"
+        string avatar "nullable until setup"
+        enum role "teacher or student"
+        bool has_access
+    }
+    SESSION {
+        ulid id PK
+        int position UK
+        string title
+        text summary
+        bool enabled
+        int current_slide
+        int current_step
+        datetime deleted_at "nullable"
+    }
+    MATERIAL {
+        ulid id PK
+        ulid session_id FK
+        string name
+        file file
+        bool is_slides
+    }
+    POLL {
+        ulid id PK
+        ulid session_id FK
+        enum type "choice, words or scale"
+        enum status "draft, active or closed"
+        string prompt
+        json options "choice only"
+        string scale_min_label "scale only"
+        string scale_max_label "scale only"
+        datetime deleted_at "nullable"
+    }
+    RESPONSE {
+        ulid poll_id PK, FK
+        ulid user_id PK, FK
+        json value "option, 1 to 5 or words"
+    }
+    QUESTION {
+        ulid id PK
+        ulid session_id FK
+        ulid author_id FK
+        text body
+        bool answered
+    }
+    QUESTION_VOTE {
+        ulid question_id PK, FK
+        ulid user_id PK, FK
+    }
+    RAISED_HAND {
+        ulid session_id PK, FK
+        ulid user_id PK, FK
+    }
+    CODE {
+        ulid id PK
+        enum type "user or enrollment"
+        string code UK
+        ulid user_id FK "nullable, set on a user code"
+        datetime deleted_at "nullable, set when regenerated"
+    }
+```
+
+### 👤 Usuario
+
+La entidad `User` tiene `email`, `name`, `avatar`, `role` y `has_access`. El usuario entra con su email, que es único. El avatar es un emoji de animal. El nombre y el avatar quedan vacíos hasta que el usuario completa el setup, y se pueden repetir entre usuarios. Si falta alguno de los dos, la app lleva al usuario al setup cuando entra (ver [login y acceso](login-y-acceso.md)).
+
+El campo `role` vale `teacher` para el profe o `student` para el estudiante. Con `has_access` en falso, el usuario no puede entrar. La API revisa el acceso en cada pedido, y el profe lo da y lo saca desde Usuarios. Los usuarios no se borran; el profe le saca el acceso a quien no tiene que entrar.
+
+### 📚 Sesión
+
+La entidad `Session` tiene `title`, `summary`, `position`, su lugar en la lista del profe, y `enabled`, que dice si está habilitada. El estudiante ve solo las habilitadas, en el orden de esa lista, y la destacada es la habilitada que está más adelante en ella. Cómo una sesión pasa de deshabilitada a habilitada o borrada está en [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md).
+
+La sesión guarda también la posición actual del profe en las slides: una slide y un paso dentro de ella, en `current_slide` y `current_step`, una sola por sesión (ver [la API de las slides](api-de-las-slides.md)). Borrar una sesión la deja guardada, con todo lo que cuelga de ella, y le pone la fecha en `deleted_at`.
+
+> [!NOTE] Por qué la posición del profe vive en el servidor
+> La comparten el profe y todos los estudiantes, así que no puede vivir en un navegador. Como se guarda en D1, sigue ahí cuando el profe cierra la página.
+
+### 📎 Material
+
+La entidad `Material` es un archivo, en `file`, con el `name` que le puso el profe al subirlo. A lo sumo uno por sesión tiene `is_slides` en verdadero: marcar otro como slides desmarca el anterior. El estudiante solo lo descarga.
+
+### 📊 Encuesta y respuesta
+
+La entidad `Poll` tiene `type`, `status`, `prompt` (la consigna) y `deleted_at`, la fecha en que se borró, si se borró. El tipo es `choice` (opción múltiple), `words` (word cloud) o `scale` (escala de 1 a 5), y el estado es `draft`, `active` o `closed`. Las de tipo `choice` tienen su lista de opciones en `options`, y las de tipo `scale` un texto para el 1 en `scale_min_label` y otro para el 5 en `scale_max_label`; los campos del otro tipo quedan vacíos. Borrar una encuesta la deja guardada con sus respuestas, pero nadie la ve.
+
+Cada estudiante tiene a lo sumo una `Response` por encuesta. Su `value` es la opción elegida, un valor de 1 a 5 o la lista de palabras que mandó en el word cloud. Cambiar el voto reemplaza esa respuesta. Nadie ve qué votó cada uno: el profe ve porcentajes y la cantidad de respuestas.
+
+### ❓ Pregunta y voto
+
+La entidad `Question` guarda su texto en `body`, a su autor en `author_id` y si está respondida en `answered`. Se muestra sin autor a todos; al autor la app le marca las suyas. Cada estudiante vota una pregunta a lo sumo una vez, con una `QuestionVote`, y no vota las propias.
+
+### ✋ Mano levantada
+
+La entidad `RaisedHand` une a un estudiante con una sesión. Existe hasta que alguien baja la mano, el estudiante o el profe, así que sigue levantada si el estudiante sale del aula y vuelve (ver [tiempo real del aula](tiempo-real-del-aula.md)).
+
+### 🔑 Código
+
+La entidad `Code` guarda los dos tipos de código que usa la app, y el campo `type` los distingue: `enrollment` para el código de registro y `user` para el código de un usuario.
+
+El código de registro, el que el profe muestra junto al QR en Usuarios, es una fila de `Code` de tipo `enrollment`, sin `user_id`. La app lo genera la primera vez que el profe abre el QR, y el profe lo regenera con un botón: el anterior deja de servir y queda guardado con la fecha en `deleted_at`. Hay un solo código de registro vigente, la fila de tipo `enrollment` sin `deleted_at`.
+
+El código del magic link es una fila de `Code` de tipo `user`, con el `user_id` del usuario al que la app le manda el mail, tanto para confirmar el registro como para entrar. Cada usuario tiene a lo sumo uno: pedir otro reemplaza al anterior, y usarlo borra la fila. No vence. El mail lleva solo el link, y el usuario no tiene que tipear el código del link.
+
+---
+
+Related: [componentes](componentes.md), [login y acceso](login-y-acceso.md), [tiempo real del aula](tiempo-real-del-aula.md), [API de las slides](api-de-las-slides.md), [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)

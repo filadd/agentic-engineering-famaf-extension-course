@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Prototipo · Aula responsive</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  :root { --window: #FBF3EE; --ink: #1F1B18; --muted: #8A7E75; --line: #EADFD8; --side: #F3E8E1; --slide: #FFFFFF; --pill: #FFFFFF; }
+  .dark { --window: #161413; --ink: #F2EDE9; --muted: #9C918A; --line: #34302D; --side: #1F1C1A; --slide: #24211F; --pill: #2A2623; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9e6e3; font-family: 'Atkinson Hyperlegible', sans-serif; color: #1F1B18; }
+  h1, h2, h3, h4 { font-family: 'Rubik', sans-serif; margin: 0; }
+  .intro p { margin: 6px 0 0; color: #6b625c; }
+  .strip { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; font-size: 14px; }
+  .strip button { font: inherit; border: 1px solid #cfc8c2; background: #fff; border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+  .strip button.on { background: #1F1B18; color: #fff; border-color: #1F1B18; }
+  .strip .sep { width: 1px; height: 20px; background: #cfc8c2; margin: 0 4px; }
+
+  .i { display: inline-grid; place-items: center; flex: none; }
+  .i svg { width: 100%; height: 100%; }
+
+  .app { background: var(--window); color: var(--ink); height: 100%; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+
+  /* Same header as the student's main page: big title on the left, avatar on the right. */
+  .top { display: flex; align-items: center; gap: 14px; padding: 26px 32px 6px; }
+  .back { width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; color: var(--ink); cursor: pointer; display: grid; place-items: center; }
+  .back:hover { background: var(--line); }
+  .top .title { flex: 1; }
+  .top h1 { font-size: 30px; }
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .tag { display: inline-flex; align-items: center; gap: 6px; border: 0; font: inherit; font-size: 13px; background: #fff; color: #1F1B18; border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; background: #CCC4F0; display: grid; place-items: center; font-size: 22px; flex: none; }
+
+  .body { flex: 1; display: flex; min-height: 0; position: relative; }
+  .stage { flex: 1; display: flex; flex-direction: column; padding: 14px 32px 22px; gap: 12px; min-width: 0; }
+  .slide { flex: 1; background: var(--slide); border-radius: 18px; border: 1.5px solid var(--line); display: flex; flex-direction: column; justify-content: center; padding: 40px 56px; }
+  .slide h3 { font-size: 34px; }
+  .slide p { font-size: 18px; color: var(--muted); margin: 14px 0 0; line-height: 1.5; }
+  .slide ul { font-size: 18px; margin: 14px 0 0; line-height: 1.7; }
+  .controls { display: flex; align-items: center; gap: 10px; }
+  .controls .count { color: var(--muted); font-size: 14px; min-width: 60px; text-align: center; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 14px; border: 1.5px solid var(--line); background: transparent; color: var(--ink); border-radius: 999px; padding: 7px 12px; cursor: pointer; }
+  .btn.on { background: var(--ink); color: var(--window); border-color: var(--ink); }
+  .follow { margin-left: auto; }
+  .follow.off { border-style: dashed; }
+  .hand.on { background: #F8D0A0; color: #1F1B18; border-color: #F8D0A0; }
+
+  .side { width: 340px; background: var(--side); border-radius: 18px 0 0 18px; margin: 14px 0 22px; display: flex; flex-direction: column; min-height: 0; }
+  .side-head { display: flex; justify-content: flex-start; padding: 10px 10px 4px 10px; }
+  .ptabs { display: flex; gap: 6px; padding: 0 16px 10px; }
+  .ptabs button { position: relative; flex: 1; display: inline-flex; justify-content: center; align-items: center; gap: 6px; font: inherit; font-size: 13px; border: 1.5px solid var(--line); background: transparent; color: var(--ink); border-radius: 999px; padding: 6px 0; cursor: pointer; }
+  .ptabs button.on { background: var(--ink); color: var(--window); border-color: var(--ink); }
+  .files { display: flex; flex-direction: column; gap: 6px; }
+  .file { display: flex; align-items: center; gap: 8px; background: #fff; color: #1F1B18; border-radius: 12px; padding: 8px 6px 8px 12px; font-size: 13px; }
+  .file .grow { flex: 1; }
+  .file small { display: block; color: #8A7E75; font-size: 11px; }
+  .file .iconbtn { color: #1F1B18; }
+  .sub { font-family: 'Rubik', sans-serif; font-weight: 500; font-size: 13px; color: var(--muted); margin: 14px 0 6px; }
+  .acc { display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%; font: inherit; text-align: left; background: none; border: 0; padding: 0; cursor: pointer; color: #1F1B18; }
+  .room-wrap { padding: 10px 0 14px; border-top: 1.5px solid var(--line); }
+  .room-wrap.folded { padding-bottom: 10px; }
+  .fold { width: 100%; font: inherit; font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 15px; color: var(--ink); background: none; border: 0; padding: 0 16px; cursor: pointer; text-align: left; }
+  .fold .chev { margin-left: auto; display: inline-grid; }
+  .ask { display: flex; gap: 6px; margin-bottom: 10px; }
+  .ask input { flex: 1; font: inherit; font-size: 13px; border: 1.5px solid var(--line); background: var(--window); color: var(--ink); border-radius: 999px; padding: 7px 12px; }
+  .question { display: flex; gap: 10px; align-items: flex-start; background: #fff; color: #1F1B18; border-radius: 14px; padding: 10px 12px; margin-bottom: 8px; font-size: 13px; line-height: 1.35; }
+  .vote { display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 34px; font: inherit; font-size: 12px; border: 1.5px solid #EADFD8; background: #fff; color: #1F1B18; border-radius: 10px; padding: 3px 0; cursor: pointer; }
+  .vote.on { background: #1F1B18; color: #fff; border-color: #1F1B18; }
+  .vote:disabled { opacity: 0.5; cursor: default; }
+  .qtext { flex: 1; }
+  .question .del { width: 28px; height: 28px; color: #8A7E75; }
+  .question .del:hover { color: #B5485A; background: #F2EDE9; }
+  .yours { margin-left: 6px; font-size: 11px; background: #CCC4F0; border-radius: 999px; padding: 0 6px; }
+  .side-scroll { overflow: auto; padding: 0 12px 16px 16px; margin-right: 4px; flex: 1; }
+
+  /* Thin rounded scrollbars in the scheme's colours, for both scroll areas of the panel. */
+  .side-scroll, .people { scrollbar-width: thin; scrollbar-color: #D9C9BF transparent; }
+  .dark .side-scroll, .dark .people { scrollbar-color: #4A423D transparent; }
+  .side-scroll::-webkit-scrollbar, .people::-webkit-scrollbar { width: 8px; }
+  .side-scroll::-webkit-scrollbar-track, .people::-webkit-scrollbar-track { background: transparent; }
+  .side-scroll::-webkit-scrollbar-thumb, .people::-webkit-scrollbar-thumb { background: #D9C9BF; border-radius: 999px; }
+  .dark .side-scroll::-webkit-scrollbar-thumb, .dark .people::-webkit-scrollbar-thumb { background: #4A423D; }
+  .section-title { font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 15px; margin: 4px 0 8px; display: flex; align-items: center; gap: 6px; }
+  .iconbtn { width: 34px; height: 34px; border-radius: 50%; border: 0; background: transparent; color: var(--ink); cursor: pointer; display: grid; place-items: center; }
+  .iconbtn:hover { background: var(--line); }
+
+  .side.rail { width: 46px; background: transparent; }
+  .body.folded .stage { padding-right: 4px; }
+  .side.rail .side-head { padding: 10px 6px 4px 2px; }
+  .side-head .iconbtn { position: relative; }
+  .badge { position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; border-radius: 999px; background: #E8505B; color: #fff; font-size: 11px; display: grid; place-items: center; padding: 0 5px; }
+
+  .panel { background: #fff; color: #1F1B18; border-radius: 16px; padding: 12px 14px; margin-bottom: 10px; }
+  .panel.new { box-shadow: 0 0 0 3px #E8505B; }
+  .q { font-family: 'Rubik', sans-serif; font-weight: 500; font-size: 14px; }
+  .meta { font-size: 12px; opacity: 0.7; margin-top: 2px; }
+  .rows { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .row { position: relative; overflow: hidden; display: flex; justify-content: space-between; border: 2px solid #EADFD8; border-radius: 10px; padding: 6px 10px; cursor: pointer; background: #fff; font: inherit; font-size: 13px; text-align: left; color: #1F1B18; }
+  .row i { position: absolute; inset: 0 auto 0 0; background: #F8D0A0; opacity: 0.6; }
+  .row span { position: relative; }
+  .row.mine { border-color: #1F1B18; }
+  .empty { color: var(--muted); font-size: 14px; }
+
+  .people { display: flex; flex-direction: column; gap: 6px; max-height: 210px; overflow: auto; padding: 0 12px 0 16px; margin-right: 4px; }
+  .person { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+  .person .face { width: 30px; height: 30px; border-radius: 50%; background: #CCC4F0; display: grid; place-items: center; font-size: 16px; flex: none; }
+  .person .role { font-size: 11px; color: var(--muted); background: var(--window); border-radius: 999px; padding: 1px 8px; }
+  .person .raised { margin-left: auto; margin-right: 2px; width: 26px; height: 26px; border-radius: 50%; background: #F8D0A0; color: #1F1B18; display: grid; place-items: center; }
+  .intro, .alt { max-width: 1580px; margin: 24px auto; padding: 0 20px; }
+  .alt h2 { font-size: 20px; }
+  .tradeoff { margin: 4px 0 12px; color: #6b625c; }
+  .frames { display: flex; gap: 28px; align-items: flex-start; overflow-x: auto; padding-bottom: 8px; }
+  .frame-label { font-size: 13px; color: #6b625c; margin-bottom: 6px; }
+  .device { padding: 10px; background: #1F1B18; border-radius: 46px; flex: none; }
+
+  /* The frames are size containers, so the layout below reacts to the frame's width, not the window's. */
+  .frame { container: app / inline-size; overflow: hidden; }
+  .frame.phone { width: 390px; height: 844px; border-radius: 36px; }
+  .frame.desk { width: 1060px; height: 844px; border-radius: 12px; flex: none; }
+
+  .lbl { white-space: nowrap; }
+  .ptabs button[data-tab="people"] { display: none; }
+  .row-edit { display: flex; justify-content: flex-end; margin-top: 8px; }
+  .link { font: inherit; font-size: 13px; background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; color: #1F1B18; }
+  .side-scroll .people { max-height: none; padding: 0; margin: 0; }
+
+  .offline { display: flex; align-items: center; gap: 8px; margin: 10px 32px 0; padding: 8px 14px; border-radius: 12px; background: #F8D0A0; color: #1F1B18; font-size: 14px; }
+
+  .scrim { position: absolute; inset: 0; background: rgba(31, 27, 24, 0.45); display: grid; place-items: center; padding: 30px; z-index: 5; }
+  .modal { background: var(--window); color: var(--ink); border-radius: 22px; width: min(420px, 100%); padding: 20px 24px 22px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); }
+  .modal h4 { font-size: 20px; }
+  .modal p { margin: 8px 0 0; color: var(--muted); line-height: 1.45; }
+  .modal .handle { display: none; }
+  .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+  .btn.danger { background: #B5485A; color: #fff; border-color: #B5485A; }
+
+  @container app (max-width: 600px) {
+    .top { padding: 14px 14px 4px; gap: 8px; }
+    .back { width: 36px; height: 36px; }
+    .top h1 { font-size: 21px; }
+    .avatar { width: 38px; height: 38px; font-size: 19px; }
+
+    .body { flex-direction: column; }
+    .stage { flex: none; padding: 8px 14px 10px; gap: 8px; }
+    .slide { flex: none; aspect-ratio: 16 / 10; padding: 18px 20px; border-radius: 14px; }
+    .slide h3 { font-size: 19px; }
+    .slide p, .slide ul { font-size: 13px; margin-top: 8px; line-height: 1.45; }
+    .slide ul { padding-left: 18px; }
+    .controls { gap: 6px; }
+    .controls .count { min-width: 40px; font-size: 13px; }
+    .btn { font-size: 13px; padding: 7px 10px; }
+
+    .side { width: auto; margin: 0; border-radius: 20px 20px 0 0; }
+    .side.rail { display: none; }
+    .body.folded .stage { padding-right: 14px; }
+    .people { max-height: 160px; }
+
+    /* A: slide on top, the panel fills the rest, Presentes is a fourth tab. */
+    .alt-a .side { flex: 1; }
+    .alt-a .side-head, .alt-a .room-wrap { display: none; }
+    .alt-a .ptabs { padding: 12px 12px 10px; }
+    .alt-a .ptabs button[data-tab="people"] { display: inline-flex; }
+    .alt-a .ptabs button { flex-direction: column; gap: 2px; font-size: 11px; padding: 6px 0 5px; border-radius: 14px; }
+    .alt-a .controls .hand .lbl { display: none; }
+
+    .offline { margin: 6px 14px 0; font-size: 13px; }
+
+    /* Every modal is a sheet from the bottom on the phone. */
+    .scrim { padding: 0; align-items: end; }
+    .modal { width: 100%; border-radius: 22px 22px 0 0; padding: 8px 18px 22px; }
+    .modal .handle { display: block; width: 40px; height: 5px; border-radius: 999px; background: var(--line); margin: 0 auto 12px; }
+
+  }
+</style>
+</head>
+<body>
+<div class="intro">
+  <h1>Aula · celular y escritorio</h1>
+  <p>La pantalla muestra el aula en un celular (390 × 844) y en escritorio, con la misma data; el escritorio es el aula ya decidida. Los dos marcos comparten lo que viene del servidor (slides, encuestas, preguntas, manos) y cada uno guarda su propio estado de UI (panel abierto, pestaña, presentes plegado), como en el localStorage de cada dispositivo. La tira simula lo que hacen el profe y otro estudiante; "Profe en el aula" apagado saca el control de seguir al profe. Si se corta una conexión, la web se reconecta sola a los pocos segundos; mientras tanto esa persona no figura en Presentes. Borrar una pregunta tuya pide confirmación.</p>
+</div>
+
+<section class="alt" data-alt="a">
+  <h2>A · Slide arriba, panel abajo</h2>
+  <p class="tradeoff">La slide y el panel se ven a la vez; el panel no se oculta, porque la slide no crece al ocultarlo. Presentes pasa a ser una cuarta pestaña y la mano queda como ícono junto a los controles de la slide.</p>
+  <div class="strip"></div>
+  <div class="frames"></div>
+</section>
+
+<script>
+const ICONS = {"chart-bar":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 21H9.4c-2.24 0-3.36 0-4.216-.436a4 4 0 0 1-1.748-1.748C3 17.96 3 16.84 3 14.6V3m4 13.5h5M7 12h10M7 7.5h7\"/></svg>","chat-messages":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M5 12a5 5 0 0 1 7 7m-7-7a5 5 0 0 0-2 4a5 5 0 0 0 .224 1.483c.272.88.076 1.86-.099 2.784a.468.468 0 0 0 .592.539c.848-.232 1.691-.43 2.557-.112A5 5 0 0 0 8 21a4.99 4.99 0 0 0 4-2m-7-7c0-4.685 2.875-9 8-9a8 8 0 0 1 7.532 10.7c-.476 1.326.037 3.102.337 4.568a.451.451 0 0 1-.584.526c-1.312-.41-2.852-.986-4.085-.466c-1.334.562-2.736.672-4.2.672\"/></svg>","download":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4 16.004V17a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1M12 4.5v11m3.5-3.5L12 15.5L8.5 12\"/></svg>","users":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 19.75c0-2.09-1.67-5.068-4-5.727m-2 5.727c0-2.651-2.686-6-6-6s-6 3.349-6 6m9-12.5a3 3 0 1 1-6 0a3 3 0 0 1 6 0m3 3a3 3 0 1 0 0-6\"/></svg>","presentation":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M3 4h18m-1.9 0v9.778c0 .471-.19.923-.527 1.257c-.338.333-.796.52-1.273.52H6.7c-.477 0-.935-.187-1.273-.52a1.77 1.77 0 0 1-.527-1.257V4m2.6 16l4.5-4.444L16.5 20\"/></svg>","hand":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\"><path d=\"M17.428 11.212v-4.5c0-2.213-3.572-2.35-3.572 0\"/><path d=\"M13.857 10V4.712c0-2.213-3.572-2.35-3.572 0v1.8m-.001 4.25v-4.05c0-2.213-3.747-2.35-3.747 0V13\"/><path d=\"M17.428 9.312c0-2.35 3.572-2.213 3.572 0v4.4c0 6.843-9.799 9.578-14.278 5.094l-3.215-3.24C2.018 13.904 4.044 10.5 6.537 13l1 1\"/></g></svg>","send":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m14 10l-3 3m9.288-9.969a.535.535 0 0 1 .68.681l-5.924 16.93a.535.535 0 0 1-.994.04l-3.219-7.242a.54.54 0 0 0-.271-.271l-7.242-3.22a.535.535 0 0 1 .04-.993z\"/></svg>","arrow-up":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M12 19.5v-15m6 5.625L12 4.5l-6 5.625\"/></svg>","trash":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m18 9l-.84 8.398c-.127 1.273-.19 1.909-.48 2.39a2.5 2.5 0 0 1-1.075.973C15.098 21 14.46 21 13.18 21h-2.36c-1.279 0-1.918 0-2.425-.24a2.5 2.5 0 0 1-1.076-.973c-.288-.48-.352-1.116-.48-2.389L6 9m7.5 6.5v-5m-3 5v-5m-6-4h4.615m0 0l.386-2.672c.112-.486.516-.828.98-.828h3.038c.464 0 .867.342.98.828l.386 2.672m-5.77 0h5.77m0 0H19.5\"/></svg>","chevron-up":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m18 15l-6-6l-6 6\"/></svg>","chevron-down":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m6 9l6 6l6-6\"/></svg>","panel-bottom-close":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\"><path d=\"M3.5 15h17M15 8l-3 3l-3-3\"/><path d=\"M3 9.4c0-2.24 0-3.36.436-4.216a4 4 0 0 1 1.748-1.748C6.04 3 7.16 3 9.4 3h5.2c2.24 0 3.36 0 4.216.436a4 4 0 0 1 1.748 1.748C21 6.04 21 7.16 21 9.4v5.2c0 2.24 0 3.36-.436 4.216a4 4 0 0 1-1.748 1.748C17.96 21 16.84 21 14.6 21H9.4c-2.24 0-3.36 0-4.216-.436a4 4 0 0 1-1.748-1.748C3 17.96 3 16.84 3 14.6z\"/></g></svg>","panel-right-close":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\"><path d=\"M15 3.5v17M8 9l3 3l-3 3\"/><path d=\"M3 9.4c0-2.24 0-3.36.436-4.216a4 4 0 0 1 1.748-1.748C6.04 3 7.16 3 9.4 3h5.2c2.24 0 3.36 0 4.216.436a4 4 0 0 1 1.748 1.748C21 6.04 21 7.16 21 9.4v5.2c0 2.24 0 3.36-.436 4.216a4 4 0 0 1-1.748 1.748C17.96 21 16.84 21 14.6 21H9.4c-2.24 0-3.36 0-4.216-.436a4 4 0 0 1-1.748-1.748C3 17.96 3 16.84 3 14.6z\"/></g></svg>","panel-right-open":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\"><path d=\"M15 3.5v17M10 15l-3-3l3-3\"/><path d=\"M3 9.4c0-2.24 0-3.36.436-4.216a4 4 0 0 1 1.748-1.748C6.04 3 7.16 3 9.4 3h5.2c2.24 0 3.36 0 4.216.436a4 4 0 0 1 1.748 1.748C21 6.04 21 7.16 21 9.4v5.2c0 2.24 0 3.36-.436 4.216a4 4 0 0 1-1.748 1.748C17.96 21 16.84 21 14.6 21H9.4c-2.24 0-3.36 0-4.216-.436a4 4 0 0 1-1.748-1.748C3 17.96 3 16.84 3 14.6z\"/></g></svg>","arrow-left":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M19.5 12h-15m5.625 6L4.5 12l5.625-6\"/></svg>","wifi-off":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M22 9.483a14.5 14.5 0 0 0-4.5-2.907M19 12.9a9.85 9.85 0 0 0-5-2.697M5 12.9a9.86 9.86 0 0 1 4-2.437m3 8.787v-.5M3 21L21 3M2 9.483A14.5 14.5 0 0 1 12 5.5m4 10.657a5.657 5.657 0 0 0-8 0\"/></svg>","chevron-left":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m15 6l-6 6l6 6\"/></svg>","chevron-right":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m9 18l6-6l-6-6\"/></svg>"};
+const ic = (n, s = 20) => `<span class="i" style="width:${s}px;height:${s}px">${ICONS[n]}</span>`;
+
+const SLIDES = [
+  { title: 'Planificación y revisión', text: 'Sesión 2 de 6' },
+  { title: 'El problema del vibe coding', list: ['El agente decide por vos', 'No sabés qué cambió', 'Los errores aparecen tarde'] },
+  { title: 'Explorar antes de pedir', text: 'Leer el código y los docs, hacer preguntas, y recién después decidir qué cambiar.' },
+  { title: 'Un plan que se pueda revisar', list: ['Pasos chicos', 'Cada paso dice cómo se verifica', 'Lo que queda afuera, escrito'] },
+  { title: 'Revisar lo que produce el agente', text: 'El diff, los tests y la app andando. En ese orden.' },
+];
+
+const TEACHER = ['🦉', 'Agustín'];
+const KIDS = [['🐼', 'Mateo'], ['🐸', 'Sofía'], ['🦊', 'Lucía'], ['🐨', 'Tomás'], ['🦁', 'Valentina'], ['🐧', 'Joaquín'], ['🐙', 'Camila'], ['🦄', 'Benjamín']];
+
+const POLLS = [
+  { id: 'p1', question: '¿Cuánto código de tu último proyecto escribió un agente?', options: [['Nada', 4], ['Algo', 9], ['La mitad', 6], ['Casi todo', 3]] },
+  { id: 'p2', question: '¿Ya escribiste un plan antes de pedirle algo a un agente?', options: [['Nunca', 7], ['A veces', 10], ['Siempre', 2]] },
+];
+
+const QUESTIONS = [
+  { id: 'q1', text: '¿Cuánto detalle tiene que tener un plan antes de pasárselo al agente?', votes: 9 },
+  { id: 'q2', text: '¿Conviene revisar el diff o correr los tests primero?', votes: 6 },
+  { id: 'q3', text: '¿Qué pasa si el plan está mal y el agente lo sigue igual?', votes: 4, mine: true },
+];
+
+const MATERIAL = [['Slides de la sesión', 'PDF · 3,2 MB'], ['Guía de planificación', 'PDF · 480 KB'], ['Ejercicio', 'ZIP · 1,1 MB'], ['Lectura: "Plan, then code"', 'PDF · 260 KB'], ['Grabación de la clase', 'MP4 · 620 MB']];
+
+const CLOSED = [{ question: '¿Usaste un agente para planificar antes de esta clase?', mine: 'No', options: [['Sí', 38], ['No', 62]], total: 21 }];
+
+// Named here so the build inlines them: ic('chart-bar') ic('chat-messages') ic('download') ic('users') ic('presentation')
+const TABS = [['polls', 'chart-bar', 'Encuestas'], ['qa', 'chat-messages', 'Preguntas'], ['material', 'download', 'Material'], ['people', 'users', 'Presentes']];
+
+// Each frame keeps its own UI state, the way each device keeps its own localStorage.
+const PHONE_UI = { a: { side: true, tab: 'polls', peopleOpen: true } };
+
+const fresh = (alt) => ({
+  teacherIn: true, teacher: 1, mine: 1, follow: true, confirm: null, offline: false, gone: [], polls: ['p1'], newPoll: null, hands: [], votes: {}, editing: [], dark: false,
+  questions: QUESTIONS.map((q) => ({ ...q })), upvoted: [], draft: '', openClosed: null,
+  ui: { phone: { ...PHONE_UI[alt], unseen: 0 }, desk: { side: true, tab: 'polls', peopleOpen: true, unseen: 0 } },
+});
+
+const S = { a: fresh('a') };
+
+const pct = (n, of) => Math.round((n / of) * 100);
+
+const pollPanel = (v, p) => {
+  const mine = v.votes[p.id];
+  const voting = mine == null || v.editing.includes(p.id);
+  const counted = p.options.map(([o, n]) => [o, o === mine && !voting ? n + 1 : n]);
+  const of = counted.reduce((a, [, n]) => a + n, 0);
+
+  return `<div class="panel ${v.newPoll === p.id ? 'new' : ''}">
+    <div class="q">${p.question}</div><div class="meta">${voting ? 'Abierta' : 'Votaste'} · ${of} respuestas</div>
+    <div class="rows">${counted.map(([o, n]) => voting
+      ? `<button class="row" data-vote="${p.id}|${o}"><span>${o}</span></button>`
+      : `<div class="row ${o === mine ? 'mine' : ''}"><i style="width:${pct(n, of)}%"></i><span>${o === mine ? '✓ ' : ''}${o}</span><span>${pct(n, of)}%</span></div>`).join('')}</div>
+    ${mine == null ? '' : `<div class="row-edit"><button class="link" data-edit="${p.id}">${voting ? 'Cancelar' : 'Cambiar mi voto'}</button></div>`}
+  </div>`;
+};
+
+// Whoever lost the connection is out of Presentes until the web reconnects.
+const roster = (v) => (v.teacherIn ? [[...TEACHER, 'Profe'], ...KIDS] : KIDS).filter(([, n]) => !v.gone.includes(n));
+
+const people = (v) => `<div class="people">${roster(v).map(([a, n, role]) => `
+  <div class="person"><span class="face">${a}</span><span>${n}</span>${n === 'Lucía' ? '<span class="role">Vos</span>' : role ? `<span class="role">${role}</span>` : ''}${v.hands.includes(n) ? `<span class="raised">${ic('hand', 16)}</span>` : ''}</div>`).join('')}</div>`;
+
+const qa = (v) => `
+  <div class="ask"><input data-draft placeholder="Hacé una pregunta" value="${v.draft}"><button class="iconbtn send" data-ask title="Enviar">${ic('send', 18)}</button></div>
+  ${[...v.questions].sort((a, b) => b.votes - a.votes).map((q) => `
+    <div class="question">
+      <button class="vote ${v.upvoted.includes(q.id) ? 'on' : ''}" data-up="${q.id}" ${q.mine ? 'disabled' : ''}>${ic('arrow-up', 14)}<span>${q.votes}</span></button>
+      <div class="qtext">${q.text}${q.mine ? '<span class="yours">Tuya</span>' : ''}</div>
+      ${q.mine ? `<button class="iconbtn del" data-del="${q.id}" title="Borrar tu pregunta">${ic('trash', 16)}</button>` : ''}
+    </div>`).join('')}`;
+
+const material = () => `<div class="files">${MATERIAL.map(([name, detail]) => `
+  <div class="file"><div class="grow"><b>${name}</b><small>${detail}</small></div><button class="iconbtn" title="Descargar">${ic('download', 18)}</button></div>`).join('')}</div>`;
+
+const closed = (v) => `<div class="sub">Cerradas</div>${CLOSED.map((p, i) => `
+  <div class="panel">
+    <button class="acc" data-closed="${i}"><span class="q">${p.question}</span>${v.openClosed === i ? ic('chevron-up', 16) : ic('chevron-down', 16)}</button>
+    ${v.openClosed === i ? `<div class="rows">${p.options.map(([o, n]) => `<div class="row ${o === p.mine ? 'mine' : ''}"><i style="width:${n}%"></i><span>${o === p.mine ? '✓ ' : ''}${o}</span><span>${n}%</span></div>`).join('')}</div>` : ''}
+  </div>`).join('')}`;
+
+const tabBody = (v, ui) => ({
+  polls: () => `${POLLS.filter((p) => v.polls.includes(p.id)).map((p) => pollPanel(v, p)).join('') || '<div class="empty">No hay encuestas activas.</div>'}${closed(v)}`,
+  qa: () => qa(v),
+  material,
+  people: () => people(v),
+})[ui.tab]();
+
+const badge = (ui) => ui.unseen > 0 ? `<span class="badge">${ui.unseen}</span>` : '';
+
+const side = (v, ui, phone) => ui.side
+  ? `<div class="side">
+      <div class="side-head"><button class="iconbtn" data-side title="Ocultar el panel">${phone ? ic('panel-bottom-close', 20) : ic('panel-right-close', 20)}</button></div>
+      <div class="ptabs">${TABS.map(([k, icon, label]) => `<button data-tab="${k}" class="${ui.tab === k ? 'on' : ''}">${ic(icon, 15)} ${label}${k === 'polls' && ui.tab !== 'polls' ? badge(ui) : ''}</button>`).join('')}</div>
+      <div class="side-scroll">${tabBody(v, ui)}</div>
+      <div class="room-wrap ${ui.peopleOpen ? '' : 'folded'}">
+        <button class="section-title fold" data-people>${ic('users', 18)} Presentes (${roster(v).length})<span class="chev">${ui.peopleOpen ? ic('chevron-down', 16) : ic('chevron-up', 16)}</span></button>
+        ${ui.peopleOpen ? people(v) : ''}
+      </div>
+    </div>`
+  : `<div class="side rail">
+      <div class="side-head"><button class="iconbtn" data-side title="Mostrar el panel">${ic('panel-right-open', 20)}${badge(ui)}</button></div>
+    </div>`;
+
+const slide = (s) => `<div class="slide"><h3>${s.title}</h3>${s.text ? `<p>${s.text}</p>` : ''}${s.list ? `<ul>${s.list.map((l) => `<li>${l}</li>`).join('')}</ul>` : ''}</div>`;
+
+const handBtn = (v) => `<button class="btn hand ${v.hands.includes('Lucía') ? 'on' : ''}" data-hand title="${v.hands.includes('Lucía') ? 'Bajar la mano' : 'Levantar la mano'}">${ic('hand', 18)} <span class="lbl">${v.hands.includes('Lucía') ? 'Mano levantada' : 'Levantar la mano'}</span></button>`;
+
+const app = (alt, v, ui, phone) => `
+  <div class="app alt-${alt} ${v.dark ? 'dark' : ''}" data-tab="${ui.tab}">
+    <div class="top">
+      <button class="back" title="Volver a las sesiones">${ic('arrow-left', 22)}</button>
+      <div class="title"><h1>Planificación y revisión</h1></div>
+      <span class="avatar">🦊</span>
+    </div>
+    ${v.offline ? `<div class="offline">${ic('wifi-off', 18)} Se cortó la conexión. Reconectando…</div>` : ''}
+    <div class="body ${ui.side ? '' : 'folded'}">
+      <div class="stage">
+        ${slide(SLIDES[v.mine])}
+        <div class="controls">
+          <button class="btn" data-prev>${ic('chevron-left', 18)}</button>
+          <span class="count">${v.mine + 1} / ${SLIDES.length}</span>
+          <button class="btn" data-next>${ic('chevron-right', 18)}</button>
+          ${v.teacherIn ? `<button class="btn follow ${v.follow ? 'on' : 'off'}" data-follow>${ic('presentation', 18)} ${v.follow ? 'Siguiendo al profe' : 'Seguir al profe'}</button>` : '<span style="margin-left:auto"></span>'}
+          ${handBtn(v)}
+        </div>
+      </div>
+      ${side(v, ui, phone)}
+    </div>
+    ${v.confirm == null ? '' : `
+      <div class="scrim" data-keep>
+        <div class="modal" data-stay>
+          <div class="handle"></div>
+          <h4>¿Borrar tu pregunta?</h4>
+          <p>Se borra para todos, con sus votos.</p>
+          <div class="actions"><button class="btn" data-keep>Cancelar</button><button class="btn danger" data-confirm-del>${ic('trash', 16)} Borrar</button></div>
+        </div>
+      </div>`}
+  </div>`;
+
+const render = (alt) => {
+  const root = document.querySelector(`[data-alt="${alt}"]`);
+  const v = S[alt];
+
+  root.querySelector('.strip').innerHTML = `
+    <button data-sim-in class="${v.teacherIn ? 'on' : ''}">Profe en el aula</button>
+    <button data-sim-poll ${v.polls.length === POLLS.length ? 'disabled' : ''}>Profe activa una encuesta nueva</button>
+    <button data-sim-next ${v.teacherIn ? '' : 'disabled'}>Profe avanza una slide</button>
+    <button data-sim-hand class="${v.hands.includes('Tomás') ? 'on' : ''}">Tomás levanta la mano</button>
+    <button data-sim-drop="Lucía" class="${v.offline ? 'on' : ''}">Se corta tu conexión</button>
+    <button data-sim-drop="Mateo" class="${v.gone.includes('Mateo') ? 'on' : ''}">Se corta la conexión de Mateo</button>
+    <span class="sep"></span>
+    <button data-dark class="${v.dark ? 'on' : ''}">Dark</button>
+    <button data-reset>Reiniciar</button>`;
+
+  root.querySelector('.frames').innerHTML = `
+    <div><div class="frame-label">Celular</div><div class="device"><div class="frame phone" data-frame="phone">${app(alt, v, v.ui.phone, true)}</div></div></div>
+    <div><div class="frame-label">Escritorio</div><div class="frame desk" data-frame="desk">${app(alt, v, v.ui.desk, false)}</div></div>`;
+};
+
+const toggleHand = (v, name) => {
+  v.hands = v.hands.includes(name) ? v.hands.filter((n) => n !== name) : [...v.hands, name];
+};
+
+// The web reconnects by itself a few seconds after the cut.
+const drop = (alt, name) => {
+  const v = S[alt];
+
+  if (name === 'Lucía') {
+    v.offline = true;
+  } else {
+    v.gone = [...new Set([...v.gone, name])];
+  }
+
+  setTimeout(() => {
+    S[alt].offline = name === 'Lucía' ? false : S[alt].offline;
+    S[alt].gone = S[alt].gone.filter((n) => n !== name);
+    render(alt);
+  }, 4000);
+};
+
+const seesPolls = (ui) => ui.side && ui.tab === 'polls';
+
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('button, [data-keep], [data-stay]');
+  const section = e.target.closest('[data-alt]');
+
+  if (t == null || t.disabled || section == null || (t.hasAttribute('data-stay') && !t.matches('button'))) {
+    return;
+  }
+
+  const alt = section.dataset.alt;
+  const v = S[alt];
+  const frame = t.closest('[data-frame]');
+  const ui = frame == null ? null : v.ui[frame.dataset.frame];
+
+  if (t.hasAttribute('data-sim-in')) {
+    v.teacherIn = !v.teacherIn;
+
+    // Without the teacher everyone navigates alone; when the teacher arrives, following follows the usual rule.
+    v.follow = v.teacherIn && v.mine === v.teacher;
+  } else if (t.hasAttribute('data-sim-poll')) {
+    const next = POLLS.find((p) => !v.polls.includes(p.id));
+
+    v.polls = [...v.polls, next.id];
+    v.newPoll = next.id;
+
+    Object.values(v.ui).filter((u) => !seesPolls(u)).forEach((u) => {
+      u.unseen += 1;
+    });
+  } else if (t.dataset.tab != null) {
+    ui.tab = t.dataset.tab;
+    ui.side = true;
+
+    if (ui.tab === 'polls') {
+      ui.unseen = 0;
+    }
+  } else if (t.hasAttribute('data-people')) {
+    ui.peopleOpen = !ui.peopleOpen;
+  } else if (t.dataset.closed != null) {
+    v.openClosed = v.openClosed === Number(t.dataset.closed) ? null : Number(t.dataset.closed);
+  } else if (t.dataset.del != null) {
+    v.confirm = t.dataset.del;
+  } else if (t.hasAttribute('data-keep')) {
+    v.confirm = null;
+  } else if (t.hasAttribute('data-confirm-del')) {
+    v.questions = v.questions.filter((q) => q.id !== v.confirm);
+    v.confirm = null;
+  } else if (t.dataset.simDrop != null) {
+    drop(alt, t.dataset.simDrop);
+  } else if (t.dataset.up != null) {
+    const q = v.questions.find((x) => x.id === t.dataset.up);
+    const on = v.upvoted.includes(q.id);
+
+    q.votes += on ? -1 : 1;
+    v.upvoted = on ? v.upvoted.filter((id) => id !== q.id) : [...v.upvoted, q.id];
+  } else if (t.hasAttribute('data-ask')) {
+    if (v.draft.trim() === '') {
+      return;
+    }
+
+    v.questions = [...v.questions, { id: `q${v.questions.length + 1}`, text: v.draft.trim(), votes: 0, mine: true }];
+    v.draft = '';
+  } else if (t.hasAttribute('data-sim-next')) {
+    v.teacher = Math.min(v.teacher + 1, SLIDES.length - 1);
+
+    if (v.follow) {
+      v.mine = v.teacher;
+    }
+  } else if (t.hasAttribute('data-sim-hand')) {
+    toggleHand(v, 'Tomás');
+  } else if (t.hasAttribute('data-prev') || t.hasAttribute('data-next')) {
+    v.mine = Math.max(0, Math.min(SLIDES.length - 1, v.mine + (t.hasAttribute('data-next') ? 1 : -1)));
+    v.follow = v.teacherIn && v.mine === v.teacher;
+  } else if (t.hasAttribute('data-follow')) {
+    v.follow = !v.follow;
+
+    if (v.follow) {
+      v.mine = v.teacher;
+    }
+  } else if (t.hasAttribute('data-hand')) {
+    toggleHand(v, 'Lucía');
+  } else if (t.hasAttribute('data-side')) {
+    ui.side = !ui.side;
+
+    if (seesPolls(ui)) {
+      ui.unseen = 0;
+    }
+  } else if (t.dataset.vote != null) {
+    const [id, o] = t.dataset.vote.split('|');
+
+    v.votes = { ...v.votes, [id]: o };
+    v.editing = v.editing.filter((x) => x !== id);
+  } else if (t.dataset.edit != null) {
+    const id = t.dataset.edit;
+
+    v.editing = v.editing.includes(id) ? v.editing.filter((x) => x !== id) : [...v.editing, id];
+  } else if (t.hasAttribute('data-dark')) {
+    v.dark = !v.dark;
+  } else if (t.hasAttribute('data-reset')) {
+    S[alt] = fresh(alt);
+  } else {
+    return;
+  }
+
+  render(alt);
+});
+
+document.addEventListener('input', (e) => {
+  const section = e.target.closest('[data-alt]');
+
+  if (section != null && e.target.matches('[data-draft]')) {
+    S[section.dataset.alt].draft = e.target.value;
+  }
+});
+
+render('a');
+</script>
+</body>
+</html>

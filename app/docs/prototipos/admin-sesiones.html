@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Prototipo · Sesiones del profe</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  :root {
+    --window: #FBF3EE; --ink: #1F1B18; --muted: #8A7E75; --line: #EADFD8;
+    --active: #1F1B18; --active-ink: #FFFFFF; --tag: #FFFFFF;
+    --c0: #F2B8C0; --c1: #F8D0A0; --c2: #CCC4F0; --c3: #B4E8CC; --locked: #EFE6E0;
+  }
+
+  .dark {
+    --window: #161413; --ink: #F2EDE9; --muted: #9C918A; --line: #34302D;
+    --active: #F2EDE9; --active-ink: #161413; --tag: #FFFFFF; --card-ink: #1F1B18; --locked: #24211F;
+  }
+
+  /* Cards keep their light pastels in dark mode, so what sits on them keeps dark ink. */
+  .dark .card .btn { background: #1F1B18; color: #FFFFFF; }
+  .dark .card.locked .btn { background: var(--active); color: var(--active-ink); }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9e6e3; font-family: 'Atkinson Hyperlegible', sans-serif; color: #1F1B18; }
+  h1, h2, h3 { font-family: 'Rubik', sans-serif; margin: 0; }
+  .intro, .alt { max-width: 1100px; margin: 24px auto; padding: 0 20px; }
+  .intro h1 { font-size: 28px; }
+  .intro p, .tradeoff { margin: 6px 0 0; color: #6b625c; }
+  .alt h2 { font-size: 22px; }
+  .tradeoff { margin-bottom: 10px; }
+
+  .strip { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; font-size: 14px; }
+  .strip button { font: inherit; border: 1px solid #cfc8c2; background: #fff; border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+  .strip button.on { background: #1F1B18; color: #fff; border-color: #1F1B18; }
+  .strip .sep { width: 1px; height: 20px; background: #cfc8c2; margin: 0 4px; }
+
+  .i { display: inline-grid; place-items: center; flex: none; }
+  .i svg { width: 100%; height: 100%; }
+
+  .frame { color: var(--ink); border-radius: 12px; overflow: hidden; position: relative; }
+  .window { background: var(--window); min-height: 680px; padding: 32px 48px; position: relative; }
+
+  .top { display: flex; align-items: center; gap: 12px; }
+  .hello { flex: 1; font-size: 30px; font-weight: 700; font-family: 'Rubik', sans-serif; }
+  .me { position: relative; }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--c1); display: grid; place-items: center; font-size: 22px; border: 0; cursor: pointer; }
+  .menu { position: absolute; right: 0; top: 58px; width: 250px; background: var(--window); border: 1.5px solid var(--line); border-radius: 18px; padding: 14px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18); z-index: 2; }
+  .menu .who { font-family: 'Rubik', sans-serif; font-weight: 700; }
+  .menu .mail { color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .menu hr { border: 0; border-top: 1.5px solid var(--line); margin: 12px 0; }
+  .switch { display: flex; justify-content: space-between; align-items: center; width: 100%; font: inherit; color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; }
+  .knob { width: 40px; height: 22px; border-radius: 999px; background: var(--line); position: relative; }
+  .knob::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--ink); transition: left 0.15s; }
+  .knob.on { background: var(--active); }
+  .knob.on::after { left: 21px; background: var(--active-ink); }
+
+  .btn { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-family: 'Rubik', sans-serif; font-weight: 500; border: 0; border-radius: 999px; padding: 10px 18px; cursor: pointer; background: var(--active); color: var(--active-ink); text-decoration: none; }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+
+  .state { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 3px 10px; font-size: 12px; background: var(--tag); color: #1F1B18; white-space: nowrap; }
+  .state .dot { width: 8px; height: 8px; border-radius: 50%; background: #3F9E6E; }
+  .state.off .dot { background: #B9ADA5; }
+
+  .card { border-radius: 22px; padding: 20px 22px; color: var(--card-ink, var(--ink)); }
+  .card .head { cursor: pointer; display: flex; align-items: center; gap: 10px; }
+  .card .head h3 { flex: 1; }
+  .card.closed { padding: 12px 18px; }
+  .card.closed h3 { font-size: 17px; }
+  .card h3 { font-size: 20px; }
+  .card p { margin: 12px 0 0; line-height: 1.45; }
+  .foot { display: flex; justify-content: flex-end; margin-top: 16px; }
+  .locked { background: var(--locked); color: var(--muted); }
+  .locked h3 { color: var(--muted); }
+  .hero { margin-top: 24px; padding: 26px; }
+  .hero h3 { font-size: 30px; margin-top: 4px; }
+  .kicker { font-size: 14px; opacity: 0.75; display: flex; align-items: center; gap: 10px; }
+  .section-title { font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 18px; margin: 28px 0 0; }
+  .empty-note { margin-top: 18px; color: var(--muted); }
+  .empty { margin-top: 40px; text-align: center; color: var(--muted); }
+  .empty h3 { color: var(--ink); font-size: 22px; margin-bottom: 6px; }
+
+  .path { display: grid; grid-template-columns: 56px 1fr; column-gap: 16px; margin-top: 12px; }
+  .rail { display: flex; flex-direction: column; align-items: center; }
+  .node { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-family: 'Rubik', sans-serif; font-weight: 700; flex: none; }
+  .node.done { background: var(--active); color: var(--active-ink); }
+  .node.live { background: #E8505B; color: #fff; box-shadow: 0 0 0 6px color-mix(in srgb, #E8505B 25%, transparent); }
+  .node.lock { background: var(--locked); color: var(--muted); }
+  .node.add { background: transparent; border: 2px dashed var(--muted); color: var(--muted); }
+  .link { width: 4px; flex: 1; min-height: 14px; background: var(--line); border-radius: 2px; }
+  .step { padding-bottom: 12px; }
+  .add-card { width: 100%; display: flex; align-items: center; gap: 8px; font: inherit; font-family: 'Rubik', sans-serif; font-weight: 500; font-size: 16px; color: var(--muted); background: transparent; border: 2px dashed var(--muted); border-radius: 22px; padding: 11px 18px; cursor: pointer; }
+  .add-card:hover { color: var(--ink); border-color: var(--ink); }
+
+  .scrim { position: absolute; inset: 0; background: rgba(31, 27, 24, 0.45); display: grid; place-items: center; padding: 30px; z-index: 3; }
+  .modal { background: var(--window); color: var(--ink); border-radius: 22px; width: min(520px, 100%); padding: 22px 24px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .modal h3 { font-size: 22px; }
+  .modal label { display: block; font-size: 13px; color: var(--muted); margin: 12px 0 4px; }
+  .modal input, .modal textarea { width: 100%; font: inherit; border: 1.5px solid var(--line); border-radius: 14px; padding: 10px 12px; background: transparent; color: var(--ink); }
+  .modal textarea { min-height: 80px; resize: vertical; }
+  .modal .note { font-size: 13px; color: var(--muted); margin-top: 12px; }
+  .modal .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+  .qr-scrim { background: rgba(31, 27, 24, 0.7); }
+  .qr-view { position: relative; background: var(--window); color: var(--ink); border-radius: 28px; width: min(640px, 100%); padding: 36px 40px; text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35); }
+  .qr-view h3 { font-size: 40px; }
+  .qr-view p { margin: 8px 0 4px; color: var(--muted); font-size: 18px; }
+  .qr-url { font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 26px; }
+  .qr { width: 340px; height: 340px; margin: 22px auto 10px; border-radius: 18px; overflow: hidden; }
+  .qr svg { width: 100%; height: 100%; display: block; }
+  .qr-note { font-size: 12px; color: var(--muted); }
+  .qr-close { position: absolute; top: 14px; right: 14px; }
+  .iconbtn { width: 36px; height: 36px; border-radius: 50%; border: 0; background: transparent; color: var(--ink); cursor: pointer; display: grid; place-items: center; }
+  .iconbtn:hover { background: var(--line); }
+  .grip { display: inline-grid; cursor: grab; opacity: 0.45; margin-right: 6px; }
+  .grip:hover { opacity: 1; }
+  .head { display: flex; align-items: center; }
+  .step.over .card { box-shadow: 0 -4px 0 #1F1B18; }
+  .step.dragging { opacity: 0.4; }
+</style>
+</head>
+<body>
+<div class="intro">
+  <h1>Sesiones del profe</h1>
+  <p>La misma página que ve el estudiante: la última sesión habilitada destacada arriba y, debajo, todas las sesiones en el camino colapsable. El profe ve todas, con su estado, y cada una abre su página de admin. "Nueva sesión" abre un modal y la suma al final, deshabilitada. La card "+ Nueva sesión" cierra el camino. Las sesiones se reordenan arrastrándolas desde el asa. "Usuarios" lleva a la página de usuarios, donde está el QR de registro.</p>
+</div>
+<div id="alts"></div>
+
+<script>
+const ICONS = {"arrow-right":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4.5 12h15m-5.625 6l5.625-6l-5.625-6\"/></svg>","grip-vertical":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M9.667 12H9m6 0h-.667M9.667 7H9m6 0h-.667M9.667 17H9m6 0h-.667\"/></svg>","plus":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 12h-6m0 0H6m6 0V6m0 6v6\"/></svg>","x":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 6L6 18M6 6l12 12\"/></svg>","users":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 19.75c0-2.09-1.67-5.068-4-5.727m-2 5.727c0-2.651-2.686-6-6-6s-6 3.349-6 6m9-12.5a3 3 0 1 1-6 0a3 3 0 0 1 6 0m3 3a3 3 0 1 0 0-6\"/></svg>"};
+const ic = (n, s = 20) => `<span class="i" style="width:${s}px;height:${s}px">${ICONS[n]}</span>`;
+
+const BASE = [
+  { title: 'La experiencia vibe coding', summary: 'Armamos una app entera pidiéndosela al agente y miramos qué salió bien y qué no.' },
+  { title: 'Planificación y revisión', summary: 'Antes de escribir código: explorar, planificar y revisar lo que el agente produce.' },
+  { title: 'Tooling y skills', summary: 'Herramientas, skills y cómo se arma un flujo de trabajo propio.' },
+  { title: 'Context engineering', summary: 'Qué entra en el contexto del agente, cuánto cuesta y dónde se rompe.' },
+  { title: 'Coding harness por dentro', summary: 'Desarmamos un harness para ver qué hace cada pieza.' },
+  { title: 'Modelos open source y CCAD', summary: 'Correr modelos propios en el cluster de la facultad.' },
+];
+
+// How many of the course's sessions are enabled in each scenario; the last enabled one is the current one.
+const SCENARIOS = {
+  live: { label: 'Sesión 2 en curso', sessions: () => BASE.map((s, i) => ({ ...s, enabled: i < 2 })) },
+  none: { label: 'Ninguna habilitada', sessions: () => BASE.map((s) => ({ ...s, enabled: false })) },
+  empty: { label: 'Sin sesiones todavía', sessions: () => [] },
+};
+
+const ALTS = {
+  B: { name: 'Card punteada al final del camino', tradeoff: 'Una card "+ Nueva sesión" cierra el camino, justo donde se suma la sesión; el header queda igual al del estudiante, pero con muchas sesiones hay que bajar hasta el final para agregar una.' },
+};
+
+const fresh = (scenario = 'live') => ({ scenario, sessions: SCENARIOS[scenario].sessions(), dark: false, menu: false, open: null, modal: false, qr: false, title: '', summary: '' });
+
+const view = { B: fresh() };
+
+const color = (n) => `var(--c${(n - 1) % 4})`;
+
+const stateTag = (s) => `<span class="state ${s.enabled ? '' : 'off'}"><span class="dot"></span>${s.enabled ? 'Habilitada' : 'Deshabilitada'}</span>`;
+
+const currentIndex = (v) => v.sessions.map((s) => s.enabled).lastIndexOf(true);
+
+const nodeOf = (v, i) => {
+  const s = v.sessions[i];
+  const current = currentIndex(v);
+
+  if (!s.enabled) {
+    return `<div class="node lock">${i + 1}</div>`;
+  }
+
+  return i === current ? `<div class="node live">${i + 1}</div>` : `<div class="node done">✓</div>`;
+};
+
+// The admin page of each session is prototypes/admin-sesion.html.
+const openBtn = () => `<a class="btn" href="admin-sesion.html" target="_blank">Abrir ${ic('arrow-right', 18)}</a>`;
+
+const hero = (v) => {
+  const i = currentIndex(v);
+
+  if (i === -1) {
+    return v.sessions.length === 0 ? '' : '<div class="empty-note">Todavía no habilitaste ninguna sesión: los estudiantes no ven nada.</div>';
+  }
+
+  const s = v.sessions[i];
+
+  return `<div class="card hero" style="background:${color(i + 1)}">
+    <div class="kicker">Sesión ${i + 1} de ${v.sessions.length} ${stateTag(s)}</div>
+    <h3>${s.title}</h3>
+    <p>${s.summary}</p>
+    <div class="foot">${openBtn()}</div>
+  </div>`;
+};
+
+const path = (alt, v) => {
+  const rows = v.sessions.map((s, i) => {
+    const last = i === v.sessions.length - 1 && alt !== 'B';
+    const card = v.open === i
+      ? `<div class="card ${s.enabled ? '' : 'locked'}" style="${s.enabled ? `background:${color(i + 1)}` : ''}">
+          <div class="head" data-toggle="${i}"><span class="grip" title="Arrastrar para reordenar">${ic('grip-vertical', 18)}</span><h3>${s.title}</h3>${stateTag(s)}</div>
+          <p>${s.summary || 'Sin resumen todavía.'}</p>
+          <div class="foot">${openBtn()}</div>
+        </div>`
+      : `<div class="card closed ${s.enabled ? '' : 'locked'}" style="${s.enabled ? `background:${color(i + 1)}` : ''}">
+          <div class="head" data-toggle="${i}"><span class="grip" title="Arrastrar para reordenar">${ic('grip-vertical', 18)}</span><h3>${s.title}</h3>${stateTag(s)}</div>
+        </div>`;
+
+    return `<div class="rail">${nodeOf(v, i)}${last ? '' : '<div class="link"></div>'}</div><div class="step ${v.dragOver === i ? 'over' : ''}" draggable="true" data-drag="${i}">${card}</div>`;
+  });
+
+  if (alt === 'B') {
+    rows.push(`<div class="rail"><div class="node add">${ic('plus', 20)}</div></div><div class="step"><button class="add-card" data-new>${ic('plus', 20)} Nueva sesión</button></div>`);
+  }
+
+  return `<div class="path">${rows.join('')}</div>`;
+};
+
+const modal = (v) => v.modal ? `
+  <div class="scrim" data-cancel>
+    <div class="modal" data-stay>
+      <div class="modal-head"><h3>Nueva sesión</h3><button class="iconbtn" data-cancel title="Cerrar">${ic('x', 20)}</button></div>
+      <label>Título</label><input data-field="title" value="${v.title}" placeholder="Ej.: Testing con agentes">
+      <label>Resumen</label><textarea data-field="summary" placeholder="De qué trata la sesión">${v.summary}</textarea>
+      <div class="note">Se suma al final del camino, deshabilitada. El material, las slides y las encuestas se cargan desde su página.</div>
+      <div class="actions"><button class="btn ghost" data-cancel>Cancelar</button><button class="btn" data-create>Crear sesión</button></div>
+    </div>
+  </div>` : '';
+
+// A placeholder pattern with the three finder squares of a QR; the real code would encode REGISTER_URL.
+const REGISTER_URL = 'aula.famaf.dev/registro/k7f2q';
+
+const fakeQr = (size = 29) => {
+  const finder = (x, y) => {
+    const fx = [[0, 0], [size - 7, 0], [0, size - 7]].find(([a, b]) => x >= a && x < a + 7 && y >= b && y < b + 7);
+
+    if (fx == null) {
+      return null;
+    }
+
+    const dx = x - fx[0];
+    const dy = y - fx[1];
+
+    return dx === 0 || dx === 6 || dy === 0 || dy === 6 || (dx >= 2 && dx <= 4 && dy >= 2 && dy <= 4);
+  };
+
+  let seed = 7;
+  const rand = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  const cells = [];
+
+  for (let y = 0; y < size; y += 1) {
+    for (let x = 0; x < size; x += 1) {
+      const f = finder(x, y);
+
+      if (f ?? rand() > 0.52) {
+        cells.push(`<rect x="${x}" y="${y}" width="1" height="1"/>`);
+      }
+    }
+  }
+
+  return `<svg viewBox="-2 -2 ${size + 4} ${size + 4}" shape-rendering="crispEdges"><rect x="-2" y="-2" width="${size + 4}" height="${size + 4}" fill="#fff"/><g fill="#1F1B18">${cells.join('')}</g></svg>`;
+};
+
+const qrModal = (v) => v.qr ? `
+  <div class="scrim qr-scrim" data-qr-close>
+    <div class="qr-view" data-stay>
+      <button class="iconbtn qr-close" data-qr-close title="Cerrar">${ic('x', 24)}</button>
+      <h3>Sumate al aula</h3>
+      <p>Escaneá el código con el celular, o entrá a</p>
+      <div class="qr-url">${REGISTER_URL}</div>
+      <div class="qr">${fakeQr()}</div>
+      <div class="qr-note">Código de ejemplo: el prototipo no genera un QR real.</div>
+    </div>
+  </div>` : '';
+
+const app = (alt, v) => `
+  <div class="window">
+    <div class="top">
+      <div class="hello">Hola, Agustín</div>
+      <a class="btn ghost" href="admin-usuarios.html" target="_blank" style="text-decoration:none">${ic('users', 18)} Usuarios</a>
+      ${alt === 'A' ? `<button class="btn" data-new>${ic('plus', 18)} Nueva sesión</button>` : ''}
+      <div class="me">
+        <button class="avatar" data-menu title="Tu cuenta">🦉</button>
+        ${v.menu ? `
+          <div class="menu">
+            <div class="who">Agustín</div>
+            <div class="mail">agustin@famaf.unc.edu.ar</div>
+            <hr>
+            <button class="switch" data-theme>Modo oscuro <span class="knob ${v.dark ? 'on' : ''}"></span></button>
+          </div>` : ''}
+      </div>
+    </div>
+    ${v.sessions.length === 0
+      ? `<div class="empty"><h3>Todavía no hay sesiones</h3><p>${alt === 'A' ? 'Creá la primera con "Nueva sesión".' : 'Creá la primera desde la card de abajo.'}</p></div>${alt === 'B' ? path(alt, v) : ''}`
+      : `${hero(v)}<div class="section-title">Todas las sesiones</div>${path(alt, v)}`}
+    ${modal(v)}
+    ${qrModal(v)}
+  </div>`;
+
+const render = (alt) => {
+  const v = view[alt];
+  const root = document.getElementById(`alt-${alt}`);
+
+  root.querySelector('.strip').innerHTML = `
+    ${Object.entries(SCENARIOS).map(([k, s]) => `<button data-scenario="${k}" class="${v.scenario === k ? 'on' : ''}">${s.label}</button>`).join('')}
+    <span class="sep"></span>
+    <button data-dark class="${v.dark ? 'on' : ''}">Dark</button>
+    <button data-reset>Reiniciar</button>`;
+  root.querySelector('.stagewrap').innerHTML = `<div class="frame ${v.dark ? 'dark' : ''}">${app(alt, v)}</div>`;
+};
+
+document.getElementById('alts').innerHTML = Object.entries(ALTS).map(([k, a]) => `
+  <section class="alt" id="alt-${k}">
+    <div class="strip"></div>
+    <div class="stagewrap"></div>
+  </section>`).join('');
+
+// Reordering: drag a session by its card and drop it on another one to take its place.
+const wireDrag = (alt) => {
+  const root = document.getElementById(`alt-${alt}`);
+  let from = null;
+
+  root.addEventListener('dragstart', (e) => {
+    const step = e.target.closest('[data-drag]');
+
+    if (step == null) {
+      return;
+    }
+
+    from = Number(step.dataset.drag);
+    step.classList.add('dragging');
+  });
+  root.addEventListener('dragover', (e) => {
+    const step = e.target.closest('[data-drag]');
+
+    if (step == null || from == null) {
+      return;
+    }
+
+    e.preventDefault();
+    root.querySelectorAll('.step.over').forEach((el) => el.classList.remove('over'));
+    step.classList.add('over');
+  });
+  root.addEventListener('drop', (e) => {
+    const step = e.target.closest('[data-drag]');
+
+    if (step == null || from == null) {
+      return;
+    }
+
+    e.preventDefault();
+
+    const v = view[alt];
+    const to = Number(step.dataset.drag);
+    const [moved] = v.sessions.splice(from, 1);
+
+    v.sessions.splice(to, 0, moved);
+    v.open = null;
+    from = null;
+    render(alt);
+  });
+  root.addEventListener('dragend', () => {
+    from = null;
+    root.querySelectorAll('.step.over, .step.dragging').forEach((el) => el.classList.remove('over', 'dragging'));
+  });
+};
+
+Object.keys(ALTS).forEach(wireDrag);
+
+Object.keys(ALTS).forEach((alt) => {
+  const root = document.getElementById(`alt-${alt}`);
+
+  root.addEventListener('input', (e) => {
+    if (e.target.dataset.field != null) {
+      view[alt][e.target.dataset.field] = e.target.value;
+    }
+  });
+
+  root.addEventListener('click', (e) => {
+    const v = view[alt];
+    const t = e.target.closest('[data-scenario], [data-dark], [data-reset], [data-menu], [data-theme], [data-toggle], [data-new], [data-qr], [data-qr-close], [data-cancel], [data-create], [data-stay]');
+
+    if (t == null || t.hasAttribute('data-stay') && !e.target.closest('[data-cancel], [data-create], [data-qr-close]')) {
+      return;
+    }
+
+    const target = e.target.closest('[data-cancel], [data-create], [data-qr-close]') ?? t;
+
+    if (target.dataset.scenario != null) {
+      view[alt] = { ...fresh(target.dataset.scenario), dark: v.dark };
+    } else if (target.hasAttribute('data-dark') || target.hasAttribute('data-theme')) {
+      v.dark = !v.dark;
+    } else if (target.hasAttribute('data-reset')) {
+      view[alt] = fresh();
+    } else if (target.hasAttribute('data-menu')) {
+      v.menu = !v.menu;
+    } else if (target.dataset.toggle != null) {
+      const i = Number(target.dataset.toggle);
+
+      v.open = v.open === i ? null : i;
+    } else if (target.hasAttribute('data-qr')) {
+      Object.assign(v, { qr: true, menu: false });
+    } else if (target.hasAttribute('data-qr-close')) {
+      v.qr = false;
+    } else if (target.hasAttribute('data-new')) {
+      Object.assign(v, { modal: true, menu: false, title: '', summary: '' });
+    } else if (target.hasAttribute('data-cancel')) {
+      v.modal = false;
+    } else if (target.hasAttribute('data-create')) {
+      if (v.title.trim() === '') {
+        return;
+      }
+
+      v.sessions = [...v.sessions, { title: v.title.trim(), summary: v.summary.trim(), enabled: false }];
+      Object.assign(v, { modal: false, open: v.sessions.length - 1 });
+    } else {
+      return;
+    }
+
+    render(alt);
+  });
+
+  render(alt);
+});
+</script>
+</body>
+</html>

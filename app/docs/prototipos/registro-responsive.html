@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Prototipo · Registro, login y menú de usuario · responsive</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  :root { --window: #FBF3EE; --ink: #1F1B18; --muted: #8A7E75; --line: #EADFD8; --side: #F3E8E1; --field: #FFFFFF; --active: #1F1B18; --active-ink: #FFFFFF; }
+  .dark { --window: #161413; --ink: #F2EDE9; --muted: #9C918A; --line: #34302D; --side: #1F1C1A; --field: #24211F; --active: #F2EDE9; --active-ink: #161413; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9e6e3; font-family: 'Atkinson Hyperlegible', sans-serif; color: #1F1B18; }
+  h1, h2, h3 { font-family: 'Rubik', sans-serif; margin: 0; }
+  .wrap { max-width: 1480px; margin: 24px auto; padding: 0 20px; }
+  .intro p, .tradeoff { margin: 6px 0 0; color: #6b625c; max-width: 1100px; }
+  .alt { margin-top: 44px; }
+  .alt h2 { font-size: 22px; }
+  .tradeoff { margin-bottom: 10px; }
+  .strip { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; font-size: 14px; }
+  .strip button { font: inherit; border: 1px solid #cfc8c2; background: #fff; border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+  .strip button.on { background: #1F1B18; color: #fff; border-color: #1F1B18; }
+  .strip .sep { width: 1px; height: 20px; background: #cfc8c2; margin: 0 4px; }
+  .state-label { font-family: 'Rubik', sans-serif; font-weight: 500; margin: 22px 0 8px; }
+
+  .i { display: inline-grid; place-items: center; flex: none; }
+  .i svg { width: 100%; height: 100%; }
+
+  /* Frames: the viewport inside each one is a size container, so the screen reacts to the frame's width, not the window's. */
+  .pair { display: flex; gap: 28px; align-items: flex-start; }
+  .cap { font-size: 13px; color: #6b625c; margin-bottom: 6px; }
+  .phone { box-sizing: content-box; width: 390px; height: 844px; border: 10px solid #1F1B18; border-radius: 46px; overflow: hidden; background: #1F1B18; flex: none; }
+  .desk { width: 1000px; border-radius: 12px; overflow: hidden; border: 1px solid #cfc8c2; flex: none; }
+  .desk .bar { height: 30px; background: #f1ece8; display: flex; gap: 6px; align-items: center; padding: 0 12px; }
+  .desk .bar i { width: 10px; height: 10px; border-radius: 50%; background: #d8cfc8; }
+  .vp { container: app / inline-size; contain: layout; position: relative; background: var(--window); color: var(--ink); }
+  .phone .vp { width: 390px; height: 844px; border-radius: 36px; overflow: hidden; }
+  .desk .vp { width: 100%; height: 800px; }
+  .app { height: 100%; overflow: auto; scrollbar-width: thin; }
+
+  .btn { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-size: 14px; border: 1.5px solid var(--line); background: transparent; color: var(--ink); border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+  .btn:disabled { opacity: 0.35; cursor: default; }
+  .btn.solid { background: var(--active); color: var(--active-ink); border-color: var(--active); }
+  .iconbtn { width: 34px; height: 34px; border-radius: 50%; border: 0; background: transparent; color: var(--ink); cursor: pointer; display: grid; place-items: center; }
+  .iconbtn:hover { background: var(--line); }
+
+  /* Registration and login: same pieces as registro.html. */
+  .reg { min-height: 100%; display: grid; place-items: center; padding: 40px; }
+  .panel { width: min(440px, 100%); text-align: center; }
+  .mark { width: 64px; height: 64px; border-radius: 20px; background: #F8D0A0; display: grid; place-items: center; margin: 0 auto 18px; font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 26px; color: #1F1B18; }
+  .panel h1 { font-size: 32px; }
+  .panel p { color: var(--muted); margin: 10px 0 0; line-height: 1.5; }
+  .error { margin-top: 18px; background: #F2B8C0; color: #1F1B18; border-radius: 14px; padding: 12px 14px; font-size: 14px; text-align: left; }
+  .field { display: block; margin-top: 20px; font-size: 14px; font-weight: 700; text-align: left; }
+  .panel .field { margin-top: 26px; }
+  .field input { display: block; width: 100%; margin-top: 6px; font: inherit; font-weight: 400; font-size: 16px; border: 1.5px solid var(--line); border-radius: 14px; padding: 11px 14px; background: var(--field); color: var(--ink); }
+  .field input.code { font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 26px; letter-spacing: 0.3em; text-align: center; text-transform: uppercase; padding: 12px 14px 12px calc(14px + 0.3em); }
+  .field input.code.bad { border-color: #E8505B; }
+  .go { display: flex; justify-content: flex-end; margin-top: 26px; }
+  .panel .go { justify-content: center; }
+  .go .btn { background: var(--active); color: var(--active-ink); border-color: var(--active); font-family: 'Rubik', sans-serif; font-weight: 500; font-size: 15px; padding: 11px 20px; }
+  .go .btn:disabled { opacity: 0.35; cursor: default; }
+  .linkbtn { margin-top: 14px; font: inherit; font-size: 14px; background: none; border: 0; text-decoration: underline; color: var(--muted); cursor: pointer; }
+  .inbox-mail { margin-top: 22px; background: #fff; color: #1F1B18; border: 1px solid #dadce0; border-radius: 12px; padding: 16px; text-align: left; font-family: Arial, sans-serif; }
+  .inbox-mail small { display: block; color: #5f6368; font-size: 12px; }
+  .inbox-mail p { color: #3c4043; font-size: 14px; }
+  .inbox-mail .btn { margin-top: 4px; background: #1F1B18; color: #fff; border-color: #1F1B18; }
+  .mail-note { font-size: 11px; color: #5f6368; margin-top: 12px; }
+
+  .form { width: min(480px, 100%); text-align: left; }
+  .form h1 { font-size: 30px; }
+  .who { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 14px; color: var(--muted); background: var(--side); border-radius: 999px; padding: 4px 12px; max-width: 100%; }
+  .who span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .label { margin-top: 20px; font-size: 14px; font-weight: 700; }
+  .search { display: flex; align-items: center; gap: 8px; margin-top: 8px; border: 1.5px solid var(--line); border-radius: 999px; padding: 0 12px; background: var(--field); color: var(--muted); }
+  .search input { flex: 1; min-width: 0; font: inherit; border: 0; background: transparent; color: var(--ink); padding: 9px 0; outline: none; }
+  .grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px; margin-top: 8px; max-height: 210px; overflow: auto; padding: 4px; scrollbar-width: thin; scrollbar-color: #D9C9BF transparent; }
+  .pick { aspect-ratio: 1; border-radius: 50%; border: 0; background: var(--side); font-size: 22px; cursor: pointer; display: grid; place-items: center; padding: 0; }
+  .pick.on { background: #CCC4F0; box-shadow: 0 0 0 3px var(--ink); }
+  .none { grid-column: 1 / -1; color: var(--muted); font-size: 14px; padding: 8px 0; }
+  .preview { display: flex; align-items: center; gap: 10px; margin-top: 18px; padding: 12px 14px; border-radius: 14px; background: var(--side); font-size: 14px; }
+  .preview .face { width: 36px; height: 36px; border-radius: 50%; background: #CCC4F0; display: grid; place-items: center; font-size: 20px; flex: none; }
+  .preview .tag { margin-left: auto; font-size: 12px; color: var(--muted); }
+
+  /* Student home behind the user menu: header from vista-estudiante.html. */
+  .home { padding: 32px 48px; min-height: 100%; }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .hello { font-family: 'Rubik', sans-serif; font-size: 30px; font-weight: 700; }
+  .me { position: relative; }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; background: #CCC4F0; display: grid; place-items: center; font-size: 22px; border: 0; cursor: pointer; padding: 0; }
+  .card { margin-top: 24px; background: #F8D0A0; color: #1F1B18; border-radius: 22px; padding: 26px; max-width: 760px; }
+  .card h3 { font-size: 26px; }
+  .card p { margin: 12px 0 0; line-height: 1.45; }
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; background: #fff; color: #1F1B18; border-radius: 999px; padding: 4px 12px; }
+  .card .foot { display: flex; justify-content: flex-end; margin-top: 16px; }
+  .card .enter { font: inherit; font-family: 'Rubik', sans-serif; font-weight: 500; border: 0; border-radius: 999px; padding: 10px 20px; background: #1F1B18; color: #fff; display: inline-flex; align-items: center; gap: 8px; }
+
+  .menu { position: absolute; right: 0; top: 58px; width: 290px; background: var(--window); border: 1.5px solid var(--line); border-radius: 18px; padding: 14px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18); z-index: 3; }
+  .menu .name { font-family: 'Rubik', sans-serif; font-weight: 700; }
+  .menu .mail { color: var(--muted); font-size: 14px; margin-top: 2px; overflow-wrap: anywhere; }
+  .menu hr { border: 0; border-top: 1.5px solid var(--line); margin: 12px 0; }
+  .menu .grab { display: none; }
+  .mhead { display: flex; align-items: center; gap: 10px; }
+  .mhead .face { width: 40px; height: 40px; border-radius: 50%; background: #CCC4F0; display: grid; place-items: center; font-size: 22px; flex: none; }
+  .item { display: flex; align-items: center; gap: 10px; width: 100%; font: inherit; color: var(--ink); background: none; border: 0; padding: 8px 6px; border-radius: 10px; cursor: pointer; text-align: left; }
+  .item:hover { background: var(--line); }
+  .switch { display: flex; justify-content: space-between; align-items: center; width: 100%; font: inherit; color: var(--ink); background: none; border: 0; padding: 8px 6px; cursor: pointer; }
+  .switch span:first-child { display: inline-flex; align-items: center; gap: 10px; }
+  .knob { width: 40px; height: 22px; border-radius: 999px; background: var(--line); position: relative; flex: none; }
+  .knob::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--ink); transition: left 0.15s; }
+  .knob.on { background: var(--active); }
+  .knob.on::after { left: 21px; background: var(--active-ink); }
+
+  /* Layout containment on .vp makes it the containing block of fixed elements, so overlays cover the frame and not the page. */
+  .scrim { position: fixed; inset: 0; background: rgba(31, 27, 24, 0.45); display: grid; place-items: center; z-index: 5; }
+  .modal { background: var(--window); color: var(--ink); border-radius: 22px; width: 520px; padding: 22px 24px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; }
+  .mailrow { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 14px; color: var(--muted); }
+  .modal .field { margin-top: 10px; }
+  .modal .field input { font-size: 15px; border-radius: 12px; padding: 9px 12px; }
+  .modal .grid { max-height: 260px; gap: 6px; padding: 3px; }
+  .modal .pick { font-size: 24px; }
+  .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+  .modal .grab { display: none; }
+
+  @container app (max-width: 600px) {
+    .reg { padding: 28px 20px; }
+    .panel h1 { font-size: 28px; }
+    .go .btn { width: 100%; justify-content: center; padding: 13px 20px; }
+    .form h1 { font-size: 26px; }
+    .grid { grid-template-columns: repeat(6, 1fr); max-height: 264px; }
+    .pick { font-size: 24px; }
+    .preview .tag { display: none; }
+
+
+    .home { padding: 22px 20px; }
+    .hello { font-size: 26px; }
+    .card { padding: 20px; margin-top: 18px; }
+    .card h3 { font-size: 22px; }
+    .card .enter { width: 100%; justify-content: center; }
+    .item, .switch { padding: 11px 6px; }
+    .modal .grid { grid-template-columns: repeat(6, 1fr); }
+
+    /* On the phone every modal opens as a sheet from the bottom, with the page visible above it. */
+    .scrim { place-items: end stretch; }
+    .modal { width: 100%; max-height: 88%; overflow: auto; border-radius: 24px 24px 0 0; padding: 8px 20px 24px; }
+    .modal .grab { display: block; width: 40px; height: 5px; border-radius: 999px; background: var(--line); margin: 0 auto 14px; }
+    .modal .grid { max-height: 300px; }
+
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="intro">
+    <h1>Registro, login y menú de usuario · celular y escritorio</h1>
+    <p>Cada pantalla se ve en un celular de 390 px y en escritorio, lado a lado y con los mismos datos; la tira de controles cambia la pantalla en los dos marcos. El registro empieza por el código del aula; si se llega por el QR, la misma pantalla se abre con el código puesto (K7F2Q). Después siguen el email, el link por mail y el perfil con nombre y avatar. Si el email ya tiene cuenta con acceso, el registro sigue como un login y llega el link para entrar; si la cuenta no tiene acceso, aparece el mensaje de pedirle al profe que la habilite y no se manda mail. El login es el email y el link; un email sin cuenta ve que no está registrado y no se manda mail. El mail lleva solo el link, que sirve una sola vez y no vence. En el celular todo modal sube desde abajo como hoja, de hasta 88% del alto, con la página visible arriba; en escritorio queda centrado. En el perfil del registro, la grilla de avatares se scrollea adentro de su caja; el menú de usuario se despliega debajo del avatar, igual que en escritorio. El mail del prototipo es un sustituto.</p>
+  </div>
+  <div id="sections"></div>
+</div>
+
+<script>
+const ICONS = {"arrow-right":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4.5 12h15m-5.625 6l5.625-6l-5.625-6\"/></svg>","mail":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m2.357 7.714l6.98 4.654c.963.641 1.444.962 1.964 1.087c.46.11.939.11 1.398 0c.52-.125 1.001-.446 1.964-1.087l6.98-4.654M7.157 19.5h9.686c1.68 0 2.52 0 3.162-.327a3 3 0 0 0 1.31-1.311c.328-.642.328-1.482.328-3.162V9.3c0-1.68 0-2.52-.327-3.162a3 3 0 0 0-1.311-1.311c-.642-.327-1.482-.327-3.162-.327H7.157c-1.68 0-2.52 0-3.162.327a3 3 0 0 0-1.31 1.311c-.328.642-.328 1.482-.328 3.162v5.4c0 1.68 0 2.52.327 3.162a3 3 0 0 0 1.311 1.311c.642.327 1.482.327 3.162.327\"/></svg>","search":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M19 11.5a7.5 7.5 0 1 1-15 0a7.5 7.5 0 0 1 15 0m-2.107 5.42l3.08 3.08\"/></svg>","pencil":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18.774 10.221L8.801 20.2a2.73 2.73 0 0 1-1.933.8H3v-3.844c0-.724.288-1.419.8-1.931m5 4.974l-5-4.974m0 0l9.983-9.995m0 0l1.426-1.428a2.733 2.733 0 0 1 3.867-.001l1.126 1.127a2.733 2.733 0 0 1 0 3.865l-1.428 1.428M13.783 5.23l4.991 4.991\"/></svg>","moon":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 12.808c-.5 5.347-5.849 9.14-11.107 7.983C-.078 18.6 1.15 3.909 11.11 3C6.395 9.296 14.619 17.462 21 12.808\"/></svg>","logout":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M13.496 21H6.5c-1.105 0-2-1.151-2-2.571V5.57c0-1.419.895-2.57 2-2.57h7M16 15.5l3.5-3.5L16 8.5m-6.5 3.496h10\"/></svg>","x":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 6L6 18M6 6l12 12\"/></svg>","lock":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M8 10V8c0-2.761 1.239-5 4-5s4 2.239 4 5v2M3.5 17.8v-4.6c0-1.12 0-1.68.218-2.107a2 2 0 0 1 .874-.875c.428-.217.988-.217 2.108-.217h10.6c1.12 0 1.68 0 2.108.217a2 2 0 0 1 .874.874c.218.428.218.988.218 2.108v4.6c0 1.12 0 1.68-.218 2.108a2 2 0 0 1-.874.874C18.98 21 18.42 21 17.3 21H6.7c-1.12 0-1.68 0-2.108-.218a2 2 0 0 1-.874-.874C3.5 19.481 3.5 18.921 3.5 17.8\"/></svg>","check":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m6 13.626l1.606 1.722c.886.95 1.329 1.424 1.825 1.574c.436.131.9.096 1.315-.1c.473-.224.852-.761 1.612-1.836L18 7\"/></svg>","file-text":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M9.478 3H7.25A2.25 2.25 0 0 0 5 5.25v13.5A2.25 2.25 0 0 0 7.25 21h9a2.25 2.25 0 0 0 2.25-2.25V12M9.478 3c1.243 0 2.272 1.007 2.272 2.25V7.5A2.25 2.25 0 0 0 14 9.75h2.25A2.25 2.25 0 0 1 18.5 12M9.478 3c3.69 0 9.022 5.36 9.022 9M9 16.5h6m-6-3h4\"/></svg>","chat-messages":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M5 12a5 5 0 0 1 7 7m-7-7a5 5 0 0 0-2 4a5 5 0 0 0 .224 1.483c.272.88.076 1.86-.099 2.784a.468.468 0 0 0 .592.539c.848-.232 1.691-.43 2.557-.112A5 5 0 0 0 8 21a4.99 4.99 0 0 0 4-2m-7-7c0-4.685 2.875-9 8-9a8 8 0 0 1 7.532 10.7c-.476 1.326.037 3.102.337 4.568a.451.451 0 0 1-.584.526c-1.312-.41-2.852-.986-4.085-.466c-1.334.562-2.736.672-4.2.672\"/></svg>"};
+const ic = (n, s = 20) => `<span class="i" style="width:${s}px;height:${s}px">${ICONS[n]}</span>`;
+
+const ANIMALS = [
+  ['🦊', 'zorro'], ['🐼', 'panda'], ['🐸', 'rana sapo'], ['🐨', 'koala'], ['🦁', 'león'], ['🐯', 'tigre'], ['🐻', 'oso'], ['🐻‍❄️', 'oso polar'],
+  ['🐰', 'conejo'], ['🐶', 'perro'], ['🐱', 'gato'], ['🐵', 'mono'], ['🦍', 'gorila'], ['🦧', 'orangután'], ['🐭', 'ratón'], ['🐹', 'hámster'],
+  ['🐺', 'lobo'], ['🦝', 'mapache'], ['🦨', 'zorrino mofeta'], ['🦡', 'tejón'], ['🦦', 'nutria'], ['🦥', 'perezoso'], ['🦘', 'canguro'], ['🦔', 'erizo'],
+  ['🐮', 'vaca'], ['🐷', 'chancho cerdo'], ['🐗', 'jabalí'], ['🐴', 'caballo'], ['🦄', 'unicornio'], ['🦓', 'cebra'], ['🦒', 'jirafa'], ['🐘', 'elefante'],
+  ['🦏', 'rinoceronte'], ['🦛', 'hipopótamo'], ['🐪', 'camello'], ['🦙', 'llama'], ['🦌', 'ciervo'], ['🦬', 'bisonte'], ['🐐', 'cabra'], ['🐑', 'oveja'],
+  ['🦇', 'murciélago'], ['🦫', 'castor'], ['🐿️', 'ardilla'], ['🦉', 'búho lechuza'], ['🦅', 'águila'], ['🦆', 'pato'], ['🦢', 'cisne'], ['🦩', 'flamenco'],
+  ['🦚', 'pavo real'], ['🦜', 'loro'], ['🐧', 'pingüino'], ['🐔', 'gallina'], ['🐤', 'pollito'], ['🦃', 'pavo'], ['🕊️', 'paloma'], ['🦤', 'dodo'],
+  ['🐙', 'pulpo'], ['🦑', 'calamar'], ['🦀', 'cangrejo'], ['🦞', 'langosta'], ['🦐', 'camarón'], ['🐠', 'pez tropical'], ['🐡', 'pez globo'], ['🐟', 'pez'],
+  ['🐬', 'delfín'], ['🐳', 'ballena'], ['🦈', 'tiburón'], ['🦭', 'foca'], ['🐢', 'tortuga'], ['🐊', 'cocodrilo yacaré'], ['🦎', 'lagartija'], ['🐍', 'serpiente víbora'],
+  ['🦕', 'dinosaurio'], ['🦖', 'tiranosaurio'], ['🐲', 'dragón'], ['🐝', 'abeja'], ['🐞', 'vaquita de san antonio mariquita'], ['🦋', 'mariposa'], ['🐌', 'caracol'], ['🐛', 'oruga'],
+  ['🐜', 'hormiga'], ['🕷️', 'araña'], ['🦂', 'escorpión'], ['🪲', 'escarabajo'],
+];
+
+// The class's fixed code; the QR's link carries it (aula.famaf.dev/registro/k7f2q), so arriving from the QR fills it in.
+const CODE = 'K7F2Q';
+const MAIL = 'lucia.fernandez@mi.unc.edu.ar';
+// Accounts by email: with access, or with the access taken away by the teacher.
+const ACCOUNTS = { [MAIL]: 'access', 'tomas.rios@gmail.com': 'blocked' };
+
+// Accents are ignored so "tiburon" finds the shark.
+const plain = (text) => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+const filtered = (q) => {
+  const term = plain(q.trim());
+
+  return term === '' ? ANIMALS : ANIMALS.filter(([, words]) => plain(words).includes(term));
+};
+
+const picks = (q, chosen) => filtered(q).map(([a, w]) => `<button class="pick ${chosen === a ? 'on' : ''}" data-avatar="${a}" title="${w}">${a}</button>`).join('') || '<div class="none">Ningún animal con ese nombre.</div>';
+
+const brand = '<div class="mark">AV</div>';
+
+/* Registration and login screens */
+
+const codeForm = (v) => `
+  <div class="panel">${brand}<h1>Sumate al aula</h1><p>Escribí el código que muestra el profe en clase.</p>
+    <label class="field">Código del aula<input data-code class="code ${v.notice === 'badcode' ? 'bad' : ''}" maxlength="5" autocomplete="off" placeholder="·····" value="${v.code}"></label>
+    <div class="go"><button class="btn" data-checkcode ${v.code.length === CODE.length ? '' : 'disabled'}>Seguir ${ic('arrow-right', 18)}</button></div>
+    ${v.notice === 'badcode' ? '<div class="error">Ese código no es el del aula. Revisalo y probá de nuevo.</div>' : ''}
+  </div>`;
+
+const emailForm = (v) => `
+  <div class="panel">${brand}<h1>${v.flow === 'enroll' ? 'Sumate al aula' : 'Entrar al aula'}</h1>
+    <label class="field">Tu email<input data-email type="email" placeholder="nombre@mail.com" value="${v.email}"></label>
+    <div class="go"><button class="btn" data-send ${v.email.includes('@') ? '' : 'disabled'}>${ic('mail', 18)} Mandame el link</button></div>
+    ${v.notice === 'blocked' ? '<div class="error">Tu cuenta todavía no tiene acceso al aula. Pedile al profe que te habilite.</div>' : ''}
+    ${v.notice === 'unregistered' ? '<div class="error">Ese email no está registrado. Pedile acceso al profe.</div>' : ''}
+  </div>`;
+
+// A stand-in for the student's inbox: the real link arrives by email.
+const inbox = (v) => `
+  <div class="panel">${brand}<h1>Revisá tu mail</h1><p>Te mandamos un link a <b>${v.email}</b>.</p>
+    <div class="inbox-mail">
+      <b>Aula · Agentic Engineering</b><small>para ${v.email}</small>
+      <p>${v.mail === 'enroll' ? 'Confirmá tu email para terminar de registrarte.' : 'Usá este link para entrar al aula.'}</p>
+      <button class="btn" data-link>${v.mail === 'enroll' ? 'Confirmar mi email' : 'Entrar al aula'}</button>
+      <div class="mail-note">Mail de ejemplo: el real llega a tu casilla.</div>
+    </div>
+    <button class="linkbtn" data-other>Usar otro email</button>
+  </div>`;
+
+const profileForm = (v, alt) => `
+  <div class="form">
+    <h1>Completá tu perfil</h1>
+    <span class="who">${ic('mail', 16)}<span>${MAIL}</span></span>
+    <label class="field">Tu nombre<input data-name placeholder="Cómo querés que te vean en el aula" value="${v.name}"></label>
+    <div class="avatar-head">
+      <div class="label">Tu avatar</div>
+      <div class="search">${ic('search', 18)}<input data-q placeholder="Buscar un animal" value="${v.query}"></div>
+    </div>
+    <div class="grid">${picks(v.query, v.avatar)}</div>
+    <div class="foot">
+      <div class="preview"><span class="face">${v.avatar ?? '?'}</span><b>${v.name || 'Tu nombre'}</b><span class="tag">Así te ven los demás</span></div>
+      <div class="go"><button class="btn" data-finish ${v.name.trim() === '' || v.avatar == null ? 'disabled' : ''}>Entrar al aula ${ic('arrow-right', 18)}</button></div>
+    </div>
+  </div>`;
+
+/* Student home with the user menu and the "Tu perfil" modal */
+
+const userMenu = (v) => v.state === 'menu' ? `
+  <div class="menu">
+    <div class="grab"></div>
+    <div class="mhead"><span class="face">${v.profile.avatar}</span><div><div class="name">${v.profile.name}</div><div class="mail">${MAIL}</div></div></div>
+    <hr>
+    <button class="item" data-edit>${ic('pencil', 18)} Editar perfil</button>
+    <button class="switch" data-darkmode><span>${ic('moon', 18)} Modo oscuro</span><span class="knob ${v.dark ? 'on' : ''}"></span></button>
+    <hr>
+    <button class="item" data-logout>${ic('logout', 18)} Cerrar sesión</button>
+  </div>` : '';
+
+const profileModal = (v) => v.state === 'edit' ? `
+  <div class="scrim" data-cancel>
+    <div class="modal" data-stay>
+      <div class="grab"></div>
+      <div class="modal-head"><h3>Tu perfil</h3><button class="iconbtn" data-cancel>${ic('x', 18)}</button></div>
+      <div class="mailrow">${ic('lock', 14)} ${MAIL}</div>
+      <label class="field">Nombre<input data-dname value="${v.draft.name}"></label>
+      <div class="field">Avatar</div>
+      <label class="search">${ic('search', 16)}<input data-q placeholder="Buscar un animal" value="${v.query}"></label>
+      <div class="grid">${picks(v.query, v.draft.avatar)}</div>
+      <div class="actions"><button class="btn" data-cancel>Cancelar</button><button class="btn solid" data-save ${v.draft.name.trim() === '' ? 'disabled' : ''}>${ic('check', 16)} Guardar</button></div>
+    </div>
+  </div>` : '';
+
+const home = (v) => v.state === 'out'
+  ? `<div class="reg">${({ email: emailForm, inbox })[v.step](v)}</div>`
+  : `<div class="home">
+      <div class="top"><div class="hello">Hola, ${v.profile.name}</div>
+        <div class="me"><button class="avatar" data-menu title="Tu cuenta">${v.profile.avatar}</button>${userMenu(v)}</div>
+      </div>
+      <div class="card">
+        <h3>Planificación y revisión</h3>
+        <div class="tags"><span class="chip">${ic('file-text', 14)} Material (3)</span><span class="chip">${ic('chat-messages', 14)} 4 preguntas</span></div>
+        <p>Antes de escribir código: explorar, planificar y revisar lo que el agente produce.</p>
+        <div class="foot"><button class="enter">Entrar al aula ${ic('arrow-right', 18)}</button></div>
+      </div>
+      ${profileModal(v)}
+    </div>`;
+
+/* Sections, their states and alternatives */
+
+const REG_STATES = {
+  code: ['Código', { flow: 'enroll', step: 'code', code: '', notice: null }],
+  qr: ['Código, desde el QR', { flow: 'enroll', step: 'code', code: CODE, notice: null }],
+  badcode: ['Código incorrecto', { flow: 'enroll', step: 'code', code: 'K7F2X', notice: 'badcode' }],
+  email: ['Email', { flow: 'enroll', step: 'email', email: '', notice: null }],
+  inbox: ['Link enviado', { flow: 'enroll', step: 'inbox', email: 'nueva@gmail.com', mail: 'enroll', notice: null }],
+  hasaccount: ['Registro con cuenta: link para entrar', { flow: 'enroll', step: 'inbox', email: MAIL, mail: 'login', notice: null }],
+  blocked: ['Cuenta sin acceso', { flow: 'enroll', step: 'email', email: 'tomas.rios@gmail.com', notice: 'blocked' }],
+  login: ['Login', { flow: 'login', step: 'email', email: '', notice: null }],
+  unregistered: ['Login sin cuenta', { flow: 'login', step: 'email', email: 'nadie@gmail.com', notice: 'unregistered' }],
+};
+
+const PROFILE_STATES = {
+  empty: ['Sin completar', { name: '', avatar: null, query: '' }],
+  done: ['Completo', { name: 'Lucía', avatar: '🦊', query: '' }],
+  search: ['Buscando "pe"', { name: 'Lucía', avatar: null, query: 'pe' }],
+  none: ['Búsqueda sin resultados', { name: 'Lucía', avatar: null, query: 'dragoncito' }],
+};
+
+const MENU_STATES = {
+  closed: ['Menú cerrado', { state: 'closed' }],
+  menu: ['Menú abierto', { state: 'menu' }],
+  edit: ['Editando el perfil', { state: 'edit' }],
+};
+
+const KINDS = {
+  reg: {
+    states: REG_STATES,
+    fresh: () => ({ key: 'code', flow: 'enroll', step: 'code', code: '', email: '', notice: null }),
+    screen: (v) => `<div class="reg">${({ code: codeForm, email: emailForm, inbox })[v.step](v)}</div>`,
+  },
+  profile: {
+    states: PROFILE_STATES,
+    fresh: () => ({ key: 'empty', name: '', avatar: null, query: '' }),
+    screen: (v, alt) => `<div class="reg">${profileForm(v, alt)}</div>`,
+  },
+  menu: {
+    states: MENU_STATES,
+    fresh: () => ({ key: 'closed', state: 'closed', flow: 'login', step: 'email', email: '', notice: null, profile: { name: 'Lucía', avatar: '🦊' }, draft: { name: 'Lucía', avatar: '🦊' }, query: '' }),
+    screen: home,
+  },
+};
+
+const SECTIONS = [
+  { id: 'reg', kind: 'reg', title: 'Registro y login', line: 'Las pantallas se apilan en una columna del ancho del celular; el botón principal ocupa todo el ancho.' },
+  { id: 'profile-A', kind: 'profile', alt: 'A', title: 'Perfil del registro', line: 'La grilla de avatares se scrollea adentro de su caja, como en escritorio; en el celular todo el formulario entra en la pantalla.' },
+  { id: 'menu-A', kind: 'menu', alt: 'A', title: 'Menú de usuario y "Tu perfil"', line: 'El menú se despliega debajo del avatar, igual que en escritorio; en el celular, "Tu perfil" sube desde abajo como hoja.' },
+];
+
+const view = Object.fromEntries(SECTIONS.map((s) => [s.id, { v: KINDS[s.kind].fresh(), dark: false, all: false }]));
+
+const frames = (s, v, dark) => `
+  <div class="pair">
+    <div><div class="cap">Celular · 390 px</div><div class="phone"><div class="vp ${dark ? 'dark' : ''} alt-${s.alt ?? ''}" data-frame="phone"><div class="app">${KINDS[s.kind].screen(v, s.alt)}</div></div></div></div>
+    <div><div class="cap">Escritorio</div><div class="desk"><div class="bar"><i></i><i></i><i></i></div><div class="vp ${dark ? 'dark' : ''} alt-${s.alt ?? ''}" data-frame="desk"><div class="app">${KINDS[s.kind].screen(v, s.alt)}</div></div></div></div>
+  </div>`;
+
+// Re-rendering both frames would drop focus, the caret and the scroll positions; they are kept per frame.
+const keep = (root) => {
+  const a = document.activeElement;
+  const field = root.contains(a) && a.matches('input') ? { frame: a.closest('[data-frame]').dataset.frame, row: [...root.querySelectorAll('[data-frame]')].indexOf(a.closest('[data-frame]')), attr: [...a.attributes].find((x) => x.name.startsWith('data-')).name, pos: a.selectionStart } : null;
+  const scrolls = [...root.querySelectorAll('.app, .grid, .modal')].map((el) => el.scrollTop);
+
+  return () => {
+    [...root.querySelectorAll('.app, .grid, .modal')].forEach((el, i) => { el.scrollTop = scrolls[i] ?? 0; });
+
+    if (field != null) {
+      const input = root.querySelectorAll('[data-frame]')[field.row]?.querySelector(`[${field.attr}]`);
+
+      if (input == null) {
+        return;
+      }
+
+      input.focus();
+
+      // Email inputs expose no caret position; emptying and refilling the value leaves the caret at the end.
+      if (field.pos == null) {
+        const value = input.value;
+
+        input.value = '';
+        input.value = value;
+      } else {
+        input.setSelectionRange(field.pos, field.pos);
+      }
+    }
+  };
+};
+
+const render = (s) => {
+  const root = document.getElementById(s.id);
+  const st = view[s.id];
+  const states = KINDS[s.kind].states;
+  const restore = keep(root);
+
+  root.querySelector('.strip').innerHTML = `
+    ${Object.entries(states).map(([k, [label]]) => `<button data-state="${k}" class="${!st.all && st.v.key === k ? 'on' : ''}">${label}</button>`).join('')}
+    <span class="sep"></span>
+    <button data-all class="${st.all ? 'on' : ''}">Mostrar todos los estados</button>
+    <button data-dark class="${st.dark ? 'on' : ''}">Dark</button>
+    <button data-reset>Reiniciar</button>`;
+
+  root.querySelector('.stage').innerHTML = st.all
+    ? Object.entries(states).map(([k, [label, preset]]) => `<div class="state-label">${label}</div>${frames(s, { ...KINDS[s.kind].fresh(), ...preset, key: k }, st.dark)}`).join('')
+    : frames(s, st.v, st.dark);
+
+  restore();
+};
+
+document.getElementById('sections').innerHTML = SECTIONS.map((s) => `
+  <section class="alt" id="${s.id}">
+    <h2>${s.title}</h2>
+    <p class="tradeoff">${s.line}</p>
+    <div class="strip"></div>
+    <div class="stage"></div>
+  </section>`).join('');
+
+const jump = (id, key) => {
+  const s = SECTIONS.find((x) => x.id === id);
+
+  view[id].v = { ...KINDS[s.kind].fresh(), ...KINDS[s.kind].states[key][1], key };
+  view[id].all = false;
+  render(s);
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+};
+
+SECTIONS.forEach((s) => {
+  const root = document.getElementById(s.id);
+
+  root.addEventListener('input', (e) => {
+    const st = view[s.id];
+    const t = e.target;
+
+    if (st.all) {
+      return;
+    }
+
+    const v = st.v;
+
+    if (t.matches('[data-code]')) {
+      v.code = t.value.trim().toUpperCase();
+    } else if (t.matches('[data-email]')) {
+      v.email = t.value.trim();
+    } else if (t.matches('[data-name]')) {
+      v.name = t.value;
+    } else if (t.matches('[data-dname]')) {
+      v.draft.name = t.value;
+    } else if (t.matches('[data-q]')) {
+      v.query = t.value;
+    } else {
+      return;
+    }
+
+    render(s);
+  });
+
+  root.addEventListener('click', (e) => {
+    const st = view[s.id];
+    const t = e.target.closest('button, [data-cancel], [data-stay]');
+
+    if (t == null || t.disabled || (t.hasAttribute('data-stay') && !t.matches('button'))) {
+      return;
+    }
+
+    const d = t.dataset;
+    const v = st.v;
+    const inFrame = t.closest('[data-frame]') != null;
+
+    if (inFrame && st.all) {
+      return;
+    }
+
+    if (d.state) {
+      st.v = { ...KINDS[s.kind].fresh(), ...KINDS[s.kind].states[d.state][1], key: d.state };
+      st.all = false;
+
+      if (s.kind === 'menu' && d.state === 'edit') {
+        st.v.draft = { ...st.v.profile };
+      }
+    } else if (t.hasAttribute('data-all')) {
+      st.all = !st.all;
+    } else if (t.hasAttribute('data-dark') || t.hasAttribute('data-darkmode')) {
+      st.dark = !st.dark;
+    } else if (t.hasAttribute('data-reset')) {
+      Object.assign(st, { v: KINDS[s.kind].fresh(), all: false, dark: false });
+    } else if (t.hasAttribute('data-checkcode')) {
+      Object.assign(v, v.code === CODE ? { step: 'email', key: 'email', notice: null } : { notice: 'badcode', key: 'badcode' });
+    } else if (t.hasAttribute('data-send')) {
+      // An account with access gets the login link, from either flow; no mail goes out otherwise unless the code creates the account.
+      const account = ACCOUNTS[v.email.toLowerCase()];
+
+      if (account === 'access') {
+        Object.assign(v, { step: 'inbox', mail: 'login', notice: null, key: v.flow === 'enroll' ? 'hasaccount' : null });
+      } else if (account === 'blocked') {
+        Object.assign(v, { notice: 'blocked', key: v.flow === 'enroll' ? 'blocked' : null });
+      } else if (v.flow === 'enroll') {
+        Object.assign(v, { step: 'inbox', mail: 'enroll', notice: null, key: 'inbox' });
+      } else {
+        Object.assign(v, { notice: 'unregistered', key: 'unregistered' });
+      }
+    } else if (t.hasAttribute('data-other')) {
+      Object.assign(v, { step: 'email', notice: null, key: v.flow === 'enroll' ? 'email' : 'login' });
+    } else if (t.hasAttribute('data-link') && s.kind === 'menu') {
+      Object.assign(v, { state: 'closed', key: 'closed' });
+    } else if (t.hasAttribute('data-link')) {
+      return v.mail === 'enroll' ? jump('profile-A', 'empty') : jump('menu-A', 'closed');
+    } else if (t.hasAttribute('data-finish')) {
+      return jump('menu-A', 'closed');
+    } else if (d.avatar) {
+      if (s.kind === 'menu') {
+        v.draft.avatar = d.avatar;
+      } else {
+        v.avatar = d.avatar;
+        v.key = null;
+      }
+    } else if (t.hasAttribute('data-menu')) {
+      Object.assign(v, { state: v.state === 'menu' ? 'closed' : 'menu', key: v.state === 'menu' ? 'closed' : 'menu' });
+    } else if (t.hasAttribute('data-edit')) {
+      Object.assign(v, { state: 'edit', key: 'edit', draft: { ...v.profile }, query: '' });
+    } else if (t.hasAttribute('data-cancel')) {
+      Object.assign(v, { state: 'closed', key: 'closed' });
+    } else if (t.hasAttribute('data-save')) {
+      Object.assign(v, { state: 'closed', key: 'closed', profile: { name: v.draft.name.trim(), avatar: v.draft.avatar } });
+    } else if (t.hasAttribute('data-logout')) {
+      Object.assign(v, { state: 'out', key: null, step: 'email', email: '', notice: null });
+    } else {
+      return;
+    }
+
+    render(s);
+  });
+
+  render(s);
+});
+</script>
+</body>
+</html>
