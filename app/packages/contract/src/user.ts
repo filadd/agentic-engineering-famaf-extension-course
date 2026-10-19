@@ -125,9 +125,17 @@ export const User = Schema.Struct({
 
 export type User = typeof User.Type;
 
-// Five characters typed by hand, without 0, O, 1 and I.
+// Without 0, O, 1 and I, which read alike when the code is typed by hand. Its
+// 32 characters divide 256, so taking a random byte modulo the length keeps
+// every character equally likely.
+export const enrollmentAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+export const enrollmentCodeLength = 5;
+
 export const EnrollmentCode = Schema.Struct({
-  code: Schema.String.check(Schema.isPattern(/^[A-HJ-NP-Z2-9]{5}$/)),
+  code: Schema.String.check(
+    Schema.isPattern(new RegExp(`^[${enrollmentAlphabet}]{${enrollmentCodeLength}}$`)),
+  ),
   url: Schema.String,
 });
 
