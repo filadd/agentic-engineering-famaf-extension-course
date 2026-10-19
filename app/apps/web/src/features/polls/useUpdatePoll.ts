@@ -1,4 +1,9 @@
-import type { InvalidTransition, PollNotDraft, PollNotFound } from "@kurasu/contract/errors";
+import type {
+  InvalidPollContent,
+  InvalidTransition,
+  PollNotDraft,
+  PollNotFound,
+} from "@kurasu/contract/errors";
 import type { AdminPoll, PollChange } from "@kurasu/contract/polls";
 
 import type { MutationOptions } from "../../api/api-error.ts";
@@ -11,7 +16,11 @@ export interface PollUpdate {
 }
 
 export const useUpdatePoll = (
-  options?: MutationOptions<AdminPoll, PollUpdate, PollNotFound | PollNotDraft | InvalidTransition>,
+  options?: MutationOptions<
+    AdminPoll,
+    PollUpdate,
+    PollNotFound | PollNotDraft | InvalidTransition | InvalidPollContent
+  >,
 ) =>
   useApiMutation({
     call: (api, input) =>

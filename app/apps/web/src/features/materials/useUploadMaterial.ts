@@ -1,4 +1,4 @@
-import type { FileTooLarge, SessionNotFound } from "@kurasu/contract/errors";
+import type { FileTooLarge, InvalidUpload, SessionNotFound } from "@kurasu/contract/errors";
 import type { Material } from "@kurasu/contract/materials";
 
 import type { MutationOptions } from "../../api/api-error.ts";
@@ -26,7 +26,11 @@ const formOf = (input: MaterialUploadInput) => {
 };
 
 export const useUploadMaterial = (
-  options?: MutationOptions<Material, MaterialUploadInput, SessionNotFound | FileTooLarge>,
+  options?: MutationOptions<
+    Material,
+    MaterialUploadInput,
+    SessionNotFound | FileTooLarge | InvalidUpload
+  >,
 ) =>
   useApiMutation({
     call: (api, input) => api.adminMaterials.upload({ payload: formOf(input) }),
