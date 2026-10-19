@@ -2,7 +2,6 @@ import type { Person } from "@kurasu/contract/classroom";
 import type { Session } from "@kurasu/contract/sessions";
 
 import { Badge } from "../../ui/Badge.tsx";
-import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 import { LowerHandButton } from "../hands/LowerHandButton.tsx";
 import { useAdminRaisedHands } from "../hands/useAdminRaisedHands.ts";
 import { useMe } from "../me/useMe.ts";
@@ -10,7 +9,7 @@ import { AdminPanelPolls } from "../polls/AdminPanelPolls.tsx";
 import { AdminQuestions } from "../questions/AdminQuestions.tsx";
 import { ClassroomPanel } from "./ClassroomPanel.tsx";
 import { PresentButton } from "./PresentButton.tsx";
-import { SlideStage } from "./SlideStage.tsx";
+import { SlideStageSkeleton } from "./SlideStageSkeleton.tsx";
 import { TeacherSlides } from "./TeacherSlides.tsx";
 
 interface Props {
@@ -32,13 +31,7 @@ export const TeacherClassroom = ({ sessionId, session, people, newQuestions }: P
     <div className="flex min-h-0 flex-1">
       <div className="flex min-w-0 flex-1 flex-col pt-3.5 pr-8 pb-[22px] pl-[86px]">
         {session == null ? (
-          <SkeletonOf>
-            <SlideStage
-              html={null}
-              position={{ slide: 1, step: 1 }}
-              controls={<PresentButton sessionId={sessionId} />}
-            />
-          </SkeletonOf>
+          <SlideStageSkeleton controls={<PresentButton sessionId={sessionId} />} />
         ) : (
           <TeacherSlides session={session} />
         )}

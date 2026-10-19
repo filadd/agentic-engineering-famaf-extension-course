@@ -16,8 +16,8 @@ const sizes = {
 export const Avatar = ({ animal, size = "medium" }: Props) => (
   <span
     aria-hidden="true"
-    className={`grid flex-none place-items-center rounded-full bg-lilac ${sizes[size]}`}
+    className={`skeleton-block grid flex-none place-items-center rounded-full bg-lilac ${sizes[size]}`}
   >
-    {animal == null ? "?" : animalLooks[animal].emoji}
+    <span>{animal == null ? "?" : animalLooks[animal].emoji}</span>
   </span>
 );

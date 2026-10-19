@@ -13,7 +13,7 @@ interface Props {
 export const AdminHighlighted = ({ session, number, total }: Props) => (
   <section
     aria-label={session.title}
-    className={`mt-6 rounded-[22px] p-[26px] text-card-ink ${sessionColor(session.position)}`}
+    className={`skeleton-block mt-6 rounded-[22px] p-[26px] text-card-ink ${sessionColor(session.position)}`}
   >
     <div className="flex items-center gap-2.5 text-sm">
       <span className="opacity-75">

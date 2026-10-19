@@ -50,7 +50,13 @@ const SetupRoute = () => {
     <main className="grid min-h-full place-items-center p-10 max-[600px]:px-5 max-[600px]:py-7">
       <div className="w-[min(480px,100%)]">
         <h1 className="text-[30px] font-bold max-[600px]:text-[26px]">Completá tu perfil</h1>
-        {me.data == null ? <SkeletonOf>{profile(meExample)}</SkeletonOf> : profile(me.data)}
+        {me.data == null ? (
+          <SkeletonOf>
+            <div className="skeleton-block">{profile(meExample)}</div>
+          </SkeletonOf>
+        ) : (
+          profile(me.data)
+        )}
       </div>
     </main>
   );

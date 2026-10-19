@@ -21,7 +21,7 @@ export const SlideNav = ({ manifest, position, onNavigate }: Props) => (
     >
       <Icon name="chevron-left" size={18} />
     </Button>
-    <span className="min-w-[60px] text-center text-sm text-muted max-[600px]:min-w-10 max-[600px]:text-[13px]">
+    <span className="skeleton-block min-w-[60px] text-center text-sm text-muted max-[600px]:min-w-10 max-[600px]:text-[13px]">
       {position.slide} / {manifest.slides.length}
     </span>
     <Button

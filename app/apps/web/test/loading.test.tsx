@@ -25,7 +25,7 @@ afterEach(() => {
 });
 
 describe("loading a screen", () => {
-  test("the home draws its fixed parts at once, Sesiones anteriores among them, and its cards as skeletons while the API has not answered", async () => {
+  test("the home draws its fixed parts at once, Sesiones anteriores among them, and each card as one skeleton block while the API has not answered", async () => {
     const sessions = heldResponse("get", "/sessions");
 
     server.use(sessions.handler, getJson("/me", student), getJson("/polls", []));
@@ -46,6 +46,12 @@ describe("loading a screen", () => {
     expect(earlier.contains(earlierCards)).toBe(true);
     expect(earlierCards.hasAttribute("inert")).toBe(true);
     expect(within(earlierCards).getAllByRole("article", { hidden: true })).toHaveLength(2);
+    expect(
+      [
+        ...within(highlighted).getAllByRole("region", { hidden: true }),
+        ...within(earlierCards).getAllByRole("article", { hidden: true }),
+      ].every((card) => card.classList.contains("skeleton-block")),
+    ).toBe(true);
     expect(screen.queryByRole("region", { name: vibeCoding.title })).toBeNull();
 
     sessions.release(HttpResponse.json([vibeCoding, planning, tooling]));

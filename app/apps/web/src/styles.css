@@ -118,38 +118,31 @@
     @apply rounded-[18px] bg-paper text-coal;
   }
 
-  /* The wrapper adds no box, so the real part keeps its layout; only its
-     leaves turn grey. The colours are important because the part's own
-     utilities (a card's ink, an avatar's colour) would win over this layer.
-     A shadow of the background colour hides an emoji, which ignores color. */
+  /* The wrapper adds no box, so the real part keeps its layout, and hides
+     everything in it. Only the part's cards, rows and controls show, each as
+     one grey block of its own size; nothing inside them shows. A text right
+     inside a block cannot be hidden on its own, so it turns transparent; an
+     emoji, which ignores the colour, has to sit in an element. The colours are
+     important because a card's own utilities would win over this layer. */
   .skeleton {
     display: contents;
+    visibility: hidden;
   }
 
-  .skeleton * {
-    color: transparent !important;
-  }
-
-  .skeleton *::placeholder {
-    color: transparent !important;
-  }
-
-  .skeleton :not(:has(*)) {
-    @apply animate-pulse rounded-md;
-    background-color: var(--line) !important;
-    text-shadow: 0 0 0 var(--line) !important;
-    box-decoration-break: clone;
-  }
-
-  .skeleton img {
-    object-position: -100vw 0;
-    background-color: var(--side) !important;
-  }
-
-  /* A drawn image, such as the QR, draws its marks in currentColor, so they
-     turn transparent with the text and leave the grey box. */
-  .skeleton svg[role="img"] {
+  .skeleton :is(.skeleton-block, .main-button, .pill-button, .icon-button, [role="tab"]) {
     @apply animate-pulse;
-    background-color: var(--line) !important;
+    visibility: visible;
+    color: transparent !important;
+    background-color: color-mix(in srgb, var(--line) 60%, transparent) !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .skeleton .skeleton-block {
+    @apply rounded-md;
+  }
+
+  .skeleton :is(.skeleton-block, .main-button, .pill-button, .icon-button, [role="tab"]) * {
+    visibility: hidden;
   }
 }

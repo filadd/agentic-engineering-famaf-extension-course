@@ -1,11 +1,11 @@
 import type { Session } from "@kurasu/contract/sessions";
 
-import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 import { useAdminMaterials } from "../materials/useAdminMaterials.ts";
 import { useSlidesMaterial } from "../materials/useSlidesMaterial.ts";
 import { useMoveSlide } from "../sessions/useMoveSlide.ts";
 import { PresentButton } from "./PresentButton.tsx";
 import { SlideStage } from "./SlideStage.tsx";
+import { SlideStageSkeleton } from "./SlideStageSkeleton.tsx";
 
 interface Props {
   session: Session;
@@ -22,9 +22,7 @@ export const TeacherSlides = ({ session }: Props) => {
   const controls = <PresentButton sessionId={session.id} />;
 
   return materials.data == null || (slides != null && slides.html == null) ? (
-    <SkeletonOf>
-      <SlideStage html={null} position={position} controls={controls} />
-    </SkeletonOf>
+    <SlideStageSkeleton controls={controls} />
   ) : (
     <SlideStage
       html={slides?.html ?? null}

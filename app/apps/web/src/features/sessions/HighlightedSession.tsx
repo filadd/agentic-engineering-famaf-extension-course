@@ -16,7 +16,7 @@ interface Props {
 export const HighlightedSession = ({ session, polls }: Props) => (
   <section
     aria-label={session.title}
-    className={`mt-6 rounded-[22px] p-[26px] text-card-ink max-[600px]:mt-[18px] max-[600px]:p-[18px] ${sessionColor(session.position)}`}
+    className={`skeleton-block mt-6 rounded-[22px] p-[26px] text-card-ink max-[600px]:mt-[18px] max-[600px]:p-[18px] ${sessionColor(session.position)}`}
   >
     <h2 className="text-[30px] font-bold max-[600px]:text-2xl">{session.title}</h2>
     <SessionLinks sessionId={session.id} highlighted />

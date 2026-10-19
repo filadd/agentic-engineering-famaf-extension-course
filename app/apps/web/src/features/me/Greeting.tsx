@@ -10,7 +10,7 @@ export const Greeting = () => {
       Hola,{" "}
       {me.data == null ? (
         <SkeletonOf>
-          <span>{meExample.name}</span>
+          <span className="skeleton-block">{meExample.name}</span>
         </SkeletonOf>
       ) : (
         me.data.name

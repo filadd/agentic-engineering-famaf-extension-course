@@ -19,7 +19,7 @@ import { sessionExamples } from "../sessions/session-examples.ts";
 import { useSession } from "../sessions/useSession.ts";
 import { ClassroomLayout } from "./ClassroomLayout.tsx";
 import { ClassroomPanel } from "./ClassroomPanel.tsx";
-import { SlideStage } from "./SlideStage.tsx";
+import { SlideStageSkeleton } from "./SlideStageSkeleton.tsx";
 import { StudentSlides } from "./StudentSlides.tsx";
 import { useClassroom } from "./useClassroom.ts";
 
@@ -53,7 +53,7 @@ export const StudentClassroom = ({ sessionId }: Props) => {
           title={
             session.data == null ? (
               <SkeletonOf>
-                <span>{sessionExamples[0].title}</span>
+                <span className="skeleton-block">{sessionExamples[0].title}</span>
               </SkeletonOf>
             ) : (
               session.data.title
@@ -74,18 +74,14 @@ export const StudentClassroom = ({ sessionId }: Props) => {
       }
       stage={
         session.data == null ? (
-          <SkeletonOf>
-            <SlideStage
-              html={null}
-              position={{ slide: 1, step: 1 }}
-              controls={
-                <>
-                  <span className="ml-auto" />
-                  <HandButton sessionId={sessionId} />
-                </>
-              }
-            />
-          </SkeletonOf>
+          <SlideStageSkeleton
+            controls={
+              <>
+                <span className="ml-auto" />
+                <HandButton sessionId={sessionId} />
+              </>
+            }
+          />
         ) : (
           <StudentSlides session={session.data} teacherPresent={classroom.teacherPresent} />
         )

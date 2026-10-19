@@ -17,7 +17,7 @@ export const UserRow = ({ user }: Props) => {
   return (
     <li
       aria-label={user.name ?? user.email}
-      className="flex items-center gap-3 rounded-2xl bg-side py-2.5 pr-3 pl-3.5"
+      className="skeleton-block flex items-center gap-3 rounded-2xl bg-side py-2.5 pr-3 pl-3.5"
     >
       {user.avatar == null ? (
         <span

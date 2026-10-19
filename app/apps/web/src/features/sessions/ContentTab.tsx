@@ -13,6 +13,8 @@ interface Props {
   session: Session | undefined;
 }
 
+const card = "rounded-[22px] bg-peach p-[22px] text-coal";
+
 // A session can only be deleted while it is disabled.
 export const ContentTab = ({ sessionId, session }: Props) => {
   const sessions = useAdminSessions();
@@ -21,32 +23,31 @@ export const ContentTab = ({ sessionId, session }: Props) => {
 
   return (
     <div className="flex max-w-[760px] flex-col gap-[18px]">
-      <section aria-label="La sesión" className="rounded-[22px] bg-peach p-[22px] text-coal">
-        {sessions.data == null ? (
-          <SkeletonOf>
+      {session == null ? (
+        <SkeletonOf>
+          <section className={`skeleton-block ${card}`}>
             <div className="text-sm opacity-75">Sesión 1 de 6</div>
-          </SkeletonOf>
-        ) : null}
-        {number === 0 ? null : (
-          <div className="text-sm opacity-75">
-            Sesión {number} de {sessions.data?.length}
-          </div>
-        )}
-        {session == null ? (
-          <SkeletonOf>
             <SessionDetailsForm session={sessionExamples[0]} />
             <EnabledSwitch session={sessionExamples[0]} />
-          </SkeletonOf>
-        ) : (
-          <>
-            <SessionDetailsForm key={`${session.title}|${session.summary}`} session={session} />
-            <EnabledSwitch session={session} />
-          </>
-        )}
-        {session == null || session.enabled === true ? null : (
-          <DeleteSessionButton session={session} />
-        )}
-      </section>
+          </section>
+        </SkeletonOf>
+      ) : (
+        <section aria-label="La sesión" className={card}>
+          {sessions.data == null ? (
+            <SkeletonOf>
+              <div className="skeleton-block w-fit text-sm">Sesión 1 de 6</div>
+            </SkeletonOf>
+          ) : null}
+          {number === 0 ? null : (
+            <div className="text-sm opacity-75">
+              Sesión {number} de {sessions.data?.length}
+            </div>
+          )}
+          <SessionDetailsForm key={`${session.title}|${session.summary}`} session={session} />
+          <EnabledSwitch session={session} />
+          {session.enabled === true ? null : <DeleteSessionButton session={session} />}
+        </section>
+      )}
       <AdminMaterials sessionId={sessionId} />
     </div>
   );

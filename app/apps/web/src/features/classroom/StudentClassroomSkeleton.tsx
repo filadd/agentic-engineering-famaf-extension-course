@@ -16,7 +16,7 @@ import { VoteCount } from "../questions/VoteCount.tsx";
 import { sessionExamples } from "../sessions/session-examples.ts";
 import { ClassroomLayout } from "./ClassroomLayout.tsx";
 import { ClassroomPanel } from "./ClassroomPanel.tsx";
-import { SlideStage } from "./SlideStage.tsx";
+import { SlideStageSkeleton } from "./SlideStageSkeleton.tsx";
 
 // The student's classroom while the web does not know the session yet. Its
 // parts take no session, so it asks the API for nothing; the whole panel is
@@ -28,27 +28,23 @@ export const StudentClassroomSkeleton = () => (
         leading={<BackButton to="/" label="Volver a las sesiones" />}
         title={
           <SkeletonOf>
-            <span>{sessionExamples[0].title}</span>
+            <span className="skeleton-block">{sessionExamples[0].title}</span>
           </SkeletonOf>
         }
       />
     }
     stage={
-      <SkeletonOf>
-        <SlideStage
-          html={null}
-          position={{ slide: 1, step: 1 }}
-          controls={
-            <>
-              <span className="ml-auto" />
-              <Button variant="pill">
-                <Icon name="hand" size={18} />
-                <span className="max-[600px]:hidden">Levantar la mano</span>
-              </Button>
-            </>
-          }
-        />
-      </SkeletonOf>
+      <SlideStageSkeleton
+        controls={
+          <>
+            <span className="ml-auto" />
+            <Button variant="pill">
+              <Icon name="hand" size={18} />
+              <span className="max-[600px]:hidden">Levantar la mano</span>
+            </Button>
+          </>
+        }
+      />
     }
     panel={
       <SkeletonOf>

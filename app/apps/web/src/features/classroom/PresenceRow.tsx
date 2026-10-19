@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const PresenceRow = ({ person, isMe, hand }: Props) => (
-  <li aria-label={person.name ?? ""} className="flex items-center gap-2.5 text-sm">
+  <li aria-label={person.name ?? ""} className="skeleton-block flex items-center gap-2.5 text-sm">
     <Avatar animal={person.avatar} size="small" />
     <span>{person.name}</span>
     {person.role === "teacher" ? (

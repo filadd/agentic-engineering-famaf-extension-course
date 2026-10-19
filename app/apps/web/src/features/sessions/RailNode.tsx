@@ -14,7 +14,7 @@ const looks = {
 
 export const RailNode = ({ look, children }: Props) => (
   <div
-    className={`grid size-11 flex-none place-items-center rounded-full font-display font-bold max-[600px]:size-8 max-[600px]:text-sm ${looks[look]}`}
+    className={`skeleton-block grid size-11 flex-none place-items-center rounded-full font-display font-bold max-[600px]:size-8 max-[600px]:text-sm ${looks[look]}`}
   >
     {children}
   </div>

@@ -3,12 +3,12 @@ import type { Position } from "@kurasu/slides/messages";
 import { samePosition } from "@kurasu/slides/navigation";
 import { useState } from "react";
 
-import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 import { HandButton } from "../hands/HandButton.tsx";
 import { useMaterials } from "../materials/useMaterials.ts";
 import { useSlidesMaterial } from "../materials/useSlidesMaterial.ts";
 import { FollowTeacherToggle } from "./FollowTeacherToggle.tsx";
 import { SlideStage } from "./SlideStage.tsx";
+import { SlideStageSkeleton } from "./SlideStageSkeleton.tsx";
 
 interface Props {
   session: Session;
@@ -52,9 +52,7 @@ export const StudentSlides = ({ session, teacherPresent }: Props) => {
   );
 
   return materials.data == null || (slides != null && slides.html == null) ? (
-    <SkeletonOf>
-      <SlideStage html={null} position={position} controls={controls} />
-    </SkeletonOf>
+    <SlideStageSkeleton controls={controls} />
   ) : (
     <SlideStage
       html={slides?.html ?? null}

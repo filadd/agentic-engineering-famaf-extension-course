@@ -22,7 +22,7 @@ export const NewSessionCard = ({ onCreated }: Props) => {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="flex w-full items-center gap-2 rounded-[22px] border-2 border-dashed border-muted px-[18px] py-3 font-display font-medium text-muted hover:border-ink hover:text-ink"
+          className="skeleton-block flex w-full items-center gap-2 rounded-[22px] border-2 border-dashed border-muted px-[18px] py-3 font-display font-medium text-muted hover:border-ink hover:text-ink"
         >
           <Icon name="plus" size={20} />
           Nueva sesión

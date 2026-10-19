@@ -22,10 +22,10 @@ export const EnrollmentQr = ({ onClose }: Props) => {
 
   const codeView = (
     <div className="mt-[22px] mb-2.5 flex items-center justify-center gap-9">
-      <div className="size-[340px] flex-none overflow-hidden rounded-[18px]">
+      <div className="skeleton-block size-[340px] flex-none overflow-hidden rounded-[18px]">
         <QrCode text={shown.url} label={`QR de registro: ${shown.url}`} />
       </div>
-      <div className="flex size-[340px] flex-none flex-col justify-center gap-2.5 rounded-[18px] bg-side p-6">
+      <div className="skeleton-block flex size-[340px] flex-none flex-col justify-center gap-2.5 rounded-[18px] bg-side p-6">
         <small className="text-lg text-muted">Código del aula</small>
         <b aria-label="Código del aula" className="font-display text-7xl tracking-[0.12em]">
           {shown.code}

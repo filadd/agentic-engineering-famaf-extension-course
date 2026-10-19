@@ -48,7 +48,7 @@ export const PollCard = ({
   return (
     <article
       aria-label={poll.prompt}
-      className={`paper px-[18px] py-4 max-[600px]:p-3.5 ${bordered ? "border-[1.5px] border-sand" : ""}`}
+      className={`skeleton-block paper px-[18px] py-4 max-[600px]:p-3.5 ${bordered ? "border-[1.5px] border-sand" : ""}`}
     >
       {onToggle == null ? (
         header

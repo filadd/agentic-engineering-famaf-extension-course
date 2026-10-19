@@ -42,7 +42,7 @@ const AdminSessionRoute = () => {
           title={
             session.data == null ? (
               <SkeletonOf>
-                <span>{sessionExamples[0].title}</span>
+                <span className="skeleton-block">{sessionExamples[0].title}</span>
               </SkeletonOf>
             ) : (
               session.data.title

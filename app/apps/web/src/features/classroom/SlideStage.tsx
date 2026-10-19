@@ -28,7 +28,7 @@ export const SlideStage = ({ html, position, onNavigate, controls }: Props) => {
     <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 max-[600px]:flex-none max-[600px]:gap-2">
       <div className="min-h-0 flex-1 max-[600px]:aspect-[16/10] max-[600px]:flex-none">
         {html == null ? (
-          <div className="grid size-full place-items-center rounded-[18px] border-[1.5px] border-line text-muted">
+          <div className="skeleton-block grid size-full place-items-center rounded-[18px] border-[1.5px] border-line text-muted">
             Esta sesión todavía no tiene slides.
           </div>
         ) : (

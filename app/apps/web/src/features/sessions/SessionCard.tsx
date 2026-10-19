@@ -27,7 +27,7 @@ export const SessionCard = ({
 }: Props) => (
   <article
     aria-label={session.title}
-    className={`rounded-[22px] px-[18px] py-3 text-card-ink max-[600px]:px-3.5 max-[600px]:py-[11px] ${painted ? sessionColor(session.position) : "border-[1.5px] border-line text-ink"}`}
+    className={`skeleton-block rounded-[22px] px-[18px] py-3 text-card-ink max-[600px]:px-3.5 max-[600px]:py-[11px] ${painted ? sessionColor(session.position) : "border-[1.5px] border-line text-ink"}`}
   >
     <div className="flex items-center gap-2.5">
       {handle}
