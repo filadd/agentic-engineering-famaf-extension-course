@@ -65,6 +65,17 @@ describe("material from the card", () => {
 
     expect(await within(sheet).findByText("Todavía no hay material.")).toBeTruthy();
   });
+  test("Escape closes the sheet", async () => {
+    home(planning);
+    server.use(getJson("/materials", []));
+
+    const { user, sheet } = await openLink(planning.title, "Material", "Material");
+
+    await within(sheet).findByText("Todavía no hay material.");
+    await user.keyboard("{Escape}");
+
+    expect(screen.queryByRole("dialog", { name: "Material" })).toBeNull();
+  });
 });
 
 describe("closed polls from the card", () => {
@@ -223,6 +234,29 @@ describe("questions from the card", () => {
       expect(within(sheet).queryByRole("listitem", { name: own.body })).toBeNull(),
     );
     expect(store.current()).toEqual([]);
+  });
+
+  test("Escape on the delete confirmation closes only the confirmation, and the next one the sheet", async () => {
+    const own = question(1, planning.id, "¿Y si me arrepiento?", { mine: true });
+    const store = questionStore([own]);
+
+    home(planning);
+    server.use(...store.handlers);
+
+    const { user, sheet } = await openLink(planning.title, "Preguntas", "Preguntas");
+
+    const row = await within(sheet).findByRole("listitem", { name: own.body });
+
+    await user.click(within(row).getByRole("button", { name: "Borrar tu pregunta" }));
+    await user.keyboard("{Escape}");
+
+    expect(screen.queryByRole("alertdialog")).toBeNull();
+    expect(screen.getByRole("dialog", { name: "Preguntas" })).toBe(sheet);
+    expect(store.current()).toEqual([own]);
+
+    await user.keyboard("{Escape}");
+
+    expect(screen.queryByRole("dialog", { name: "Preguntas" })).toBeNull();
   });
 
   test("an earlier session is read-only: no form, no voting, no deleting", async () => {

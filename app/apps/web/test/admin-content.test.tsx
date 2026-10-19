@@ -98,6 +98,17 @@ describe("session page: content", () => {
     expect(router.state.location.pathname).toBe(`/admin/sesiones/${planning.id}`);
   });
 
+  test("Escape on the delete confirmation cancels it and does nothing", async () => {
+    const { user, card, store, router } = await openContent(false);
+
+    await user.click(within(card).getByRole("button", { name: "Borrar sesión" }));
+    await user.keyboard("{Escape}");
+
+    expect(screen.queryByRole("alertdialog")).toBeNull();
+    expect(store.writes).toEqual([]);
+    expect(router.state.location.pathname).toBe(`/admin/sesiones/${planning.id}`);
+  });
+
   test("an enabled session has no delete button", async () => {
     const { card } = await openContent(true);
 
