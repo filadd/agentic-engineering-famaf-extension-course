@@ -22,6 +22,7 @@ Each beat is `{ time, kind, text }` with `kind` one of `user | assistant | tool 
 
 - **At most 10 points.** Read the whole session first and split it into the stages it went through: for example a first prompt, the first working version, each round of fixes, or each step of a process such as exploring, designing, implementing, testing and deploying. Pick the points so that, taken together, they show how the process unfolded from start to end.
 - **One point per stage.** When a stage spans many prompts, merge them into one point. Leave out stages that repeat what an earlier point already showed.
+- **One part of the session.** When you are told the video covers only some stages, the session for this video is those stages: leave the rest out and use the 10 points to show those stages in more detail, splitting a stage into several points where it went through distinct steps.
 - **Prefer the moments that show something.** A point works best when it ends on a capture of the app or of the artifact that stage produced.
 
 ## Writing each point
@@ -30,6 +31,7 @@ Each beat is `{ time, kind, text }` with `kind` one of `user | assistant | tool 
 - **tool**: 2 to 6 lines that summarize what the agent did in that stage, in the same `Name(target)` style as the full video. Merge freely: `Write(src/server.js, src/db.js, src/views.js)`, `Bash(corre los tests)`.
 - **assistant**: 1 or 2 beats of 1 to 3 short sentences each, at most ~220 characters, with what the agent built, decided or found in that stage.
 - **screenshot**: 1 to 4 per point, copied from the manifest with `src`, `url`, `caption` and `action` unchanged, except that `action` becomes `null` when the capture that shows the action's result is left out. Give each one `hold: 3000` so the presenter has time to talk over it.
+- **zoom**: when a capture has details too small to read on a projector, such as a diagram, a tree, a table or a part of a screen, follow it with beats that repeat its `src`, `url` and `time` with `zoom: { x, y, w, h }`, the region to show as fractions of the capture, `action: null`, a caption naming the detail, and `hold: 3000`. The player zooms into each region in turn over the same capture. Look at the capture with Read to pick each region, keep its proportions close to 16:10 so it fills the screen, and leave a small margin around the detail. Zoom beats don't count toward the 1 to 4 captures.
 - **note**: only for what the stage needs, such as an interruption that changed the course of the session.
 
 Every event, decision and capture comes from the recording; you may summarize and merge, but don't invent. `time` is the time of the first event a beat stands for, and beats are in chronological order.

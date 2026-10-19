@@ -6,7 +6,7 @@
 //   replay.mjs shot <dir> "<caption>" [--click <selector> | --type <selector> "<text>"]
 //   replay.mjs condense <dir>
 //   replay.mjs player <dir>
-//   replay.mjs highlights <dir>
+//   replay.mjs highlights <dir> [<part>]
 import { execFileSync } from "node:child_process";
 import { appendFileSync, copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -302,9 +302,10 @@ const player = (dir) => {
 };
 
 // The highlights live next to the raw recording and reuse its captures. Their folder gets its own
-// player and only the captures its script uses, so it can be opened or moved on its own.
-const highlights = (dir) => {
-  const target = join(dir, "..", "highlights");
+// player and only the captures its script uses, so it can be opened or moved on its own. A recording
+// cut into several parts keeps each one in its own folder inside highlights/.
+const highlights = (dir, [part]) => {
+  const target = join(dir, "..", "highlights", part ?? "");
   const script = join(target, "script.js");
 
   if (!existsSync(script)) {

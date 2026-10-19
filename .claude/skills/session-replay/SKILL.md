@@ -14,7 +14,7 @@ The skill has three phases. **Recording** happens throughout the session, after 
 Each recording has its own folder inside the session it belongs to, `sessions/session-<n>/recordings/<name>/`, named after what it recorded (`vibecoding`, `agentic`). Ask the user for the session and the name when starting if they are not clear from the conversation. The folder holds two subfolders:
 
 - `raw/` is `<dir>` in the commands below: `session.json`, `condensed.md`, `manifest.jsonl`, every capture in `screenshots/`, and the full video (`script.js` and `player.html`).
-- `highlights/` is the short version: its own `player.html` and `script.js`, and only the captures its script uses.
+- `highlights/` is the short version: its own `player.html` and `script.js`, and only the captures its script uses. When the class shows the recording in parts, each part has its own folder inside it with the same files, numbered in the order they are shown: `highlights/1-implementacion/`, `highlights/2-validacion/`.
 
 Commit both folders. The captures are PNGs, which the repo tracks with Git LFS (`.gitattributes`). Never put the recording inside the app being built.
 
@@ -96,15 +96,19 @@ window.RECORDING = {
 
 `action` is copied from `manifest.jsonl`: `{ kind: "click" | "type", x, y, w, h, text? }`, with coordinates as fractions of the capture. Any beat accepts `hold` (ms) to change the pause after it.
 
+A screenshot beat also accepts `zoom: { x, y, w, h }`, a region of the capture in the same fractions. The player scales the capture until the region fills the screen. When the beat repeats the `src` already on screen, the player moves the zoom over that capture instead of fading in a new one, so a capture followed by beats with the same `src` and different `zoom` walks through its details; a beat without `zoom` zooms back out. Zoom beats carry `action: null`, because the action's coordinates refer to the whole capture.
+
 ## Highlights
 
 The highlights are a short version of the video for showing in class: at most 10 points, one per stage of the process, each one a prompt with a summary of what the agent did and the captures of the result. They summarize and merge, so they don't copy the session faithfully, but every event in them comes from the recording.
 
+When the class shows different stages of the session at different moments, cut one highlights video per part instead, each with at most 10 points over its own stages. Check the session's slides to decide where each part starts and ends, and ask the user when the slides leave it open.
+
 1. Render the full video first; the highlights start from `<dir>/script.js`.
-2. Delegate the cut to a subagent. Use the prompt in [references/highlights.md](references/highlights.md), replacing `<raw>` with the absolute path of `<dir>` and `<highlights>` with the `highlights/` folder next to it. The subagent writes `highlights/script.js`.
+2. Delegate the cut to a subagent. Use the prompt in [references/highlights.md](references/highlights.md), replacing `<raw>` with the absolute path of `<dir>` and `<highlights>` with the `highlights/` folder next to it, or with the part's folder inside it. Tell the subagent which stages go in each part. The subagent writes `script.js` in that folder.
 3. Copy the player and the captures the highlights use, and open them:
    ```bash
-   node replay.mjs highlights <dir>
-   xdg-open <dir>/../highlights/player.html
+   node replay.mjs highlights <dir> [<part>]
+   xdg-open <dir>/../highlights/[<part>/]player.html
    ```
-   The command empties `highlights/screenshots/` before copying, so it can run again after editing the script.
+   `<part>` is the name of the part's folder inside `highlights/`. The command empties that folder's `screenshots/` before copying, so it can run again after editing the script.
