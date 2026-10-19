@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Icon } from "../../ui/Icon.tsx";
 import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
-import { AdminPollCard } from "./AdminPollCard.tsx";
+import { PanelPollCard } from "./PanelPollCard.tsx";
 import { adminPollExamples } from "./poll-examples.ts";
 import { byStatus } from "./poll-order.ts";
 import { useAdminPolls } from "./useAdminPolls.ts";
@@ -23,7 +23,7 @@ export const AdminPanelPolls = ({ sessionId }: Props) => {
       <SkeletonOf>
         <div className="flex flex-col gap-2.5">
           {adminPollExamples.map((poll) => (
-            <AdminPollCard key={poll.id} poll={poll} />
+            <PanelPollCard key={poll.id} poll={poll} />
           ))}
         </div>
       </SkeletonOf>
@@ -38,7 +38,7 @@ export const AdminPanelPolls = ({ sessionId }: Props) => {
     <div className="flex flex-col gap-2.5">
       {current.length === 0 ? <div className="text-sm text-muted">No hay encuestas.</div> : null}
       {current.map((poll) => (
-        <AdminPollCard key={poll.id} poll={poll} />
+        <PanelPollCard key={poll.id} poll={poll} />
       ))}
       {closed.length === 0 ? null : (
         <section aria-label="Cerradas">
@@ -54,7 +54,7 @@ export const AdminPanelPolls = ({ sessionId }: Props) => {
           {closedOpen ? (
             <div className="flex flex-col gap-2.5">
               {closed.map((poll) => (
-                <AdminPollCard key={poll.id} poll={poll} />
+                <PanelPollCard key={poll.id} poll={poll} />
               ))}
             </div>
           ) : null}

@@ -44,7 +44,14 @@ export const AdminPollsTab = ({ sessionId }: Props) => {
             ))}
           </SkeletonOf>
         ) : (
-          byStatus(polls.data).map((poll) => <AdminPollCard key={poll.id} poll={poll} />)
+          <>
+            {polls.data.length === 0 ? (
+              <div className="text-sm text-muted">Todavía no hay encuestas.</div>
+            ) : null}
+            {byStatus(polls.data).map((poll) => (
+              <AdminPollCard key={poll.id} poll={poll} />
+            ))}
+          </>
         )}
       </div>
     </div>

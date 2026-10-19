@@ -38,6 +38,37 @@ const startNew = async (user: Awaited<ReturnType<typeof renderRoute>>["user"], t
 const draftChoice = adminPoll(choicePoll(planning.id), "draft", { count: 0 });
 
 describe("session page: polls", () => {
+  test("without polls the tab says so under the creator", async () => {
+    await openPolls([]);
+
+    expect(await screen.findByText("Todavía no hay encuestas.")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Nueva encuesta" })).toBeTruthy();
+  });
+
+  test("the tab keeps creating, editing, activating, closing and deleting", async () => {
+    const active = adminPoll(scalePoll(planning.id), "active", {
+      count: 0,
+      scale: [0, 0, 0, 0, 0],
+    });
+
+    const { user } = await openPolls([draftChoice, active]);
+
+    const draft = await screen.findByRole("article", { name: draftChoice.prompt });
+    const open = screen.getByRole("article", { name: active.prompt });
+
+    await user.click(within(draft).getByRole("button", { expanded: false }));
+
+    expect(within(draft).getByLabelText("Opción 1")).toBeTruthy();
+    expect(within(draft).getByRole("button", { name: "Activar" })).toBeTruthy();
+    expect(within(draft).getByRole("button", { name: "Borrar" })).toBeTruthy();
+    expect(within(open).getByRole("button", { name: "Cerrar" })).toBeTruthy();
+    expect(within(open).getByRole("button", { name: "Borrar" })).toBeTruthy();
+
+    await startNew(user, "Opción múltiple");
+
+    expect(screen.getByRole("article", { name: "Nueva encuesta" })).toBeTruthy();
+  });
+
   test("a new choice poll starts with two options, takes up to ten and saves as a draft", async () => {
     const { user, store } = await openPolls();
     const card = await startNew(user, "Opción múltiple");

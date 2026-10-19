@@ -283,7 +283,6 @@ describe("session page: classroom panel and badges", () => {
       within(panel).queryByRole("article", { name: scalePoll(planning.id).prompt }),
     ).toBeNull();
 
-    await user.click(within(draft).getByRole("button", { expanded: false }));
     await user.click(within(draft).getByRole("button", { name: "Activar" }));
     await waitFor(() => expect(within(draft).getByText("Activa")).toBeTruthy());
     await user.click(within(draft).getByRole("button", { name: "Cerrar" }));
@@ -295,6 +294,72 @@ describe("session page: classroom panel and badges", () => {
       { method: "PATCH", body: { status: "active" } },
       { method: "PATCH", body: { status: "closed" } },
     ]);
+  });
+
+  test("a draft in the panel shows as the students see it, with Activar and without Guardar, Borrar or the editor", async () => {
+    const draft = adminPoll(choicePoll(planning.id), "draft", { count: 0 });
+
+    await openPage("aula", { polls: [draft] });
+
+    const card = await within(await screen.findByRole("tabpanel")).findByRole("article", {
+      name: draft.prompt,
+    });
+
+    expect(
+      within(within(card).getByRole("list", { name: "Opciones" }))
+        .getAllByRole("listitem")
+        .map((option) => option.textContent),
+    ).toEqual(draft.options);
+    expect(within(card).getByRole("button", { name: "Activar" })).toBeTruthy();
+    expect(within(card).queryByRole("button", { name: "Guardar" })).toBeNull();
+    expect(within(card).queryByRole("button", { name: "Borrar" })).toBeNull();
+    expect(within(card).queryByLabelText("Pregunta")).toBeNull();
+  });
+
+  test("an active poll in the panel shows its results and Cerrar, without Borrar", async () => {
+    const active = adminPoll(choicePoll(planning.id), "active", { count: 2, choice: [1, 1, 0, 0] });
+
+    await openPage("aula", { polls: [active] });
+
+    const card = await within(await screen.findByRole("tabpanel")).findByRole("article", {
+      name: active.prompt,
+    });
+
+    expect(within(card).getByRole("list", { name: "Resultados" })).toBeTruthy();
+    expect(within(card).getByRole("button", { name: "Cerrar" })).toBeTruthy();
+    expect(within(card).queryByRole("button", { name: "Borrar" })).toBeNull();
+  });
+
+  test("closed polls in the panel go folded at the end, without actions", async () => {
+    const active = adminPoll(choicePoll(planning.id), "active", { count: 0, choice: [0, 0, 0, 0] });
+
+    const closed = adminPoll(scalePoll(planning.id), "closed", {
+      count: 1,
+      scale: [1, 0, 0, 0, 0],
+    });
+
+    const { user } = await openPage("aula", { polls: [closed, active] });
+
+    const panel = await screen.findByRole("tabpanel");
+    const fold = await within(panel).findByRole("button", { name: "Cerradas (1)" });
+
+    expect(
+      within(panel)
+        .getAllByRole("article")
+        .map((card) => card.getAttribute("aria-label")),
+    ).toEqual([active.prompt]);
+
+    await user.click(fold);
+
+    const card = within(panel).getByRole("article", { name: closed.prompt });
+
+    expect(within(panel).getAllByRole("article").at(-1)).toBe(card);
+    expect(within(card).getByRole("button", { expanded: false })).toBeTruthy();
+
+    await user.click(within(card).getByRole("button", { expanded: false }));
+
+    expect(within(card).getByRole("list", { name: "Resultados" })).toBeTruthy();
+    expect(within(card).getAllByRole("button")).toHaveLength(1);
   });
 
   test("the teacher is present from another tab and the panel never hides", async () => {
