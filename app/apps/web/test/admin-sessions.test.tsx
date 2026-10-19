@@ -88,7 +88,7 @@ describe("/admin", () => {
     expect(dialog.querySelector("p")).toBeNull();
   });
 
-  test("creating a session waits with Creando… and Cancelar disabled", async () => {
+  test("creating a session waits with Creando…, Cancelar and the X disabled, and neither Escape nor a click outside closes the sheet", async () => {
     const { user, rail } = await openAdmin();
     const held = heldResponse("post", "/admin/sessions");
 
@@ -108,6 +108,12 @@ describe("/admin", () => {
       "disabled",
       true,
     );
+    expect(within(dialog).getByRole("button", { name: "Cerrar" })).toHaveProperty("disabled", true);
+
+    await user.keyboard("{Escape}");
+    await user.click(dialog.parentElement ?? document.body);
+
+    expect(screen.getByRole("dialog", { name: "Nueva sesión" })).toBe(dialog);
 
     held.release();
 

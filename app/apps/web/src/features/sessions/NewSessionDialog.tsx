@@ -17,7 +17,7 @@ export const NewSessionDialog = ({ onClose, onCreated }: Props) => {
   const create = useCreateSession({ onSuccess: (session) => onCreated(session.id) });
 
   return (
-    <Sheet open onClose={onClose} title="Nueva sesión" width="normal">
+    <Sheet open onClose={onClose} title="Nueva sesión" width="normal" pending={create.isPending}>
       <form
         onSubmit={(event) => {
           event.preventDefault();

@@ -6,6 +6,8 @@ import type { EndpointError, MutationOptions } from "../../api/api-error.ts";
 import { queryKeys } from "../../api/query-keys.ts";
 import { useApiMutation } from "../../api/useApiMutation.ts";
 
+export const updateProfileKey = ["me", "update"] as const;
+
 export const useUpdateProfile = (
   options?: MutationOptions<Me, ProfileInput, EndpointError<"me", "update">>,
 ) => {
@@ -14,6 +16,6 @@ export const useUpdateProfile = (
   return useApiMutation({
     call: (api, input) => api.me.update({ payload: input }),
     onSuccess: (me) => queryClient.setQueryData(queryKeys.me(), me),
-    options,
+    options: { mutationKey: updateProfileKey, ...options },
   });
 };

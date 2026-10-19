@@ -55,7 +55,7 @@ export const UploadMaterialDialog = ({ sessionId, onClose }: Props) => {
   };
 
   return (
-    <Sheet open onClose={onClose} title="Subir archivo" width="normal">
+    <Sheet open onClose={onClose} title="Subir archivo" width="normal" pending={upload.isPending}>
       {chosen == null ? (
         <label
           onDragOver={(event) => event.preventDefault()}

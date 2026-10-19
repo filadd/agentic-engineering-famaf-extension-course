@@ -9,6 +9,7 @@ interface Props {
   title: string;
   children: ReactNode;
   width?: "narrow" | "normal" | "wide";
+  pending?: boolean;
 }
 
 const widths = {
@@ -18,9 +19,18 @@ const widths = {
 };
 
 // Centred on a desktop; on a phone it rises from the bottom edge, full width.
-export const Sheet = ({ open, onClose, title, children, width = "wide" }: Props) =>
+// While its action waits for the API, nothing closes it, as with a
+// confirmation: the user sees how it ends, in the sheet itself when it fails.
+export const Sheet = ({
+  open,
+  onClose,
+  title,
+  children,
+  width = "wide",
+  pending = false,
+}: Props) =>
   open ? (
-    <Backdrop layer="sheet" onClose={onClose}>
+    <Backdrop layer="sheet" onClose={pending ? () => undefined : onClose}>
       <div
         role="dialog"
         aria-modal="true"
@@ -34,6 +44,7 @@ export const Sheet = ({ open, onClose, title, children, width = "wide" }: Props)
             type="button"
             title="Cerrar"
             aria-label="Cerrar"
+            disabled={pending}
             onClick={onClose}
             className="icon-button"
           >

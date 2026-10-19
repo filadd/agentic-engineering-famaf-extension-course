@@ -18,7 +18,7 @@ export const AddUserForm = ({ onClose }: Props) => {
   const add = useAddUser({ onSuccess: onClose });
 
   return (
-    <Sheet open onClose={onClose} title="Agregar por email" width="narrow">
+    <Sheet open onClose={onClose} title="Agregar por email" width="narrow" pending={add.isPending}>
       <form
         onSubmit={(event) => {
           event.preventDefault();

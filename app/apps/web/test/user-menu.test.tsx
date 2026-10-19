@@ -5,6 +5,7 @@ import { describe, expect, test } from "vitest";
 import { student } from "./fixtures/people.ts";
 import { noContent, url } from "./helpers/api.ts";
 import { failingRoute } from "./helpers/failing-route.ts";
+import { heldResponse } from "./helpers/held-response.ts";
 import { recorder } from "./helpers/recorder.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { studentHome } from "./helpers/screens.ts";
@@ -95,6 +96,36 @@ describe("user menu", () => {
       "true",
     );
     expect(screen.getByRole("heading", { name: "Hola, Lucía" })).toBeTruthy();
+  });
+
+  test("while the profile saves, Cancelar and the X are disabled and neither Escape nor a click outside closes the sheet", async () => {
+    const save = heldResponse("patch", "/me");
+
+    server.use(...studentHome(student), save.handler);
+
+    const { user } = await renderRoute("/");
+
+    await user.click(within(await openMenu(user)).getByRole("button", { name: "Editar perfil" }));
+
+    const dialog = screen.getByRole("dialog", { name: "Tu perfil" });
+
+    await user.click(within(dialog).getByRole("button", { name: "Guardar" }));
+
+    expect(await within(dialog).findByRole("button", { name: "Guardando…" })).toBeTruthy();
+    expect(within(dialog).getByRole("button", { name: "Cancelar" })).toHaveProperty(
+      "disabled",
+      true,
+    );
+    expect(within(dialog).getByRole("button", { name: "Cerrar" })).toHaveProperty("disabled", true);
+
+    await user.keyboard("{Escape}");
+    await user.click(dialog.parentElement ?? document.body);
+
+    expect(screen.getByRole("dialog", { name: "Tu perfil" })).toBe(dialog);
+
+    save.release(HttpResponse.json(student));
+
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Tu perfil" })).toBeNull());
   });
 
   test("turning on the dark mode marks the page dark and keeps it", async () => {
