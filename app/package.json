@@ -1,0 +1,38 @@
+{
+  "name": "kurasu",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "pnpm run lockfile:check && varlock load && turbo run typecheck && pnpm run typecheck-tools && pnpm run lint",
+    "lint": "oxlint && oxfmt --check .",
+    "fix": "oxlint --fix && oxfmt .",
+    "format": "oxfmt .",
+    "lockfile:check": "pnpm install --frozen-lockfile --offline --lockfile-only --ignore-scripts",
+    "typecheck": "turbo run typecheck",
+    "typecheck-tools": "tsc --noEmit -p tsconfig.json",
+    "test": "turbo run test",
+    "build": "turbo run build",
+    "dev": "pnpm --filter @kurasu/infra dev",
+    "deploy": "pnpm --filter @kurasu/infra deploy",
+    "prepare": "effect-tsgo patch && sh tools/hooks/install.sh"
+  },
+  "devDependencies": {
+    "@effect/tsgo": "0.53.4",
+    "@oxlint/plugins": "1.88.0",
+    "@types/node": "24.19.2",
+    "effect": "4.0.5",
+    "lefthook": "2.2.2",
+    "oxfmt": "0.73.0",
+    "oxlint": "1.88.0",
+    "oxlint-tsgolint": "7.0.2004",
+    "turbo": "2.11.9",
+    "typescript": "7.0.2",
+    "varlock": "1.23.0",
+    "vitest": "5.0.5"
+  },
+  "engines": {
+    "node": ">=24.18.0"
+  },
+  "packageManager": "pnpm@11.3.0"
+}
