@@ -1,17 +1,16 @@
 import type { SessionNotFound } from "@kurasu/contract/errors";
 import type { Question } from "@kurasu/contract/questions";
-import { useQuery } from "@tanstack/react-query";
 
 import type { QueryOptions } from "../../api/api-error.ts";
 import { queryKeys } from "../../api/query-keys.ts";
-import { runApi } from "../../api/run-api.ts";
+import { useApiQuery } from "../../api/useApiQuery.ts";
 
 export const useQuestions = (
   sessionId: string,
   options?: QueryOptions<ReadonlyArray<Question>, SessionNotFound>,
 ) =>
-  useQuery({
+  useApiQuery({
     queryKey: queryKeys.questions(sessionId),
-    queryFn: () => runApi((api) => api.questions.list({ query: { sessionId } })),
-    ...options,
+    call: (api) => api.questions.list({ query: { sessionId } }),
+    options,
   });

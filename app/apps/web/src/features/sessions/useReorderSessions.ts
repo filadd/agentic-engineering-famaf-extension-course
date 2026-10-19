@@ -1,10 +1,10 @@
 import type { OrderMismatch } from "@kurasu/contract/errors";
 import type { SessionSummary } from "@kurasu/contract/sessions";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 import type { MutationOptions } from "../../api/api-error.ts";
 import { queryKeys } from "../../api/query-keys.ts";
-import { runApi } from "../../api/run-api.ts";
+import { useApiMutation } from "../../api/useApiMutation.ts";
 
 // The list takes the new order as soon as the card is dropped; if the API
 // rejects it, the list goes back to the server's order.
@@ -13,10 +13,9 @@ export const useReorderSessions = (
 ) => {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    ...options,
-    mutationFn: (ids) => runApi((api) => api.adminSessions.reorder({ payload: { ids } })),
-    onMutate: async (ids, context) => {
+  return useApiMutation({
+    call: (api, ids) => api.adminSessions.reorder({ payload: { ids } }),
+    onMutate: async (ids) => {
       const key = queryKeys.adminSessions();
 
       await queryClient.cancelQueries({ queryKey: key, exact: true });
@@ -31,20 +30,15 @@ export const useReorderSessions = (
         }),
       );
 
-      await options?.onMutate?.(ids, context);
-
       return { previous };
     },
-    onError: async (error, ids, result, context) => {
-      queryClient.setQueryData(queryKeys.adminSessions(), result?.previous);
-      await options?.onError?.(error, ids, result, context);
-    },
-    onSettled: async (data, error, ids, result, context) => {
-      await Promise.all([
+    onError: (_error, _ids, result) =>
+      queryClient.setQueryData(queryKeys.adminSessions(), result?.previous),
+    onSettled: () =>
+      Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.adminSessions(), exact: true }),
         queryClient.invalidateQueries({ queryKey: queryKeys.sessions(), exact: true }),
-      ]);
-      await options?.onSettled?.(data, error, ids, result, context);
-    },
+      ]),
+    options,
   });
 };
