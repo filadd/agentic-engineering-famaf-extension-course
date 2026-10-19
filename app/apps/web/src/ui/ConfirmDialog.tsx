@@ -29,7 +29,7 @@ export const ConfirmDialog = ({
   onCancel,
 }: Props) =>
   open ? (
-    <Backdrop layer="alert" onClose={pending ? () => undefined : onCancel}>
+    <Backdrop layer="alert" onClose={onCancel} dismissible={!pending}>
       <div
         role="alertdialog"
         aria-modal="true"

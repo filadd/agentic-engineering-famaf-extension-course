@@ -5,6 +5,7 @@ import { useCloseOnEscape } from "./useCloseOnEscape.ts";
 interface Props {
   layer: "sheet" | "alert" | "projection" | "menu";
   onClose: () => void;
+  dismissible?: boolean;
   children?: ReactNode;
 }
 
@@ -21,13 +22,15 @@ const layers = {
 };
 
 // A click on the backdrop itself closes, but not one inside its content.
-export const Backdrop = ({ layer, onClose, children }: Props) => {
-  useCloseOnEscape(onClose);
+export const Backdrop = ({ layer, onClose, dismissible = true, children }: Props) => {
+  useCloseOnEscape(() => (dismissible ? onClose() : undefined));
 
   return (
     <div
       className={`fixed inset-0 grid place-items-center p-8 ${layers[layer]}`}
-      onClick={(event) => (event.target === event.currentTarget ? onClose() : undefined)}
+      onClick={(event) =>
+        dismissible && event.target === event.currentTarget ? onClose() : undefined
+      }
     >
       {children}
     </div>

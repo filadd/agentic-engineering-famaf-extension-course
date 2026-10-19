@@ -30,7 +30,7 @@ export const Sheet = ({
   pending = false,
 }: Props) =>
   open ? (
-    <Backdrop layer="sheet" onClose={pending ? () => undefined : onClose}>
+    <Backdrop layer="sheet" onClose={onClose} dismissible={!pending}>
       <div
         role="dialog"
         aria-modal="true"
