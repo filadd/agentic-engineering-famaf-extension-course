@@ -40,16 +40,16 @@ const pollFields = {
   sessionId: Ulid,
   type: PollType,
   prompt: Text,
-  options: Schema.optionalKey(PollOptions),
-  scaleMinLabel: Schema.optionalKey(Schema.String),
-  scaleMaxLabel: Schema.optionalKey(Schema.String),
+  options: Schema.optional(PollOptions),
+  scaleMinLabel: Schema.optional(Schema.String),
+  scaleMaxLabel: Schema.optional(Schema.String),
 };
 
 interface PollContent {
   readonly type: PollType;
-  readonly options?: ReadonlyArray<string>;
-  readonly scaleMinLabel?: string;
-  readonly scaleMaxLabel?: string;
+  readonly options?: ReadonlyArray<string> | undefined;
+  readonly scaleMinLabel?: string | undefined;
+  readonly scaleMaxLabel?: string | undefined;
 }
 
 // A choice poll carries its options and a scale poll its labels; the fields of

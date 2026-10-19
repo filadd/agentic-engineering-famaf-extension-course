@@ -1,0 +1,16 @@
+{
+  "name": "@kurasu/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@kurasu/contract": "workspace:*",
+    "effect": "4.0.5"
+  }
+}
