@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Slides de prueba</title>
+  </head>
+  <body>
+    <section data-slide="1"><h1>Planificación y revisión</h1></section>
+    <section data-slide="2" hidden>
+      <h2>Antes de escribir código</h2>
+      <ul>
+        <li data-step="2">Explorar</li>
+        <li data-step="3">Planificar</li>
+      </ul>
+    </section>
+    <section data-slide="3" hidden><h2>Revisar lo que produce el agente</h2></section>
+    <script>
+      const manifest = {
+        type: "kurasu:manifest",
+        slides: [{ steps: 1 }, { steps: 3 }, { steps: 1 }],
+      };
+
+      parent.postMessage(manifest, "*");
+
+      addEventListener("message", (event) => {
+        if (event.data?.type !== "kurasu:go") return;
+
+        document.querySelectorAll("[data-slide]").forEach((section) => {
+          section.hidden = Number(section.dataset.slide) !== event.data.slide;
+        });
+        document.querySelectorAll("[data-step]").forEach((item) => {
+          item.hidden = Number(item.dataset.step) > event.data.step;
+        });
+      });
+    </script>
+  </body>
+</html>

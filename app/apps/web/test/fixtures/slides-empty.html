@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Slides sin slides</title>
+  </head>
+  <body>
+    <script>
+      const manifest = { type: "kurasu:manifest", slides: [] };
+
+      parent.postMessage(manifest, "*");
+    </script>
+  </body>
+</html>
