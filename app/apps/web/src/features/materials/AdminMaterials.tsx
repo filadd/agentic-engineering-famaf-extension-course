@@ -4,53 +4,61 @@ import { useState } from "react";
 
 import { Button } from "../../ui/Button.tsx";
 import { Icon } from "../../ui/Icon.tsx";
-import { InlineError } from "../../ui/InlineError.tsx";
+import { showError } from "../../ui/toast.ts";
 import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
-import { SlidesFrame } from "../classroom/SlidesFrame.tsx";
 import { DeleteMaterialButton } from "./DeleteMaterialButton.tsx";
 import { isHtml } from "./is-html.ts";
 import { materialExamples } from "./material-examples.ts";
 import { MarkSlidesButton } from "./MarkSlidesButton.tsx";
 import { MaterialList } from "./MaterialList.tsx";
 import { SlidesChip } from "./SlidesChip.tsx";
-import { slidesNotices } from "./slides-notices.ts";
+import { SlidesCheckNotice } from "./SlidesCheckNotice.tsx";
 import { UploadMaterialDialog } from "./UploadMaterialDialog.tsx";
 import { useAdminMaterials } from "./useAdminMaterials.ts";
 import { materialFileQuery } from "./material-file-query.ts";
+import { useSlidesCheck } from "./useSlidesCheck.ts";
 import { useUpdateMaterial } from "./useUpdateMaterial.ts";
 
 interface Props {
   sessionId: string;
 }
 
-interface Marking {
-  material: Material;
-  html: string | null;
-  invalid: boolean;
-}
-
 const renderLeading = (material: Material) => (
   <Icon name={isHtml(material.name, material.contentType) ? "code" : "file-text"} size={20} />
 );
 
-// Marking an uploaded HTML as slides runs the same check as the upload: the
-// file is loaded in a hidden frame and has five seconds to announce itself.
+// Marking an uploaded HTML as slides runs the same check as the upload, once
+// its text is downloaded. An ok marks it and goes away after ten seconds; an
+// error stays until the next mark.
 export const AdminMaterials = ({ sessionId }: Props) => {
   const queryClient = useQueryClient();
   const materials = useAdminMaterials(sessionId);
   const update = useUpdateMaterial();
+  const check = useSlidesCheck({ okFor: 10_000 });
 
   const [uploading, setUploading] = useState(false);
-  const [marking, setMarking] = useState<Marking | null>(null);
+  const [downloading, setDownloading] = useState(false);
 
-  const checking = marking != null && !marking.invalid;
+  const checking = downloading || check.state === "checking";
 
   const mark = async (material: Material) => {
-    setMarking({ material, html: null, invalid: false });
+    check.reset();
+    setDownloading(true);
 
-    const html = await queryClient.fetchQuery(materialFileQuery(material.id));
+    const html = await queryClient
+      .fetchQuery(materialFileQuery(material.id))
+      .catch(() => null)
+      .finally(() => setDownloading(false));
 
-    setMarking({ material, html, invalid: false });
+    if (html == null) {
+      showError("No se pudo abrir el archivo.");
+
+      return;
+    }
+
+    if ((await check.start(html)) === "ok") {
+      update.mutate({ id: material.id, isSlides: true });
+    }
   };
 
   return (
@@ -92,27 +100,12 @@ export const AdminMaterials = ({ sessionId }: Props) => {
           )}
         />
       )}
-      {checking && marking.html != null ? (
-        <div className="hidden">
-          <SlidesFrame
-            html={marking.html}
-            hidden
-            onManifest={() => {
-              update.mutate({ id: marking.material.id, isSlides: true });
-              setMarking(null);
-            }}
-            onInvalid={() => setMarking({ ...marking, invalid: true })}
-          />
-        </div>
-      ) : null}
-      {checking ? (
-        <p role="status" className="mt-2 text-sm text-muted">
-          {slidesNotices.checking}
-        </p>
-      ) : null}
-      {marking?.invalid === true ? (
-        <InlineError className="mt-2">{slidesNotices.invalid}</InlineError>
-      ) : null}
+      {check.frame}
+      {downloading ? (
+        <SlidesCheckNotice state="checking" />
+      ) : (
+        <SlidesCheckNotice state={check.state} />
+      )}
       {uploading ? (
         <UploadMaterialDialog sessionId={sessionId} onClose={() => setUploading(false)} />
       ) : null}

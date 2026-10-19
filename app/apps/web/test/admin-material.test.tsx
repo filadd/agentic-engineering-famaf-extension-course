@@ -1,9 +1,10 @@
 import type { Material } from "@kurasu/contract/materials";
-import { screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { material, planning, sessionDetail } from "./fixtures/content.ts";
 import { emptySlides, guidePdf, slidesWithoutManifest, validSlides } from "./fixtures/slides.ts";
+import { failingRoute } from "./helpers/failing-route.ts";
 import { materialStore } from "./helpers/material-store.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
@@ -61,8 +62,21 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
+const slidesSwitch = (dialog: HTMLElement) =>
+  within(dialog).getByRole("switch", { name: "Usar como slides del aula" });
+
+const checkingNotice = (place: HTMLElement) =>
+  within(place)
+    .queryAllByRole("status")
+    .find((status) => status.textContent?.includes("Revisando") ?? false);
+
+const okNotice = (place: HTMLElement) =>
+  within(place)
+    .queryAllByRole("status")
+    .find((status) => status.textContent === "El HTML respeta la API de las slides");
+
 describe("session page: material and slides", () => {
-  test("uploading a PDF adds it to the list", async () => {
+  test("choosing a PDF shows its name and the trash in place of the area, without the switch, and Subir uploads it", async () => {
     const { user, box, store } = await openContent([]);
 
     const dialog = await chooseFile(
@@ -70,6 +84,11 @@ describe("session page: material and slides", () => {
       box,
       new File([guidePdf], "guia.pdf", { type: "application/pdf" }),
     );
+
+    expect(within(dialog).queryByText("Arrastrá un archivo o elegí uno")).toBeNull();
+    expect(within(dialog).getByText("guia.pdf")).toBeTruthy();
+    expect(within(dialog).getByRole("button", { name: "Quitar archivo" })).toBeTruthy();
+    expect(within(dialog).queryByRole("switch")).toBeNull();
 
     await user.click(within(dialog).getByRole("button", { name: "Subir" }));
 
@@ -79,20 +98,63 @@ describe("session page: material and slides", () => {
     ]);
   });
 
-  test("uploading valid slides checks them, enables Subir and marks the new row as slides", async () => {
+  test("dropping a file on the area chooses it", async () => {
+    const { user, box } = await openContent([]);
+
+    await user.click(within(box).getByRole("button", { name: "Subir archivo" }));
+
+    const dialog = screen.getByRole("dialog", { name: "Subir archivo" });
+    const area = within(dialog).getByText("Arrastrá un archivo o elegí uno");
+
+    fireEvent.drop(area, {
+      dataTransfer: { files: [new File([guidePdf], "guia.pdf", { type: "application/pdf" })] },
+    });
+
+    expect(await within(dialog).findByLabelText("Nombre")).toHaveProperty("value", "guia.pdf");
+    expect(within(dialog).getByRole("button", { name: "Quitar archivo" })).toBeTruthy();
+  });
+
+  test("the trash takes the file away and brings the area back", async () => {
+    const { user, box } = await openContent([]);
+
+    const dialog = await chooseFile(
+      user,
+      box,
+      new File([guidePdf], "guia.pdf", { type: "application/pdf" }),
+    );
+
+    await user.click(within(dialog).getByRole("button", { name: "Quitar archivo" }));
+
+    expect(within(dialog).getByText("Arrastrá un archivo o elegí uno")).toBeTruthy();
+    expect(within(dialog).queryByLabelText("Nombre")).toBeNull();
+    expect(within(dialog).getByRole("button", { name: "Subir" })).toHaveProperty("disabled", true);
+  });
+
+  test("valid slides check for a second with everything disabled, then show the green alert and upload as slides", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+
     const { user, box, store } = await openContent([oldSlides]);
 
     const dialog = await chooseFile(user, box, htmlFile(validSlides));
     const upload = within(dialog).getByRole("button", { name: "Subir" });
 
-    await user.click(within(dialog).getByRole("switch", { name: "Usar como slides del aula" }));
+    await user.click(slidesSwitch(dialog));
 
-    expect(within(dialog).getByRole("status").textContent).toContain("Revisando");
+    expect(checkingNotice(dialog)).toBeTruthy();
     expect(upload).toHaveProperty("disabled", true);
+    expect(slidesSwitch(dialog)).toHaveProperty("disabled", true);
+    expect(within(dialog).getByRole("button", { name: "Quitar archivo" })).toHaveProperty(
+      "disabled",
+      true,
+    );
 
     await (await slidesFrame()).announce();
+    await vi.advanceTimersByTimeAsync(1_000);
 
-    await waitFor(() => expect(upload).toHaveProperty("disabled", false));
+    await waitFor(() => expect(okNotice(dialog)).toBeTruthy());
+    expect(checkingNotice(dialog)).toBeUndefined();
+    expect(upload).toHaveProperty("disabled", false);
+
     await user.click(upload);
 
     await waitFor(() =>
@@ -110,13 +172,33 @@ describe("session page: material and slides", () => {
     expect(store.uploads[0]?.isSlides).toBe("true");
   });
 
-  test("an HTML without manifest shows the error in the modal after five seconds and keeps Subir disabled", async () => {
+  test("the green alert stays until the switch goes off", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+
+    const { user, box } = await openContent([]);
+    const dialog = await chooseFile(user, box, htmlFile(validSlides));
+
+    await user.click(slidesSwitch(dialog));
+    await (await slidesFrame()).announce();
+    await vi.advanceTimersByTimeAsync(1_000);
+    await waitFor(() => expect(okNotice(dialog)).toBeTruthy());
+    await vi.advanceTimersByTimeAsync(20_000);
+
+    expect(okNotice(dialog)).toBeTruthy();
+
+    await user.click(slidesSwitch(dialog));
+
+    expect(okNotice(dialog)).toBeUndefined();
+    expect(slidesSwitch(dialog).getAttribute("aria-checked")).toBe("false");
+  });
+
+  test("an HTML without manifest shows the error after five seconds and turns the switch off", async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
 
     const { user, box } = await openContent([]);
     const dialog = await chooseFile(user, box, htmlFile(slidesWithoutManifest));
 
-    await user.click(within(dialog).getByRole("switch", { name: "Usar como slides del aula" }));
+    await user.click(slidesSwitch(dialog));
     await slidesFrame();
     await vi.advanceTimersByTimeAsync(4_900);
 
@@ -127,19 +209,58 @@ describe("session page: material and slides", () => {
     expect((await within(dialog).findByRole("alert")).textContent).toContain(
       "no respeta la API de las slides",
     );
-    expect(within(dialog).getByRole("button", { name: "Subir" })).toHaveProperty("disabled", true);
+    expect(slidesSwitch(dialog).getAttribute("aria-checked")).toBe("false");
+    expect(within(dialog).getByRole("button", { name: "Subir" })).toHaveProperty("disabled", false);
   });
 
-  test("a manifest with no slides shows the error in the modal", async () => {
+  test("a manifest with no slides shows the error a second after the check starts", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+
     const { user, box } = await openContent([]);
     const dialog = await chooseFile(user, box, htmlFile(emptySlides));
 
-    await user.click(within(dialog).getByRole("switch", { name: "Usar como slides del aula" }));
+    await user.click(slidesSwitch(dialog));
     await (await slidesFrame()).announce();
+
+    expect(within(dialog).queryByRole("alert")).toBeNull();
+
+    await vi.advanceTimersByTimeAsync(1_000);
 
     expect((await within(dialog).findByRole("alert")).textContent).toContain(
       "no respeta la API de las slides",
     );
+    expect(slidesSwitch(dialog).getAttribute("aria-checked")).toBe("false");
+  });
+
+  test("an HTML left unmarked uploads as plain material, without a check", async () => {
+    const { user, box, store } = await openContent([]);
+    const dialog = await chooseFile(user, box, htmlFile(validSlides));
+
+    expect(slidesSwitch(dialog).getAttribute("aria-checked")).toBe("false");
+
+    await user.click(within(dialog).getByRole("button", { name: "Subir" }));
+
+    await waitFor(() => expect(store.uploads).toHaveLength(1));
+    expect(store.uploads[0]?.isSlides).toBe("false");
+    expect(screen.queryByTitle("Slides")).toBeNull();
+  });
+
+  test("a manifest that arrives at once still shows Revisando for a second", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+
+    const { user, box } = await openContent([]);
+    const dialog = await chooseFile(user, box, htmlFile(validSlides));
+
+    await user.click(slidesSwitch(dialog));
+    await (await slidesFrame()).announce();
+    await vi.advanceTimersByTimeAsync(800);
+
+    expect(checkingNotice(dialog)).toBeTruthy();
+    expect(okNotice(dialog)).toBeUndefined();
+
+    await vi.advanceTimersByTimeAsync(300);
+
+    await waitFor(() => expect(okNotice(dialog)).toBeTruthy());
   });
 
   test("a file over 100 MB shows the size error in the modal", async () => {
@@ -156,7 +277,9 @@ describe("session page: material and slides", () => {
     expect((await within(dialog).findByRole("alert")).textContent).toContain("más de 100 MB");
   });
 
-  test("marking an uploaded HTML downloads its text, checks it and patches isSlides", async () => {
+  test("marking an uploaded HTML checks it for a second, patches isSlides and shows the green alert for ten seconds", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+
     const { user, box, store } = await openContent([oldSlides, draftHtml], {
       [draftHtml.id]: validSlides,
     });
@@ -168,6 +291,11 @@ describe("session page: material and slides", () => {
     );
     await (await slidesFrame()).announce();
 
+    expect(checkingNotice(box)).toBeTruthy();
+    expect(store.writes).toEqual([]);
+
+    await vi.advanceTimersByTimeAsync(1_000);
+
     await waitFor(() =>
       expect(store.writes).toEqual([{ method: "PATCH", body: { isSlides: true } }]),
     );
@@ -176,13 +304,19 @@ describe("session page: material and slides", () => {
         within(within(box).getAllByRole("listitem")[1] ?? box).getByText("Slides del aula"),
       ).toBeTruthy(),
     );
+    expect(okNotice(box)).toBeTruthy();
+
+    await vi.advanceTimersByTimeAsync(10_000);
+
+    await waitFor(() => expect(okNotice(box)).toBeUndefined());
   });
 
-  test("marking one without manifest shows the error and patches nothing", async () => {
+  test("marking one without manifest shows the error until the next mark, and patches nothing", async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
 
-    const { user, box, store } = await openContent([noApiHtml], {
+    const { user, box, store } = await openContent([noApiHtml, draftHtml], {
       [noApiHtml.id]: slidesWithoutManifest,
+      [draftHtml.id]: validSlides,
     });
 
     await user.click(
@@ -196,7 +330,61 @@ describe("session page: material and slides", () => {
     expect((await within(box).findByRole("alert")).textContent).toContain(
       "no respeta la API de las slides",
     );
+
+    await vi.advanceTimersByTimeAsync(30_000);
+
+    expect(within(box).getByRole("alert")).toBeTruthy();
     expect(store.writes).toEqual([]);
+
+    await user.click(
+      within(box).getByRole("button", { name: `Usar ${draftHtml.name} como slides del aula` }),
+    );
+
+    await waitFor(() => expect(within(box).queryByRole("alert")).toBeNull());
+  });
+
+  test("a failed download of the HTML shows a toast and leaves the list as it was", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+
+    const { user, box, store } = await openContent([draftHtml]);
+
+    server.use(failingRoute("get", "/materials/:id/file"));
+
+    await user.click(
+      await within(box).findByRole("button", {
+        name: `Usar ${draftHtml.name} como slides del aula`,
+      }),
+    );
+    await vi.advanceTimersByTimeAsync(4_000);
+
+    expect(await screen.findByText("No se pudo abrir el archivo.")).toBeTruthy();
+    await waitFor(() => expect(checkingNotice(box)).toBeUndefined());
+    expect(
+      within(box).getByRole("button", { name: `Usar ${draftHtml.name} como slides del aula` }),
+    ).toHaveProperty("disabled", false);
+    expect(store.writes).toEqual([]);
+  });
+
+  test("while one HTML is checked, the buttons to mark the others are disabled", async () => {
+    const { user, box } = await openContent([draftHtml, noApiHtml], {
+      [draftHtml.id]: validSlides,
+      [noApiHtml.id]: slidesWithoutManifest,
+    });
+
+    await user.click(
+      await within(box).findByRole("button", {
+        name: `Usar ${draftHtml.name} como slides del aula`,
+      }),
+    );
+
+    await waitFor(() =>
+      expect(
+        within(box).getByRole("button", { name: `Usar ${noApiHtml.name} como slides del aula` }),
+      ).toHaveProperty("disabled", true),
+    );
+    expect(
+      within(box).getByRole("button", { name: `Usar ${draftHtml.name} como slides del aula` }),
+    ).toHaveProperty("disabled", true);
   });
 
   test("deleting a material asks for confirmation, deletes it and removes it from the list", async () => {
