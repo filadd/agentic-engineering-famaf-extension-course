@@ -50,7 +50,7 @@ export default defineConfig({
   plugins: [
     apiUpgradesToProxy(),
     tailwindcss(),
-    tanstackStart({ spa: { enabled: true } }),
+    tanstackStart({ spa: { enabled: true, prerender: { outputPath: "/index" } } }),
     viteReact(),
   ],
   server: {
