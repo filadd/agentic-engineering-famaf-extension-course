@@ -34,6 +34,7 @@ describe("loading a screen", () => {
     const title = await screen.findByRole("heading", { level: 1 });
 
     await waitFor(() => expect(title.textContent).toBe(`Hola, ${student.name}`));
+    expect(screen.getByRole("link", { name: "Ir al inicio" }).textContent).toBe("🐦‍⬛");
 
     const [cards = document.body] = skeletons();
 
