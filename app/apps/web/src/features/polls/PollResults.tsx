@@ -8,11 +8,19 @@ interface Props {
   options?: ReadonlyArray<string> | undefined;
   scaleLabels?: readonly [string, string] | undefined;
   mine?: ResponseValue | null | undefined;
+  showCounts?: boolean;
 }
 
 const scaleValues = [1, 2, 3, 4, 5];
 
-export const PollResults = ({ type, results, options, scaleLabels, mine }: Props) => {
+export const PollResults = ({
+  type,
+  results,
+  options,
+  scaleLabels,
+  mine,
+  showCounts = false,
+}: Props) => {
   if (type === "choice") {
     const counts = results.choice ?? [];
     const total = counts.reduce((sum, count) => sum + count, 0);
@@ -98,6 +106,11 @@ export const PollResults = ({ type, results, options, scaleLabels, mine }: Props
           }}
         >
           {entry.word}
+          {showCounts ? (
+            <span className="ml-1 align-super font-sans text-xs font-normal opacity-70">
+              {entry.count}
+            </span>
+          ) : null}
         </li>
       ))}
     </ul>

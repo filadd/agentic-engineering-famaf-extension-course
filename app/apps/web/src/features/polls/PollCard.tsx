@@ -16,6 +16,7 @@ interface Props {
   open?: boolean;
   onToggle?: () => void;
   bordered?: boolean;
+  showCounts?: boolean;
 }
 
 // A poll as both sides show it. A card with `onToggle` folds: its header is
@@ -31,6 +32,7 @@ export const PollCard = ({
   open = true,
   onToggle,
   bordered = false,
+  showCounts = false,
 }: Props) => {
   const header = (
     <span className="min-w-0 flex-1">
@@ -69,6 +71,7 @@ export const PollCard = ({
           options={poll.options}
           scaleLabels={scaleLabelsOf(poll)}
           mine={mine}
+          showCounts={showCounts}
         />
       ) : null}
       {open ? actions : null}
