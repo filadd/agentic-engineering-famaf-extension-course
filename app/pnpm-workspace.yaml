@@ -4,6 +4,7 @@ packages:
 
 allowBuilds:
   esbuild: true
+  lefthook: false
   workerd: true
 
 # Exact pins newer than pnpm's minimum release age. One entry per version; a
