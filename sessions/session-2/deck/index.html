@@ -2368,6 +2368,10 @@ const slides = $$(".slide");
 let idx = 0;
 let step = 0;
 
+// Inside kurasu the deck runs in a sandboxed iframe: the web moves it with kurasu:go messages and owns the
+// navigation, so the deck leaves the keys, the address bar and its own HUD alone.
+const embedded = window.parent !== window;
+
 const stepsOf = (s) => Number(s.dataset.steps || Math.max(0, ...$$("[data-step]", s).map((e) => Number(e.dataset.step))));
 
 const show = (entered, forward) => {
@@ -2394,7 +2398,9 @@ const show = (entered, forward) => {
 
   $(".count").textContent = `${idx + 1} / ${slides.length}`;
   $(".stepdots").innerHTML = Array.from({ length: stepsOf(slide) }, (_, i) => `<i class="${i < step ? "on" : ""}"></i>`).join("");
-  history.replaceState(null, "", `${location.search}#${idx + 1}${step > 0 ? `.${step}` : ""}`);
+  if (!embedded) {
+    history.replaceState(null, "", `${location.search}#${idx + 1}${step > 0 ? `.${step}` : ""}`);
+  }
 };
 
 const next = () => {
@@ -2420,6 +2426,10 @@ const prev = () => {
 };
 
 document.addEventListener("keydown", (e) => {
+  if (embedded) {
+    return;
+  }
+
   if (["ArrowRight", " ", "PageDown", "Enter"].includes(e.key)) {
     e.preventDefault();
     next();
@@ -2461,6 +2471,40 @@ document.fonts.ready.then(() => {
   fitTitles();
   show(false, false);
 });
+
+/* ───────────── kurasu ───────────── */
+
+// kurasu counts slides and steps from 1 and gives a slide without inner steps one step, so the deck's
+// step 0 is kurasu's step 1.
+if (embedded) {
+  $("#hud").classList.add("hidden");
+
+  window.parent.postMessage({
+    type: "kurasu:manifest",
+    slides: slides.map((s) => ({ steps: stepsOf(s) + 1 })),
+  }, "*");
+
+  addEventListener("message", (e) => {
+    const go = e.data;
+
+    if (e.source !== window.parent || go?.type !== "kurasu:go" || !Number.isInteger(go.slide) || !Number.isInteger(go.step)) {
+      return;
+    }
+
+    const nextIdx = Math.min(Math.max(go.slide - 1, 0), slides.length - 1);
+    const nextStep = Math.min(Math.max(go.step - 1, 0), stepsOf(slides[nextIdx]));
+    const forward = nextIdx > idx || (nextIdx === idx && nextStep >= step);
+    const entered = nextIdx !== idx;
+
+    if (!entered && nextStep === step) {
+      return;
+    }
+
+    idx = nextIdx;
+    step = nextStep;
+    show(entered, forward);
+  });
+}
 </script>
 </body>
 </html>
