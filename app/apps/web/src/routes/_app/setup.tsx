@@ -5,6 +5,7 @@ import { meExample } from "../../features/me/me-example.ts";
 import { ProfileForm } from "../../features/me/ProfileForm.tsx";
 import { ProfilePreview } from "../../features/me/ProfilePreview.tsx";
 import { useMe } from "../../features/me/useMe.ts";
+import { useUpdateProfile } from "../../features/me/useUpdateProfile.ts";
 import { Button } from "../../ui/Button.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
@@ -12,6 +13,7 @@ import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 const SetupRoute = () => {
   const me = useMe();
   const navigate = useNavigate();
+  const save = useUpdateProfile({ onSuccess: () => navigate({ to: "/" }) });
 
   const profile = (shown: Me) => (
     <>
@@ -23,7 +25,7 @@ const SetupRoute = () => {
         me={shown}
         nameLabel="Tu nombre"
         namePlaceholder="Cómo querés que te vean en el aula"
-        onSaved={() => navigate({ to: "/" })}
+        save={save}
         renderActions={(draft) => (
           <div>
             <ProfilePreview name={draft.name} avatar={draft.avatar} />

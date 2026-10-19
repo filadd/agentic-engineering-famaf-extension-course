@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 
 import { InlineError } from "../../ui/InlineError.tsx";
 import { AvatarPicker } from "./AvatarPicker.tsx";
-import { useUpdateProfile } from "./useUpdateProfile.ts";
+import type { useUpdateProfile } from "./useUpdateProfile.ts";
 
 export interface ProfileDraft {
   name: string;
@@ -15,17 +15,15 @@ export interface ProfileDraft {
 
 interface Props {
   me: Me;
-  onSaved?: (me: Me) => void;
+  save: ReturnType<typeof useUpdateProfile>;
   nameLabel: string;
   namePlaceholder?: string;
   renderActions: (draft: ProfileDraft) => ReactNode;
 }
 
-export const ProfileForm = ({ me, onSaved, nameLabel, namePlaceholder, renderActions }: Props) => {
+export const ProfileForm = ({ me, save, nameLabel, namePlaceholder, renderActions }: Props) => {
   const [name, setName] = useState(me.name ?? "");
   const [avatar, setAvatar] = useState(me.avatar);
-
-  const save = useUpdateProfile({ onSuccess: (saved) => onSaved?.(saved) });
 
   const canSave = name.trim() !== "" && avatar != null;
 
