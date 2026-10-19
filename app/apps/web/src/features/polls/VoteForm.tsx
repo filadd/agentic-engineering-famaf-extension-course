@@ -3,6 +3,7 @@ import * as Predicate from "effect/Predicate";
 import { useState } from "react";
 
 import { Button } from "../../ui/Button.tsx";
+import { InlineError } from "../../ui/InlineError.tsx";
 import { PollResults } from "./PollResults.tsx";
 import { scaleLabelsOf } from "./scale-labels.ts";
 import { useVote } from "./useVote.ts";
@@ -61,17 +62,25 @@ export const VoteForm = ({ poll, onClosed }: Props) => {
                   : "Más palabras, separadas por coma"
               }
               aria-label={mine == null ? "Tus palabras" : "Más palabras"}
+              disabled={vote.isPending}
               className="min-w-0 flex-1 rounded-full border-2 border-coal bg-paper px-3.5 py-[7px] text-coal"
             />
             <Button
               variant="main"
               type="submit"
-              disabled={mergeWords([], draft).length === 0 || vote.isPending}
+              disabled={mergeWords([], draft).length === 0}
+              pending={vote.isPending}
+              pendingLabel="Enviando…"
               className="px-3.5 py-1.5 text-sm"
             >
               Enviar
             </Button>
           </form>
+        ) : null}
+        {vote.isError && !Predicate.isTagged(vote.error, "PollNotActive") ? (
+          <InlineError className="mt-2">
+            No se pudo enviar tu respuesta. Probá de nuevo.
+          </InlineError>
         ) : null}
         {words.length === 0 ? null : (
           <div className="mt-2 text-[13px] opacity-70">Tus palabras: {words.join(", ")}</div>

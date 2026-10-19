@@ -27,6 +27,8 @@ export const DeletePollButton = ({ poll }: Props) => {
           : "Se borran sus respuestas y los estudiantes dejan de verla."
       }
       confirmLabel="Borrar"
+      pendingLabel="Borrando…"
+      errorText="No se pudo borrar la encuesta. Probá de nuevo."
       onConfirm={() => remove.mutateAsync(poll.id)}
     />
   );

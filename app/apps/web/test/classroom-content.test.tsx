@@ -6,6 +6,7 @@ import { material, planning, question, sessionDetail } from "./fixtures/content.
 import { student, teacher } from "./fixtures/people.ts";
 import { getJson } from "./helpers/api.ts";
 import { classroomSocket } from "./helpers/classroom-socket.ts";
+import { failingRoute } from "./helpers/failing-route.ts";
 import { heldResponse } from "./helpers/held-response.ts";
 import { questionStore } from "./helpers/question-store.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
@@ -43,6 +44,24 @@ describe("questions in the classroom", () => {
       "disabled",
       true,
     );
+  });
+
+  test("a failed question stays written with the error under the field", async () => {
+    const store = questionStore([]);
+    const { user, panel } = await enter("Preguntas", ...store.handlers);
+
+    server.use(failingRoute("post", "/questions"));
+    await user.type(within(panel).getByLabelText("Hacé una pregunta"), "¿Y los tests?");
+    await user.click(within(panel).getByRole("button", { name: "Enviar" }));
+
+    expect((await within(panel).findByRole("alert")).textContent).toBe(
+      "No se pudo enviar tu pregunta. Probá de nuevo.",
+    );
+    expect(within(panel).getByLabelText("Hacé una pregunta")).toHaveProperty(
+      "value",
+      "¿Y los tests?",
+    );
+    expect(store.current()).toEqual([]);
   });
 
   test("voting and taking the vote back adds and removes it, ordered by votes", async () => {

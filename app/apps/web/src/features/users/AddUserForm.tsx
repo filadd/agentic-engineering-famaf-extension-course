@@ -43,13 +43,15 @@ export const AddUserForm = ({ onClose }: Props) => {
           </InlineError>
         )}
         <div className="mt-[18px] flex justify-end gap-2">
-          <Button variant="pill" onClick={onClose}>
+          <Button variant="pill" disabled={add.isPending} onClick={onClose}>
             Cancelar
           </Button>
           <Button
             variant="pill-dark"
             type="submit"
-            disabled={!email.includes("@") || add.isPending}
+            disabled={!email.includes("@")}
+            pending={add.isPending}
+            pendingLabel="Agregando…"
           >
             Agregar
           </Button>

@@ -114,10 +114,12 @@ describe("/admin/usuarios", () => {
     );
   });
 
-  test("taking the access asks for confirmation and leaves the row without access", async () => {
+  test("taking the access asks for confirmation, waits with Sacando… and leaves the row without access", async () => {
     const { user, list, store } = await openUsers();
     const row = within(list).getByRole("listitem", { name: "Lucía" });
+    const held = heldResponse("patch", `/admin/users/${student.id}`);
 
+    server.use(held.handler);
     await user.click(within(row).getByRole("switch", { name: "Con acceso" }));
 
     const confirm = screen.getByRole("alertdialog", { name: "¿Sacarle el acceso a Lucía?" });
@@ -125,6 +127,13 @@ describe("/admin/usuarios", () => {
     expect(store.writes).toEqual([]);
 
     await user.click(within(confirm).getByRole("button", { name: "Sacar acceso" }));
+
+    expect(await within(confirm).findByRole("button", { name: "Sacando…" })).toBeTruthy();
+    expect(
+      within(row).getByRole("switch", { name: "Con acceso" }).getAttribute("aria-checked"),
+    ).toBe("true");
+
+    held.release();
 
     await waitFor(() =>
       expect(

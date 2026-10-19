@@ -27,6 +27,8 @@ export const DeleteOwnQuestion = ({ question }: Props) => {
       title="¿Borrar tu pregunta?"
       text="Se borra para todos, con sus votos."
       confirmLabel="Borrar"
+      pendingLabel="Borrando…"
+      errorText="No se pudo borrar tu pregunta. Probá de nuevo."
       onConfirm={() => remove.mutateAsync(question.id)}
     />
   );

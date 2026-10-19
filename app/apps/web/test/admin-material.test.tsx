@@ -4,6 +4,8 @@ import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { material, planning, sessionDetail } from "./fixtures/content.ts";
 import { emptySlides, guidePdf, slidesWithoutManifest, validSlides } from "./fixtures/slides.ts";
+import { failingRoute } from "./helpers/failing-route.ts";
+import { heldResponse } from "./helpers/held-response.ts";
 import { materialStore } from "./helpers/material-store.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
@@ -199,10 +201,12 @@ describe("session page: material and slides", () => {
     expect(store.writes).toEqual([]);
   });
 
-  test("deleting a material asks for confirmation, deletes it and removes it from the list", async () => {
+  test("deleting a material asks for confirmation, waits for the delete and removes it from the list", async () => {
     const guide = material(4, planning.id, "Guía.pdf");
     const { user, box, store } = await openContent([guide]);
+    const held = heldResponse("delete", `/admin/materials/${guide.id}`);
 
+    server.use(held.handler);
     await user.click(await within(box).findByRole("button", { name: "Borrar Guía.pdf" }));
 
     const confirm = screen.getByRole("alertdialog", { name: '¿Borrar "Guía.pdf"?' });
@@ -211,7 +215,41 @@ describe("session page: material and slides", () => {
 
     await user.click(within(confirm).getByRole("button", { name: "Borrar" }));
 
+    const deleting = await within(confirm).findByRole("button", { name: "Borrando…" });
+
+    expect(deleting.getAttribute("aria-busy")).toBe("true");
+    expect(deleting).toHaveProperty("disabled", true);
+    expect(within(confirm).getByRole("button", { name: "Cancelar" })).toHaveProperty(
+      "disabled",
+      true,
+    );
+    expect(within(box).getByText("Guía.pdf")).toBeTruthy();
+
+    held.release();
+
     await waitFor(() => expect(within(box).queryByText("Guía.pdf")).toBeNull());
+    expect(screen.queryByRole("alertdialog")).toBeNull();
     expect(store.writes).toEqual([{ method: "DELETE", body: guide.id }]);
+  });
+
+  test("a failed delete keeps the confirmation open with its error", async () => {
+    const guide = material(4, planning.id, "Guía.pdf");
+    const { user, box } = await openContent([guide]);
+
+    server.use(failingRoute("delete", `/admin/materials/${guide.id}`));
+    await user.click(await within(box).findByRole("button", { name: "Borrar Guía.pdf" }));
+
+    const confirm = screen.getByRole("alertdialog", { name: '¿Borrar "Guía.pdf"?' });
+
+    await user.click(within(confirm).getByRole("button", { name: "Borrar" }));
+
+    expect((await within(confirm).findByRole("alert")).textContent).toBe(
+      "No se pudo borrar el material. Probá de nuevo.",
+    );
+    expect(within(confirm).getByRole("button", { name: "Borrar" })).toHaveProperty(
+      "disabled",
+      false,
+    );
+    expect(within(box).getByText("Guía.pdf")).toBeTruthy();
   });
 });

@@ -2,6 +2,7 @@ import type { Session } from "@kurasu/contract/sessions";
 import { useState } from "react";
 
 import { Button } from "../../ui/Button.tsx";
+import { InlineError } from "../../ui/InlineError.tsx";
 import { useUpdateSession } from "./useUpdateSession.ts";
 
 interface Props {
@@ -39,12 +40,17 @@ export const SessionDetailsForm = ({ session }: Props) => {
           className="mt-1 block min-h-[70px] w-full resize-y rounded-xl bg-paper px-3 py-[9px] text-[15px] text-coal"
         />
       </label>
+      {update.isError ? (
+        <InlineError className="mt-3">No se pudo guardar. Probá de nuevo.</InlineError>
+      ) : null}
       {changed ? (
         <div className="mt-3 flex justify-end">
           <Button
             variant="main"
             type="submit"
-            disabled={title.trim() === "" || update.isPending}
+            disabled={title.trim() === ""}
+            pending={update.isPending}
+            pendingLabel="Guardando…"
             className="px-3.5 py-[7px] text-sm"
           >
             Guardar

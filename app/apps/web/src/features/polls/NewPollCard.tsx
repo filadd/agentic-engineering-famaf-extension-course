@@ -2,6 +2,7 @@ import type { PollType } from "@kurasu/contract/polls";
 import { useState } from "react";
 
 import { Button } from "../../ui/Button.tsx";
+import { InlineError } from "../../ui/InlineError.tsx";
 import { emptyContent, fieldsOf, isComplete } from "./poll-content.ts";
 import { pollTypeLabels } from "./poll-labels.ts";
 import { PollEditor } from "./PollEditor.tsx";
@@ -29,14 +30,24 @@ export const NewPollCard = ({ sessionId, type, onDone }: Props) => {
       </div>
       <div className="text-[13px] opacity-70">{pollTypeLabels[type]}</div>
       <PollEditor type={type} value={draft} onChange={setDraft} />
+      {create.isError ? (
+        <InlineError className="mt-3">No se pudo guardar la encuesta. Probá de nuevo.</InlineError>
+      ) : null}
       <div className="mt-3 flex justify-end gap-2">
-        <Button variant="pill" className="border-sand text-coal" onClick={onDone}>
+        <Button
+          variant="pill"
+          className="border-sand text-coal"
+          disabled={create.isPending}
+          onClick={onDone}
+        >
           Descartar
         </Button>
         <Button
           variant="pill-dark"
           className="border-coal bg-coal text-white"
-          disabled={!isComplete(type, draft) || create.isPending}
+          disabled={!isComplete(type, draft)}
+          pending={create.isPending}
+          pendingLabel="Guardando…"
           onClick={() => create.mutate({ sessionId, type, ...fieldsOf(type, draft) })}
         >
           Guardar borrador

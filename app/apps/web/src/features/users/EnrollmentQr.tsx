@@ -1,8 +1,6 @@
-import { useState } from "react";
-
 import { Backdrop } from "../../ui/Backdrop.tsx";
 import { Button } from "../../ui/Button.tsx";
-import { ConfirmDialog } from "../../ui/ConfirmDialog.tsx";
+import { ConfirmAction } from "../../ui/ConfirmAction.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 import { QrCode } from "./QrCode.tsx";
 import { useEnrollmentCode } from "./useEnrollmentCode.ts";
@@ -16,9 +14,7 @@ interface Props {
 // type by hand. Regenerating asks first, because the old code stops working.
 export const EnrollmentQr = ({ onClose }: Props) => {
   const code = useEnrollmentCode();
-  const regenerate = useRegenerateEnrollmentCode({ onSuccess: () => setConfirming(false) });
-
-  const [confirming, setConfirming] = useState(false);
+  const regenerate = useRegenerateEnrollmentCode();
 
   return (
     <Backdrop layer="projection" onClose={onClose}>
@@ -53,26 +49,24 @@ export const EnrollmentQr = ({ onClose }: Props) => {
               <b aria-label="Código del aula" className="font-display text-7xl tracking-[0.12em]">
                 {code.data.code}
               </b>
-              <Button
-                variant="main"
-                className="mt-1.5 self-center"
-                onClick={() => setConfirming(true)}
-              >
-                <Icon name="refresh" size={16} />
-                Regenerar código
-              </Button>
+              <ConfirmAction
+                renderTrigger={(ask) => (
+                  <Button variant="main" className="mt-1.5 self-center" onClick={ask}>
+                    <Icon name="refresh" size={16} />
+                    Regenerar código
+                  </Button>
+                )}
+                title="¿Regenerar el código de registro?"
+                text={`El código ${code.data.code} y su QR dejan de servir.`}
+                confirmLabel="Regenerar"
+                pendingLabel="Regenerando…"
+                errorText="No se pudo regenerar el código. Probá de nuevo."
+                onConfirm={() => regenerate.mutateAsync()}
+              />
             </div>
           </div>
         )}
       </div>
-      <ConfirmDialog
-        open={confirming}
-        title="¿Regenerar el código de registro?"
-        text={`El código ${code.data?.code ?? ""} y su QR dejan de servir.`}
-        confirmLabel="Regenerar"
-        onConfirm={() => regenerate.mutate()}
-        onCancel={() => setConfirming(false)}
-      />
     </Backdrop>
   );
 };

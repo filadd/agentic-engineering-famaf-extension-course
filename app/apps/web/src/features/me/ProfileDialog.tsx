@@ -23,10 +23,16 @@ export const ProfileDialog = ({ me, open, onClose }: Props) => (
       onSaved={onClose}
       renderActions={(draft) => (
         <div className="mt-3.5 flex justify-end gap-2">
-          <Button variant="pill" onClick={onClose}>
+          <Button variant="pill" disabled={draft.saving} onClick={onClose}>
             Cancelar
           </Button>
-          <Button variant="pill-dark" type="submit" disabled={!draft.canSave || draft.saving}>
+          <Button
+            variant="pill-dark"
+            type="submit"
+            disabled={!draft.canSave}
+            pending={draft.saving}
+            pendingLabel="Guardando…"
+          >
             <Icon name="check" size={16} />
             Guardar
           </Button>

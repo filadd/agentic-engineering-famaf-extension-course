@@ -61,6 +61,8 @@ export const UserRow = ({ user }: Props) => {
           title={`¿Sacarle el acceso a ${user.name ?? user.email}?`}
           text="No va a poder entrar al aula hasta que le vuelvas a dar acceso."
           confirmLabel="Sacar acceso"
+          pendingLabel="Sacando…"
+          errorText="No se pudo sacar el acceso. Probá de nuevo."
           onConfirm={() => setAccess.mutateAsync({ id: user.id, hasAccess: false })}
         />
       )}

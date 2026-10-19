@@ -106,6 +106,34 @@ describe("voting in the classroom's Encuestas tab", () => {
     expect(vote.votes).toEqual([{ words: ["contexto"] }]);
   });
 
+  test("sending words waits with Enviando… and the field disabled", async () => {
+    const vote = voteHandler((myResponse) =>
+      voted(words, myResponse, { count: 1, words: [{ word: "contexto", count: 1 }] }),
+    );
+
+    const held = heldResponse("patch", `/polls/${words.id}`);
+
+    server.use(vote.handler);
+
+    const { user, panel } = await enter([words]);
+    const card = await cardIn(panel, words);
+
+    server.use(held.handler);
+    await user.type(within(card).getByLabelText("Tus palabras"), "contexto");
+    await user.click(within(card).getByRole("button", { name: "Enviar" }));
+
+    const sending = await within(card).findByRole("button", { name: "Enviando…" });
+
+    expect(sending).toHaveProperty("disabled", true);
+    expect(within(card).getByLabelText("Tus palabras")).toHaveProperty("disabled", true);
+    expect(within(card).queryByRole("list", { name: "Resultados" })).toBeNull();
+
+    held.release();
+
+    expect(await within(card).findByRole("list", { name: "Resultados" })).toBeTruthy();
+    expect(vote.votes).toEqual([{ words: ["contexto"] }]);
+  });
+
   test("changing the vote marks the previous one and takes the new one", async () => {
     const vote = voteHandler((myResponse) =>
       voted(choice, myResponse, { count: 1, choice: [1, 0, 0, 0] }),
