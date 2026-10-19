@@ -301,18 +301,37 @@
   }
 
   /* One dot per user prompt: passed ones filled, the current one bigger. Clicking one jumps there.
-     Dots keep a fixed gap and the row scrolls sideways, so a long session doesn't squeeze them together. */
+     Each step is a dot and the dotted line to the next one. The lines grow to spread the dots over the
+     whole row, and only when they reach their minimum width does the row scroll sideways. */
   .seek {
     flex: 1;
     min-width: 0;
     display: flex;
     align-items: center;
-    gap: 14px;
     padding: 6px 10px;
     overflow-x: auto;
     overflow-y: hidden;
     scrollbar-width: thin;
     scrollbar-color: #2a3366 transparent;
+  }
+
+  .seek-step {
+    display: flex;
+    flex: 1 0 auto;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .seek-step:last-child {
+    flex-grow: 0;
+  }
+
+  .seek-step:not(:last-child)::after {
+    content: "";
+    flex: 1;
+    min-width: 10px;
+    margin-right: 2px;
+    border-top: 2px dotted #2a3366;
   }
 
   #controls .seek-dot {
@@ -325,15 +344,6 @@
     background: #2a3366;
     border: 2px solid #000;
     transition: transform 0.2s, background 0.2s;
-  }
-
-  #controls .seek-dot:not(:last-child)::after {
-    content: "";
-    position: absolute;
-    left: calc(100% + 2px);
-    top: 50%;
-    width: 14px;
-    border-top: 2px dotted #2a3366;
   }
 
   #controls .seek-dot.passed {
@@ -696,7 +706,11 @@
     };
 
     dot.onmouseleave = () => $("seek-tip").classList.remove("visible");
-    $("seek").append(dot);
+
+    const step = document.createElement("span");
+    step.className = "seek-step";
+    step.append(dot);
+    $("seek").append(step);
   });
 
   // A mouse wheel only scrolls vertically; turn it into sideways scrolling over the dots.
