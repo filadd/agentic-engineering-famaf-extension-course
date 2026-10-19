@@ -1,5 +1,8 @@
+import { SessionTokens } from "@kurasu/core/access/session-tokens";
 import * as Effect from "effect/Effect";
-import { SignJWT } from "jose";
+import * as Redacted from "effect/Redacted";
+
+import { JoseSessionTokens } from "../../src/session-tokens.ts";
 
 import { testJwtSecret } from "./api-test.ts";
 import { request } from "./http.ts";
@@ -37,11 +40,8 @@ export const loginByMail = (url: string, email: string) =>
 // signs its own. The login itself is tested through the link; the tests of
 // the other endpoints log in this way to skip the mail.
 export const cookieFor = (userId: string) =>
-  Effect.promise(() =>
-    new SignJWT({})
-      .setProtectedHeader({ alg: "HS256" })
-      .setSubject(userId)
-      .setIssuedAt()
-      .setExpirationTime("1h")
-      .sign(new TextEncoder().encode(testJwtSecret)),
-  ).pipe(Effect.map((token) => `session=${token}`));
+  Effect.gen(function* () {
+    const tokens = yield* SessionTokens;
+
+    return `session=${yield* tokens.sign(userId)}`;
+  }).pipe(Effect.provide(JoseSessionTokens(Redacted.make(testJwtSecret))));

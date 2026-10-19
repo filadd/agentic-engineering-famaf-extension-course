@@ -1,6 +1,7 @@
 import * as Effect from "effect/Effect";
 import * as HttpClient from "effect/http/HttpClient";
 import * as HttpClientRequest from "effect/http/HttpClientRequest";
+import type * as HttpClientResponse from "effect/http/HttpClientResponse";
 
 export interface ApiResponse {
   readonly status: number;
@@ -12,6 +13,13 @@ export interface RequestOptions {
   readonly body?: object;
   readonly cookie?: string;
 }
+
+const toApiResponse = (response: HttpClientResponse.HttpClientResponse) =>
+  Effect.map(response.text, (text): ApiResponse => ({
+    status: response.status,
+    headers: response.headers,
+    body: text === "" ? null : JSON.parse(text),
+  }));
 
 // A request to the local API with an optional JSON body and session cookie.
 // The body is parsed as JSON when there is one.
@@ -34,14 +42,7 @@ export const request = (
       outgoing = HttpClientRequest.setHeader(outgoing, "cookie", options.cookie);
     }
 
-    const response = yield* client.execute(outgoing);
-    const text = yield* response.text;
-
-    return {
-      status: response.status,
-      headers: response.headers,
-      body: text === "" ? null : JSON.parse(text),
-    } satisfies ApiResponse;
+    return yield* toApiResponse(yield* client.execute(outgoing));
   });
 
 export interface UploadFile {
@@ -85,14 +86,7 @@ export const uploadEntries = (url: string, cookie: string, entries: ReadonlyArra
       HttpClientRequest.bodyFormData(data),
     );
 
-    const response = yield* client.execute(outgoing);
-    const text = yield* response.text;
-
-    return {
-      status: response.status,
-      headers: response.headers,
-      body: text === "" ? null : JSON.parse(text),
-    } satisfies ApiResponse;
+    return yield* toApiResponse(yield* client.execute(outgoing));
   });
 
 // Uploads a material as the web does: a multipart form with the fields first

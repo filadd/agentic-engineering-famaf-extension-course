@@ -36,7 +36,6 @@ const keysIn = (path: string) => {
   }
 };
 
-// Every object key the local R2 holds, across buckets.
 export const storedKeys = Effect.tryPromise(async () => {
   const files = await readdir(objectsFolder);
 

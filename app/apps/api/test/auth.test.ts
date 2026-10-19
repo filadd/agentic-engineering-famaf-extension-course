@@ -38,7 +38,6 @@ const requestLink = (url: string, body: LinkRequest) =>
 const openSession = (url: string, code: string) =>
   request(url, "POST", "/api/auth/session", { body: { code } });
 
-// Every user, as the teacher's Usuarios screen lists them.
 const allUsers = (url: string) =>
   Effect.gen(function* () {
     const cookie = yield* loginByMail(url, "profe@auth.kurasu.test");
