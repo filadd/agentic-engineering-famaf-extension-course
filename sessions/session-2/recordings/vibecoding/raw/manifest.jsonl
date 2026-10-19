@@ -1,0 +1,63 @@
+{"n":1,"time":"12:30:56","src":"screenshots/001.png","url":"localhost:3000/","caption":"Sin QR: solo para el curso","action":null}
+{"n":2,"time":"12:30:57","src":"screenshots/002.png","url":"localhost:3000/admin/login","caption":"Acceso docente","action":{"kind":"type","x":0.33359375,"y":0.356640625,"w":0.3328125,"h":0.0675,"text":"••••"}}
+{"n":3,"time":"12:30:58","src":"screenshots/003.png","url":"localhost:3000/admin","caption":"Panel docente: todo deshabilitado","action":null}
+{"n":4,"time":"12:30:59","src":"screenshots/004.png","url":"localhost:3000/admin/qr","caption":"QR para proyectar en clase","action":null}
+{"n":5,"time":"12:31:00","src":"screenshots/005.png","url":"localhost:3000/join/b8da54157f08","caption":"Escanea el QR: elige su nombre","action":{"kind":"type","x":0.33359375,"y":0.356640625,"w":0.3328125,"h":0.0675,"text":"Lucía"}}
+{"n":6,"time":"12:31:01","src":"screenshots/006.png","url":"localhost:3000/join/b8da54157f08","caption":"Formulario para sumarse","action":{"kind":"click","x":0.33359375,"y":0.444140625,"w":0.07310791015625,"h":0.0675}}
+{"n":7,"time":"12:31:02","src":"screenshots/007.png","url":"localhost:3000/","caption":"Adentro, todo bloqueado","action":null}
+{"n":8,"time":"12:31:03","src":"screenshots/008.png","url":"localhost:3000/admin","caption":"Habilitar la sesión 1","action":{"kind":"click","x":0.499072265625,"y":0.44310546875,"w":0.09805908203125,"h":0.04951171875}}
+{"n":9,"time":"12:31:04","src":"screenshots/009.png","url":"localhost:3000/admin","caption":"Sesión 1 habilitada, Lucía en la lista","action":null}
+{"n":10,"time":"12:31:05","src":"screenshots/010.png","url":"localhost:3000/","caption":"Lucía ya ve la sesión 1","action":null}
+{"n":11,"time":"12:54:00","src":"screenshots/011.png","url":"localhost:3000/admin","caption":"Panel docente: cards desparejas","action":null}
+{"n":12,"time":"12:54:02","src":"screenshots/012.png","url":"localhost:3000/admin","caption":"Panel docente: cards parejas","action":null}
+{"n":13,"time":"12:54:36","src":"screenshots/013.png","url":"localhost:3000/admin/login","caption":"Reinicio del servidor: pide la contraseña otra vez","action":null}
+{"n":14,"time":"12:54:53","src":"screenshots/014.png","url":"localhost:3000/admin","caption":"Reinicio del servidor: el panel sigue abierto","action":null}
+{"n":15,"time":"13:01:58","src":"screenshots/015.png","url":"localhost:3000/admin","caption":"Nueva sección: materiales por sesión","action":{"kind":"type","x":0.11015625,"y":0.24365234375,"w":0.20164794921875,"h":0.0575,"text":"Slides"}}
+{"n":16,"time":"13:01:58","src":"screenshots/016.png","url":"localhost:3000/admin","caption":"Sube el deck de la sesión 1","action":{"kind":"click","x":0.8236083984375,"y":0.24763671875,"w":0.06622314453125,"h":0.04951171875}}
+{"n":17,"time":"13:02:00","src":"screenshots/017.png","url":"localhost:3000/admin","caption":"Sesión 1 con sus materiales","action":null}
+{"n":18,"time":"13:02:14","src":"screenshots/018.png","url":"localhost:3000/","caption":"Lucía ve los materiales de la sesión 1","action":{"kind":"click","x":0.11015625,"y":0.68412109375,"w":0.05457763671875,"h":0.03}}
+{"n":19,"time":"13:02:18","src":"screenshots/019.png","url":"localhost:3000/materials/3","caption":"Las slides de la clase","action":null}
+{"n":20,"time":"13:03:50","src":"screenshots/020.png","url":"localhost:3000/admin","caption":"Panel docente: una sesión por fila","action":{"kind":"click","x":0.09140625,"y":0.31810546875,"w":0.8171875,"h":0.09}}
+{"n":21,"time":"13:03:50","src":"screenshots/021.png","url":"localhost:3000/admin","caption":"Todo lo de la sesión 1 en un lugar","action":{"kind":"click","x":0.80726318359375,"y":0.18861328125,"w":0.10367431640625,"h":0.0675}}
+{"n":22,"time":"13:04:02","src":"screenshots/022.png","url":"localhost:3000/admin/qr","caption":"El QR en su propia página","action":null}
+{"n":23,"time":"13:04:40","src":"screenshots/023.png","url":"localhost:3000/admin","caption":"Estudiantes en su propia página","action":{"kind":"click","x":0.67314453125,"y":0.18861328125,"w":0.12474365234375,"h":0.0675}}
+{"n":24,"time":"13:04:41","src":"screenshots/024.png","url":"localhost:3000/admin/estudiantes","caption":"Quién se sumó y cuándo","action":null}
+{"n":25,"time":"13:08:14","src":"screenshots/025.png","url":"localhost:3000/","caption":"Vista estudiante: grilla con sesiones bloqueadas","action":null}
+{"n":26,"time":"13:08:35","src":"screenshots/026.png","url":"localhost:3000/","caption":"Solo las sesiones habilitadas, en lista","action":null}
+{"n":27,"time":"13:08:35","src":"screenshots/027.png","url":"localhost:3000/admin","caption":"Habilitar la sesión 2","action":{"kind":"click","x":0.82188720703125,"y":0.55458984375,"w":0.06951904296875,"h":0.04951171875}}
+{"n":28,"time":"13:08:37","src":"screenshots/028.png","url":"localhost:3000/","caption":"Aparece la sesión 2","action":null}
+{"n":29,"time":"13:11:30","src":"screenshots/029.png","url":"localhost:3000/","caption":"La sesión más reciente primero","action":null}
+{"n":30,"time":"13:12:58","src":"screenshots/030.png","url":"localhost:3000/admin","caption":"El resumen ahora se edita desde el panel","action":{"kind":"type","x":0.10859375,"y":0.67185546875,"w":0.68460693359375,"h":0.1275,"text":"Explorar, diseñar y documentar antes de que el agente toque código. Después, verificar: revisión, tests y el agente probando lo que construyó."}}
+{"n":31,"time":"13:12:58","src":"screenshots/031.png","url":"localhost:3000/admin","caption":"Resumen nuevo para la sesión 2","action":{"kind":"click","x":0.10859375,"y":0.81185546875,"w":0.11710205078125,"h":0.04951171875}}
+{"n":32,"time":"13:13:00","src":"screenshots/032.png","url":"localhost:3000/","caption":"Lucía ve el resumen actualizado","action":null}
+{"n":33,"time":"13:17:48","src":"screenshots/033.png","url":"localhost:3000/","caption":"Antes del aula: solo la lista de sesiones","action":null}
+{"n":34,"time":"13:18:45","src":"screenshots/034.png","url":"localhost:3000/","caption":"Cada sesión tiene su aula","action":{"kind":"click","x":0.11015625,"y":1.00357421875,"w":0.114599609375,"h":0.0675}}
+{"n":35,"time":"13:18:46","src":"screenshots/035.png","url":"localhost:3000/aula/1","caption":"Lucía espera al docente","action":null}
+{"n":36,"time":"13:18:47","src":"screenshots/036.png","url":"localhost:3000/aula/1","caption":"Aula del docente: elige qué mostrar","action":null}
+{"n":37,"time":"13:18:58","src":"screenshots/037.png","url":"localhost:3000/aula/1","caption":"El docente muestra las slides","action":null}
+{"n":38,"time":"13:19:00","src":"screenshots/038.png","url":"localhost:3000/aula/1","caption":"Avanza con el teclado","action":null}
+{"n":39,"time":"13:19:02","src":"screenshots/039.png","url":"localhost:3000/aula/1","caption":"Lucía ve exactamente lo mismo","action":null}
+{"n":40,"time":"13:24:02","src":"screenshots/040.png","url":"localhost:3000/aula/1","caption":"Aula sin la lista de estudiantes","action":null}
+{"n":41,"time":"13:24:16","src":"screenshots/041.png","url":"localhost:3000/aula/1","caption":"Opción para mostrar a los estudiantes","action":{"kind":"click","x":0.71771240234375,"y":0.03998046875,"w":0.01015625,"h":0.01625}}
+{"n":42,"time":"13:24:19","src":"screenshots/042.png","url":"localhost:3000/aula/1","caption":"Los nombres a la derecha de la slide","action":null}
+{"n":43,"time":"13:24:20","src":"screenshots/043.png","url":"localhost:3000/aula/1","caption":"Lucía también ve quiénes están","action":null}
+{"n":44,"time":"13:25:59","src":"screenshots/044.png","url":"localhost:3000/aula/1","caption":"Lucía puede levantar la mano","action":{"kind":"click","x":0.83946533203125,"y":0.02,"w":0.14178466796875,"h":0.05599609375}}
+{"n":45,"time":"13:25:59","src":"screenshots/045.png","url":"localhost:3000/aula/1","caption":"Mano levantada","action":null}
+{"n":46,"time":"13:26:00","src":"screenshots/046.png","url":"localhost:3000/aula/1","caption":"El docente ve quién levantó la mano","action":{"kind":"click","x":0.03203125,"y":0.1125,"w":0.07867431640625,"h":0.04451171875}}
+{"n":47,"time":"13:26:01","src":"screenshots/047.png","url":"localhost:3000/aula/1","caption":"Le baja la mano a Lucía","action":null}
+{"n":48,"time":"13:27:42","src":"screenshots/048.png","url":"localhost:3000/aula/1","caption":"Botón para armar una encuesta","action":{"kind":"click","x":0.75166015625,"y":0.023359375,"w":0.09052734375,"h":0.04951171875}}
+{"n":49,"time":"13:27:42","src":"screenshots/049.png","url":"localhost:3000/aula/1","caption":"Pregunta","action":{"kind":"type","x":0.33359375,"y":0.13625,"w":0.3328125,"h":0.0675,"text":"¿Ya usaron un agente de código?"}}
+{"n":50,"time":"13:27:43","src":"screenshots/050.png","url":"localhost:3000/aula/1","caption":"Opciones, una por línea","action":{"kind":"type","x":0.33359375,"y":0.26125,"w":0.3328125,"h":0.1575,"text":"Nunca · Alguna vez · Todos los días"}}
+{"n":51,"time":"13:27:43","src":"screenshots/051.png","url":"localhost:3000/aula/1","caption":"Lanzar la encuesta","action":{"kind":"click","x":0.53154296875,"y":0.43875,"w":0.13486328125,"h":0.0675}}
+{"n":52,"time":"13:27:44","src":"screenshots/052.png","url":"localhost:3000/aula/1","caption":"Lucía recibe la encuesta","action":{"kind":"click","x":0.79296875,"y":0.310703125,"w":0.1734375,"h":0.0675}}
+{"n":53,"time":"13:27:45","src":"screenshots/053.png","url":"localhost:3000/aula/1","caption":"Lucía votó","action":null}
+{"n":54,"time":"13:27:46","src":"screenshots/054.png","url":"localhost:3000/aula/1","caption":"El docente ve los votos en vivo","action":{"kind":"click","x":0.79296875,"y":0.43345703125,"w":0.1734375,"h":0.0765234375}}
+{"n":55,"time":"13:27:47","src":"screenshots/055.png","url":"localhost:3000/aula/1","caption":"Resultados para todos","action":null}
+{"n":56,"time":"13:31:12","src":"screenshots/056.png","url":"localhost:3000/","caption":"Antes: encuestas solo dentro del aula","action":null}
+{"n":57,"time":"13:32:11","src":"screenshots/057.png","url":"localhost:3000/admin","caption":"Encuestas dentro de la sesión","action":{"kind":"type","x":0.10859375,"y":0.3678125,"w":0.7828125,"h":0.0675,"text":"¿Qué parte de la sesión 2 te costó más?"}}
+{"n":58,"time":"13:32:11","src":"screenshots/058.png","url":"localhost:3000/admin","caption":"Pregunta y opciones","action":{"kind":"click","x":0.10859375,"y":0.5828125,"w":0.1068115234375,"h":0.04951171875}}
+{"n":59,"time":"13:32:12","src":"screenshots/059.png","url":"localhost:3000/admin","caption":"Encuesta creada, sin votos","action":null}
+{"n":60,"time":"13:32:12","src":"screenshots/060.png","url":"localhost:3000/","caption":"Lucía la ve en su página","action":{"kind":"click","x":0.125,"y":0.573828125,"w":0.521875,"h":0.0675}}
+{"n":61,"time":"13:32:13","src":"screenshots/061.png","url":"localhost:3000/","caption":"Lucía votó","action":null}
+{"n":62,"time":"13:32:14","src":"screenshots/062.png","url":"localhost:3000/admin","caption":"El docente ve los resultados","action":{"kind":"click","x":0.1234375,"y":0.61330078125,"w":0.17371826171875,"h":0.04951171875}}
+{"n":63,"time":"13:32:15","src":"screenshots/063.png","url":"localhost:3000/","caption":"Resultados para Lucía","action":null}

@@ -642,6 +642,7 @@
 
     generation += 1;
     playing = false;
+    const mine = generation;
 
     // A prompt being typed finishes and then starts waiting, so keep releasing it until the loop exits.
     while (running) {
@@ -649,6 +650,12 @@
       advance?.();
       sleepers.forEach((wake) => wake());
       await new Promise((r) => setTimeout(r, 30));
+    }
+
+    // Two quick skips start two seeks that wait together. If the older one went on, its run() would take
+    // the newer generation and the newer seek would keep waking it, racing through every beat to the end.
+    if (mine !== generation) {
+      return;
     }
 
     term.replaceChildren();

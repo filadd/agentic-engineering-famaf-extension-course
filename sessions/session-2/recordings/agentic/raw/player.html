@@ -300,26 +300,24 @@
     gap: 8px;
   }
 
-  /* One dot per user prompt: passed ones filled, the current one bigger. Clicking one jumps there. */
+  /* One dot per user prompt: passed ones filled, the current one bigger. Clicking one jumps there.
+     Dots keep a fixed gap and the row scrolls sideways, so a long session doesn't squeeze them together. */
   .seek {
     flex: 1;
+    min-width: 0;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    position: relative;
-  }
-
-  .seek::before {
-    content: "";
-    position: absolute;
-    left: 8px;
-    right: 8px;
-    top: 50%;
-    border-top: 2px dotted #2a3366;
+    gap: 14px;
+    padding: 6px 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #2a3366 transparent;
   }
 
   #controls .seek-dot {
     position: relative;
+    flex-shrink: 0;
     width: 14px;
     height: 14px;
     padding: 0;
@@ -327,6 +325,15 @@
     background: #2a3366;
     border: 2px solid #000;
     transition: transform 0.2s, background 0.2s;
+  }
+
+  #controls .seek-dot:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: calc(100% + 2px);
+    top: 50%;
+    width: 14px;
+    border-top: 2px dotted #2a3366;
   }
 
   #controls .seek-dot.passed {
@@ -342,11 +349,11 @@
     transform: scale(1.5);
   }
 
-  .seek-dot .tip {
-    position: absolute;
-    bottom: 22px;
-    left: 50%;
-    transform: translateX(-50%);
+  /* One shared tooltip, fixed to the page, because the scrolling row would clip a tooltip inside it. */
+  #seek-tip {
+    position: fixed;
+    z-index: 10;
+    transform: translate(-50%, -100%);
     width: max-content;
     max-width: 320px;
     padding: 6px 10px;
@@ -363,7 +370,7 @@
     transition: opacity 0.15s;
   }
 
-  .seek-dot:hover .tip {
+  #seek-tip.visible {
     opacity: 1;
   }
 </style>
@@ -389,6 +396,7 @@
 
 <div id="controls">
   <div class="seek" id="seek"></div>
+  <div id="seek-tip"></div>
   <div class="buttons">
   <button id="prev" title="Prompt anterior"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><rect x="4" y="5" width="3" height="14"/><path d="M20 5v14L8 12z"/></svg></button>
   <button id="play" title="Pausa"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg></button>
@@ -457,8 +465,8 @@
       sleepers.add(wake);
     });
 
-  const follow = () => {
-    term.scrollTop = term.scrollHeight;
+  const follow = (behavior = "smooth") => {
+    term.scrollTo({ top: term.scrollHeight, behavior });
   };
 
   const typeInto = async (el, text, msPerChar, onTick) => {
@@ -545,14 +553,23 @@
     }
   };
 
+  let shownPrompt = null;
+
   const updateProgress = () => {
+    const current = promptIndexes.filter((p) => p <= index).at(-1);
+
     document.querySelectorAll(".seek-dot").forEach((dot) => {
       const at = Number(dot.dataset.index);
-      const current = promptIndexes.filter((p) => p <= index).at(-1);
 
       dot.classList.toggle("passed", at < index && at !== current);
       dot.classList.toggle("current", at === current);
+
+      if (at === current && current !== shownPrompt) {
+        dot.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+      }
     });
+
+    shownPrompt = current;
   };
 
   const playBeat = async (beat) => {
@@ -620,8 +637,12 @@
   };
 
   const seekTo = async (target) => {
+    // Moving to the prompt right before or after the current one scrolls the terminal; a longer jump lands directly.
+    const step = Math.abs(promptIndexes.indexOf(target) - promptIndexes.indexOf(currentPrompt()));
+
     generation += 1;
     playing = false;
+    const mine = generation;
 
     // A prompt being typed finishes and then starts waiting, so keep releasing it until the loop exits.
     while (running) {
@@ -631,6 +652,12 @@
       await new Promise((r) => setTimeout(r, 30));
     }
 
+    // Two quick skips start two seeks that wait together. If the older one went on, its run() would take
+    // the newer generation and the newer seek would keep waking it, racing through every beat to the end.
+    if (mine !== generation) {
+      return;
+    }
+
     term.replaceChildren();
     screen.querySelectorAll("img, .typed, .ripple").forEach((el) => el.remove());
     cursor.style.opacity = 0;
@@ -638,7 +665,7 @@
     $("url").textContent = "about:blank";
 
     rec.beats.slice(0, target).forEach(renderInstant);
-    follow();
+    follow(step === 1 ? "smooth" : "instant");
     index = target;
     updateProgress();
 
@@ -656,11 +683,29 @@
     const dot = document.createElement("button");
     dot.className = "seek-dot";
     dot.dataset.index = i;
-    dot.innerHTML = `<span class="tip"></span>`;
-    dot.querySelector(".tip").textContent = rec.beats[i].text;
     dot.onclick = () => seekTo(i);
+
+    dot.onmouseenter = () => {
+      const box = dot.getBoundingClientRect();
+      const tip = $("seek-tip");
+
+      tip.textContent = rec.beats[i].text;
+      tip.style.left = `${Math.min(Math.max(box.left + box.width / 2, 170), innerWidth - 170)}px`;
+      tip.style.top = `${box.top - 8}px`;
+      tip.classList.add("visible");
+    };
+
+    dot.onmouseleave = () => $("seek-tip").classList.remove("visible");
     $("seek").append(dot);
   });
+
+  // A mouse wheel only scrolls vertically; turn it into sideways scrolling over the dots.
+  $("seek").addEventListener("wheel", (event) => {
+    if (event.deltaY === 0) return;
+
+    event.preventDefault();
+    $("seek").scrollLeft += event.deltaY;
+  }, { passive: false });
 
   updateProgress();
 
@@ -696,8 +741,9 @@
       skipTyping = true;
     } else if (advance != null) {
       advance();
-    } else {
-      // During the agent's turn: draw the rest of it at once and land on the next prompt.
+    } else if (index < rec.beats.length) {
+      // During the agent's turn: draw the rest of it at once and land on the next prompt. At the end
+      // there is nothing left to draw, and re-seeking would redraw the whole video from the top.
       seekTo(promptIndexes.find((i) => i > index) ?? rec.beats.length);
     }
   };
