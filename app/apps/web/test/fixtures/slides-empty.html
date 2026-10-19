@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Slides sin slides</title>
+  </head>
+  <body>
+    <script type="application/json" id="manifest">
+      { "type": "kurasu:manifest", "slides": [] }
+    </script>
+    <script>
+      const manifest = JSON.parse(document.getElementById("manifest").textContent);
+
+      parent.postMessage(manifest, "*");
+    </script>
+  </body>
+</html>
