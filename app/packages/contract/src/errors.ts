@@ -126,6 +126,18 @@ export class InvalidResponse extends Schema.TaggedError<InvalidResponse>()(
   { httpApiStatus: 400 },
 ) {}
 
+export class InvalidPollContent extends Schema.TaggedError<InvalidPollContent>()(
+  "InvalidPollContent",
+  {},
+  { httpApiStatus: 400 },
+) {}
+
+export class InvalidUpload extends Schema.TaggedError<InvalidUpload>()(
+  "InvalidUpload",
+  {},
+  { httpApiStatus: 400 },
+) {}
+
 export class FileTooLarge extends Schema.TaggedError<FileTooLarge>()(
   "FileTooLarge",
   {},

@@ -2,6 +2,7 @@ import * as Schema from "effect/Schema";
 import { HttpApiEndpoint, HttpApiGroup, HttpApiSchema } from "effect/http-api";
 
 import {
+  InvalidPollContent,
   InvalidResponse,
   InvalidTransition,
   NotStudent,
@@ -45,32 +46,7 @@ const pollFields = {
   scaleMaxLabel: Schema.optional(Schema.String),
 };
 
-interface PollContent {
-  readonly type: PollType;
-  readonly options?: ReadonlyArray<string> | undefined;
-  readonly scaleMinLabel?: string | undefined;
-  readonly scaleMaxLabel?: string | undefined;
-}
-
-// A choice poll carries its options and a scale poll its labels; the fields of
-// the other types stay empty.
-const fieldsMatchType = (poll: PollContent) => {
-  const hasLabels = poll.scaleMinLabel != null || poll.scaleMaxLabel != null;
-
-  if (poll.type === "choice") {
-    return poll.options == null
-      ? "a choice poll needs its options"
-      : !hasLabels || "only a scale poll has labels";
-  }
-
-  if (poll.options != null) {
-    return "only a choice poll has options";
-  }
-
-  return poll.type === "scale" || !hasLabels || "only a scale poll has labels";
-};
-
-export const PollDraft = Schema.Struct(pollFields).check(Schema.makeFilter(fieldsMatchType));
+export const PollDraft = Schema.Struct(pollFields);
 
 export type PollDraft = typeof PollDraft.Type;
 
@@ -157,13 +133,13 @@ export class AdminPollsGroup extends HttpApiGroup.make("adminPolls")
     HttpApiEndpoint.post("create", "/admin/polls", {
       payload: PollDraft,
       success: AdminPoll.pipe(HttpApiSchema.status(201)),
-      error: SessionNotFound,
+      error: [SessionNotFound, InvalidPollContent],
     }),
     HttpApiEndpoint.patch("update", "/admin/polls/:id", {
       params: { id: Ulid },
       payload: PollChange,
       success: AdminPoll,
-      error: [PollNotFound, PollNotDraft, InvalidTransition],
+      error: [PollNotFound, PollNotDraft, InvalidTransition, InvalidPollContent],
     }),
     HttpApiEndpoint.delete("delete", "/admin/polls/:id", {
       params: { id: Ulid },

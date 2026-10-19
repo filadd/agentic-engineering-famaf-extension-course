@@ -1,4 +1,5 @@
 import {
+  InvalidPollContent,
   InvalidResponse,
   InvalidTransition,
   NotStudent,
@@ -11,7 +12,7 @@ import {
   type AdminPoll,
   type Poll,
   type PollChange,
-  PollDraft,
+  type PollDraft,
   type PollStatus,
   type ResponseValue,
   type VisiblePollStatus,
@@ -23,11 +24,11 @@ import * as Crypto from "effect/Crypto";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
-import * as Schema from "effect/Schema";
 
 import { Classroom } from "../classroom.ts";
 import { SessionsStore } from "../sessions/sessions-store.ts";
 import { existingSession, visibleSession } from "../sessions/visible-session.ts";
+import { fitsType } from "./fits-type.ts";
 import { PollsStore, type StoredPoll } from "./polls-store.ts";
 import { ResponsesStore } from "./responses-store.ts";
 import { fitsPoll, tally } from "./tally.ts";
@@ -53,8 +54,6 @@ const isContentChange = (change: PollChange) =>
 const visibleStatus = (status: PollStatus): VisiblePollStatus =>
   status === "closed" ? "closed" : "active";
 
-const decodeDraft = Schema.decodeUnknownEffect(PollDraft);
-
 // The polls as each side sees them. The student sees the active and closed
 // polls of enabled sessions, with their own vote, and the results once they
 // voted or the poll closed. The teacher sees every poll not deleted with its
@@ -75,11 +74,16 @@ export class Polls extends Context.Service<
     readonly listForTeacher: (
       sessionId: Ulid,
     ) => Effect.Effect<ReadonlyArray<AdminPoll>, SessionNotFound>;
-    readonly create: (draft: PollDraft) => Effect.Effect<AdminPoll, SessionNotFound>;
+    readonly create: (
+      draft: PollDraft,
+    ) => Effect.Effect<AdminPoll, SessionNotFound | InvalidPollContent>;
     readonly update: (
       id: Ulid,
       change: PollChange,
-    ) => Effect.Effect<AdminPoll, PollNotFound | PollNotDraft | InvalidTransition>;
+    ) => Effect.Effect<
+      AdminPoll,
+      PollNotFound | PollNotDraft | InvalidTransition | InvalidPollContent
+    >;
     readonly remove: (id: Ulid) => Effect.Effect<void, PollNotFound>;
   }
 >()("kurasu/Polls") {
@@ -182,6 +186,10 @@ export class Polls extends Context.Service<
         create: Effect.fn("Polls.create")(function* (draft) {
           yield* withSessions(existingSession(draft.sessionId));
 
+          if (!fitsType(draft)) {
+            return yield* new InvalidPollContent();
+          }
+
           const id = yield* crypto.randomULID.pipe(Effect.orDie);
           const poll = yield* store.create({ ...draft, id, status: "draft" });
 
@@ -203,16 +211,17 @@ export class Polls extends Context.Service<
             return yield* new InvalidTransition();
           }
 
-          // The content a draft ends up with must still fit its type: options
-          // only on a choice poll and labels only on a scale poll.
-          yield* decodeDraft({
-            sessionId: poll.sessionId,
-            type: poll.type,
-            prompt: change.prompt ?? poll.prompt,
-            options: change.options ?? poll.options,
-            scaleMinLabel: change.scaleMinLabel ?? poll.scaleMinLabel,
-            scaleMaxLabel: change.scaleMaxLabel ?? poll.scaleMaxLabel,
-          }).pipe(Effect.orDie);
+          // The content a draft ends up with must still fit its type.
+          if (
+            !fitsType({
+              type: poll.type,
+              options: change.options ?? poll.options,
+              scaleMinLabel: change.scaleMinLabel ?? poll.scaleMinLabel,
+              scaleMaxLabel: change.scaleMaxLabel ?? poll.scaleMaxLabel,
+            })
+          ) {
+            return yield* new InvalidPollContent();
+          }
 
           const updated = yield* Effect.flatMap(store.update(id, change), (stored) =>
             Effect.fromOption(stored).pipe(Effect.mapError(() => new PollNotFound())),

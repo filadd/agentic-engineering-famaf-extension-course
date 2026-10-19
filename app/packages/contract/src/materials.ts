@@ -1,7 +1,7 @@
 import * as Schema from "effect/Schema";
 import { HttpApiEndpoint, HttpApiGroup, HttpApiSchema } from "effect/http-api";
 
-import { FileTooLarge, MaterialNotFound, SessionNotFound } from "./errors.ts";
+import { FileTooLarge, InvalidUpload, MaterialNotFound, SessionNotFound } from "./errors.ts";
 import { CurrentUserMiddleware } from "./middleware.ts";
 import { Ulid } from "./ulid.ts";
 
@@ -54,7 +54,7 @@ export class AdminMaterialsGroup extends HttpApiGroup.make("adminMaterials")
     HttpApiEndpoint.post("upload", "/admin/materials", {
       payload: MaterialUpload,
       success: Material.pipe(HttpApiSchema.status(201)),
-      error: [SessionNotFound, FileTooLarge],
+      error: [SessionNotFound, FileTooLarge, InvalidUpload],
     }),
     HttpApiEndpoint.patch("update", "/admin/materials/:id", {
       params: { id: Ulid },

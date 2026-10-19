@@ -1,4 +1,4 @@
-import type { Material } from "@kurasu/contract/materials";
+import { InvalidUpload } from "@kurasu/contract/errors";
 import { CurrentUser } from "@kurasu/contract/middleware";
 import { Ulid } from "@kurasu/contract/ulid";
 import { Materials } from "@kurasu/core/materials/materials";
@@ -6,10 +6,13 @@ import * as Effect from "effect/Effect";
 import * as HttpServerResponse from "effect/http/HttpServerResponse";
 import * as Multipart from "effect/http/Multipart";
 import { HttpApiBuilder } from "effect/http-api";
+import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
 
 import { KurasuApi } from "@kurasu/contract/api";
+
+import { formParts } from "../files/form-parts.ts";
 
 const decodeUploadFields = Schema.decodeUnknownEffect(
   Schema.Struct({
@@ -45,9 +48,10 @@ export const MaterialsHandlers = HttpApiBuilder.group(KurasuApi, "materials", (h
     ),
 );
 
-// The upload reads the multipart body as it arrives: the form sends its fields
-// before the file, so the session is checked and the file streams to R2
-// without being buffered whole.
+// The upload reads the multipart body as it arrives, one part at a time: the
+// form sends its fields before the file, so the session is checked and the
+// file streams to R2 without being buffered whole. Fields that come after the
+// file, a second file or no file at all make the form invalid.
 export const AdminMaterialsHandlers = HttpApiBuilder.group(
   KurasuApi,
   "adminMaterials",
@@ -63,33 +67,43 @@ export const AdminMaterialsHandlers = HttpApiBuilder.group(
       .handle("upload", ({ payload }) =>
         Effect.gen(function* () {
           const materials = yield* Materials;
-          const fields = new Map<string, string>();
-          const uploaded: Array<Material> = [];
+          const parts = yield* formParts(payload);
 
-          yield* Stream.runForEach(payload, (part) =>
-            Multipart.isField(part)
-              ? Effect.sync(() => fields.set(part.key, part.value))
-              : Effect.gen(function* () {
-                  const form = yield* decodeUploadFields(Object.fromEntries(fields)).pipe(
-                    Effect.orDie,
-                  );
+          const store = Effect.gen(function* () {
+            const fields = new Map<string, string>();
 
-                  uploaded.push(
-                    yield* materials.upload({
-                      sessionId: form.sessionId,
-                      name: form.name,
-                      isSlides: form.isSlides === "true",
-                      fileName: part.name,
-                      contentType:
-                        part.contentType === "" ? "application/octet-stream" : part.contentType,
-                      body: Stream.orDie(part.content),
-                    }),
-                  );
-                }),
-          ).pipe(Effect.catchTag("MultipartError", Effect.die));
+            let part = yield* parts.next;
 
-          return uploaded[0] ?? (yield* Effect.die("the upload carried no file"));
-        }),
+            while (Option.isSome(part) && Multipart.isField(part.value)) {
+              fields.set(part.value.key, part.value.value);
+              part = yield* parts.next;
+            }
+
+            if (Option.isNone(part) || !Multipart.isFile(part.value)) {
+              return yield* new InvalidUpload();
+            }
+
+            const file = part.value;
+
+            const form = yield* decodeUploadFields(Object.fromEntries(fields)).pipe(
+              Effect.mapError(() => new InvalidUpload()),
+            );
+
+            return yield* materials.upload({
+              sessionId: form.sessionId,
+              name: form.name,
+              isSlides: form.isSlides === "true",
+              fileName: file.name,
+              contentType: file.contentType === "" ? "application/octet-stream" : file.contentType,
+              body: Stream.orDie(file.content),
+              formEnd: Effect.flatMap(parts.next, (rest) =>
+                Option.isSome(rest) ? Effect.fail(new InvalidUpload()) : Effect.void,
+              ),
+            });
+          });
+
+          return yield* store.pipe(Effect.onError(() => parts.skipRest));
+        }).pipe(Effect.scoped),
       )
       .handle("update", ({ params, payload }) =>
         Effect.gen(function* () {

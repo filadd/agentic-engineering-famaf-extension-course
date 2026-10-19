@@ -1,5 +1,6 @@
 import { expect } from "@effect/vitest";
 import {
+  InvalidPollContent,
   InvalidResponse,
   InvalidTransition,
   NotStudent,
@@ -390,6 +391,64 @@ test(
     expect((yield* createChoice(Array.from({ length: 11 }, (_, index) => `${index}`))).status).toBe(
       400,
     );
+  }),
+);
+
+const teacherPolls = Effect.gen(function* () {
+  const { url } = yield* stack;
+  const cookie = yield* cookieFor(teacher);
+
+  const response = yield* request(url, "GET", `/api/admin/polls?sessionId=${teachers}`, {
+    cookie,
+  });
+
+  return yield* bodyOf(AdminPolls, response);
+});
+
+test(
+  "options outside a choice poll, or labels outside a scale, answer InvalidPollContent",
+  Effect.gen(function* () {
+    const before = yield* teacherPolls;
+
+    const contents: ReadonlyArray<
+      Pick<PollDraft, "type" | "options" | "scaleMinLabel" | "scaleMaxLabel">
+    > = [
+      { type: "scale", options: ["A", "B"] },
+      { type: "words", options: ["A", "B"] },
+      { type: "choice", options: ["A", "B"], scaleMinLabel: "Nada" },
+      { type: "words", scaleMaxLabel: "Mucho" },
+    ];
+
+    for (const content of contents) {
+      const response = yield* asTeacher("POST", "/api/admin/polls", {
+        sessionId: teachers,
+        prompt: "Mal armada",
+        ...content,
+      });
+
+      expect(response.status).toBe(400);
+      expect(failedWith(response, InvalidPollContent)).toBe(true);
+    }
+
+    expect(yield* teacherPolls).toEqual(before);
+  }),
+);
+
+test(
+  "options on a scale draft answer InvalidPollContent and leave the draft as it was",
+  Effect.gen(function* () {
+    const id = "01PD8000000000000000000000";
+    const before = (yield* teacherPolls).find((poll) => poll.id === id);
+
+    const response = yield* asTeacher("PATCH", `/api/admin/polls/${id}`, {
+      prompt: "Cambiada",
+      options: ["Uno", "Dos"],
+    });
+
+    expect(response.status).toBe(400);
+    expect(failedWith(response, InvalidPollContent)).toBe(true);
+    expect(before).toMatchObject({ prompt: "Escala sin opciones", status: "draft" });
+    expect((yield* teacherPolls).find((poll) => poll.id === id)).toEqual(before);
   }),
 );
 

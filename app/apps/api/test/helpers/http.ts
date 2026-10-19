@@ -57,17 +57,28 @@ export interface UploadForm {
   readonly file: UploadFile;
 }
 
-// Uploads a material as the web does: a multipart form with the fields first
-// and the file last.
-export const upload = (url: string, cookie: string, form: UploadForm) =>
+export type FormEntry =
+  | { readonly key: string; readonly value: string }
+  | { readonly key: string; readonly file: UploadFile };
+
+// Posts a multipart form to the material upload with its entries in the given
+// order, so a test can send the fields after the file.
+export const uploadEntries = (url: string, cookie: string, entries: ReadonlyArray<FormEntry>) =>
   Effect.gen(function* () {
     const client = yield* HttpClient.HttpClient;
     const data = new FormData();
 
-    data.append("sessionId", form.sessionId);
-    data.append("name", form.name);
-    data.append("isSlides", String(form.isSlides));
-    data.append("file", new Blob([form.file.bytes], { type: form.file.type }), form.file.name);
+    for (const entry of entries) {
+      if ("file" in entry) {
+        data.append(
+          entry.key,
+          new Blob([entry.file.bytes], { type: entry.file.type }),
+          entry.file.name,
+        );
+      } else {
+        data.append(entry.key, entry.value);
+      }
+    }
 
     const outgoing = HttpClientRequest.post(`${url}/api/admin/materials`).pipe(
       HttpClientRequest.setHeader("cookie", cookie),
@@ -83,6 +94,16 @@ export const upload = (url: string, cookie: string, form: UploadForm) =>
       body: text === "" ? null : JSON.parse(text),
     } satisfies ApiResponse;
   });
+
+// Uploads a material as the web does: a multipart form with the fields first
+// and the file last.
+export const upload = (url: string, cookie: string, form: UploadForm) =>
+  uploadEntries(url, cookie, [
+    { key: "sessionId", value: form.sessionId },
+    { key: "name", value: form.name },
+    { key: "isSlides", value: String(form.isSlides) },
+    { key: "file", file: form.file },
+  ]);
 
 export interface Download {
   readonly status: number;

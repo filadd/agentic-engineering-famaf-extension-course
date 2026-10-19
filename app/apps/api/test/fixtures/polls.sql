@@ -29,7 +29,8 @@ INSERT INTO polls (id, session_id, type, status, prompt, options, scale_min_labe
   ('01PD4000000000000000000000', '01PSC000000000000000000000', 'words', 'active', 'Para cerrar', NULL, NULL, NULL, NULL),
   ('01PD5000000000000000000000', '01PSC000000000000000000000', 'choice', 'closed', 'Cerrada', '["Sí","No"]', NULL, NULL, NULL),
   ('01PD6000000000000000000000', '01PSC000000000000000000000', 'scale', 'draft', 'Borrador que no cierra', NULL, NULL, NULL, NULL),
-  ('01PD7000000000000000000000', '01PSC000000000000000000000', 'choice', 'active', 'Para borrar', '["Sí","No"]', NULL, NULL, NULL);
+  ('01PD7000000000000000000000', '01PSC000000000000000000000', 'choice', 'active', 'Para borrar', '["Sí","No"]', NULL, NULL, NULL),
+  ('01PD8000000000000000000000', '01PSC000000000000000000000', 'scale', 'draft', 'Escala sin opciones', NULL, 'Poco', 'Mucho', NULL);
 
 INSERT INTO responses (poll_id, user_id, value) VALUES
   ('01PQ2000000000000000000000', '01PRDR00000000000000000000', '{"scale":4}'),

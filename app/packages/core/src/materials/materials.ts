@@ -1,4 +1,9 @@
-import { type FileTooLarge, MaterialNotFound, type SessionNotFound } from "@kurasu/contract/errors";
+import {
+  type FileTooLarge,
+  type InvalidUpload,
+  MaterialNotFound,
+  type SessionNotFound,
+} from "@kurasu/contract/errors";
 import type { Material } from "@kurasu/contract/materials";
 import type { Ulid } from "@kurasu/contract/ulid";
 import type { User } from "@kurasu/contract/user";
@@ -21,6 +26,7 @@ export interface MaterialUpload {
   readonly fileName: string;
   readonly contentType: string;
   readonly body: Stream.Stream<Uint8Array, FileTooLarge>;
+  readonly formEnd: Effect.Effect<void, InvalidUpload>;
 }
 
 // The material of the sessions. The student lists and downloads the material
@@ -28,6 +34,9 @@ export interface MaterialUpload {
 // slides of a session change (an upload marked as slides, marking or unmarking
 // one, or deleting the slides) the store moves the teacher's position back to
 // slide 1, step 1, so the classroom hears `slide` as well as `material`.
+// An upload reads `formEnd` once the file is stored and before saving the
+// material: whatever the form sends after the file only shows up then, and a
+// failure there leaves neither the material nor its file.
 export class Materials extends Context.Service<
   Materials,
   {
@@ -38,7 +47,7 @@ export class Materials extends Context.Service<
     readonly file: (viewer: User, id: Ulid) => Effect.Effect<StoredFile, MaterialNotFound>;
     readonly upload: (
       upload: MaterialUpload,
-    ) => Effect.Effect<Material, SessionNotFound | FileTooLarge>;
+    ) => Effect.Effect<Material, SessionNotFound | FileTooLarge | InvalidUpload>;
     readonly setSlides: (id: Ulid, isSlides: boolean) => Effect.Effect<Material, MaterialNotFound>;
     readonly remove: (id: Ulid) => Effect.Effect<void, MaterialNotFound>;
   }
@@ -101,6 +110,8 @@ export class Materials extends Context.Service<
             contentType: upload.contentType,
             body: upload.body,
           });
+
+          yield* upload.formEnd.pipe(Effect.onError(() => files.remove(id)));
 
           const material = yield* store.create({
             id,
