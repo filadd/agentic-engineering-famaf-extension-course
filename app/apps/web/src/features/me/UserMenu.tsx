@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { Backdrop } from "../../ui/Backdrop.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 import { Avatar } from "./Avatar.tsx";
@@ -31,6 +32,7 @@ export const UserMenu = () => {
       >
         <Avatar animal={me.data.avatar} size="large" />
       </button>
+      {open ? <Backdrop layer="menu" onClose={() => setOpen(false)} /> : null}
       {open ? (
         <div
           role="menu"

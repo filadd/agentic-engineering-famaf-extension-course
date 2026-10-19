@@ -19,26 +19,29 @@ export const UserRow = ({ user }: Props) => {
       aria-label={user.name ?? user.email}
       className="flex items-center gap-3 rounded-2xl bg-side py-2.5 pr-3 pl-3.5"
     >
-      <span
-        aria-hidden="true"
-        className={`grid size-[38px] flex-none place-items-center rounded-full text-xl ${user.avatar == null ? "" : "bg-lilac"}`}
-      >
-        {user.avatar == null ? "" : animalLooks[user.avatar].emoji}
-      </span>
+      {user.avatar == null ? (
+        <span
+          aria-hidden="true"
+          className="grid size-[38px] flex-none place-items-center rounded-full border-2 border-dashed border-muted text-muted"
+        >
+          ?
+        </span>
+      ) : (
+        <span
+          aria-hidden="true"
+          className="grid size-[38px] flex-none place-items-center rounded-full bg-lilac text-xl"
+        >
+          {animalLooks[user.avatar].emoji}
+        </span>
+      )}
       <div className="min-w-0 flex-1">
-        {user.name == null ? (
-          user.email
-        ) : (
-          <>
-            <b>{user.name}</b>
-            {user.role === "teacher" ? (
-              <span className="ml-1.5 rounded-full bg-window px-2 py-px text-[11px] text-muted">
-                Profe
-              </span>
-            ) : null}
-            <small className="block text-[13px] text-muted">{user.email}</small>
-          </>
-        )}
+        {user.name == null ? <span className="text-muted">Sin nombre</span> : <b>{user.name}</b>}
+        {user.role === "teacher" ? (
+          <span className="ml-1.5 rounded-full bg-window px-2 py-px text-[11px] text-muted">
+            Profe
+          </span>
+        ) : null}
+        <small className="block text-[13px] text-muted">{user.email}</small>
       </div>
       {user.role === "teacher" ? null : (
         <ConfirmAction

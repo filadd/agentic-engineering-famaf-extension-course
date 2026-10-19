@@ -48,6 +48,29 @@ describe("user menu", () => {
     expect(updates.calls).toEqual([{ name: "Lu", avatar: "panda" }]);
   });
 
+  test("Escape closes the menu", async () => {
+    server.use(...studentHome(student));
+
+    const { user } = await renderRoute("/");
+
+    await openMenu(user);
+    await user.keyboard("{Escape}");
+
+    expect(screen.queryByRole("menu")).toBeNull();
+  });
+
+  test("a click outside closes the menu", async () => {
+    server.use(...studentHome(student));
+
+    const { user } = await renderRoute("/");
+
+    const menu = await openMenu(user);
+
+    await user.click(menu.previousElementSibling ?? document.body);
+
+    expect(screen.queryByRole("menu")).toBeNull();
+  });
+
   test("turning on the dark mode marks the page dark and keeps it", async () => {
     server.use(...studentHome(student));
 

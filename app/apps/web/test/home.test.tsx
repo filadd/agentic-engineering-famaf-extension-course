@@ -12,6 +12,7 @@ import {
   wordsPoll,
 } from "./fixtures/content.ts";
 import { student } from "./fixtures/people.ts";
+import { icons } from "../src/ui/icons.ts";
 import { getJson, url } from "./helpers/api.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
@@ -45,7 +46,7 @@ describe("/ home", () => {
     expect(
       within(highlighted).getByRole("link", { name: "Entrar al aula" }).getAttribute("href"),
     ).toBe("/aula");
-    expect(screen.queryByRole("heading", { name: "Todas las sesiones" })).toBeNull();
+    expect(screen.queryByRole("heading", { name: "Sesiones anteriores" })).toBeNull();
   });
 
   test("several sessions highlight the last one and fold the rest, newest first, one open at a time", async () => {
@@ -59,7 +60,7 @@ describe("/ home", () => {
 
     expect(await screen.findByRole("region", { name: tooling.title })).toBeTruthy();
 
-    const rail = screen.getByRole("region", { name: "Todas las sesiones" });
+    const rail = screen.getByRole("region", { name: "Sesiones anteriores" });
     const cards = within(rail).getAllByRole("article");
 
     expect(cards.map((card) => card.getAttribute("aria-label"))).toEqual([
@@ -78,6 +79,27 @@ describe("/ home", () => {
     expect(within(rail).getByText(vibeCoding.summary)).toBeTruthy();
     expect(within(rail).queryByText(planning.summary)).toBeNull();
     expect(within(rail).queryByRole("link", { name: "Entrar al aula" })).toBeNull();
+  });
+
+  test("an earlier card's caret points down while folded and up while open", async () => {
+    server.use(
+      getJson("/me", student),
+      getJson("/sessions", [vibeCoding, planning]),
+      getJson("/polls", []),
+    );
+
+    const { user } = await renderRoute("/");
+
+    const rail = await screen.findByRole("region", { name: "Sesiones anteriores" });
+    const card = within(rail).getByRole("article", { name: vibeCoding.title });
+    const caret = () => card.querySelector("button[aria-hidden] path")?.getAttribute("d");
+
+    expect(within(rail).getByRole("heading", { name: "Sesiones anteriores" })).toBeTruthy();
+    expect(caret()).toBe(icons["chevron-down"][0]);
+
+    await user.click(within(card).getByRole("button", { name: vibeCoding.title }));
+
+    expect(caret()).toBe(icons["chevron-up"][0]);
   });
 
   test("the highlighted session shows one card per active poll: the form before voting, the results after", async () => {

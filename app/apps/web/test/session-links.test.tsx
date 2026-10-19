@@ -269,7 +269,7 @@ describe("questions from the card", () => {
     server.use(...store.handlers);
 
     const { user } = await renderRoute("/");
-    const rail = await screen.findByRole("region", { name: "Todas las sesiones" });
+    const rail = await screen.findByRole("region", { name: "Sesiones anteriores" });
 
     await user.click(within(rail).getByRole("button", { name: vibeCoding.title }));
     await user.click(within(rail).getByRole("button", { name: "Preguntas" }));

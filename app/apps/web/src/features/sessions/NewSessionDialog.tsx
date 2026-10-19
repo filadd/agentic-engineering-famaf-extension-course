@@ -41,10 +41,6 @@ export const NewSessionDialog = ({ onClose, onCreated }: Props) => {
             className="input-field min-h-20 resize-y"
           />
         </label>
-        <p className="mt-3 text-[13px] text-muted">
-          Se suma al final del camino, deshabilitada. El material, las slides y las encuestas se
-          cargan desde su página.
-        </p>
         <div className="mt-[18px] flex justify-end gap-2">
           <Button variant="pill" onClick={onClose}>
             Cancelar

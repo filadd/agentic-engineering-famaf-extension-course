@@ -98,6 +98,27 @@ describe("/admin/usuarios", () => {
     expect(store.writes).toEqual([{ method: "POST", body: "nueva@gmail.com" }]);
   });
 
+  test("a user added by email shows a dotted question mark, Sin nombre and the email below", async () => {
+    const { list } = await openUsers();
+
+    const row = within(list).getByRole("listitem", { name: pending.email });
+
+    expect(row.textContent).toContain("?");
+    expect(within(row).getByText("Sin nombre")).toBeTruthy();
+    expect(within(row).getByText(pending.email).tagName).toBe("SMALL");
+  });
+
+  test("a user with a profile shows the name, the avatar and the email", async () => {
+    const { list } = await openUsers();
+
+    const row = within(list).getByRole("listitem", { name: student.name ?? "" });
+
+    expect(within(row).getByText(student.name ?? "").tagName).toBe("B");
+    expect(row.textContent).toContain("🦊");
+    expect(within(row).getByText(student.email)).toBeTruthy();
+    expect(within(row).queryByText("Sin nombre")).toBeNull();
+  });
+
   test("adding a registered email shows that it is taken", async () => {
     const { user } = await openUsers();
 

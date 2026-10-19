@@ -15,9 +15,9 @@ export const EarlierSessions = ({ sessions }: Props) => {
   const [openId, setOpenId] = useState<string | null>(null);
 
   return (
-    <section aria-label="Todas las sesiones">
+    <section aria-label="Sesiones anteriores">
       <h2 className="mt-7 text-lg font-bold max-[600px]:mt-6 max-[600px]:text-[17px]">
-        Todas las sesiones
+        Sesiones anteriores
       </h2>
       <SessionRail
         sessions={sessions}

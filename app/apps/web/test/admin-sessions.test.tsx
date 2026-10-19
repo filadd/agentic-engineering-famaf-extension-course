@@ -74,6 +74,18 @@ describe("/admin", () => {
     expect(within(created).getByText("Deshabilitada")).toBeTruthy();
   });
 
+  test("the new session sheet asks for the title and the summary, without an explanation", async () => {
+    const { user, rail } = await openAdmin();
+
+    await user.click(within(rail).getByRole("button", { name: "Nueva sesión" }));
+
+    const dialog = screen.getByRole("dialog", { name: "Nueva sesión" });
+
+    expect(within(dialog).getByLabelText("Título")).toBeTruthy();
+    expect(within(dialog).getByLabelText("Resumen")).toBeTruthy();
+    expect(dialog.querySelector("p")).toBeNull();
+  });
+
   test("dragging a card reorders the list on drop and puts the whole order", async () => {
     const { rail, store } = await openAdmin();
 

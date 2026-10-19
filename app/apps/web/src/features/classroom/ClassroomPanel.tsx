@@ -98,7 +98,7 @@ export const ClassroomPanel = ({
       <div
         role="tablist"
         aria-label="Pestañas del panel"
-        className="flex gap-1.5 px-4 pb-2.5 max-[600px]:px-3 max-[600px]:pt-3"
+        className={`flex gap-1.5 px-4 pb-2.5 max-[600px]:px-3 max-[600px]:pt-3 ${hideable ? "" : "pt-12"}`}
       >
         {shown.map((tab) => (
           <button
@@ -123,7 +123,11 @@ export const ClassroomPanel = ({
         {current?.content}
       </div>
       {isMobile ? null : (
-        <div className="border-t-[1.5px] border-line pt-2.5 pb-3.5">
+        <div
+          className={`flex flex-col border-t-[1.5px] border-line pt-2.5 pb-3.5 ${
+            ui.presenceCollapsed ? "" : "min-h-0 basis-1/2"
+          }`}
+        >
           <button
             type="button"
             aria-expanded={!ui.presenceCollapsed}
@@ -138,7 +142,7 @@ export const ClassroomPanel = ({
             </span>
           </button>
           {ui.presenceCollapsed ? null : (
-            <div className="mt-2 mr-1 max-h-[210px] overflow-auto pr-3 pl-4">
+            <div className="mt-2 mr-1 min-h-0 flex-1 overflow-auto pr-3 pl-4">
               {presence.content}
             </div>
           )}
