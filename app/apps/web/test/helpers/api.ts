@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw";
 import type { JsonBodyType } from "msw";
+import * as Schema from "effect/Schema";
 
 const statusOf = {
   Unauthenticated: 401,
@@ -29,3 +30,7 @@ export const getJson = (path: string, body: JsonBodyType) =>
   http.get(url(path), () => HttpResponse.json(body));
 
 export const noContent = () => new HttpResponse(null, { status: 204 });
+
+// Decodes what the screen sent, so a handler reads it with its contract type.
+export const readJson = async <S extends Schema.Decoder<unknown>>(request: Request, schema: S) =>
+  Schema.decodeUnknownSync(schema)(await request.json());
