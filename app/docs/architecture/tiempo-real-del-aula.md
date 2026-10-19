@@ -76,7 +76,9 @@ El estudiante solo puede entrar al aula de la sesión destacada, esté el profe 
 
 [Prototipo del aula del estudiante, en celular y escritorio](../prototipos/aula-responsive.html)
 
-El profe conduce el aula desde la pestaña Aula del admin de la sesión, con la slide grande y el mismo panel que el estudiante: maneja las encuestas, marca preguntas como respondidas y baja manos. Cuando el profe está en otra pestaña de la sesión, la pestaña Aula muestra badges con las preguntas nuevas y las manos levantadas.
+El profe conduce el aula desde la pestaña Aula del admin de la sesión, con la slide grande y el mismo panel que el estudiante: cambia el estado de las encuestas, marca preguntas como respondidas y baja manos. En el panel, un borrador se ve como lo verá el estudiante, con el botón Activar. Una encuesta activa muestra sus resultados, con el botón Cerrar. Las encuestas cerradas quedan plegadas al final. El profe edita, borra y crea encuestas en la pestaña Encuestas (ver [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)). Cuando el profe está en otra pestaña de la sesión, la pestaña Aula muestra badges con las preguntas nuevas y las manos levantadas.
+
+En escritorio, Presentes ocupa siempre la mitad del alto del panel, en el aula del estudiante y en la del profe; plegado, queda abajo del panel. En celular, Presentes es una pestaña del panel y crece sin tope.
 
 [Prototipo del admin de la sesión, con la pestaña Aula](../prototipos/admin-sesion.html)
 

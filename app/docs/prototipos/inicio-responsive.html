@@ -220,7 +220,7 @@
 <body>
 <div class="intro">
   <h1>Inicio del estudiante · celular y escritorio</h1>
-  <p>Cada estado se ve en un celular de 390 × 844 y en escritorio, con la misma data; lo que hacés en uno se refleja en el otro. En celular la card destacada ocupa el ancho, "Entrar al aula" va a lo ancho al pie de la card, el camino de "Todas las sesiones" achica los nodos y el menú del avatar sigue siendo un desplegable. En el celular, todos los modales (Material, Encuestas, Preguntas y "Tu perfil") suben como una hoja desde abajo; en escritorio son el modal centrado ya decidido. Las sesiones no habilitadas no aparecen. Borrar una pregunta tuya pide confirmación. Votá, cambiá el voto, mandá palabras separadas por coma, abrí los links de la card o el menú del avatar.</p>
+  <p>Cada estado se ve en un celular de 390 × 844 y en escritorio, con la misma data; lo que hacés en uno se refleja en el otro. En celular la card destacada ocupa el ancho, "Entrar al aula" va a lo ancho al pie de la card, el camino de "Sesiones anteriores" achica los nodos y el menú del avatar sigue siendo un desplegable. En el celular, todos los modales (Material, Encuestas, Preguntas y "Tu perfil") suben como una hoja desde abajo; en escritorio son el modal centrado ya decidido. Las sesiones no habilitadas no aparecen. Borrar una pregunta tuya pide confirmación. Votá, cambiá el voto, mandá palabras separadas por coma, abrí los links de la card o el menú del avatar.</p>
 </div>
 <div id="alts"></div>
 
@@ -464,7 +464,7 @@ const page = (v, state) => {
       ${current == null
         ? '<div class="empty-note">Todavía no hay sesiones habilitadas. Cuando el profe habilite la primera, aparece acá arriba.</div>'
         : `${hero(v, state, current)}
-          <div class="section-title">Todas las sesiones</div>
+          <div class="section-title">Sesiones anteriores</div>
           <div class="path">${all.map((s, i) => `
             <div class="rail"><div class="node ${s.n === current.n ? 'live' : 'done'}">${s.n === current.n ? s.n : ic('check', 20)}</div>${i < all.length - 1 ? '<div class="link"></div>' : ''}</div>
             <div class="step">${pathCard(v, state, s, current)}</div>`).join('')}</div>`}

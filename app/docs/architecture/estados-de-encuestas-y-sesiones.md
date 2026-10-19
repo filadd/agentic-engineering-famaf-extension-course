@@ -74,7 +74,7 @@ Una pregunta (`Question`) está abierta o respondida, según su campo `answered`
 
 ## 🏠 Inicio del estudiante
 
-En el inicio, el estudiante ve solo las sesiones habilitadas, en el orden de la lista del profe. Arriba está la sesión destacada, la habilitada que está más adelante en la lista. Es la única desde la que se entra al aula; las demás están en "Todas las sesiones". Cada card muestra el resumen, las encuestas activas, donde el estudiante vota, y los links a Material, Encuestas y Preguntas, sin cantidades. Cada link abre un modal, que en celular es una hoja desde abajo y en escritorio va centrado. Una sesión anterior muestra su material, sus encuestas cerradas y sus preguntas para leer, y en ella no se pregunta ni se vota.
+En el inicio, el estudiante ve solo las sesiones habilitadas, en el orden de la lista del profe. Arriba está la sesión destacada, la habilitada que está más adelante en la lista. Es la única desde la que se entra al aula; las demás están en "Sesiones anteriores". Cada card muestra el resumen, las encuestas activas, donde el estudiante vota, y los links a Material, Encuestas y Preguntas, sin cantidades. Cada link abre un modal, que en celular es una hoja desde abajo y en escritorio va centrado. Cada card que se pliega muestra un caret, que apunta hacia abajo cuando está plegada y hacia arriba cuando está desplegada, como la lista de Presentes. Una sesión anterior muestra su material, sus encuestas cerradas y sus preguntas para leer, y en ella no se pregunta ni se vota.
 
 El inicio no recibe avisos: una encuesta que el profe activa o cierra aparece en el inicio cuando la web vuelve a pedir sus datos, cada cinco minutos, o cuando el estudiante vuelve a cargar la página (ver [componentes](componentes.md)).
 
@@ -86,7 +86,7 @@ El profe ve la lista de sesiones, crea una nueva al final de la lista, las reord
 
 [Prototipo de la lista de sesiones del profe](../prototipos/admin-sesiones.html)
 
-La página de una sesión tiene las pestañas Contenido, Encuestas y Aula. En esa página, el profe habilita o deshabilita la sesión con el switch de su card, y una deshabilitada se borra desde la misma card. En Contenido edita el título y el resumen. El profe sube el material con un nombre desde un modal, y no lo puede reordenar ni renombrar. La API rechaza una subida mal formada y no guarda ni el material ni el archivo. En Encuestas crea encuestas de cada tipo, edita los borradores, y activa, cierra y borra las encuestas. La pestaña Aula está en [tiempo real del aula](tiempo-real-del-aula.md), y la subida de las slides en [API de las slides](api-de-las-slides.md).
+La página de una sesión tiene las pestañas Contenido, Encuestas y Aula. En esa página, el profe habilita o deshabilita la sesión con el switch de su card, y una deshabilitada se borra desde la misma card. En Contenido edita el título y el resumen. El profe sube el material con un nombre desde un modal, y no lo puede reordenar ni renombrar. La API rechaza una subida mal formada y no guarda ni el material ni el archivo. En Encuestas crea encuestas de cada tipo, edita los borradores, y activa, cierra y borra las encuestas. Sin encuestas, la pestaña muestra "Todavía no hay encuestas" debajo del creador. En el panel del aula el profe solo activa y cierra encuestas. La pestaña Aula está en [tiempo real del aula](tiempo-real-del-aula.md), y la subida de las slides en [API de las slides](api-de-las-slides.md).
 
 [Prototipo del admin de una sesión, con sus pestañas Contenido, Encuestas y Aula](../prototipos/admin-sesion.html)
 
@@ -94,8 +94,10 @@ La página de una sesión tiene las pestañas Contenido, Encuestas y Aula. En es
 
 Toda acción destructiva pide confirmación: borrar una sesión, una encuesta, un material o una pregunta propia, sacarle el acceso a alguien y regenerar el código de registro. No la piden los cambios que se deshacen fácil, como marcar una pregunta como respondida o bajar una mano.
 
-La confirmación es un diálogo que se abre encima de lo que haya, también sobre un modal o una hoja. Escape cierra solo el diálogo de arriba, igual que su botón Cerrar o Cancelar: una confirmación abierta sobre una hoja se cierra y la hoja queda.
+La confirmación es un diálogo que se abre encima de lo que haya, también sobre un modal o una hoja. Escape cierra solo el diálogo de arriba, igual que su botón Cerrar o Cancelar: una confirmación abierta sobre una hoja se cierra y la hoja queda. El menú del usuario también se cierra con Escape o con un click fuera de él, como los modales.
+
+Toda acción que pide confirmación queda en espera hasta que responde el servidor, según la regla de [carga y acciones de la web](carga-y-acciones-de-la-web.md).
 
 ---
 
-Related: [modelo de datos](modelo-de-datos.md), [tiempo real del aula](tiempo-real-del-aula.md), [login y acceso](login-y-acceso.md), [API de las slides](api-de-las-slides.md)
+Related: [modelo de datos](modelo-de-datos.md), [tiempo real del aula](tiempo-real-del-aula.md), [login y acceso](login-y-acceso.md), [API de las slides](api-de-las-slides.md), [carga y acciones de la web](carga-y-acciones-de-la-web.md)

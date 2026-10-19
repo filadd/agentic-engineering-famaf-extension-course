@@ -1,6 +1,6 @@
 ---
 title: "API de las slides"
-summary: "Cómo la web le dice al HTML de las slides de una sesión a qué slide y paso ir, cómo viaja la posición del profe hasta los estudiantes y qué pasa al marcar un HTML como slides: se revisa que respete la API y, si no, el modal de subida muestra un error."
+summary: "Cómo la web le dice al HTML de las slides de una sesión a qué slide y paso ir, cómo viaja la posición del profe hasta los estudiantes y cómo se revisa que un HTML respete la API al marcarlo como slides, desde el modal de subida o desde la lista del material."
 created: "2026-10-18"
 ---
 
@@ -95,7 +95,32 @@ La web carga el HTML de las slides en un marco aislado de la página. El HTML co
 
 ## 📤 Subir las slides
 
-El profe sube el HTML como cualquier material, desde el modal de subida del admin de la sesión, y lo marca como slides, con el campo `is_slides` del `Material`. Antes de mandarlo, la web del profe carga el HTML en el mismo marco aislado del aula y espera su `manifest` hasta cinco segundos. Si no llega, o no tiene la forma de esta API, el modal muestra un error y el archivo no queda como slides. El profe puede marcar después como slides un HTML ya subido, desde la lista del material en la pestaña Contenido, y la web hace la misma revisión. Marcar otro HTML como slides desmarca el anterior (ver [modelo de datos](modelo-de-datos.md)). El estudiante también descarga el mismo HTML desde Material.
+El profe sube el HTML como cualquier material, desde el modal de subida del admin de la sesión, y lo marca como slides con el switch del modal, que guarda el campo `is_slides` del `Material`. El modal sube un solo archivo. El área de subida abre el selector de archivos al tocarla y también recibe un archivo soltado encima. Elegido el archivo, el área muestra su nombre con un botón de tacho que lo quita y vuelve a mostrar el área. El profe puede marcar después como slides un HTML ya subido, desde la lista del material en la pestaña Contenido. Marcar otro HTML como slides desmarca el anterior (ver [modelo de datos](modelo-de-datos.md)). El estudiante también descarga el mismo HTML desde Material.
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    state "Revisando…" as Revisando
+    state "Éxito<br/>alert verde con check" as Exito
+    state "Error<br/>alert de error" as Error
+    [*] --> Revisando: marca el HTML como slides
+    Revisando --> Exito: respeta la API, al menos 1 s después
+    Revisando --> Error: no respeta la API, al menos 1 s después
+    Exito --> [*]: modal cerrado o switch apagado
+    Exito --> [*]: en la lista, a los 10 s
+    Error --> Revisando: lo marca de nuevo
+
+    classDef grey fill:#f3f4f6,stroke:#4b5563,color:#1f2937
+    classDef green fill:#dcfce7,stroke:#16a34a,color:#1f2937
+    classDef red fill:#fee2e2,stroke:#dc2626,color:#1f2937
+    class Revisando grey
+    class Exito green
+    class Error red
+```
+
+Cuando el profe marca un HTML como slides, desde el modal o desde la lista, la web lo revisa en el navegador del profe. Carga el HTML en el mismo marco aislado del aula y espera su `manifest` hasta cinco segundos. En el modal, la revisión corre antes de subir el archivo. Mientras revisa, la web muestra "Revisando…" durante al menos un segundo, aunque la revisión termine antes. Si el `manifest` llega con la forma de esta API, un alert verde con un check reemplaza a "Revisando…" y dice "El HTML respeta la API de las slides". Si no llega, o no tiene esa forma, aparece el alert de error y el archivo no queda como slides.
+
+En el modal, mientras la web revisa, Subir, el switch y el tacho quedan deshabilitados. Si la revisión falla, el switch vuelve a apagado. El alert verde queda hasta que el profe cierra el modal o apaga el switch. En la lista del material, el alert verde desaparece a los 10 segundos, y el error queda hasta que el profe vuelve a marcar un archivo.
 
 > [!TIP] Revisar el HTML en el servidor
 > Para ver si el HTML anuncia su `manifest` hay que correrlo en un navegador. La web del profe ya tiene uno; en el servidor haría falta un navegador remoto, con su costo y sus límites, para revisar archivos que sube una sola persona, el profe.
@@ -103,6 +128,8 @@ El profe sube el HTML como cualquier material, desde el modal de subida del admi
 Cuando cambian las slides de la sesión, porque el profe sube o marca otro HTML como slides o borra el que lo era, la posición del profe vuelve a la slide 1, paso 1, y el aula avisa el cambio como cualquier otro movimiento de slide. La posición guardada siempre corresponde al HTML actual.
 
 [Prototipo del admin de la sesión, con el modal de subida de material](../prototipos/admin-sesion.html)
+
+[Prototipo de la revisión de las slides, en el modal de subida y en la lista del material](../prototipos/revision-slides.html)
 
 ---
 

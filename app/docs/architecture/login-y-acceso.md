@@ -90,9 +90,11 @@ En cada pedido, la API revisa el campo `has_access` del usuario. Si está en fal
 
 El WebSocket del aula revisa el acceso una sola vez, al abrirse; qué pasa con quien pierde el acceso con el aula abierta está en [tiempo real del aula](tiempo-real-del-aula.md).
 
+Al abrir una pantalla, la web chequea el login como un dato más de esa pantalla. Mientras espera la respuesta, la pantalla se dibuja con sus partes fijas y sus skeletons. Si no hay sesión, la web va al login (ver [carga y acciones de la web](carga-y-acciones-de-la-web.md)).
+
 ## 👥 Usuarios
 
-El profe administra los usuarios desde la pantalla Usuarios, a la que llega desde la lista de sesiones. Ahí busca, filtra por acceso, da y saca el acceso y agrega usuarios por email. Los usuarios no se borran: el profe le saca el acceso a quien no tiene que entrar. Un usuario agregado por email ya tiene acceso, y aparece solo con su email hasta que hace el setup. El usuario del profe, con `role` en `teacher`, se crea a mano.
+El profe administra los usuarios desde la pantalla Usuarios, a la que llega desde la lista de sesiones. Ahí busca, filtra por acceso, da y saca el acceso y agrega usuarios por email. Los usuarios no se borran: el profe le saca el acceso a quien no tiene que entrar. Un usuario agregado por email ya tiene acceso. Mientras un usuario no tiene nombre ni avatar, la lista lo muestra con placeholders en gris: un círculo con borde punteado y un "?" en lugar del avatar, y "Sin nombre" en lugar del nombre. El email va en la segunda línea, como en los usuarios con perfil. El usuario del profe, con `role` en `teacher`, se crea a mano.
 
 El QR de registro y su código están uno junto al otro. El QR abre la pantalla de registro de la web, con el código puesto, en el mismo entorno que el link del mail. El código es una fila de `Code` sin `user_id`, de cinco caracteres para que se pueda escribir a mano. La app lo genera la primera vez que el profe abre el QR, y el profe lo regenera con un botón: el anterior deja de servir para registrarse. Sacarle el acceso a alguien y regenerar el código piden confirmación, como toda acción destructiva (ver [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)). El profe no se puede sacar el acceso a sí mismo: la API lo rechaza, porque no habría otro profe que se lo devuelva. Cómo se guardan los dos tipos de código está en el [modelo de datos](modelo-de-datos.md).
 
@@ -100,4 +102,4 @@ El QR de registro y su código están uno junto al otro. El QR abre la pantalla 
 
 ---
 
-Related: [modelo de datos](modelo-de-datos.md), [componentes](componentes.md), [tiempo real del aula](tiempo-real-del-aula.md), [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)
+Related: [modelo de datos](modelo-de-datos.md), [componentes](componentes.md), [tiempo real del aula](tiempo-real-del-aula.md), [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md), [carga y acciones de la web](carga-y-acciones-de-la-web.md)

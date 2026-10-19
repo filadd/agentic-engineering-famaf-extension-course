@@ -63,6 +63,8 @@ La web y la API comparten el dominio `kurasu.asermax.com`: los pedidos a `/api` 
 
 La web vuelve a pedir sus datos a la API cada cinco minutos, en todas las pantallas. Fuera del aula no hay avisos: cada pantalla carga sus datos al abrirse y se actualiza con ese pedido. Así se ven, por ejemplo, un cambio de nombre o avatar, o una encuesta que el profe activa mientras el estudiante está en el inicio.
 
+Cada pantalla se dibuja con sus partes fijas mientras cargan sus datos, y cada acción del usuario responde al instante o en espera (ver [carga y acciones de la web](carga-y-acciones-de-la-web.md)).
+
 ### ⚙️ API
 
 La API es un Worker que atiende todos los pedidos de la web. Cada pedido lleva la cookie con el login, que dura una semana desde que se entra. En cada pedido, la API revisa que el usuario tenga acceso. Si no lo tiene, devuelve un error propio y la web manda al usuario al login (ver [login y acceso](login-y-acceso.md)). Guarda los datos en D1 con el [modelo de datos](modelo-de-datos.md), sube y baja los archivos del material en R2, y manda los magic links con Email Sending.
@@ -78,6 +80,12 @@ Email Sending manda el mail con el magic link del registro y del login, desde `n
 > [!WARNING] Email Sending tiene requisitos propios
 > Email Sending está en beta, necesita el plan pago de Workers y que el dominio esté en el DNS de Cloudflare. Sin eso no sale ningún mail, y nadie puede registrarse ni entrar.
 
+## 🐦‍⬛ Marca del cuervo
+
+La marca de kurasu es el emoji del cuervo, 🐦‍⬛. Es el favicon, y la página se titula "Kurasu" en todas las rutas. El cuervo aparece grande en el login y el registro, y chico en cada header, a la izquierda del título; tocarlo lleva al inicio de quien lo toca: el inicio del estudiante o el admin del profe.
+
+[Prototipo de la marca del cuervo, en la pestaña del navegador, el login y el header](../prototipos/marca-cuervo.html)
+
 ## 🗄️ Estado que guarda el navegador
 
 El navegador guarda en su localStorage lo que no viene del servidor: el modo oscuro, que vale para toda la app, y cómo dejó cada uno el aula (ver [tiempo real del aula](tiempo-real-del-aula.md)).
@@ -86,4 +94,4 @@ El estado queda en el navegador: quien entra después en la misma computadora lo
 
 ---
 
-Related: [modelo de datos](modelo-de-datos.md), [login y acceso](login-y-acceso.md), [tiempo real del aula](tiempo-real-del-aula.md), [API de las slides](api-de-las-slides.md)
+Related: [modelo de datos](modelo-de-datos.md), [login y acceso](login-y-acceso.md), [tiempo real del aula](tiempo-real-del-aula.md), [API de las slides](api-de-las-slides.md), [carga y acciones de la web](carga-y-acciones-de-la-web.md)
