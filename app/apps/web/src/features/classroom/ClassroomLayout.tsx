@@ -7,8 +7,6 @@ interface Props {
   panel: ReactNode;
 }
 
-// The student's classroom page: the header, the slide on the left and the
-// panel on the right, below the slide on a phone.
 export const ClassroomLayout = ({ header, notice, stage, panel }: Props) => (
   <main className="flex h-dvh flex-col overflow-hidden">
     <div className="px-8 pt-[26px] pb-1.5 max-[600px]:px-3.5 max-[600px]:pt-3.5 max-[600px]:pb-1">

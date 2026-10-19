@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
 
-import { buttonVariants } from "./buttonVariants.ts";
+import { buttonClass, buttonVariants } from "./buttonVariants.ts";
 import { Spinner } from "./Spinner.tsx";
 
 interface Props extends ComponentProps<"button"> {
@@ -26,9 +26,7 @@ export const Button = ({
     type={type}
     disabled={pending || disabled}
     aria-busy={pending ? true : undefined}
-    className={`${buttonVariants[variant]}${pending ? " cursor-progress disabled:opacity-100" : ""}${
-      className == null ? "" : ` ${className}`
-    }`}
+    className={`${buttonClass(variant, className)}${pending ? " cursor-progress disabled:opacity-100" : ""}`}
   >
     {pending ? (
       <>

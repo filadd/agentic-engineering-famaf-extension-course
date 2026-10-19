@@ -8,7 +8,6 @@ interface Props {
 
 const scaleValues = [1, 2, 3, 4, 5];
 
-// A poll as the student sees it before voting, without a way to vote.
 export const PollPreview = ({ poll }: Props) => {
   if (poll.type === "choice") {
     return (
