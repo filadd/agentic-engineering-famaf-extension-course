@@ -12,7 +12,7 @@ const migrations = new URL("../migrations", import.meta.url).pathname;
 export const KurasuDatabase = Effect.gen(function* () {
   const importFiles = yield* Config.option(Config.String("KURASU_D1_IMPORT_FILES"));
 
-  return yield* Cloudflare.D1.Database("Database", {
+  return yield* Cloudflare.D1.Database("DB", {
     migrations,
     ...Option.match(importFiles, {
       onNone: () => ({}),

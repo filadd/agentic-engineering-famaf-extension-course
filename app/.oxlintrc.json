@@ -69,6 +69,7 @@
           { "sources": ["/features/"], "allow": ["useClassroom", "useLocalUi"] }
         ],
         "no-nested-ternary": "error",
+        "react/react-in-jsx-scope": "off",
         "react/no-multi-comp": "error"
       }
     },
