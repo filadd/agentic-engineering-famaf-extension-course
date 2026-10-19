@@ -45,6 +45,12 @@ importers:
         specifier: 5.0.5
         version: 5.0.5(@types/node@24.19.2)(vite@8.3.4(@types/node@24.19.2))
 
+  packages/contract:
+    dependencies:
+      effect:
+        specifier: 4.0.5
+        version: 4.0.5
+
 packages:
 
   '@effect/tsgo-darwin-arm64@0.53.4':

@@ -45,6 +45,8 @@
           "globalRandomInEffect": "error",
           "globalTimersInEffect": "error",
           "cryptoRandomUUIDInEffect": "error",
+          "unstableApiUsage": "off",
+          "schemaClassMissingBrand": "off",
           "strictEffectProvide": "off",
           "lazyEffect": "off",
           "strictBooleanExpressions": "off"
