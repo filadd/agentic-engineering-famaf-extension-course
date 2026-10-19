@@ -38,6 +38,7 @@ describe("the brand", () => {
 
     const { router, user } = await renderRoute("/aula");
 
+    await screen.findByRole("heading", { level: 1, name: planning.title });
     await user.click(await screen.findByRole("link", { name: "Ir al inicio" }));
 
     await waitFor(() => expect(router.state.location.pathname).toBe("/"));

@@ -9,6 +9,7 @@ import { failingRoute } from "./helpers/failing-route.ts";
 import { heldResponse } from "./helpers/held-response.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
+import { studentClassroom } from "./helpers/student-classroom.ts";
 import { teacherSession } from "./helpers/teacher-session.ts";
 
 const skeletons = () => [...document.querySelectorAll<HTMLElement>('[aria-busy="true"]')];
@@ -65,6 +66,34 @@ describe("loading a screen", () => {
     expect(within(list).getAllByRole("listitem", { hidden: true })).toHaveLength(4);
 
     users.release(HttpResponse.json([]));
+  });
+
+  test("the classroom shows in skeleton while the list of sessions has not answered, then the real one", async () => {
+    const session = sessionDetail(planning);
+    const sessions = heldResponse("get", "/sessions");
+
+    server.use(sessions.handler, ...studentClassroom({ session }));
+
+    await renderRoute("/aula");
+
+    const title = await screen.findByRole("heading", { level: 1 });
+
+    expect(screen.getByRole("link", { name: "Volver a las sesiones" })).toBeTruthy();
+    expect(title.querySelector('[aria-busy="true"]')).not.toBeNull();
+    expect(screen.queryByRole("complementary", { name: "Panel del aula" })).toBeNull();
+    expect(screen.queryByTitle("Slides")).toBeNull();
+
+    const skeletonRoots = skeletons().map((skeleton) => skeleton.firstElementChild?.tagName);
+
+    expect(skeletonRoots).toEqual(expect.arrayContaining(["SPAN", "DIV", "ASIDE"]));
+
+    const { currentSlide: _slide, currentStep: _step, ...summary } = session;
+
+    sessions.release(HttpResponse.json([summary]));
+
+    expect(await screen.findByRole("heading", { level: 1, name: planning.title })).toBeTruthy();
+    expect(await screen.findByTitle("Slides")).toBeTruthy();
+    expect(screen.getByRole("complementary", { name: "Panel del aula" })).toBeTruthy();
   });
 
   test("the cards replace the skeleton once the data arrives", async () => {

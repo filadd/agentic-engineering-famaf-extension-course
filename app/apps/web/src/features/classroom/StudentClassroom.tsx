@@ -17,6 +17,7 @@ import { usePolls } from "../polls/usePolls.ts";
 import { StudentQuestions } from "../questions/StudentQuestions.tsx";
 import { sessionExamples } from "../sessions/session-examples.ts";
 import { useSession } from "../sessions/useSession.ts";
+import { ClassroomLayout } from "./ClassroomLayout.tsx";
 import { ClassroomPanel } from "./ClassroomPanel.tsx";
 import { SlideStage } from "./SlideStage.tsx";
 import { StudentSlides } from "./StudentSlides.tsx";
@@ -45,8 +46,8 @@ export const StudentClassroom = ({ sessionId }: Props) => {
   const pollsBadge = <Badge count={unvoted} label={`${unvoted} encuestas sin votar`} />;
 
   return (
-    <main className="flex h-dvh flex-col overflow-hidden">
-      <div className="px-8 pt-[26px] pb-1.5 max-[600px]:px-3.5 max-[600px]:pt-3.5 max-[600px]:pb-1">
+    <ClassroomLayout
+      header={
         <AppHeader
           leading={<BackButton to="/" label="Volver a las sesiones" />}
           title={
@@ -59,35 +60,37 @@ export const StudentClassroom = ({ sessionId }: Props) => {
             )
           }
         />
-      </div>
-      {classroom.reconnecting ? (
-        <div
-          role="status"
-          className="mx-8 mt-2.5 flex items-center gap-2 rounded-xl bg-peach px-3.5 py-2 text-sm text-coal max-[600px]:mx-3.5"
-        >
-          <Icon name="wifi-off" size={18} />
-          Se cortó la conexión. Reconectando…
-        </div>
-      ) : null}
-      <div className="flex min-h-0 flex-1 max-[600px]:flex-col">
-        <div className="flex min-w-0 flex-1 flex-col px-8 pt-3.5 pb-[22px] max-[600px]:flex-none max-[600px]:px-3.5 max-[600px]:pt-2 max-[600px]:pb-2.5">
-          {session.data == null ? (
-            <SkeletonOf>
-              <SlideStage
-                html={null}
-                position={{ slide: 1, step: 1 }}
-                controls={
-                  <>
-                    <span className="ml-auto" />
-                    <HandButton sessionId={sessionId} />
-                  </>
-                }
-              />
-            </SkeletonOf>
-          ) : (
-            <StudentSlides session={session.data} teacherPresent={classroom.teacherPresent} />
-          )}
-        </div>
+      }
+      notice={
+        classroom.reconnecting ? (
+          <div
+            role="status"
+            className="mx-8 mt-2.5 flex items-center gap-2 rounded-xl bg-peach px-3.5 py-2 text-sm text-coal max-[600px]:mx-3.5"
+          >
+            <Icon name="wifi-off" size={18} />
+            Se cortó la conexión. Reconectando…
+          </div>
+        ) : null
+      }
+      stage={
+        session.data == null ? (
+          <SkeletonOf>
+            <SlideStage
+              html={null}
+              position={{ slide: 1, step: 1 }}
+              controls={
+                <>
+                  <span className="ml-auto" />
+                  <HandButton sessionId={sessionId} />
+                </>
+              }
+            />
+          </SkeletonOf>
+        ) : (
+          <StudentSlides session={session.data} teacherPresent={classroom.teacherPresent} />
+        )
+      }
+      panel={
         <ClassroomPanel
           people={classroom.people}
           meId={me.data?.id}
@@ -118,7 +121,7 @@ export const StudentClassroom = ({ sessionId }: Props) => {
             },
           ]}
         />
-      </div>
-    </main>
+      }
+    />
   );
 };
