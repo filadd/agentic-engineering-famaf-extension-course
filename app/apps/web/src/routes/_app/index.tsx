@@ -32,10 +32,12 @@ const HomeRoute = () => {
     <main className="px-12 pt-8 pb-10 max-[600px]:px-4 max-[600px]:pt-5 max-[600px]:pb-8">
       <AppHeader title={<Greeting />} />
       {sessions.data == null ? (
-        <SkeletonOf>
-          <HighlightedSession session={sessionExamples[2]} polls={[]} />
-          <EarlierSessions sessions={sessionExamples.slice(0, 2)} />
-        </SkeletonOf>
+        <>
+          <SkeletonOf>
+            <HighlightedSession session={sessionExamples[2]} polls={[]} />
+          </SkeletonOf>
+          <EarlierSessions sessions={sessionExamples.slice(0, 2)} loading />
+        </>
       ) : null}
       {sessions.data != null && highlighted == null ? (
         <p className="mt-[18px] text-muted">

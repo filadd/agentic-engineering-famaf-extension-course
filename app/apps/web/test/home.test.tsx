@@ -90,8 +90,8 @@ describe("/ home", () => {
 
     const { user } = await renderRoute("/");
 
-    const rail = await screen.findByRole("region", { name: "Sesiones anteriores" });
-    const card = within(rail).getByRole("article", { name: vibeCoding.title });
+    const card = await screen.findByRole("article", { name: vibeCoding.title });
+    const rail = screen.getByRole("region", { name: "Sesiones anteriores" });
     const caret = () => card.querySelector("button[aria-hidden] path")?.getAttribute("d");
 
     expect(within(rail).getByRole("heading", { name: "Sesiones anteriores" })).toBeTruthy();

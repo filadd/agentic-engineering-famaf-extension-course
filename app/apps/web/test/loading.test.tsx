@@ -25,7 +25,7 @@ afterEach(() => {
 });
 
 describe("loading a screen", () => {
-  test("the home draws its fixed parts at once and its cards as skeletons while the API has not answered", async () => {
+  test("the home draws its fixed parts at once, Sesiones anteriores among them, and its cards as skeletons while the API has not answered", async () => {
     const sessions = heldResponse("get", "/sessions");
 
     server.use(sessions.handler, getJson("/me", student), getJson("/polls", []));
@@ -37,11 +37,15 @@ describe("loading a screen", () => {
     await waitFor(() => expect(title.textContent).toBe(`Hola, ${student.name}`));
     expect(screen.getByRole("link", { name: "Ir al inicio" }).textContent).toBe("🐦‍⬛");
 
-    const [cards = document.body] = skeletons();
+    const [highlighted = document.body, earlierCards = document.body] = skeletons();
+    const earlier = screen.getByRole("region", { name: "Sesiones anteriores" });
 
-    expect(cards.hasAttribute("inert")).toBe(true);
-    expect(within(cards).getAllByRole("region", { hidden: true })).toHaveLength(2);
-    expect(within(cards).getAllByRole("article", { hidden: true })).toHaveLength(2);
+    expect(highlighted.hasAttribute("inert")).toBe(true);
+    expect(within(highlighted).getAllByRole("region", { hidden: true })).toHaveLength(1);
+    expect(within(earlier).getByRole("heading", { name: "Sesiones anteriores" })).toBeTruthy();
+    expect(earlier.contains(earlierCards)).toBe(true);
+    expect(earlierCards.hasAttribute("inert")).toBe(true);
+    expect(within(earlierCards).getAllByRole("article", { hidden: true })).toHaveLength(2);
     expect(screen.queryByRole("region", { name: vibeCoding.title })).toBeNull();
 
     sessions.release(HttpResponse.json([vibeCoding, planning, tooling]));
