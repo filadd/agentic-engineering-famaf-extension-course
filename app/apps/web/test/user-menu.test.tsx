@@ -156,7 +156,7 @@ describe("user menu", () => {
 
     await user.click(within(await openMenu(user)).getByRole("button", { name: "Cerrar sesión" }));
 
-    expect(await screen.findByText("No se pudo cerrar la sesión.")).toBeTruthy();
+    expect(await screen.findByText("No se pudo cerrar la sesión. Probá de nuevo.")).toBeTruthy();
     expect(router.state.location.pathname).toBe("/");
     expect(screen.getByRole("heading", { name: "Hola, Lucía" })).toBeTruthy();
   });

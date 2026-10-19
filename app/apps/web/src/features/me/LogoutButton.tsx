@@ -1,19 +1,13 @@
 import { useNavigate } from "@tanstack/react-router";
 
-import { isAccessError } from "../../api/access-error.ts";
 import { Icon } from "../../ui/Icon.tsx";
 import { Spinner } from "../../ui/Spinner.tsx";
-import { showError } from "../../ui/toast.ts";
 import { useLogout } from "./useLogout.ts";
 
 export const LogoutButton = () => {
   const navigate = useNavigate();
 
-  const logout = useLogout({
-    onSuccess: () => navigate({ to: "/login" }),
-    onError: (error) =>
-      isAccessError(error) ? undefined : showError("No se pudo cerrar la sesión."),
-  });
+  const logout = useLogout({ onSuccess: () => navigate({ to: "/login" }) });
 
   return (
     <button
