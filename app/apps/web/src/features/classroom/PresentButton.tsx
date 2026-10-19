@@ -1,4 +1,4 @@
-import { Button } from "../../ui/Button.tsx";
+import { ButtonLink } from "../../ui/ButtonLink.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 
 interface Props {
@@ -6,8 +6,14 @@ interface Props {
 }
 
 export const PresentButton = ({ sessionId }: Props) => (
-  <Button variant="pill" href={`/admin/presentar/${sessionId}`} target="_blank" className="ml-auto">
+  <ButtonLink
+    variant="pill"
+    to="/admin/presentar/$id"
+    params={{ id: sessionId }}
+    target="_blank"
+    className="ml-auto"
+  >
     <Icon name="external-link" size={16} />
     Presentar en otra pestaña
-  </Button>
+  </ButtonLink>
 );

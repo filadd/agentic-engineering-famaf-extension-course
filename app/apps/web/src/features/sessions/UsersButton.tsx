@@ -1,13 +1,13 @@
-import { Button } from "../../ui/Button.tsx";
+import { ButtonLink } from "../../ui/ButtonLink.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 
 export const UsersButton = () => (
-  <Button
+  <ButtonLink
     variant="pill"
-    href="/admin/usuarios"
+    to="/admin/usuarios"
     className="px-[18px] py-2.5 font-display font-medium"
   >
     <Icon name="users" size={18} />
     Usuarios
-  </Button>
+  </ButtonLink>
 );

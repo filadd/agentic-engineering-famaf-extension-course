@@ -1,4 +1,4 @@
-import { Button } from "../../ui/Button.tsx";
+import { ButtonLink } from "../../ui/ButtonLink.tsx";
 
 export const InvalidLinkNotice = () => (
   <div>
@@ -7,13 +7,13 @@ export const InvalidLinkNotice = () => (
       Cada link sirve una sola vez. Pedí uno nuevo para entrar.
     </p>
     <div className="mt-[26px] flex justify-center">
-      <Button
+      <ButtonLink
         variant="pill-dark"
-        href="/login"
+        to="/login"
         className="px-5 py-[11px] font-display text-[15px] font-medium"
       >
         Ir al login
-      </Button>
+      </ButtonLink>
     </div>
   </div>
 );
