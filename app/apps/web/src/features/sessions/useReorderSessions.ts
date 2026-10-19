@@ -16,7 +16,7 @@ export const useReorderSessions = (
   return useMutation({
     ...options,
     mutationFn: (ids) => runApi((api) => api.adminSessions.reorder({ payload: { ids } })),
-    onMutate: async (ids) => {
+    onMutate: async (ids, context) => {
       const key = queryKeys.adminSessions();
 
       await queryClient.cancelQueries({ queryKey: key, exact: true });
@@ -30,6 +30,8 @@ export const useReorderSessions = (
           return session == null ? [] : [{ ...session, position: index + 1 }];
         }),
       );
+
+      await options?.onMutate?.(ids, context);
 
       return { previous };
     },

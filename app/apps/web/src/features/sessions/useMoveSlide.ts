@@ -26,7 +26,7 @@ export const useMoveSlide = (options?: MutationOptions<Session, SlideMove, Sessi
           payload: { currentSlide: input.position.slide, currentStep: input.position.step },
         }),
       ),
-    onMutate: async (input) => {
+    onMutate: async (input, context) => {
       const key = queryKeys.adminSession(input.id);
 
       await queryClient.cancelQueries({ queryKey: key });
@@ -38,6 +38,8 @@ export const useMoveSlide = (options?: MutationOptions<Session, SlideMove, Sessi
           ? session
           : { ...session, currentSlide: input.position.slide, currentStep: input.position.step },
       );
+
+      await options?.onMutate?.(input, context);
 
       return { previous };
     },
