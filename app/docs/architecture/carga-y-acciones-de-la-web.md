@@ -37,7 +37,7 @@ stateDiagram-v2
     class Login blue
 ```
 
-Al abrirse, una pantalla dibuja enseguida lo que no depende del servidor: los textos fijos, los títulos, el cuervo y las etiquetas. Cada parte que espera datos muestra un skeleton con la forma de esa parte. La web trata el chequeo del login como un dato más de la pantalla que se abre. Mientras la web espera la respuesta, el nombre y el avatar del header se ven en skeleton. Cuando llegan los datos, cada parte los muestra.
+Al abrirse, una pantalla dibuja enseguida lo que no depende del servidor: los textos fijos, los títulos, el cuervo y las etiquetas. Cada tarjeta que espera datos se ve como un skeleton: un solo bloque gris, suave, con la forma y el tamaño de la tarjeta, sin nada adentro. Una tarjeta es la unidad que el usuario reconoce: la sesión destacada, cada card de una sección plegable, cada card de encuesta, cada fila de una lista, la slide, el nombre y el avatar del header. El skeleton nunca dibuja el contenido interno de una tarjeta, como sus textos, botones o íconos. La web trata el chequeo del login como un dato más de la pantalla que se abre. Mientras la web espera la respuesta, el nombre y el avatar del header se ven en skeleton. Cuando llegan los datos, cada parte los muestra. El aula del estudiante necesita la lista de sesiones para saber qué sesión abrir. Mientras la lista llega, el aula entera se dibuja en skeleton, con el header, la slide y el panel.
 
 Con datos en pantalla, una recarga deja en pantalla los datos anteriores, sin skeletons, hasta que llegan los datos nuevos. Así pasa con el pedido que la web repite cada cinco minutos (ver [componentes](componentes.md)) y con los que hace después de cada aviso del aula (ver [tiempo real del aula](tiempo-real-del-aula.md)).
 
@@ -75,14 +75,14 @@ stateDiagram-v2
     class Revertida,Fallida red
 ```
 
-Una acción al instante cambia la pantalla en cuanto el usuario actúa, antes de que responda el servidor. Cuando el servidor responde, la pantalla queda con los datos que devuelve el servidor. Una acción en espera deshabilita su botón y los demás botones de su diálogo, como Cancelar, hasta que el servidor responde. Su botón muestra un spinner. Cuando el servidor responde, la pantalla muestra los datos que devuelve.
+Una acción al instante cambia la pantalla en cuanto el usuario actúa, antes de que responda el servidor. Cuando el servidor responde, la pantalla queda con los datos que devuelve el servidor. Una acción en espera deshabilita su botón y los demás botones de su diálogo, como Cancelar, hasta que el servidor responde. Su botón muestra un spinner. Mientras espera, el diálogo de confirmación no se cierra ni con Escape ni con un click afuera. Cuando el servidor responde, la pantalla muestra los datos que devuelve.
 
 Qué forma toma cada acción depende de cómo la hace el usuario:
 
-- **Al instante**: las acciones directas, un botón, un switch o un arrastre, sin confirmación ni formulario. Por ejemplo, habilitar una sesión, dar acceso a un usuario, levantar la mano, votar una encuesta de opción múltiple o de escala, marcar una pregunta como respondida, activar o cerrar una encuesta, reordenar las sesiones o mover la slide.
+- **Al instante**: las acciones directas, un botón, un switch o un arrastre, sin confirmación ni formulario. Por ejemplo, habilitar una sesión, dar acceso a un usuario, levantar la mano, marcar una pregunta como respondida, activar o cerrar una encuesta, reordenar las sesiones o mover la slide.
 - **En espera**: las acciones que pasan por un modal de confirmación, un formulario o un diálogo. Por ejemplo, borrar material, una encuesta o una sesión, sacar el acceso a un usuario, crear una sesión o una encuesta, subir un archivo, hacer una pregunta, votar una word cloud, que pasa por su campo de texto, o guardar el perfil.
 
-Cerrar sesión es directa pero queda en espera, porque no cambia nada que se pueda deshacer en pantalla: la web espera la respuesta y va al login. Marcar un HTML como slides sigue la revisión de las slides (ver [API de las slides](api-de-las-slides.md)).
+Cerrar sesión es directa pero queda en espera, porque no cambia nada que se pueda deshacer en pantalla: la web espera la respuesta y va al login. Votar una encuesta de opción múltiple o de escala también queda en espera, como la word cloud. La opción elegida muestra un spinner hasta que responde el servidor y las demás opciones se deshabilitan. Si el voto falla, la opción vuelve a como estaba y aparece un toast. Marcar un HTML como slides sigue la revisión de las slides (ver [API de las slides](api-de-las-slides.md)).
 
 > [!NOTE] Por qué la forma depende de cómo se hace la acción
 > La regla busca que ninguna acción deje al usuario sin respuesta: lo directo se ve enseguida, y lo que ya pasó por una confirmación o un formulario muestra que está esperando.

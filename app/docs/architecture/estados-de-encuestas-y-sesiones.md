@@ -96,7 +96,7 @@ Toda acción destructiva pide confirmación: borrar una sesión, una encuesta, u
 
 La confirmación es un diálogo que se abre encima de lo que haya, también sobre un modal o una hoja. Escape cierra solo el diálogo de arriba, igual que su botón Cerrar o Cancelar: una confirmación abierta sobre una hoja se cierra y la hoja queda. El menú del usuario también se cierra con Escape o con un click fuera de él, como los modales.
 
-Toda acción que pide confirmación queda en espera hasta que responde el servidor, según la regla de [carga y acciones de la web](carga-y-acciones-de-la-web.md).
+Toda acción que pide confirmación queda en espera hasta que responde el servidor, según la regla de [carga y acciones de la web](carga-y-acciones-de-la-web.md). Mientras espera, Cancelar está deshabilitado y ni Escape ni un click afuera cierran el diálogo.
 
 ---
 
