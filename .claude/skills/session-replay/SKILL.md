@@ -1,17 +1,22 @@
 ---
 name: session-replay
-description: Graba una sesión de trabajo con el agente (capturas de la app después de cada cambio, con las interacciones) y la convierte en un video HTML que reproduce el transcript acelerado en una terminal junto a las capturas. Usar cuando el usuario pida grabar la sesión, registrar cómo evoluciona la app, o armar/actualizar el video o replay de la sesión.
+description: Graba una sesión de trabajo con el agente (capturas de la app después de cada cambio, con las interacciones) y la convierte en un video HTML que reproduce el transcript acelerado en una terminal junto a las capturas. Usar cuando el usuario pida grabar la sesión, registrar cómo evoluciona la app, armar/actualizar el video o replay de la sesión, o armar sus highlights.
 ---
 
 # Session replay
 
-The skill has two phases. **Recording** happens throughout the session, after every change. **Rendering** happens when the user asks for the video.
+The skill has three phases. **Recording** happens throughout the session, after every change. **Rendering** happens when the user asks for the video. **Highlights** cut the video down to at most 10 points, when the user asks for a short version to show.
 
-`replay.mjs` is in `scripts/` inside this skill; the examples below call it as `replay.mjs`. `<dir>` is the recording folder, by default `.recording/` at the root of the app being built.
+`replay.mjs` is in `scripts/` inside this skill; the examples below call it as `replay.mjs`. It needs `node` and `agent-browser` on the PATH.
 
-It needs `node` and `agent-browser` on the PATH.
+## Where the files go
 
-Keep `<dir>` out of version control by adding it to the app's `.gitignore`. It holds the transcript path, a condensed copy of the transcript, and every capture, including the ones the video doesn't use. To publish the video, export it (see Rendering).
+Each recording has its own folder inside the session it belongs to, `sessions/session-<n>/recordings/<name>/`, named after what it recorded (`vibecoding`, `agentic`). Ask the user for the session and the name when starting if they are not clear from the conversation. The folder holds two subfolders:
+
+- `raw/` is `<dir>` in the commands below: `session.json`, `condensed.md`, `manifest.jsonl`, every capture in `screenshots/`, and the full video (`script.js` and `player.html`).
+- `highlights/` is the short version: its own `player.html` and `script.js`, and only the captures its script uses.
+
+Commit both folders. The captures are PNGs, which the repo tracks with Git LFS (`.gitattributes`). Never put the recording inside the app being built.
 
 ## Recording
 
@@ -71,11 +76,7 @@ node replay.mjs shot <dir> "<caption>" --type "<selector>" "<text>"
    xdg-open <dir>/player.html
    ```
 
-4. When the user wants to keep or share the video, export it to a folder outside `<dir>`:
-   ```bash
-   node replay.mjs export <dir> <out>
-   ```
-   `<out>` gets `player.html`, `script.js`, and only the captures that the script uses. Commit that folder, not `<dir>`. The captures are PNGs: if the repo does not track images with Git LFS yet, set it up first (`git lfs track "*.png"`) so they do not go into the repo as regular blobs.
+When the recording continues after a render, condense and edit again; the subagent rewrites `script.js`. Don't keep earlier versions next to it as `script.prev.js`: git keeps the history.
 
 `player.html` reads `script.js`, which also works when opened as `file://`. The player puts a terminal on the left, which fills from the top and scrolls once it is full. On the right it shows the browser, empty until the first capture, with the caption above it. The space bar or a click works like in a visual novel: while a user prompt is typing, it completes the prompt; once the prompt is complete, it continues; during the agent's turn, it draws the rest of the turn at once and jumps to the next prompt. Only the pause button pauses. The controls bar at the bottom is always visible, with a speed dropdown, and shows one dot per prompt, with the passed prompts filled in and the current one highlighted; hovering a dot shows the prompt text and clicking it jumps there; ⏮/⏭ and the ←/→ keys move between prompts.
 
@@ -94,3 +95,16 @@ window.RECORDING = {
 ```
 
 `action` is copied from `manifest.jsonl`: `{ kind: "click" | "type", x, y, w, h, text? }`, with coordinates as fractions of the capture. Any beat accepts `hold` (ms) to change the pause after it.
+
+## Highlights
+
+The highlights are a short version of the video for showing in class: at most 10 points, one per stage of the process, each one a prompt with a summary of what the agent did and the captures of the result. They summarize and merge, so they don't copy the session faithfully, but every event in them comes from the recording.
+
+1. Render the full video first; the highlights start from `<dir>/script.js`.
+2. Delegate the cut to a subagent. Use the prompt in [references/highlights.md](references/highlights.md), replacing `<raw>` with the absolute path of `<dir>` and `<highlights>` with the `highlights/` folder next to it. The subagent writes `highlights/script.js`.
+3. Copy the player and the captures the highlights use, and open them:
+   ```bash
+   node replay.mjs highlights <dir>
+   xdg-open <dir>/../highlights/player.html
+   ```
+   The command empties `highlights/screenshots/` before copying, so it can run again after editing the script.

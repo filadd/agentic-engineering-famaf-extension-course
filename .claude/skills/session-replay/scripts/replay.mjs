@@ -6,9 +6,9 @@
 //   replay.mjs shot <dir> "<caption>" [--click <selector> | --type <selector> "<text>"]
 //   replay.mjs condense <dir>
 //   replay.mjs player <dir>
-//   replay.mjs export <dir> <out>
+//   replay.mjs highlights <dir>
 import { execFileSync } from "node:child_process";
-import { appendFileSync, copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { appendFileSync, copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -301,20 +301,21 @@ const player = (dir) => {
   console.log(join(dir, "player.html"));
 };
 
-// Publishable copy of the video: the player, the script and only the captures it uses. The recording
-// folder stays out of version control because it holds the transcript path and a condensed transcript.
-const exportVideo = (dir, [out]) => {
-  if (out == null) {
-    fail("Uso: replay.mjs export <dir> <out>");
+// The highlights live next to the raw recording and reuse its captures. Their folder gets its own
+// player and only the captures its script uses, so it can be opened or moved on its own.
+const highlights = (dir) => {
+  const target = join(dir, "..", "highlights");
+  const script = join(target, "script.js");
+
+  if (!existsSync(script)) {
+    fail(`No encontré ${script}`);
   }
 
-  const target = resolve(out);
-  const script = readFileSync(join(dir, "script.js"), "utf8");
-  const captures = [...new Set(script.match(/screenshots\/[\w.-]+\.png/g) ?? [])];
+  const captures = [...new Set(readFileSync(script, "utf8").match(/screenshots\/[\w.-]+\.png/g) ?? [])];
 
-  mkdirSync(join(target, "screenshots"), { recursive: true });
-  copyFileSync(join(dirname(fileURLToPath(import.meta.url)), "..", "assets", "player.html"), join(target, "player.html"));
-  copyFileSync(join(dir, "script.js"), join(target, "script.js"));
+  rmSync(join(target, "screenshots"), { recursive: true, force: true });
+  mkdirSync(join(target, "screenshots"));
+  player(target);
 
   for (const capture of captures) {
     copyFileSync(join(dir, capture), join(target, capture));
@@ -326,10 +327,10 @@ const exportVideo = (dir, [out]) => {
 const [command, dir, ...rest] = process.argv.slice(2);
 
 if (dir == null) {
-  fail("Uso: replay.mjs <start|resume|shot|condense|player|export> <dir> ...");
+  fail("Uso: replay.mjs <start|resume|shot|condense|player|highlights> <dir> ...");
 }
 
-const commands = { start, resume, shot, condense, player, export: exportVideo };
+const commands = { start, resume, shot, condense, player, highlights };
 
 if (commands[command] == null) {
   fail(`Comando desconocido: ${command}`);
