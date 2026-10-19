@@ -233,3 +233,22 @@
 {"n":233,"time":"21:19:06","src":"screenshots/233.png","url":"[::1]:5190/","caption":"Rama 9: tests","action":null}
 {"n":234,"time":"21:21:56","src":"screenshots/234.png","url":"[::1]:5190/","caption":"Tests de integración","action":null}
 {"n":235,"time":"21:26:58","src":"screenshots/235.png","url":"[::1]:5190/","caption":"Tests con el harness de Alchemy","action":null}
+{"n":236,"time":"22:12:35","src":"screenshots/236.png","url":"localhost:5190/","caption":"Mapa de raíces de los tests","action":null}
+{"n":237,"time":"22:12:53","src":"screenshots/237.png","url":"localhost:5190/","caption":"Árbol A: la API","action":null}
+{"n":238,"time":"22:13:47","src":"screenshots/238.png","url":"localhost:5190/","caption":"Árbol B: la web","action":null}
+{"n":239,"time":"22:13:49","src":"screenshots/239.png","url":"localhost:5190/","caption":"Árbol C: los e2e","action":null}
+{"n":240,"time":"22:13:51","src":"screenshots/240.png","url":"localhost:5190/","caption":"Matriz e2e de encuestas","action":null}
+{"n":241,"time":"22:15:34","src":"screenshots/241.png","url":"localhost:5190/","caption":"C pasa a validación manual","action":null}
+{"n":242,"time":"22:16:13","src":"screenshots/242.png","url":"localhost:5190/","caption":"Fixtures y base por test","action":null}
+{"n":243,"time":"22:17:49","src":"screenshots/243.png","url":"localhost:5190/","caption":"B y C unificados: pruebas a mano en B","action":null}
+{"n":244,"time":"22:20:17","src":"screenshots/244.png","url":"localhost:5190/","caption":"Pruebas después del lanzamiento","action":null}
+{"n":245,"time":"22:21:36","src":"screenshots/245.png","url":"localhost:5190/","caption":"Pruebas a mano en cada pantalla","action":null}
+{"n":246,"time":"22:23:33","src":"screenshots/246.png","url":"localhost:5190/","caption":"Borrar material pide confirmación","action":null}
+{"n":247,"time":"22:24:07","src":"screenshots/247.png","url":"localhost:5190/","caption":"El socket que no abre vuelve al inicio","action":null}
+{"n":248,"time":"22:24:30","src":"screenshots/248.png","url":"localhost:5190/","caption":"Registro sin el caso del código viejo","action":null}
+{"n":249,"time":"22:25:13","src":"screenshots/249.png","url":"localhost:5190/","caption":"Q3: research del Stack local","action":null}
+{"n":250,"time":"22:25:40","src":"screenshots/250.png","url":"localhost:5190/","caption":"Sesión anterior: solo la web","action":null}
+{"n":251,"time":"22:26:59","src":"screenshots/251.png","url":"localhost:5190/","caption":"El profe no se saca el acceso","action":null}
+{"n":252,"time":"22:28:37","src":"screenshots/252.png","url":"localhost:5190/","caption":"Q3: el mail resuelto, falta la base","action":null}
+{"n":253,"time":"22:30:28","src":"screenshots/253.png","url":"localhost:5190/","caption":"Diseño de tests cerrado","action":null}
+{"n":254,"time":"22:30:30","src":"screenshots/254.png","url":"localhost:5190/","caption":"Los tres árboles settled","action":null}

@@ -6847,6 +6847,493 @@ window.RECORDING = {
       "time": "21:28:17",
       "kind": "assistant",
       "text": "La rama 9 y Standards quedaron cerradas: el árbol está completo. Encontré diez puntos donde el diseño del programa difiere de app/docs, como que el paso de las slides empieza en 1. ¿Cuáles se documentan?"
+    },
+    {
+      "time": "21:59:58",
+      "kind": "user",
+      "text": "/mahou:test-design-with-canvas hagamos el diseño de tests basado en todo lo que vimos hasta ahora; sigamos el mismo mecanismo de no pedir confiramaciones, armemos todos los arboles y matrices de una sola vez y los voy a ir corrigiendo a medida que los vea; nos concentremos en los tests que mencione en el diseño de programa: integración de api y de web, e incluyamos tests e2e para probar todas las funcionalidades que definimos durante el shaping"
+    },
+    {
+      "time": "22:00:29",
+      "kind": "assistant",
+      "text": "Leo el registro del diseño del programa, el shaping y los docs para armar los árboles de tests."
+    },
+    {
+      "time": "22:00:29",
+      "kind": "tool",
+      "text": "Read(program-design/kurasu.md)"
+    },
+    {
+      "time": "22:00:41",
+      "kind": "tool",
+      "text": "Read(shape.md)"
+    },
+    {
+      "time": "22:01:13",
+      "kind": "tool",
+      "text": "Bash(busca mail, WebSocket y e2e en los research)"
+    },
+    {
+      "time": "22:10:03",
+      "kind": "tool",
+      "text": "Write(test-design/trees.mjs)"
+    },
+    {
+      "time": "22:10:19",
+      "kind": "tool",
+      "text": "Write(test-design/render-record.mjs)"
+    },
+    {
+      "time": "22:10:20",
+      "kind": "tool",
+      "text": "Bash(genera el registro test-design/kurasu.md)"
+    },
+    {
+      "time": "22:10:24",
+      "kind": "tool",
+      "text": "Bash(levanta el canvas)"
+    },
+    {
+      "time": "22:11:38",
+      "kind": "tool",
+      "text": "Write(canvas/scripts/td-draw.js)"
+    },
+    {
+      "time": "22:11:40",
+      "kind": "assistant",
+      "text": "Abrí el canvas en http://localhost:5190. Primero dibujo el mapa de raíces y después los tres árboles con sus matrices."
+    },
+    {
+      "time": "22:11:42",
+      "kind": "tool",
+      "text": "Canvas(dibuja el mapa de raíces y los árboles A, B y C con sus matrices)"
+    },
+    {
+      "time": "22:12:35",
+      "kind": "screenshot",
+      "src": "screenshots/236.png",
+      "url": "localhost:5190/",
+      "caption": "Mapa de raíces de los tests",
+      "action": null
+    },
+    {
+      "time": "22:12:53",
+      "kind": "screenshot",
+      "src": "screenshots/237.png",
+      "url": "localhost:5190/",
+      "caption": "Árbol A: la API",
+      "action": null
+    },
+    {
+      "time": "22:13:47",
+      "kind": "screenshot",
+      "src": "screenshots/238.png",
+      "url": "localhost:5190/",
+      "caption": "Árbol B: la web",
+      "action": null
+    },
+    {
+      "time": "22:13:49",
+      "kind": "screenshot",
+      "src": "screenshots/239.png",
+      "url": "localhost:5190/",
+      "caption": "Árbol C: los e2e",
+      "action": null
+    },
+    {
+      "time": "22:13:51",
+      "kind": "screenshot",
+      "src": "screenshots/240.png",
+      "url": "localhost:5190/",
+      "caption": "Matriz e2e de encuestas",
+      "action": null
+    },
+    {
+      "time": "22:14:17",
+      "kind": "tool",
+      "text": "Bash(actualiza status.md)"
+    },
+    {
+      "time": "22:14:27",
+      "kind": "assistant",
+      "text": "Tres árboles: A, la API (125 filas); B, la web (138); C, los e2e (43). Dejé nueve preguntas en el canvas, como dónde corren los e2e (Q1) o el 404 del WebSocket que el navegador no ve (Q9)."
+    },
+    {
+      "time": "22:14:56",
+      "kind": "user",
+      "text": "🎙️ para el e2e estaba pensando que en vez de usar Playwright usemos agent-browser y puedes correr las validaciones tú manualmente; prefiero no mantener tests e2e por ahora. Para hacer esas pruebas levanta el stack localmente y probamos todo junto; si hace falta agregar algún tipo de mock o algo para guardar los archivos localmente o el tema de los emails, lo hablemos"
+    },
+    {
+      "time": "22:15:13",
+      "kind": "tool",
+      "text": "Bash(pasa el árbol C a validación manual en el registro)"
+    },
+    {
+      "time": "22:15:21",
+      "kind": "tool",
+      "text": "Canvas(redibuja el árbol C como validación manual)"
+    },
+    {
+      "time": "22:15:34",
+      "kind": "screenshot",
+      "src": "screenshots/241.png",
+      "url": "localhost:5190/",
+      "caption": "C pasa a validación manual",
+      "action": null
+    },
+    {
+      "time": "22:15:41",
+      "kind": "assistant",
+      "text": "Cerré la Q1: no hay tests e2e. El árbol C pasa a validación manual, que corro con agent-browser contra el Stack local. Archivos y mails no necesitan mock: alchemy dev los guarda en local (sin probar)."
+    },
+    {
+      "time": "22:15:45",
+      "kind": "user",
+      "text": "🎙️ para los tests automáticos deberíamos usar fixtures y regenerar la base de datos de alguna forma para cada test; para los tests e2e manuales podemos modificar la base de datos directamente y hacer las pruebas que haga falta\n\n🎙️ no, no hagamos estos tests por ahora"
+    },
+    {
+      "time": "22:15:58",
+      "kind": "tool",
+      "text": "Canvas(cierra la Q2: fixtures y base regenerada por test)"
+    },
+    {
+      "time": "22:16:13",
+      "kind": "screenshot",
+      "src": "screenshots/242.png",
+      "url": "localhost:5190/",
+      "caption": "Fixtures y base por test",
+      "action": null
+    },
+    {
+      "time": "22:16:18",
+      "kind": "tool",
+      "text": "Canvas(cierra la Q5: @kurasu/slides sin tests propios)"
+    },
+    {
+      "time": "22:16:35",
+      "kind": "assistant",
+      "text": "Cerré la Q2: cada test de A regenera la base y carga sus fixtures, y en C escribo el D1 local a mano. Cerré la Q5: @kurasu/slides no tiene tests propios; se prueba desde B#12 y B#20."
+    },
+    {
+      "time": "22:16:47",
+      "kind": "user",
+      "text": "🎙️ unifiquemos B y C. Los tests de C deberían ser algunos puntuales de B que elegimos: no solo escribir el test de integración sino también hacer la prueba manual"
+    },
+    {
+      "time": "22:17:19",
+      "kind": "tool",
+      "text": "Bash(une los árboles B y C en trees.mjs)"
+    },
+    {
+      "time": "22:17:29",
+      "kind": "tool",
+      "text": "Canvas(redibuja B con las filas test + manual)"
+    },
+    {
+      "time": "22:17:49",
+      "kind": "screenshot",
+      "src": "screenshots/243.png",
+      "url": "localhost:5190/",
+      "caption": "B y C unificados: pruebas a mano en B",
+      "action": null
+    },
+    {
+      "time": "22:17:54",
+      "kind": "assistant",
+      "text": "Unifiqué B y C: el árbol C ya no existe y 23 filas de B quedan como test + manual, con lo que se observa al correrlas a mano. El primer deploy a prod pasó a A#0, junto a las migraciones."
+    },
+    {
+      "time": "22:19:27",
+      "kind": "user",
+      "text": "🎙️ no incluyamos tests de deploy para este primer diseño. Mejor hagamos esto: planteemos otra rama para todas las cosas que tendríamos que testear una vez que ya esté deployado, lanzado el sitio en Cloudflare. Estos tests los vamos a probar luego de haber implementado todo: las pruebas locales, las pruebas de integración, las pruebas manuales; hacemos el lanzamiento a Cloudflare y ahí hacemos los tests finales para asegurarnos de que está todo. También deberíamos crear los usuarios de admin, que por ahora van a ser un par que te voy a poner en el chat\n\nacarrasco@filadd.com y dpiloni@filadd.com"
+    },
+    {
+      "time": "22:19:52",
+      "kind": "tool",
+      "text": "Bash(mueve las pruebas de deploy a un árbol C de lanzamiento)"
+    },
+    {
+      "time": "22:20:04",
+      "kind": "tool",
+      "text": "Canvas(dibuja el árbol C: después del deploy a Cloudflare)"
+    },
+    {
+      "time": "22:20:17",
+      "kind": "screenshot",
+      "src": "screenshots/244.png",
+      "url": "localhost:5190/",
+      "caption": "Pruebas después del lanzamiento",
+      "action": null
+    },
+    {
+      "time": "22:20:24",
+      "kind": "assistant",
+      "text": "Las pruebas de deploy salieron de A a un árbol C de lanzamiento: ocho filas manuales contra prod después del deploy, empezando por dar de alta a los dos profes en el D1 de prod."
+    },
+    {
+      "time": "22:20:44",
+      "kind": "user",
+      "text": "🎙️ nos aseguremos que todos los tests del lado de web tengan al menos un test manual, e incluir tantos tests manuales como haga falta para probar los casos más comunes, por ejemplo un error, o un login con un usuario que esté permitido y uno que no; solo no hagamos tests manuales de cosas que sean más raras"
+    },
+    {
+      "time": "22:21:17",
+      "kind": "tool",
+      "text": "Bash(marca pruebas a mano en cada rama de B)"
+    },
+    {
+      "time": "22:21:25",
+      "kind": "tool",
+      "text": "Canvas(redibuja el árbol B)"
+    },
+    {
+      "time": "22:21:36",
+      "kind": "screenshot",
+      "src": "screenshots/245.png",
+      "url": "localhost:5190/",
+      "caption": "Pruebas a mano en cada pantalla",
+      "action": null
+    },
+    {
+      "time": "22:21:41",
+      "kind": "assistant",
+      "text": "Las 25 ramas de B tienen al menos una prueba a mano: 80 de 138 filas. Los casos raros, como StrictMode o el archivo de más de 100 MB, quedan solo como test."
+    },
+    {
+      "time": "22:22:49",
+      "kind": "user",
+      "text": "🎙️ el caso de material debería tener una confirmación también; asegurémonos de actualizar la documentación correspondiente y los otros archivos de diseño y demás"
+    },
+    {
+      "time": "22:22:56",
+      "kind": "tool",
+      "text": "Bash(busca las reglas de confirmación en app/docs y el diseño)"
+    },
+    {
+      "time": "22:23:15",
+      "kind": "tool",
+      "text": "Bash(agrega ConfirmDialog al borrar en el diseño del programa)"
+    },
+    {
+      "time": "22:23:21",
+      "kind": "tool",
+      "text": "Canvas(las filas de borrar esperan la confirmación)"
+    },
+    {
+      "time": "22:23:29",
+      "kind": "user",
+      "text": "🎙️ dale, hagamos eso"
+    },
+    {
+      "time": "22:23:33",
+      "kind": "screenshot",
+      "src": "screenshots/246.png",
+      "url": "localhost:5190/",
+      "caption": "Borrar material pide confirmación",
+      "action": null
+    },
+    {
+      "time": "22:23:36",
+      "kind": "tool",
+      "text": "Bash(lee tiempo-real-del-aula.md)"
+    },
+    {
+      "time": "22:23:49",
+      "kind": "tool",
+      "text": "Bash(agrega a tiempo-real-del-aula.md qué pasa si el socket no abre)"
+    },
+    {
+      "time": "22:23:55",
+      "kind": "tool",
+      "text": "Canvas(cierra la Q9 en B#17)"
+    },
+    {
+      "time": "22:24:01",
+      "kind": "user",
+      "text": "🎙️ no nos preocupa este caso"
+    },
+    {
+      "time": "22:24:07",
+      "kind": "screenshot",
+      "src": "screenshots/247.png",
+      "url": "localhost:5190/",
+      "caption": "El socket que no abre vuelve al inicio",
+      "action": null
+    },
+    {
+      "time": "22:24:14",
+      "kind": "tool",
+      "text": "Canvas(saca el caso del código viejo de B#2)"
+    },
+    {
+      "time": "22:24:30",
+      "kind": "screenshot",
+      "src": "screenshots/248.png",
+      "url": "localhost:5190/",
+      "caption": "Registro sin el caso del código viejo",
+      "action": null
+    },
+    {
+      "time": "22:24:36",
+      "kind": "assistant",
+      "text": "Cerré la Q8 (borrar material, encuestas y preguntas propias pide confirmación), la Q9 (si el socket no abre, la web vuelve al inicio) y la Q7 (el código viejo en el registro queda descartado)."
+    },
+    {
+      "time": "22:24:36",
+      "kind": "user",
+      "text": "🎙️ para las pruebas locales deberíamos tener algún tipo de stack local; deberíamos chequear cómo hacer esto, y si hace falta crear un mock server para el email lo hacemos"
+    },
+    {
+      "time": "22:24:54",
+      "kind": "tool",
+      "text": "Agent(investiga el Stack local para los tests)"
+    },
+    {
+      "time": "22:25:01",
+      "kind": "tool",
+      "text": "Canvas(anota en la Q3 el Stack local y el mock de mail)"
+    },
+    {
+      "time": "22:25:11",
+      "kind": "user",
+      "text": "🎙️ no nos interesa tanto si se puede o no hacer esto"
+    },
+    {
+      "time": "22:25:13",
+      "kind": "screenshot",
+      "src": "screenshots/249.png",
+      "url": "localhost:5190/",
+      "caption": "Q3: research del Stack local",
+      "action": null
+    },
+    {
+      "time": "22:25:21",
+      "kind": "tool",
+      "text": "Canvas(cierra la Q4: descarta preguntar y votar en una sesión anterior)"
+    },
+    {
+      "time": "22:25:40",
+      "kind": "screenshot",
+      "src": "screenshots/250.png",
+      "url": "localhost:5190/",
+      "caption": "Sesión anterior: solo la web",
+      "action": null
+    },
+    {
+      "time": "22:25:44",
+      "kind": "assistant",
+      "text": "Cerré la Q4: la API no rechaza preguntar ni votar en una sesión anterior; solo lo impide la web. Lancé un researcher para la Q3: el Stack local, la base por test y el mail."
+    },
+    {
+      "time": "22:25:44",
+      "kind": "user",
+      "text": "🎙️ okay, una vez que termines deja todo registrado y cerremos el canvas; ya creo que está todo, ¿o nos falta alguna pregunta?"
+    },
+    {
+      "time": "22:25:49",
+      "kind": "assistant",
+      "text": "Falta la Q6: nada impide que el profe se saque el acceso a sí mismo. Puede rechazarlo la API con un 409, ocultarlo la web, o dejarlo así. La Q3 espera al researcher."
+    },
+    {
+      "time": "22:26:25",
+      "kind": "user",
+      "text": "🎙️ deberíamos rechazar este caso"
+    },
+    {
+      "time": "22:26:40",
+      "kind": "tool",
+      "text": "Bash(agrega OwnAccess al diseño del programa y a login-y-acceso.md)"
+    },
+    {
+      "time": "22:26:47",
+      "kind": "tool",
+      "text": "Canvas(agrega a A#8 el caso del propio profe)"
+    },
+    {
+      "time": "22:26:59",
+      "kind": "screenshot",
+      "src": "screenshots/251.png",
+      "url": "localhost:5190/",
+      "caption": "El profe no se saca el acceso",
+      "action": null
+    },
+    {
+      "time": "22:27:03",
+      "kind": "assistant",
+      "text": "Cerré la Q6: la API rechaza con un 409 OwnAccess que el profe se saque el acceso a sí mismo. Quedó en A#8, en el contrato y en login-y-acceso.md."
+    },
+    {
+      "time": "22:28:25",
+      "kind": "note",
+      "text": "Volvió el research del Stack local"
+    },
+    {
+      "time": "22:28:25",
+      "kind": "tool",
+      "text": "Canvas(vuelca el research en la Q3)"
+    },
+    {
+      "time": "22:28:37",
+      "kind": "screenshot",
+      "src": "screenshots/252.png",
+      "url": "localhost:5190/",
+      "caption": "Q3: el mail resuelto, falta la base",
+      "action": null
+    },
+    {
+      "time": "22:28:47",
+      "kind": "tool",
+      "text": "Bash(cambia .eml por .txt y .html en los árboles y el diseño)"
+    },
+    {
+      "time": "22:29:10",
+      "kind": "assistant",
+      "text": "El mail no necesita mock: en local queda en archivos y falla si el destino no está en la lista permitida. No hay forma de resetear el D1 entre tests. Q3.1: (a) un stage por archivo o (b) un endpoint de test."
+    },
+    {
+      "time": "22:29:40",
+      "kind": "user",
+      "text": "vamos con a"
+    },
+    {
+      "time": "22:29:57",
+      "kind": "tool",
+      "text": "Canvas(cierra la Q3 con un stage por archivo de test)"
+    },
+    {
+      "time": "22:30:11",
+      "kind": "tool",
+      "text": "Bash(registra la rama 9 y la wiki local)"
+    },
+    {
+      "time": "22:30:18",
+      "kind": "tool",
+      "text": "Canvas(marca todas las ramas como settled)"
+    },
+    {
+      "time": "22:30:28",
+      "kind": "screenshot",
+      "src": "screenshots/253.png",
+      "url": "localhost:5190/",
+      "caption": "Diseño de tests cerrado",
+      "action": null
+    },
+    {
+      "time": "22:30:30",
+      "kind": "screenshot",
+      "src": "screenshots/254.png",
+      "url": "localhost:5190/",
+      "caption": "Los tres árboles settled",
+      "action": null
+    },
+    {
+      "time": "22:30:37",
+      "kind": "tool",
+      "text": "Bash(cierra el canvas)"
+    },
+    {
+      "time": "22:30:51",
+      "kind": "assistant",
+      "text": "Diseño de tests cerrado: A con 124 filas de la API, B con 137 de la web (80 también a mano) y C con 8 pruebas en prod después del deploy. Cada archivo de test despliega su stage con sus fixtures."
     }
   ],
 };

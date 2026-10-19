@@ -21,7 +21,14 @@
     {
       "harness": "claude",
       "transcript": "/home/agus/.claude/projects/-home-agus-workspace-filadd-agentic-engineering-famaf-extension-course/f0579e23-1ab3-49d8-8e0f-26c17d001b3d.jsonl",
-      "startedAt": "2026-10-18T22:43:43.000Z"
+      "startedAt": "2026-10-18T22:43:43.000Z",
+      "endedAt": "2026-10-19T00:32:30.000Z"
+    },
+    {
+      "harness": "claude",
+      "transcript": "/home/agus/.claude/projects/-home-agus-workspace-filadd-agentic-engineering-famaf-extension-course/f0579e23-1ab3-49d8-8e0f-26c17d001b3d.jsonl",
+      "startedAt": "2026-10-19T00:59:50.000Z",
+      "endedAt": "2026-10-19T01:32:47.458Z"
     }
   ],
   "appUrl": null

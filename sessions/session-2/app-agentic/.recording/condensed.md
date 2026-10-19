@@ -5886,112 +5886,370 @@ arreglemos el replay y checkeemos también que no se haya perdido nada en las se
 [21:32:10] TOOL Bash: Inspect voice entries in the pi transcript
 [21:32:17] TOOL Bash: Inspect a pi voice notification and condensePi
 [21:32:24] TOOL Bash: Make condense keep pi voice notifications too
-[21:32:31] ASSISTANT
-Arreglé `condense` en `replay.mjs`:
-- **Claude Code:** perdía los mensajes de voz que llegan encolados mientras el agente está trabajando. Al regenerar, `condensed.md` pasó de 148 a 228 mensajes de voz.
-- **Pi:** el primer tramo, el del moodboard, se grabó en pi y no en Claude Code. Ahí la voz llega como una notificación del proceso que escucha el canvas, y `condense` la ignoraba. En ese tramo hay 6 mensajes de voz que no aparecían.
 
-Revisé las sesiones anteriores contra el replay. Hay 68 mensajes de voz que no tienen su beat en `script.js`, todos de los tramos de exploración, shape y diseño.
+## [21:59:58] USER
+/mahou:test-design-with-canvas hagamos el diseño de tests basado en todo lo que vimos hasta ahora; sigamos el mismo mecanismo de no pedir confiramaciones, armemos todos los arboles y matrices de una sola vez y los voy a ir corrigiendo a medida que los vea; nos concentremos en los tests que mencione en el diseño de programa: integración de api y de web, e incluyamos tests e2e para probar todas las funcionalidades que definimos durante el shaping
+recuerda estar atento sacando screenshots para el replay
 
-Un subagente está trabajando en dos cosas:
-- **Los 68 mensajes:** revisa cada uno, porque algunos pueden estar ya fusionados con otro mensaje o traducidos, ya que la voz de los primeros tramos llegaba en inglés. Si falta, lo agrega en su hora.
-- **El final del tramo de hoy:** completa lo que va desde las 21:22, con la captura 235.
+[22:00:01] TOOL Skill: 
+[22:00:06] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; ls .mahou .mahou/wiki; cat .mahou/test-design*.md .mahou/canvas.md .mahou/basics.md 2
+[22:00:07] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.claude/skills/session-replay/SKILL.md
+[22:00:11] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/sessions/session-2/app-agentic/.recording; cat session.json; tail -5 manifest.jsonl; l
+[22:00:21] TOOL Bash: cd /home/agus/.claude/projects/-home-agus-workspace-filadd-agentic-engineering-famaf-extension-course/; ls -t | head -3; grep -n '"type":"user"' f0579e23-1ab3-4
+[22:00:27] TOOL Bash: node -e '
+[22:00:29] ASSISTANT
+Retomé la grabación como un segmento nuevo. Ahora leo el registro del diseño del programa, el shaping y los docs para armar los árboles de tests.
 
-Guardé una copia del script como `script.prev5.js`. Cuando termine, regenero `condensed.md` con el arreglo de pi y le paso los 6 mensajes del moodboard.
+[22:00:29] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/program-design/kurasu.md
+[22:00:32] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/program-design/kurasu.md
+[22:00:39] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; wc -l shape.md design.md; grep -n "^#\|^├\|^│  ├\|^└" shape.md 
+[22:00:41] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/shape.md
+[22:01:13] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; grep -n -i "eml\|mail\|websocket\|playwright\|e2e" research-tes
+[22:06:01] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/canvas; ls scripts | head -30; ls mockups; grep -rn "agent-brows
+[22:06:07] TOOL Bash: grep -o 'agent-browser --session canvas eval[^"]\{0,10\}"[^"]\{0,100\}' /home/agus/.claude/projects/-home-agus-workspace-filadd-agentic-engineering-famaf-extens
+[22:06:13] TOOL Bash: grep -o 'AGENT_BROWSER_SESSION=[a-z]* node [^"]\{0,140\}' /home/agus/.claude/projects/-home-agus-workspace-filadd-agentic-engineering-famaf-extension-course/f05
+[22:10:03] TOOL Write: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design/trees.mjs
+[22:10:19] TOOL Write: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design/render-record.mjs
+[22:10:20] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design && node render-record.mjs && sed -n 1,80p kurasu.md 
+[22:10:24] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/canvas && bash ~/workspace/asermax/claude-plugins/mahou/skills/c
+[22:10:26] TOOL ToolSearch: 
+[22:10:29] TOOL Monitor: clicks y mensajes de voz del canvas de test design
+[22:10:30] TOOL Bash: agent-browser --session canvas open 'http://localhost:5190/?user=Claude' >/dev/null; sleep 2; agent-browser --session canvas eval 'typeof window.canvas + " " + 
+[22:11:38] TOOL Write: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/canvas/scripts/td-draw.js
+[22:11:40] ASSISTANT
+Abrí el canvas en http://localhost:5190. Primero dibujo el mapa de raíces y después los tres árboles con sus matrices.
 
-Sigue pendiente que elijas cuáles de las diez diferencias con `app/docs` se documentan.
+[22:11:42] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual && { echo -n 'window.tdData = '; cat test-design/trees.json; ech
+[22:11:51] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual && cat > /tmp/td-push.sh <<'EOF'
+[22:11:54] TOOL Bash: agent-browser --session canvas eval 'editor.zoomToFit({animation:{duration:0}}); 0' >/dev/null; sleep 1; agent-browser --session canvas screenshot /tmp/td-map1.
+[22:11:57] TOOL Read: /tmp/td-map1.png
+[22:12:04] TOOL Bash: agent-browser --session canvas eval '(() => { const L = [["C#1","B#2","registra"],["C#2","B#1","entra"],["C#3","B#5","edita el perfil"],["C#4","B#25","agrega"],
+[22:12:09] TOOL Read: /tmp/td-map2.png
+[22:12:16] ASSISTANT
+Abrí el canvas en http://localhost:5190 y dibujé un primer mapa de raíces. Las flechas quedaron enredadas, así que reacomodo cada árbol en una sola columna de cards.
+
+[22:12:23] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/canvas/scripts && python3 - <<'EOF'
+[22:12:27] TOOL Read: /tmp/td-map3.png
+[22:12:33] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course && agent-browser --session canvas eval '(() => { const b = td.bounds("td-map-C").clone
+[22:12:40] TOOL Bash: agent-browser --session canvas eval '(() => { const b = td.bounds("td-A#20-area"); editor.zoomToBounds(b,{inset:10, animation:{duration:0}}); return 1 })()' >/d
+[22:12:44] TOOL Read: /tmp/td-a20.png
+[22:12:50] TOOL Bash: agent-browser --session canvas eval '(() => { const b = td.bounds("td-A-tree"); editor.zoomToBounds({x:b.x,y:b.y,w:b.w,h:b.w*0.6},{inset:10, animation:{duration
+[22:13:01] TOOL Bash: agent-browser --session canvas eval '(() => { const b = td.bounds("td-B#12-area"); editor.zoomToBounds(b,{inset:10, animation:{duration:0}}); return 1 })()' >/d
+[22:13:04] TOOL Read: /tmp/td-b12.png
+[22:13:20] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/canvas/scripts && python3 - <<'EOF'
+[22:13:24] TOOL Bash: agent-browser --session canvas eval "$(cat td-draw.js); typeof td" >/dev/null && agent-browser --session canvas eval '(() => { const t=performance.now(); td.all
+[22:13:38] TOOL Read: /tmp/td-b11.png
+[22:13:40] ASSISTANT
+Los tres árboles ya están dibujados con sus matrices y las alturas corregidas. Saco capturas para el replay y actualizo `status.md`.
+
+[22:13:45] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course && for spec in "B:Árbol B: la web" "C:Árbol C: los e2e"; do L=${spec%%:*}; C=${spec#*:
+[22:13:45] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/sessions/session-2/app-agentic/.recording/screenshots/240.png
+[22:14:00] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/canvas/scripts && sed -i 's/area(`${key}-area`, x - 30, y, colW,
+[22:14:11] ASSISTANT
+Now status.md.
+
+[22:14:17] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual && python3 - <<'EOF'
+[22:14:27] ASSISTANT
+Abrí el canvas del diseño de tests en http://localhost:5190, con los tres árboles completos y sus matrices:
+
+| Árbol | Qué prueba | Ramas | Filas | Tests | Manuales |
+|---|---|---|---|---|---|
+| **A** `apps/api` | Integración con el harness de Alchemy | 43 | A1–A125 | 123 | 4 |
+| **B** `apps/web` | Pantallas con MSW | 25 | B1–B138 | 138 | 0 |
+| **C** e2e | Un flujo del shape por raíz | 12 | C1–C43 | 43 | 12 |
+
+En las filas manuales cuento también las `test + manual` (naranja en el canvas).
+
+Arriba está el mapa de raíces, con una casilla ☐ en cada card para tildarla o tacharla. Debajo, cada rama tiene su árbol de clasificaciones y su matriz. La nota de Claude de arriba explica cómo leerlo y lista las tareas de implementación que salieron.
+
+Dejé nueve preguntas en el canvas, al lado de lo que discuten. Las que cambian decisiones del diseño:
+- **Q1:** dónde corren los e2e. Hoy el diseño dice que solo hay tests de integración en `apps/api` y `apps/web`. Si los e2e van en `app/e2e` con Playwright, hay que corregir la rama 9 y la wiki local.
+- **Q9:** el navegador no ve el 404 del WebSocket del aula. Ve un cierre y `partysocket` reintenta, así que la regla de la rama 5.1 de "vuelve al inicio" no se cumple tal como está escrita.
+- **Q8:** el estado de la rama 7.2 confirma el borrado de una pregunta propia, y el shape (Q19) dice que se borra directo.
+- **Q4:** la API acepta preguntas y votos en una sesión anterior; hoy solo lo bloquea la web.
+
+Las otras cinco están en el canvas (Q2, Q3, Q5, Q6 y Q7).
+
+Corregí con stickies o por voz y voy actualizando el canvas y el registro. Tomé capturas para el replay de 236 a 240.
 
 
-## [21:32:36] USER
-/mahou:learn let's switch to spansih for this: i'm particularly intersted on the changes we made regarding reusing components and hooks, but bring up anything else that you deem relevant to save, including the local wiki notes
+## [22:14:56] USER
+🎙️ para el entente estaba pensando que en vez de usar Play write usemos agent browser y puedes correr las validaciones tú manualmente prefiero no mantener test e2d por ahora para hacer esas pruebas levanta el stack localmente y probamos todo junto si hace falta agregar algún tipo de moc o algo para guardar los archivos localmente o el tema de los emails lo hablemos
 
-[21:32:40] TOOL Bash: Read the learn modes
+[22:15:13] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design && python3 - <<'EOF'
+[22:15:21] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course && agent-browser --session canvas eval 'editor.getCurrentPageShapes().filter(s=>!s.id.
+[22:15:35] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/sessions/session-2/app-agentic/.recording/screenshots/241.png
+[22:15:41] ASSISTANT
+Cerré la Q1 como pediste: no va a haber tests e2e. El árbol C pasó a ser **validación manual**: sus 44 filas son `manual` (naranja) y las corro yo con agent-browser contra el Stack local (`alchemy dev` y Vite), con el profe y los estudiantes en sesiones de navegador separadas, mientras vos probás conmigo. La rama 9 y la wiki local no cambian.
 
-## [21:32:51] USER
-[Request interrupted by user]
+Para archivos y mails no hace falta un mock: según la documentación de Alchemy, `alchemy dev` guarda los archivos en un R2 local y los mails como `.eml` en `.alchemy/local/email`, y de ahí saco el magic link. Todavía no lo probé; si en la primera corrida no funciona, lo hablamos.
+
+En el canvas y en `test-design/kurasu.md`:
+- **Árbol C:** retitulado y redibujado como validación manual.
+- **Q2:** queda solo para los tests de la API (A). Sigue abierto cómo crear al profe en el D1 local; las validaciones de C lo necesitan igual.
+- **Tareas:** la del proyecto e2e pasó a ser "levantar el Stack local para las validaciones".
 
 
-## [21:33:02] USER
-registra todas las diferencias en docs
+## [22:15:45] USER
+🎙️ para los test automáticos deberíamos usar fixtures y regenerar la base de datos de alguna forma para cada test para los test e2e manuales podemos modificar la base de datos directamente y hacer las pruebas que haga falta
 
-[21:33:11] TOOL Skill: 
-[21:33:16] TOOL Bash: Read the docs charter and architecture index
-[21:33:40] TOOL Bash: Locate the passages the amendments touch
+[22:15:58] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design && python3 - <<'EOF'
 
-## [21:33:26] USER
-no hace falta que me muestres los drafts, haz los cambios directo
+## [22:15:56] USER
+🎙️ no no hagamos estos tés por ahora
 
-[21:33:45] TOOL Bash: Read the exact passages to edit
-[21:34:05] TOOL Bash: Apply the ten amendments to the architecture notes
-[21:34:12] TOOL Bash: Validate the edited diagram and show the docs diff stat
-[21:34:18] TOOL Agent: Review docs edits against charter
-[21:34:29] ASSISTANT
-Apliqué las diez diferencias directamente en las notas de `app/docs/architecture/`:
+[22:16:18] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design && python3 - <<'EOF'
+[22:16:35] ASSISTANT
+Cerré dos preguntas más en el canvas y en `test-design/kurasu.md`:
 
-- **`api-de-las-slides.md`:**
-  - **Numeración:** las slides y los pasos se cuentan desde 1, en el texto, en el diagrama y en la tabla. Una slide sin pasos internos tiene un solo paso.
-  - **Revisión al subir:** la hace la web del profe antes de mandar el archivo, esperando el manifest hasta cinco segundos.
-  - **Cambio de slides:** si se sube, se marca otro o se borra el HTML de slides, la posición del profe vuelve a slide 1, paso 1.
-  - **Sección nueva "Dónde corre el HTML":** el marco aislado, por qué tiene que ser un solo archivo y qué mensajes descarta la web.
-- **`modelo-de-datos.md`:**
-  - el avatar se guarda como clave en inglés, y la web lo muestra con emoji y lo busca en español;
-  - los límites del word cloud y de las opciones;
-  - sumar palabras es mandar la lista completa otra vez.
-- **`tiempo-real-del-aula.md`:**
-  - Presentes muestra el nombre y el avatar del momento en que cada uno se conectó;
-  - un aviso que falla no deshace el cambio, que queda guardado.
-- **`login-y-acceso.md`:** si el mail no sale, la web muestra un error y el código queda guardado. Pedir el link otra vez lo reemplaza.
-- **`componentes.md`:** la web y la API comparten `kurasu.asermax.com`, con `/api` ruteado al Worker de la API, y los mails salen de `no-reply@kurasu.asermax.com`.
+- **Q2, datos de partida.**
+  - **Árbol A:** cada test arranca con la base regenerada y carga sus fixtures, incluido el profe.
+  - **Login en A:** cada fixture trae un código de login que el test abre con `POST /api/auth/session`. El camino del mail se prueba solo en A#1 y A#2.
+  - **Árbol C:** en las validaciones manuales escribo el D1 local a mano para dejar cada estado.
+  - **Pendiente:** cómo se regenera el D1 local entre tests con el harness de Alchemy. Todavía no lo verifiqué y quedó anotado como tarea.
+- **Q5, `@kurasu/slides`.** Interpreté "no hagamos estos tests por ahora" como respuesta a esta pregunta, porque la tenías seleccionada. Por ahora el paquete no tiene tests propios: su navegación se prueba a través de B#12 y B#20.
 
-El diagrama que cambió valida bien. No cambié ningún título de nota, así que el índice queda igual.
+El mapa ya no tiene preguntas abiertas. Quedan Q3, Q4, Q6, Q7, Q8 y Q9, cada una al lado de su rama.
 
-Agregué cuatro callouts:
-- **TIP "Revisar el HTML en el servidor":** "Para ver si el HTML anuncia su manifest hay que correrlo en un navegador. La web del profe ya tiene uno; en el servidor haría falta un navegador remoto, con su costo y sus límites, para revisar archivos que sube una sola persona, el profe."
-- **WARNING "Un HTML que depende de otros archivos se ve incompleto":** lo que carga con rutas relativas no se encuentra. El manifest puede llegar igual, así que la revisión al subir no lo detecta y el profe lo ve recién en el aula.
-- **WARNING "Un aviso que no llega":** el cambio queda guardado en D1 y los conectados lo ven al refrescar, a los cinco minutos, o al reconectarse.
-- **TIP "La API en un dominio propio":** necesitaría permisos de origen cruzado, una cookie compartida entre subdominios y un WebSocket que cruce de dominio.
 
-Un revisor está chequeando estos cambios contra el charter de los docs. Si encuentra desvíos de forma, los corrijo. También sigue corriendo el subagente del replay.
+## [22:16:47] USER
+🎙️ unifiquemos B y C Los test de c deberían ser algunos puntuales de B que elegimos no solo escribir el test de integración sino también hacer la prueba manual
 
-[21:35:05] TOOL Bash: Reorder the slides note and sharpen the domain tip
-[21:35:18] TOOL Bash: Update status and stop the canvas
-[21:35:18] TOOL TaskStop: 
-[21:35:29] ASSISTANT
-Las diez diferencias quedaron escritas en `app/docs/architecture` y pasaron por un revisor contra el charter de los docs. Están sin commitear. Del revisor apliqué dos cosas, las que caían dentro de este cambio:
+[22:17:19] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design && cp trees.mjs /tmp/trees-before-merge.mjs && pytho
+[22:17:29] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/canvas/scripts && python3 - <<'EOF'
+[22:17:43] TOOL Read: /tmp/td-m4.png
+[22:17:46] TOOL Bash: agent-browser --session canvas eval '(() => { const b = td.bounds("td-B#12-area"); editor.zoomToBounds(b,{inset:10, animation:{duration:0}}); return 1 })()' >/d
+[22:17:54] ASSISTANT
+Unifiqué B y C: el árbol C ya no existe, y sus pruebas a mano son 23 filas de B que ahora quedan como `test + manual` (en naranja). Cada una mantiene su test de integración y, después de "a mano", dice qué se observa al correrla con agent-browser contra el Stack local, con el profe y los estudiantes en sesiones separadas. Las elegí entre las filas que cubrían los flujos de C:
+- **Entrar:** registro por QR, login con el mail, setup y la pérdida de acceso con la app abierta.
+- **Sesiones:** crear, habilitar y deshabilitar con gente en el aula.
+- **Material y slides:** descargar material, subir slides válidas y que rechace las inválidas.
+- **Aula:** seguir al profe, presentar, manos y preguntas.
+- **Encuestas:** activar, votar en vivo y cerrar.
+- **Usuarios:** agregar por email.
+- **Celular:** la vista del estudiante.
 
-- **`api-de-las-slides.md`:** moví "Dónde corre el HTML" antes de "Subir las slides". Así el marco aislado está explicado antes de usarlo, y el link al prototipo del modal de subida queda pegado a su sección.
-- **`componentes.md`:** el TIP de la API en otro dominio ahora dice por qué se descartó. La cookie del login solo viaja al dominio que la dejó; con la API aparte, habría que compartirla entre subdominios y aceptar pedidos de origen cruzado, también los del WebSocket.
+El primer deploy a prod (dominio, `/api/*` y el mail con SPF/DKIM) pasó a A#0, junto a las migraciones. En el mapa quedan B a la izquierda y A a la derecha.
 
-El revisor también marcó cosas de las notas que ya estaban antes de este cambio. No las toqué y las anoté en `status.md`:
-- la NOTE "Por qué registrarse no devuelve el acceso" no da la razón;
-- el texto sobre el código del link y el de registro se repite entre login y modelo de datos;
-- el estado del navegador aparece en dos notas.
+Quedaron 128 filas en A (123 tests y 5 manuales) y 138 en B (todas test, 23 de ellas también a mano).
 
-Dejé los nombres de dominio y la ruta `/api` porque son parte de lo que aprobaste.
+Siguen abiertas Q3, Q4, Q6, Q7, Q8 y Q9, al lado de sus ramas.
 
-Con esto el diseño del programa está completo. Cerré el canvas y la escucha de voz. El árbol final:
 
-```
-Diseño del programa
-└─ kurasu (app/)                                     settled
-   ├─ 1 Paquetes                                     settled
-   ├─ 2 Infra                                        settled
-   ├─ 3 API · login y acceso                         settled
-   ├─ 4 API · contenido de las sesiones              settled
-   ├─ 5 Aula · Durable Object                        settled
-   ├─ 6 Slides · protocolo y revisión al subir       settled
-   ├─ 7 Web · estudiante                             settled
-   │  ├─ 7.1 Base: rutas, datos y estado local       settled
-   │  ├─ 7.2 Compartidos: header, listas y aula      settled
-   │  ├─ 7.3 Entrar: registro, login y setup         settled
-   │  ├─ 7.4 Inicio                                  settled
-   │  └─ 7.5 Aula                                    settled
-   ├─ 8 Web · admin                                  settled
-   │  ├─ 8.1 Sesiones                                settled
-   │  ├─ 8.2 Sesión: contenido, encuestas y aula     settled
-   │  └─ 8.3 Usuarios                                settled
-   ├─ 9 Tests: estructura y herramientas             settled
-   └─ Standards                                      settled
-```
+## [22:19:27] USER
+🎙️ no incluyamos test de deploy para este primer diseño va mejor hagamos esto planteemos otra rama para todas las cosas que tendríamos que testear una vez que ya esté desplazado deploin lanzado el sitio en cloudflare estos test los vamos a probar luego de haber hecho implementado todo las pruebas locales las pruebas de integración las pruebas manuales hacemos el lanzado a cloudflare y ahí hacemos los test finales para asegurarnos de que está todo también deberíamos crear los usuarios de admi...(truncated)
 
-El registro completo está en `program-design/kurasu.md`. El subagente del replay sigue trabajando con los 68 mensajes de voz y el final del tramo.
+[22:19:29] TOOL Bash: grep "^voice:" /tmp/testdesign-watch.log | tail -1
+[22:19:52] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design && python3 - <<'EOF'
+
+## [22:19:37] USER
+acarrasco@filadd.com y dpiloni@filadd.com
+
+[22:19:56] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design && sed -n 465,480p trees.mjs
+[22:20:04] TOOL Bash: python3 - <<'EOF'
+[22:20:18] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/sessions/session-2/app-agentic/.recording/screenshots/244.png
+[22:20:24] ASSISTANT
+Saqué de A las pruebas de deploy y las pasé a un árbol aparte, **C lanzamiento: después del deploy a Cloudflare**. Son ocho filas manuales que se corren contra prod una vez implementado todo, pasados los tests y las pruebas a mano locales, y lanzado el sitio:
+
+1. **Crear los usuarios del profe:** acarrasco@filadd.com y dpiloni@filadd.com quedan en el D1 de prod con rol teacher y acceso, y cada uno entra al admin con su link.
+2. **Migraciones:** el primer deploy aplica 0001 y 0002 en orden, y un segundo deploy no aplica nada.
+3. **Dominio y ruteo:** kurasu.asermax.com sirve la web, `/api/*` llega al Worker, la cookie vale para los dos y el WebSocket del aula abre por `wss`.
+4. **Mail real:** el magic link llega desde `no-reply@` sin ir a spam.
+5. **Registro con el QR desde un celular.**
+6. **Material y slides en el R2 real:** el estudiante descarga el PDF idéntico y ve las slides en el aula.
+7. **Aula en vivo:** profe en la compu y estudiante en el celular.
+8. **Presentes después de hibernar:** antes era una fila manual de A#42 y la moví acá.
+
+Quedan 125 filas en A (123 tests y 2 también a mano), 138 en B (23 también a mano) y 8 en C. Siguen abiertas Q3, Q4, Q6, Q7, Q8 y Q9.
+
+
+## [22:20:44] USER
+🎙️ nos aseguremos que todos los test del lado de web tengan al menos un test manual y incluir tantos tés manuales como haga falta para probar los casos más comunes por ejemplo un error o un login con un usuario que esté permitido y uno que no solo no hagamos tés manuales de cosas que sean más raras
+
+[22:21:17] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design && python3 - <<'EOF'
+[22:21:20] TOOL Bash: grep -o 'va después de [^,]*' trees.mjs | head -2
+[22:21:25] TOOL Bash: python3 - <<'EOF'
+[22:21:41] ASSISTANT
+Ahora las 25 ramas de B tienen al menos una prueba a mano, y en total son 80 de las 138 filas (`test + manual`, en naranja). A mano van los casos comunes, también los errores comunes:
+- **Login y registro:** entrar con un usuario con acceso y probar con uno sin acceso, con un email no registrado y con un link ya usado.
+- **Perfil y sesión:** perfil, modo oscuro y cerrar sesión.
+- **Votos:** cada tipo de encuesta, en la card del inicio y en el aula.
+- **Aula:** seguir al profe, navegar a mano y la reconexión, reiniciando `alchemy dev` con el aula abierta.
+- **Admin:** cada acción de sesiones, material, encuestas, aula y Usuarios.
+
+Quedan solo como test los casos raros: StrictMode, el archivo de más de 100 MB, mensajes mal formados, valores inválidos en localStorage, el reorden con ids que no coinciden, el PATCH de la slide que falla, la encuesta que cierran mientras el estudiante vota y el refetch de 5 minutos. Ese criterio también quedó escrito en la descripción del árbol B, en el canvas y en `kurasu.md`.
+
+Siguen abiertas Q3, Q4, Q6, Q7, Q8 y Q9.
+
+
+## [22:22:49] USER
+🎙️ el caso de material debería tener una confirmación también asegurémonos de actualizar la documentación correspondiente y los otros archivos de diseño y demás
+
+[22:22:56] TOOL Bash: grep -rn -i "confirmaci\|se borran directo\|borra directo" app/docs/architecture .scratch/aula-virtual/shape.md .scratch/aula-virtual/design.md .scratch/aula-vi
+[22:23:03] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual && grep -n "DeleteMaterialButton\|PollActions\|DeleteOwnQuestion
+[22:23:15] TOOL Bash: python3 - <<'EOF'
+[22:23:21] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design && grep -n "Borrar la propia\|Borrar material\|'Borr
+
+## [22:23:29] USER
+🎙️ Dale hagamos eso
+
+[22:23:36] TOOL Bash: grep -n -i "404\|vuelve al inicio\|destacada" app/docs/architecture/tiempo-real-del-aula.md | cut -c1-400
+[22:23:39] TOOL Bash: grep -n "^#\|corta\|reconect\|deshabilit" app/docs/architecture/tiempo-real-del-aula.md | cut -c1-300
+[22:23:49] TOOL Bash: python3 - <<'EOF'
+[22:23:55] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design && python3 - <<'EOF'
+
+## [22:24:01] USER
+🎙️ no nos preocupe este caso
+
+[22:24:14] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design && python3 - <<'EOF'
+[22:24:19] TOOL Bash: sed -i "s/eg: 'abrir el QR; código viejo',/eg: 'abrir el QR; cuenta sin acceso',/" trees.mjs && node render-record.mjs >/dev/null && cd ../../.. && bash .scratc
+[22:24:36] ASSISTANT
+Cerré tres preguntas más y actualicé el canvas, el registro y los archivos de diseño:
+
+- **Q8, confirmación al borrar.** La nota de estados de `app/docs` ya pedía confirmación al borrar una sesión, una encuesta, un material o una pregunta propia; mi pregunta salía de la regla vieja del shape. Así que `app/docs` no necesitó cambios. Sí corregí:
+  - **Diseño del programa:** los botones de borrar material, de borrar en `PollActions` (las acciones de la encuesta) y de borrar la pregunta propia abren `ConfirmDialog`, y el estado registra qué borrado espera confirmación.
+  - **Shape:** marqué la hoja de la Q19 como reemplazada por la Q24 del diseño.
+  - **Filas de borrar en B#11, B#15, B#20 y B#21:** ahora esperan la confirmación.
+- **Q9, el socket que no abre.** Cuando el socket se cierra sin haber abierto, la web vuelve a pedir la lista de sesiones y, si la del aula ya no es la destacada, vuelve al inicio. Lo agregué a `tiempo-real-del-aula.md` y al diseño del programa (5.1 y `useClassroom`). En B#17 queda como test sin prueba a mano, porque es un caso raro.
+- **Q7, el código viejo en el registro.** No se cubre por ahora: saqué la fila y la partición de B#2 y lo dejé como caso descartado del árbol B.
+
+Siguen abiertas Q3 (fallas del aula y del mail sin mockear módulos), Q4 (preguntar y votar en una sesión anterior) y Q6 (el profe que se saca el acceso a sí mismo).
+
+
+## [22:24:36] USER
+🎙️ para las pruebas locales deberíamos tener algún tipo de stack local deberíamos chequear Cómo hacer esto y si hace falta crear un mooc Server para el email lo hacemos
+
+[22:24:54] TOOL Agent: Research local stack for tests
+[22:25:01] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design && python3 - <<'EOF'
+
+## [22:25:11] USER
+🎙️ no nos interesa tanto si se puede o no hacer esto
+
+[22:25:21] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design && python3 - <<'EOF'
+[22:25:25] ASSISTANT
+Same non-greedy regex issue; fix the line.
+
+[22:25:28] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design && sed -i "381s/.*/          ['Pregunta vacía', [1, 
+[22:25:44] ASSISTANT
+Cerré la Q4: la API no rechaza preguntar ni votar en una sesión anterior; solo la web lo impide, porque muestra esas preguntas en modo lectura. Saqué de A#32 la fila y la partición "anterior", y lo dejé como caso descartado del árbol A.
+
+La Q3 sigue abierta. Su card ya resume lo que decidiste: los tests corren contra un Stack local y, si el mail lo necesita, armamos un servidor mock. Lancé un researcher que está viendo:
+- cómo `alchemy/Test/Vitest` levanta el Stack local y si se puede regenerar el D1 local por test, y cómo cargarle los fixtures;
+- qué hace el mail en local y si se lo puede hacer fallar sin mockear módulos;
+- qué haría falta para usar un servidor mock de mail;
+- cómo hacer fallar el aviso al aula.
+
+Deja el resultado en `research-stack-local.md` y lo vuelco en la card cuando termine.
+
+Queda abierta la Q6: qué pasa si el profe se saca el acceso a sí mismo.
+
+
+## [22:25:44] USER
+🎙️ Okay una vez que termines deja todo registrado y cerremos el Canvas ya creo que está todo o nos falta alguna pregunta
+
+[22:25:49] ASSISTANT
+Falta responder una pregunta y otra espera al researcher:
+
+- **Q6, en A#8:** nada impide que el profe se saque el acceso a sí mismo desde Usuarios, y no hay otro profe que se lo devuelva. Las opciones son que la API lo rechace con un 409, que la web no muestre el control en su propia fila, o dejarlo así.
+- **Q3:** cuando llegue el research cierro la pregunta con lo que encuentre, o te traigo una pregunta concreta si hay que elegir algo, por ejemplo armar un servidor mock de mail.
+
+Cuando estén las dos, dejo todo registrado y cierro el canvas.
+
+
+## [22:26:25] USER
+🎙️ deberíamos rechazar este caso
+
+[22:26:29] TOOL Bash: sed -n 97p app/docs/architecture/login-y-acceso.md
+[22:26:40] TOOL Bash: python3 - <<'EOF'
+[22:26:47] TOOL Bash: sed -i "s/'200 hasAccess false; su próximo pedido da 403 NoAccess', 'tm'/'200 hasAccess false; su próximo pedido da 403 NoAccess', 't'/" .scratch/aula-virtual/t
+[22:27:03] ASSISTANT
+Cerré la Q6: la API rechaza que el profe se saque el acceso a sí mismo con un 409 `OwnAccess`, y el profe sigue con acceso. Quedó registrado en:
+- **Árbol A:** A#8 tiene una clasificación nueva, "Usuario" (un estudiante o el propio profe), y una fila para este caso.
+- **Diseño del programa:** `OwnAccess` está en los errores del contrato y en la respuesta de `PATCH /api/admin/users/{id}`.
+- **`login-y-acceso.md`:** una oración con la regla y el porqué (no habría otro profe que le devuelva el acceso).
+- **Tareas:** se suma el error nuevo del contrato.
+
+Solo queda la Q3, que espera al researcher. Cuando llegue el resultado la cierro, dejo todo registrado y cierro el canvas.
+
+
+## [22:27:31] USER
+/plugin marketplace add cloudflare/skills
+
+
+## [22:27:31] USER
+/reload-plugins
+
+
+## [22:27:51] USER
+/plugin
+
+[22:28:25] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design && python3 - <<'EOF'
+[22:28:40] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design && grep -n "\.eml" trees.mjs | cut -c1-140
+[22:28:47] TOOL Bash: python3 - <<'EOF'
+[22:28:51] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual && grep -n "Datos de las pruebas a mano" test-design/trees.mjs |
+[22:28:56] TOOL Bash: sed -i '152s/(los mails quedan como `.eml`)/(cada mail queda como `.txt` y `.html` en `.alchemy\/local\/email`; ver `..\/research-stack-local.md`)/' program-des
+[22:29:10] ASSISTANT
+El research volvió (`research-stack-local.md`). Lo leí de la fuente de Alchemy; no lo probé contra un Stack real.
+
+- **Mail: no hace falta un servidor mock.** En local, cada mail queda como archivo (`.txt` y `.html` en `.alchemy/local/email`) y el test lo lee de ahí. Para que falle, el stage de test declara `allowedDestinationAddresses` con los emails de los fixtures: un pedido de link a un email que no está en la lista falla con `SendEmailError`, y así se cubre A#1 sin código extra.
+- **Corrección:** los mails no quedan como `.eml`, que es lo que asumíamos. Lo corregí en los árboles y en el diseño del programa.
+- **Aula:** el harness no tiene ninguna forma de hacerla fallar.
+- **Base de datos:** no hay forma de resetear el D1 local entre tests, y el test no puede escribir en el D1. Un stage nuevo arranca con la base vacía, aplica las migraciones y puede cargar SQL al desplegarse.
+
+En la card de la Q3 dejé el resumen y la pregunta que falta, la Q3.1: cómo regeneramos la base y qué hacemos con la falla del aula.
+
+- **(a) Un stage nuevo por archivo de test:** cada archivo carga sus fixtures al desplegarse. La base se regenera por archivo y no por test, y la falla del aula queda sin test.
+- **(b) Un endpoint de test, solo en los stages de dev:** vacía la base y carga los fixtures de cada test. Además, una variable del stage hace fallar el aviso al aula.
+- **(c) Otra forma.**
+
+
+## [22:29:40] USER
+vamos con a
+
+[22:29:57] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design && python3 - <<'EOF'
+[22:29:59] ASSISTANT
+Same regex slip; fix line 257.
+
+[22:30:00] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design && sed -i "257s/.*/          ['El profe vota', [1, 0
+[22:30:11] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course && python3 - <<'EOF'
+[22:30:18] TOOL Bash: sed -i "s/branch.status ??= 'open'/branch.status ??= 'settled'/" .scratch/aula-virtual/test-design/render-record.mjs && (cd .scratch/aula-virtual/test-design &&
+[22:30:31] ASSISTANT
+Now stop the canvas, monitor and tab, and update status.
+
+[22:30:32] TOOL TaskStop: 
+[22:30:37] TOOL Bash: agent-browser --session canvas close >/dev/null 2>&1; bash ~/workspace/asermax/claude-plugins/mahou/skills/canvas/scripts/canvas.sh stop $PWD/.scratch/aula-virt
+[22:30:41] TOOL Bash: grep -o "Test design terminado.\{0,80\}" .scratch/aula-virtual/status.md; grep -c "Test design en curso" .scratch/aula-virtual/status.md
+[22:30:51] ASSISTANT
+Elegí la opción (a) para la Q3, así que el diseño de tests quedó cerrado: todas las ramas pasaron a settled, guardé el registro y cerré el canvas, el monitor y la pestaña.
+
+| Árbol | Ramas | Filas | Tests | También a mano | Solo a mano |
+|---|---|---|---|---|---|
+| **A** API | 42 | A1–A124 | 122 | 2 | – |
+| **B** web | 25 | B1–B137 | 137 | 80 (al menos una por rama) | – |
+| **C** lanzamiento | 1 | C1–C8 | – | – | 8, en prod después del deploy |
+
+Las filas "también a mano" son tests que además corro a mano con agent-browser contra el Stack local. Las de C son pruebas a mano contra prod; incluyen dar de alta como profes a acarrasco@filadd.com y dpiloni@filadd.com.
+
+Con (a), cada archivo de test de la API despliega su propio stage con la base vacía y carga sus fixtures, así que los tests de un mismo archivo comparten la base. El mail se hace fallar con un email que no está en la lista permitida del stage de test, sin servidor mock. La falla del aviso al aula queda sin test, porque el harness no tiene forma de provocarla.
+
+**Tareas de implementación**:
+- Stages de test con sus fixtures; además, poner `sequence.hooks: "list"` en Vitest, porque con el orden por defecto `afterAll(destroy)` de Alchemy se cuelga (issue #2118).
+- Fixtures de slides válidas e inválidas, un PDF y un archivo de 101 MB.
+- Errores nuevos del contrato: `QuestionNotFound`, `MaterialNotFound` y `OwnAccess`.
+- En la web: el error `MailNotSent` y un solo `POST` al abrir el link aunque el componente se monte dos veces (StrictMode).
+- Los handlers de WebSocket de MSW.
+- Levantar el Stack local para las pruebas a mano.
+
+**Cambios que dejó el diseño de tests, sin commitear:**
+- **`tiempo-real-del-aula.md`:** si el socket no llega a abrirse, la web vuelve a pedir las sesiones y, si la del aula ya no es la destacada, va al inicio (Q9).
+- **`login-y-acceso.md`:** el profe no puede sacarse el acceso a sí mismo (Q6).
+- **Diseño del programa (`program-design/kurasu.md`):**
+  - `OwnAccess` en el contrato;
+  - confirmación al borrar material, encuestas y preguntas propias;
+  - `useClassroom` cuando el socket no abre;
+  - la rama 9 con los stages de test, las pruebas a mano y las de después del lanzamiento;
+  - los mails locales quedan como `.txt` y `.html`, no `.eml`.
+- **`.mahou/wiki/fence.md`:** un stage por archivo de test y sin tests e2e.
+- **`shape.md`:** la regla de la Q19 marcada como reemplazada.
+
+El registro completo está en `.scratch/aula-virtual/test-design/kurasu.md`. Las capturas del replay van de la 236 a la 254, también sin commitear.
