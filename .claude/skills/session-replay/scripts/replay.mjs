@@ -109,7 +109,10 @@ const shot = (dir, [caption, flag, selector, text]) => {
   }
 
   const manifest = join(dir, "manifest.jsonl");
-  const n = existsSync(manifest) ? readFileSync(manifest, "utf8").split("\n").filter(Boolean).length + 1 : 1;
+  // Number after the highest capture, not the line count: deleting a bad capture leaves a gap, and
+  // counting lines would reuse the number of a capture that is still on disk and overwrite it.
+  const taken = existsSync(manifest) ? readFileSync(manifest, "utf8").split("\n").filter(Boolean).map((line) => JSON.parse(line).n) : [];
+  const n = Math.max(0, ...taken) + 1;
   const file = `screenshots/${String(n).padStart(3, "0")}.png`;
 
   // Viewport-only captures keep the action box coordinates valid for the image.
