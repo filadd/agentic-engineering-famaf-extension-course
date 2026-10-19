@@ -125,8 +125,9 @@ export const User = Schema.Struct({
 
 export type User = typeof User.Type;
 
+// Five characters typed by hand, without 0, O, 1 and I.
 export const EnrollmentCode = Schema.Struct({
-  code: Schema.String,
+  code: Schema.String.check(Schema.isPattern(/^[A-HJ-NP-Z2-9]{5}$/)),
   url: Schema.String,
 });
 

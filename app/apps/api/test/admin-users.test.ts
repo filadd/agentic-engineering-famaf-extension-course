@@ -34,7 +34,7 @@ const teacherLogin = (url: string) => loginByMail(url, "profe@usuarios.kurasu.te
 // The enrollment code tests run in order: the stage starts with no code, the
 // first read creates it and the later ones reuse or regenerate it.
 test(
-  "the first read of the enrollment code creates it, with the registration URL",
+  "the first read of the enrollment code creates five characters without 0, O, 1 or I, with the registration URL",
   Effect.gen(function* () {
     const { url } = yield* stack;
     const cookie = yield* teacherLogin(url);
@@ -44,7 +44,7 @@ test(
 
     const enrollment = yield* bodyOf(EnrollmentCode, response);
 
-    expect(enrollment.code).not.toBe("");
+    expect(enrollment.code).toMatch(/^[A-HJ-NP-Z2-9]{5}$/);
     expect(enrollment.url).toContain(`/registro?codigo=${enrollment.code}`);
   }),
 );
@@ -80,7 +80,10 @@ test(
     const regenerated = yield* request(url, "POST", "/api/admin/enrollment-code", { cookie });
 
     expect(regenerated.status).toBe(200);
-    expect((yield* bodyOf(EnrollmentCode, regenerated)).code).not.toBe(old);
+    const next = (yield* bodyOf(EnrollmentCode, regenerated)).code;
+
+    expect(next).not.toBe(old);
+    expect(next).toMatch(/^[A-HJ-NP-Z2-9]{5}$/);
 
     const late = yield* request(url, "POST", "/api/auth/link", {
       body: { email: "tarde@usuarios.kurasu.test", enrollmentCode: old },

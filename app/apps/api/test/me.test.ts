@@ -53,7 +53,7 @@ test(
     const { url } = yield* stack;
 
     yield* request(url, "POST", "/api/auth/link", {
-      body: { email: "nueva@me.kurasu.test", enrollmentCode: "me-enrollment" },
+      body: { email: "nueva@me.kurasu.test", enrollmentCode: "M3ENR" },
     });
 
     const cookie = yield* login(url, yield* linkCodeFor("nueva@me.kurasu.test"));

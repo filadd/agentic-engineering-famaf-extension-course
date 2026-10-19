@@ -8,7 +8,7 @@ import * as Option from "effect/Option";
 
 import { Codes } from "./codes.ts";
 import { Mailer } from "./mailer.ts";
-import { newCode } from "./new-code.ts";
+import { newLinkCode } from "./new-code.ts";
 import { SessionTokens } from "./session-tokens.ts";
 import { Users } from "./users.ts";
 
@@ -43,12 +43,12 @@ export class Access extends Context.Service<
         const mailer = yield* Mailer;
         const tokens = yield* SessionTokens;
         const crypto = yield* Crypto.Crypto;
-        const freshCode = Effect.provideService(newCode, Crypto.Crypto, crypto);
+        const freshCode = Effect.provideService(newLinkCode, Crypto.Crypto, crypto);
 
         const isCurrentEnrollment = (enrollmentCode: string | undefined) =>
           enrollmentCode == null
             ? Effect.succeed(false)
-            : Effect.map(codes.currentEnrollment(), Option.contains(enrollmentCode));
+            : Effect.map(codes.currentEnrollment(), Option.contains(enrollmentCode.toUpperCase()));
 
         // The code is stored before the mail goes out, so a mail that fails
         // leaves it there and the next request replaces it.

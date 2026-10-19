@@ -24,6 +24,8 @@ const { test, stack } = apiTest({
     "nuevo@auth.kurasu.test",
     "nadie@auth.kurasu.test",
     "otro@auth.kurasu.test",
+    "minusculas@auth.kurasu.test",
+    "largo@auth.kurasu.test",
   ],
 });
 
@@ -69,7 +71,7 @@ test(
 
     const response = yield* requestLink(url, {
       email: "nuevo@auth.kurasu.test",
-      enrollmentCode: "auth-enrollment-now",
+      enrollmentCode: "H4XQ9",
     });
 
     expect(response.status).toBe(204);
@@ -90,6 +92,36 @@ test(
 );
 
 test(
+  "a new email with the current enrollment code typed in lowercase registers too",
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+
+    const response = yield* requestLink(url, {
+      email: "minusculas@auth.kurasu.test",
+      enrollmentCode: "h4xq9",
+    });
+
+    expect(response.status).toBe(204);
+
+    const opened = yield* openSession(url, yield* linkCodeFor("minusculas@auth.kurasu.test"));
+
+    expect(opened.status).toBe(200);
+    expect(opened.body).toMatchObject({ email: "minusculas@auth.kurasu.test", role: "student" });
+  }),
+);
+
+test(
+  "the link of the mail keeps a long code, unlike the five characters of the enrollment code",
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+
+    yield* requestLink(url, { email: "largo@auth.kurasu.test", enrollmentCode: "H4XQ9" });
+
+    expect(yield* linkCodeFor("largo@auth.kurasu.test")).toMatch(/^[0-9a-f]{48}$/);
+  }),
+);
+
+test(
   "an existing account that sends the current enrollment code logs in without a second user",
   Effect.gen(function* () {
     const { url } = yield* stack;
@@ -97,7 +129,7 @@ test(
 
     const response = yield* requestLink(url, {
       email: "marta@auth.kurasu.test",
-      enrollmentCode: "auth-enrollment-now",
+      enrollmentCode: "H4XQ9",
     });
 
     expect(response.status).toBe(204);
@@ -133,7 +165,7 @@ test(
 
     const response = yield* requestLink(url, {
       email: "otro@auth.kurasu.test",
-      enrollmentCode: "auth-enrollment-old",
+      enrollmentCode: "W8MRT",
     });
 
     expect(response.status).toBe(404);
@@ -149,7 +181,7 @@ test(
 
     const response = yield* requestLink(url, {
       email: "sinacceso@auth.kurasu.test",
-      enrollmentCode: "auth-enrollment-now",
+      enrollmentCode: "H4XQ9",
     });
 
     expect(response.status).toBe(403);

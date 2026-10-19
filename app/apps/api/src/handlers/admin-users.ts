@@ -1,7 +1,7 @@
 import { OwnAccess, UserNotFound } from "@kurasu/contract/errors";
 import { CurrentUser } from "@kurasu/contract/middleware";
 import { Codes } from "@kurasu/core/access/codes";
-import { newCode } from "@kurasu/core/access/new-code";
+import { newEnrollmentCode } from "@kurasu/core/access/new-code";
 import { Users } from "@kurasu/core/access/users";
 import * as Crypto from "effect/Crypto";
 import * as Effect from "effect/Effect";
@@ -54,14 +54,14 @@ export const AdminUsersHandlers = (webOrigin: string) => {
         Effect.gen(function* () {
           const codes = yield* Codes;
 
-          return enrollmentCode(yield* codes.ensureEnrollment(yield* newCode));
+          return enrollmentCode(yield* codes.ensureEnrollment(yield* newEnrollmentCode));
         }),
       )
       .handle("regenerateEnrollmentCode", () =>
         Effect.gen(function* () {
           const codes = yield* Codes;
 
-          return enrollmentCode(yield* codes.regenerateEnrollment(yield* newCode));
+          return enrollmentCode(yield* codes.regenerateEnrollment(yield* newEnrollmentCode));
         }),
       ),
   );
