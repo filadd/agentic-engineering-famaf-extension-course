@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import type { MutationOptions } from "../../api/api-error.ts";
 import { runApi } from "../../api/run-api.ts";
+import { queryKeys } from "../../api/query-keys.ts";
 
 export interface AccessChange {
   readonly id: string;
@@ -25,7 +26,7 @@ export const useSetAccess = (
         }),
       ),
     onSuccess: async (data, input, result, context) => {
-      await queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.users() });
       await options?.onSuccess?.(data, input, result, context);
     },
   });

@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import type { MutationOptions } from "../../api/api-error.ts";
 import { runApi } from "../../api/run-api.ts";
+import { queryKeys } from "../../api/query-keys.ts";
 
 export interface AnswerInput {
   readonly id: string;
@@ -26,8 +27,8 @@ export const useAnswerQuestion = (
       ),
     onSuccess: async (data, input, result, context) => {
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["questions"] }),
-        queryClient.invalidateQueries({ queryKey: ["admin", "questions"] }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.allQuestions() }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.allAdminQuestions() }),
       ]);
       await options?.onSuccess?.(data, input, result, context);
     },

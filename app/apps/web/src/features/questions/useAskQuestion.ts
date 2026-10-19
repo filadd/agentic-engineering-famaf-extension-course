@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import type { MutationOptions } from "../../api/api-error.ts";
 import { runApi } from "../../api/run-api.ts";
+import { queryKeys } from "../../api/query-keys.ts";
 
 export interface AskInput {
   readonly sessionId: string;
@@ -17,7 +18,7 @@ export const useAskQuestion = (options?: MutationOptions<Question, AskInput, Ses
     ...options,
     mutationFn: (input) => runApi((api) => api.questions.ask({ payload: input })),
     onSuccess: async (question, input, result, context) => {
-      await queryClient.invalidateQueries({ queryKey: ["questions"] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.allQuestions() });
       await options?.onSuccess?.(question, input, result, context);
     },
   });

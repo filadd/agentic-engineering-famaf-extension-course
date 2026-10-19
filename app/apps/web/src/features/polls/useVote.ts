@@ -9,6 +9,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import type { MutationOptions } from "../../api/api-error.ts";
 import { runApi } from "../../api/run-api.ts";
+import { queryKeys } from "../../api/query-keys.ts";
 
 export interface VoteInput {
   readonly pollId: string;
@@ -31,13 +32,13 @@ export const useVote = (
         api.polls.vote({ params: { id: input.pollId }, payload: { myResponse: input.myResponse } }),
       ),
     onSuccess: async (poll, input, result, context) => {
-      queryClient.setQueriesData<ReadonlyArray<Poll>>({ queryKey: ["polls"] }, (polls) =>
+      queryClient.setQueriesData<ReadonlyArray<Poll>>({ queryKey: queryKeys.allPolls() }, (polls) =>
         polls?.map((each) => (each.id === poll.id ? poll : each)),
       );
       await options?.onSuccess?.(poll, input, result, context);
     },
     onError: async (error, input, result, context) => {
-      await queryClient.invalidateQueries({ queryKey: ["polls"] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.allPolls() });
       await options?.onError?.(error, input, result, context);
     },
   });

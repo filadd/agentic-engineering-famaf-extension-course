@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import type { MutationOptions } from "../../api/api-error.ts";
 import { runApi } from "../../api/run-api.ts";
+import { queryKeys } from "../../api/query-keys.ts";
 
 export const useRaiseHand = (
   options?: MutationOptions<RaisedHand, string, SessionNotFound | NotStudent>,
@@ -14,7 +15,7 @@ export const useRaiseHand = (
     ...options,
     mutationFn: (sessionId) => runApi((api) => api.raisedHands.raise({ payload: { sessionId } })),
     onSuccess: async (hand, sessionId, result, context) => {
-      await queryClient.invalidateQueries({ queryKey: ["raised-hands"] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.allRaisedHands() });
       await options?.onSuccess?.(hand, sessionId, result, context);
     },
   });
