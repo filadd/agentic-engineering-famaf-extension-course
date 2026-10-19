@@ -1,4 +1,4 @@
-import { useQueryErrorResetBoundary } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 
 import { Button } from "./Button.tsx";
@@ -10,11 +10,13 @@ interface Props {
 }
 
 // It replaces the whole page, header included, so it only offers the way home.
-// The queries' boundary resets too: without it, a query that threw stays in
-// its error and throws again as soon as the page mounts.
+// The queries that failed go back to their first load; left in their error,
+// they would throw again as soon as their page mounts. React Query's error
+// boundary reset is not enough: the first query that mounts clears it, and the
+// teacher reaches /admin through the student's home, whose useMe mounts first.
 export const ErrorScreen = ({ reset }: Props) => {
   const navigate = useNavigate();
-  const queries = useQueryErrorResetBoundary();
+  const queryClient = useQueryClient();
 
   return (
     <main className="grid min-h-full place-items-center p-10 max-[600px]:px-5 max-[600px]:py-7">
@@ -30,7 +32,9 @@ export const ErrorScreen = ({ reset }: Props) => {
           <Button
             variant="main"
             onClick={() => {
-              queries.reset();
+              void queryClient.resetQueries({
+                predicate: (query) => query.state.status === "error",
+              });
               void navigate({ to: "/" }).then(reset);
             }}
             className="max-[600px]:w-full max-[600px]:py-[13px]"

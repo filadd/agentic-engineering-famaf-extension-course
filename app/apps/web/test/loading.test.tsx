@@ -135,12 +135,16 @@ describe("loading a screen", () => {
     expect(await screen.findByRole("article", { name: vibeCoding.title })).toBeTruthy();
   });
 
-  test("a load that keeps failing shows the error screen, and Volver al inicio takes the teacher to /admin", async () => {
+  test("a load that keeps failing shows the error screen, and once the API answers Volver al inicio takes the teacher to their admin", async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
 
     const page = teacherSession({ sessions: [{ ...sessionDetail(planning), enabled: true }] });
 
-    server.use(failingRoute("get", "/admin/sessions/:id"), ...page.handlers);
+    server.use(
+      failingRoute("get", "/admin/sessions"),
+      failingRoute("get", "/admin/sessions/:id"),
+      ...page.handlers,
+    );
 
     const { router, user } = await renderRoute(`/admin/sesiones/${planning.id}`);
 
@@ -150,10 +154,13 @@ describe("loading a screen", () => {
     expect(screen.getByText("Probá de nuevo en un rato.")).toBeTruthy();
     expect(screen.queryByRole("banner")).toBeNull();
 
+    server.use(...page.handlers);
+
     await user.click(screen.getByRole("button", { name: "Volver al inicio" }));
 
     await waitFor(() => expect(router.state.location.pathname).toBe("/admin"));
-    expect(await screen.findByRole("region", { name: "Todas las sesiones" })).toBeTruthy();
+    expect(await screen.findByRole("region", { name: planning.title })).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "No se pudo cargar la página" })).toBeNull();
   });
 
   test("a failing Material sheet replaces the student's page with the error screen", async () => {
