@@ -8085,6 +8085,187 @@ window.RECORDING = {
       "time": "02:49:07",
       "kind": "assistant",
       "text": "F6 lo hace kurasu-f6: Escape cierra la hoja o el diálogo de arriba. F3 y F4 quedan ignorados. En Cloudflare: kurasu-api-prod-…, kurasu-web-prod-…, kurasu-db-prod-… y kurasu-bucket-prod-…"
+    },
+    {
+      "time": "02:51:30",
+      "kind": "note",
+      "text": "kurasu-f6 terminó"
+    },
+    {
+      "time": "02:51:36",
+      "kind": "tool",
+      "text": "Bash(arregla el hook de lefthook, que había dejado de correr)"
+    },
+    {
+      "time": "02:51:59",
+      "kind": "assistant",
+      "text": "F6 quedó commiteado: Escape cierra la hoja o el diálogo de arriba. El hook de lefthook vuelve a correr en cada commit."
+    },
+    {
+      "time": "02:52:07",
+      "kind": "tool",
+      "text": "Subagent(kurasu-review-2: segundo agentic review de T19, T20, T21 y T23)"
+    },
+    {
+      "time": "02:52:50",
+      "kind": "tool",
+      "text": "Bash(genera el JWT_SECRET de prod en .env.production.local)"
+    },
+    {
+      "time": "02:52:56",
+      "kind": "assistant",
+      "text": "El secreto de prod queda fuera de git. Con APP_ENV=production, varlock lo carga y el origen web pasa a ser https://kurasu.asermax.com."
+    },
+    {
+      "time": "03:23:13",
+      "kind": "note",
+      "text": "kurasu-review-2 terminó"
+    },
+    {
+      "time": "03:23:20",
+      "kind": "tool",
+      "text": "Subagent(kurasu-docs: documentación y wiki alineadas con lo construido)"
+    },
+    {
+      "time": "03:24:10",
+      "kind": "tool",
+      "text": "Bash(alchemy deploy --stage prod)"
+    },
+    {
+      "time": "03:24:48",
+      "kind": "assistant",
+      "text": "Deploy a prod en 21 s: la web en kurasu.asermax.com y la API en kurasu-api-prod-l5tmgps5s5tjmdmr. El estado de Alchemy queda en un Worker con su Durable Object en la cuenta."
+    },
+    {
+      "time": "03:24:49",
+      "kind": "tool",
+      "text": "Bash(curl a la web y a /api/me en prod)"
+    },
+    {
+      "time": "03:25:03",
+      "kind": "assistant",
+      "text": "La API responde por la ruta (401 sin cookie), pero la web devuelve 500."
+    },
+    {
+      "time": "03:25:14",
+      "kind": "tool",
+      "text": "Bash(busca dónde TanStack Start escribe el shell de la SPA)"
+    },
+    {
+      "time": "03:25:47",
+      "kind": "tool",
+      "text": "Subagent(kurasu-spa: generar el shell de la SPA como index.html y no como _shell.html)"
+    },
+    {
+      "time": "03:25:57",
+      "kind": "tool",
+      "text": "Bash(wrangler d1 execute: migraciones aplicadas en el D1 de prod)"
+    },
+    {
+      "time": "03:26:10",
+      "kind": "tool",
+      "text": "Bash(wrangler d1 execute: da de alta a los dos profes)"
+    },
+    {
+      "time": "03:26:17",
+      "kind": "tool",
+      "text": "Bash(pide el link de acceso para acarrasco@filadd.com)"
+    },
+    {
+      "time": "03:26:29",
+      "kind": "assistant",
+      "text": "C2 pasa: 0001 y 0002 aplicadas en orden en el D1 de prod. acarrasco@ y dpiloni@ quedan con rol teacher; nombre y avatar los completan al entrar."
+    },
+    {
+      "time": "03:26:29",
+      "kind": "assistant",
+      "text": "La API respondió 204 y salió el mail real con el link a acarrasco@filadd.com. Sirve una sola vez, así que no pide otro."
+    },
+    {
+      "time": "03:27:44",
+      "kind": "note",
+      "text": "kurasu-spa terminó"
+    },
+    {
+      "time": "03:27:51",
+      "kind": "tool",
+      "text": "Bash(redeploy a prod)"
+    },
+    {
+      "time": "03:28:28",
+      "kind": "tool",
+      "text": "Bash(curl a /admin/usuarios, /aula y /entrar en prod)"
+    },
+    {
+      "time": "03:29:09",
+      "kind": "tool",
+      "text": "Subagent(kurasu-prod-check: C3, C6, C7 y C8 contra prod)"
+    },
+    {
+      "time": "03:29:26",
+      "kind": "assistant",
+      "text": "T24: el shell sale como index.html y / responde 200. El segundo deploy solo tocó la web y no repitió migraciones, así que C2 queda cerrada."
+    },
+    {
+      "time": "03:32:55",
+      "kind": "note",
+      "text": "kurasu-prod-check terminó"
+    },
+    {
+      "time": "03:33:12",
+      "kind": "assistant",
+      "text": "El clasificador de permisos le bloqueó firmar cookies con el secreto de prod y leer el D1 y el R2, y paró sin escribir nada en prod."
+    },
+    {
+      "time": "03:33:40",
+      "kind": "assistant",
+      "text": "Quedan para hacer con el usuario logueado: la parte con sesión de C3, el mail en la casilla (C4), el celular (C5) y C6, C7 y C8."
+    },
+    {
+      "time": "03:33:59",
+      "kind": "note",
+      "text": "kurasu-docs terminó"
+    },
+    {
+      "time": "03:34:18",
+      "kind": "tool",
+      "text": "Subagent(kurasu-t25: arreglos de código del consistency checker)"
+    },
+    {
+      "time": "03:34:32",
+      "kind": "assistant",
+      "text": "Docs y wiki commiteadas en a2b4b38 y a1f100f. El consistency checker encontró 21 cosas; las de código van en T25: tipos de error, una constante duplicada, variables sin declarar y código sin uso."
+    },
+    {
+      "time": "03:39:00",
+      "kind": "note",
+      "text": "kurasu-t25 terminó"
+    },
+    {
+      "time": "03:39:08",
+      "kind": "tool",
+      "text": "Bash(redeploy a prod con T25)"
+    },
+    {
+      "time": "03:39:41",
+      "kind": "tool",
+      "text": "Browser(abre kurasu.asermax.com)"
+    },
+    {
+      "time": "03:39:47",
+      "kind": "screenshot",
+      "src": "screenshots/362.png",
+      "url": "kurasu.asermax.com/login",
+      "caption": "kurasu en producción",
+      "action": null
+    },
+    {
+      "time": "03:40:26",
+      "kind": "screenshot",
+      "src": "screenshots/363.png",
+      "url": "kurasu.asermax.com/registro",
+      "caption": "Registro en producción",
+      "action": null
     }
   ],
 };

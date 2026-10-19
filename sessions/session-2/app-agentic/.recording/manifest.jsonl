@@ -291,3 +291,5 @@
 {"n":357,"time":"02:39:59","src":"screenshots/357.png","url":"localhost:5173/aula","caption":"Aula en modo oscuro","action":null}
 {"n":359,"time":"02:40:18","src":"screenshots/359.png","url":"localhost:5173/admin","caption":"Lista de sesiones en oscuro","action":null}
 {"n":361,"time":"02:43:04","src":"screenshots/361.png","url":"localhost:5173/aula","caption":"Reconectada, con el cambio","action":null}
+{"n":362,"time":"03:39:47","src":"screenshots/362.png","url":"kurasu.asermax.com/login","caption":"kurasu en producción","action":null}
+{"n":363,"time":"03:40:26","src":"screenshots/363.png","url":"kurasu.asermax.com/registro","caption":"Registro en producción","action":null}
