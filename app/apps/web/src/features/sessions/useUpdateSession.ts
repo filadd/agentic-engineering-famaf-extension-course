@@ -1,7 +1,6 @@
-import type { SessionNotFound } from "@kurasu/contract/errors";
 import type { Session, SessionChange } from "@kurasu/contract/sessions";
 
-import type { MutationOptions } from "../../api/api-error.ts";
+import type { EndpointError, MutationOptions } from "../../api/api-error.ts";
 import { queryKeys } from "../../api/query-keys.ts";
 import { useApiMutation } from "../../api/useApiMutation.ts";
 
@@ -11,7 +10,7 @@ export interface SessionUpdate {
 }
 
 export const useUpdateSession = (
-  options?: MutationOptions<Session, SessionUpdate, SessionNotFound>,
+  options?: MutationOptions<Session, SessionUpdate, EndpointError<"adminSessions", "update">>,
 ) =>
   useApiMutation({
     call: (api, input) =>

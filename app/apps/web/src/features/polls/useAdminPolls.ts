@@ -1,13 +1,12 @@
-import type { SessionNotFound } from "@kurasu/contract/errors";
 import type { AdminPoll } from "@kurasu/contract/polls";
 
-import type { QueryOptions } from "../../api/api-error.ts";
+import type { EndpointError, QueryOptions } from "../../api/api-error.ts";
 import { queryKeys } from "../../api/query-keys.ts";
 import { useApiQuery } from "../../api/useApiQuery.ts";
 
 export const useAdminPolls = (
   sessionId: string,
-  options?: QueryOptions<ReadonlyArray<AdminPoll>, SessionNotFound>,
+  options?: QueryOptions<ReadonlyArray<AdminPoll>, EndpointError<"adminPolls", "list">>,
 ) =>
   useApiQuery({
     queryKey: queryKeys.adminPolls(sessionId),

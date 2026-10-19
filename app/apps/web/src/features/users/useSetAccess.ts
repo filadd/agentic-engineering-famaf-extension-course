@@ -1,7 +1,6 @@
-import type { OwnAccess, UserNotFound } from "@kurasu/contract/errors";
 import type { User } from "@kurasu/contract/user";
 
-import type { MutationOptions } from "../../api/api-error.ts";
+import type { EndpointError, MutationOptions } from "../../api/api-error.ts";
 import { queryKeys } from "../../api/query-keys.ts";
 import { useApiMutation } from "../../api/useApiMutation.ts";
 
@@ -11,7 +10,7 @@ export interface AccessChange {
 }
 
 export const useSetAccess = (
-  options?: MutationOptions<User, AccessChange, UserNotFound | OwnAccess>,
+  options?: MutationOptions<User, AccessChange, EndpointError<"adminUsers", "setAccess">>,
 ) =>
   useApiMutation({
     call: (api, input) =>

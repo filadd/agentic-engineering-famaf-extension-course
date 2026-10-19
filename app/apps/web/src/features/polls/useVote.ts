@@ -1,13 +1,7 @@
-import type {
-  InvalidResponse,
-  NotStudent,
-  PollNotActive,
-  PollNotFound,
-} from "@kurasu/contract/errors";
 import type { Poll, ResponseValue } from "@kurasu/contract/polls";
 import { useQueryClient } from "@tanstack/react-query";
 
-import type { MutationOptions } from "../../api/api-error.ts";
+import type { EndpointError, MutationOptions } from "../../api/api-error.ts";
 import { queryKeys } from "../../api/query-keys.ts";
 import { useApiMutation } from "../../api/useApiMutation.ts";
 
@@ -17,11 +11,7 @@ export interface VoteInput {
 }
 
 export const useVote = (
-  options?: MutationOptions<
-    Poll,
-    VoteInput,
-    PollNotFound | PollNotActive | InvalidResponse | NotStudent
-  >,
+  options?: MutationOptions<Poll, VoteInput, EndpointError<"polls", "vote">>,
 ) => {
   const queryClient = useQueryClient();
 

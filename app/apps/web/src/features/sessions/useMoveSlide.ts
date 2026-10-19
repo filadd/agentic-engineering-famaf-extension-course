@@ -1,9 +1,8 @@
-import type { SessionNotFound } from "@kurasu/contract/errors";
 import type { Session } from "@kurasu/contract/sessions";
 import type { Position } from "@kurasu/slides/messages";
 import { useQueryClient } from "@tanstack/react-query";
 
-import type { MutationOptions } from "../../api/api-error.ts";
+import type { EndpointError, MutationOptions } from "../../api/api-error.ts";
 import { queryKeys } from "../../api/query-keys.ts";
 import { useApiMutation } from "../../api/useApiMutation.ts";
 
@@ -14,7 +13,9 @@ export interface SlideMove {
 
 // The teacher's slide moves before the API answers; a failed move puts the
 // previous position back.
-export const useMoveSlide = (options?: MutationOptions<Session, SlideMove, SessionNotFound>) => {
+export const useMoveSlide = (
+  options?: MutationOptions<Session, SlideMove, EndpointError<"adminSessions", "update">>,
+) => {
   const queryClient = useQueryClient();
 
   return useApiMutation({

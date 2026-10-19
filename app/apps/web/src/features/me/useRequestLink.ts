@@ -1,6 +1,4 @@
-import type { MailNotSent, NoAccess, NotRegistered } from "@kurasu/contract/errors";
-
-import type { MutationOptions } from "../../api/api-error.ts";
+import type { EndpointError, MutationOptions } from "../../api/api-error.ts";
 import { useApiMutation } from "../../api/useApiMutation.ts";
 
 export interface LinkRequest {
@@ -11,7 +9,7 @@ export interface LinkRequest {
 // NoAccess here is an answer the form shows, not a session that lost access,
 // so the query client leaves it to the screen.
 export const useRequestLink = (
-  options?: MutationOptions<void, LinkRequest, NoAccess | NotRegistered | MailNotSent>,
+  options?: MutationOptions<void, LinkRequest, EndpointError<"auth", "requestLink">>,
 ) =>
   useApiMutation({
     call: (api, input) => api.auth.requestLink({ payload: input }),

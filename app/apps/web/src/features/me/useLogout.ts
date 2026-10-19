@@ -1,9 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import type { MutationOptions } from "../../api/api-error.ts";
+import type { EndpointError, MutationOptions } from "../../api/api-error.ts";
 import { runApi } from "../../api/run-api.ts";
 
-export const useLogout = (options?: MutationOptions<void, void>) => {
+export const useLogout = (
+  options?: MutationOptions<void, void, EndpointError<"auth", "logout">>,
+) => {
   const queryClient = useQueryClient();
 
   return useMutation({

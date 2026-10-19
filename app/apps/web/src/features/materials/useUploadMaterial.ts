@@ -1,7 +1,6 @@
-import type { FileTooLarge, InvalidUpload, SessionNotFound } from "@kurasu/contract/errors";
 import type { Material } from "@kurasu/contract/materials";
 
-import type { MutationOptions } from "../../api/api-error.ts";
+import type { EndpointError, MutationOptions } from "../../api/api-error.ts";
 import { queryKeys } from "../../api/query-keys.ts";
 import { useApiMutation } from "../../api/useApiMutation.ts";
 
@@ -29,7 +28,7 @@ export const useUploadMaterial = (
   options?: MutationOptions<
     Material,
     MaterialUploadInput,
-    SessionNotFound | FileTooLarge | InvalidUpload
+    EndpointError<"adminMaterials", "upload">
   >,
 ) =>
   useApiMutation({

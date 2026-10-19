@@ -1,24 +1,16 @@
-import type { NoAccess, NotTeacher, Unauthenticated } from "@kurasu/contract/errors";
-import type { HttpClientError } from "effect/http/HttpClientError";
-import type { SchemaError } from "effect/Schema";
 import type { UseMutationOptions, UseQueryOptions } from "@tanstack/react-query";
+import type * as Effect from "effect/Effect";
 
-// What any call can fail with besides its own errors: the access middleware,
-// the network and a response that does not decode.
-export type ApiError<E = never> =
-  | E
-  | Unauthenticated
-  | NoAccess
-  | NotTeacher
-  | HttpClientError
-  | SchemaError;
+import type { KurasuClient } from "./run-api.ts";
 
-export type QueryOptions<A, E = never> = Omit<
-  UseQueryOptions<A, ApiError<E>>,
-  "queryKey" | "queryFn"
->;
+// What an endpoint of the contract can fail with, as the HttpApi client types
+// it: the endpoint's own errors, its middleware's, the network and a response
+// that does not decode.
+export type EndpointError<
+  G extends keyof KurasuClient,
+  N extends keyof KurasuClient[G],
+> = KurasuClient[G][N] extends (...args: never) => Effect.Effect<unknown, infer E> ? E : never;
 
-export type MutationOptions<A, I, E = never> = Omit<
-  UseMutationOptions<A, ApiError<E>, I>,
-  "mutationFn"
->;
+export type QueryOptions<A, E> = Omit<UseQueryOptions<A, E>, "queryKey" | "queryFn">;
+
+export type MutationOptions<A, I, E> = Omit<UseMutationOptions<A, E, I>, "mutationFn">;

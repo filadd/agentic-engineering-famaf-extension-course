@@ -1,12 +1,13 @@
-import type { InvalidLink, NoAccess } from "@kurasu/contract/errors";
 import type { Me } from "@kurasu/contract/user";
 import { useQueryClient } from "@tanstack/react-query";
 
-import type { MutationOptions } from "../../api/api-error.ts";
+import type { EndpointError, MutationOptions } from "../../api/api-error.ts";
 import { queryKeys } from "../../api/query-keys.ts";
 import { useApiMutation } from "../../api/useApiMutation.ts";
 
-export const useOpenSession = (options?: MutationOptions<Me, string, InvalidLink | NoAccess>) => {
+export const useOpenSession = (
+  options?: MutationOptions<Me, string, EndpointError<"auth", "openSession">>,
+) => {
   const queryClient = useQueryClient();
 
   return useApiMutation({

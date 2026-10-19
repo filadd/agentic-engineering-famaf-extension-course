@@ -1,7 +1,6 @@
-import type { OwnQuestion, QuestionNotFound } from "@kurasu/contract/errors";
 import type { Question } from "@kurasu/contract/questions";
 
-import type { MutationOptions } from "../../api/api-error.ts";
+import type { EndpointError, MutationOptions } from "../../api/api-error.ts";
 import { queryKeys } from "../../api/query-keys.ts";
 import { useApiMutation } from "../../api/useApiMutation.ts";
 
@@ -11,7 +10,7 @@ export interface QuestionVoteInput {
 }
 
 export const useVoteQuestion = (
-  options?: MutationOptions<Question, QuestionVoteInput, QuestionNotFound | OwnQuestion>,
+  options?: MutationOptions<Question, QuestionVoteInput, EndpointError<"questions", "vote">>,
 ) =>
   useApiMutation({
     call: (api, input) =>

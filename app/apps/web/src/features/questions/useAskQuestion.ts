@@ -1,7 +1,6 @@
-import type { SessionNotFound } from "@kurasu/contract/errors";
 import type { Question } from "@kurasu/contract/questions";
 
-import type { MutationOptions } from "../../api/api-error.ts";
+import type { EndpointError, MutationOptions } from "../../api/api-error.ts";
 import { queryKeys } from "../../api/query-keys.ts";
 import { useApiMutation } from "../../api/useApiMutation.ts";
 
@@ -10,7 +9,9 @@ export interface AskInput {
   readonly body: string;
 }
 
-export const useAskQuestion = (options?: MutationOptions<Question, AskInput, SessionNotFound>) =>
+export const useAskQuestion = (
+  options?: MutationOptions<Question, AskInput, EndpointError<"questions", "ask">>,
+) =>
   useApiMutation({
     call: (api, input) => api.questions.ask({ payload: input }),
     invalidates: [queryKeys.allQuestions()],

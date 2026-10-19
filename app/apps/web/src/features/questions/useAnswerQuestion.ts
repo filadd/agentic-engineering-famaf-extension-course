@@ -1,7 +1,6 @@
-import type { QuestionNotFound } from "@kurasu/contract/errors";
 import type { AdminQuestion } from "@kurasu/contract/questions";
 
-import type { MutationOptions } from "../../api/api-error.ts";
+import type { EndpointError, MutationOptions } from "../../api/api-error.ts";
 import { queryKeys } from "../../api/query-keys.ts";
 import { useApiMutation } from "../../api/useApiMutation.ts";
 
@@ -11,7 +10,7 @@ export interface AnswerInput {
 }
 
 export const useAnswerQuestion = (
-  options?: MutationOptions<AdminQuestion, AnswerInput, QuestionNotFound>,
+  options?: MutationOptions<AdminQuestion, AnswerInput, EndpointError<"adminQuestions", "answer">>,
 ) =>
   useApiMutation({
     call: (api, input) =>

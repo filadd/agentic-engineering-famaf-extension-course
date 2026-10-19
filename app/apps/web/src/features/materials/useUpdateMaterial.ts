@@ -1,7 +1,6 @@
-import type { MaterialNotFound } from "@kurasu/contract/errors";
 import type { Material } from "@kurasu/contract/materials";
 
-import type { MutationOptions } from "../../api/api-error.ts";
+import type { EndpointError, MutationOptions } from "../../api/api-error.ts";
 import { queryKeys } from "../../api/query-keys.ts";
 import { useApiMutation } from "../../api/useApiMutation.ts";
 
@@ -11,7 +10,7 @@ export interface MaterialUpdate {
 }
 
 export const useUpdateMaterial = (
-  options?: MutationOptions<Material, MaterialUpdate, MaterialNotFound>,
+  options?: MutationOptions<Material, MaterialUpdate, EndpointError<"adminMaterials", "update">>,
 ) =>
   useApiMutation({
     call: (api, input) =>

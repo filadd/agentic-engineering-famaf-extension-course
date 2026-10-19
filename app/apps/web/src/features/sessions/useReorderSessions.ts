@@ -1,15 +1,14 @@
-import type { OrderMismatch } from "@kurasu/contract/errors";
 import type { SessionSummary } from "@kurasu/contract/sessions";
 import { useQueryClient } from "@tanstack/react-query";
 
-import type { MutationOptions } from "../../api/api-error.ts";
+import type { EndpointError, MutationOptions } from "../../api/api-error.ts";
 import { queryKeys } from "../../api/query-keys.ts";
 import { useApiMutation } from "../../api/useApiMutation.ts";
 
 // The list takes the new order as soon as the card is dropped; if the API
 // rejects it, the list goes back to the server's order.
 export const useReorderSessions = (
-  options?: MutationOptions<void, ReadonlyArray<string>, OrderMismatch>,
+  options?: MutationOptions<void, ReadonlyArray<string>, EndpointError<"adminSessions", "reorder">>,
 ) => {
   const queryClient = useQueryClient();
 
