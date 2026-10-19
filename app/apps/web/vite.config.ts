@@ -43,20 +43,30 @@ const apiUpgradesToProxy = (): Plugin => ({
   },
 });
 
-// Under `alchemy dev` the API Worker asks for port 1337, and Vite forwards
-// /api to it (the classroom WebSocket included), so the browser talks to a
-// single origin as it does in production. When 1337 is taken the Worker starts
-// on the first free port and the proxy misses it, so free 1337 first.
+// Under `alchemy dev`, Vite forwards /api to the API Worker (the classroom
+// WebSocket included), so the browser talks to a single origin as it does in
+// production. The API Worker asks for port 1337 but takes the next free one
+// when 1337 is busy; the stack passes the URL it ended up on as the
+// `VITE_API_URL` entry of the web's env, which Alchemy hands to Vite as a
+// `define` merged into this config before the plugins' `config` hooks run.
+const apiProxy = (): Plugin => ({
+  name: "kurasu:api-proxy",
+  apply: "serve",
+  config: ({ define }) => {
+    const apiUrl: string | undefined = define?.["import.meta.env.VITE_API_URL"];
+
+    return apiUrl == null
+      ? {}
+      : { server: { proxy: { "/api": { target: JSON.parse(apiUrl), ws: true } } } };
+  },
+});
+
 export default defineConfig({
   plugins: [
+    apiProxy(),
     apiUpgradesToProxy(),
     tailwindcss(),
     tanstackStart({ spa: { enabled: true, prerender: { outputPath: "/index" } } }),
     viteReact(),
   ],
-  server: {
-    proxy: {
-      "/api": { target: "http://localhost:1337", ws: true },
-    },
-  },
 });

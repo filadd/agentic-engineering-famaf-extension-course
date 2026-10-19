@@ -24,7 +24,7 @@ export default Alchemy.Stack(
   Effect.gen(function* () {
     const domain = yield* kurasuDomain;
     const api = yield* Api;
-    const web = yield* Web;
+    const web = yield* Web(api.url);
 
     // The zone, the mail sender and the route only exist in Cloudflare. The
     // route sends kurasu.asermax.com/api/* to the API Worker; routes win over
