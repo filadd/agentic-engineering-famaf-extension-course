@@ -1,7 +1,18 @@
 import { Access } from "@kurasu/core/access/access";
+import { Hands } from "@kurasu/core/hands/hands";
+import { Materials } from "@kurasu/core/materials/materials";
+import { Polls } from "@kurasu/core/polls/polls";
+import { Questions } from "@kurasu/core/questions/questions";
+import { Sessions } from "@kurasu/core/sessions/sessions";
 import { D1Codes } from "@kurasu/database/codes";
 import { Database } from "@kurasu/database/database";
+import { D1Hands } from "@kurasu/database/hands";
+import { D1Materials } from "@kurasu/database/materials";
+import { D1Polls } from "@kurasu/database/polls";
+import { D1Questions } from "@kurasu/database/questions";
 import { KurasuDatabase } from "@kurasu/database/resource";
+import { D1Responses } from "@kurasu/database/responses";
+import { D1Sessions } from "@kurasu/database/sessions";
 import { D1Users } from "@kurasu/database/users";
 import * as Cloudflare from "alchemy/Cloudflare";
 import * as Config from "effect/Config";
@@ -13,11 +24,18 @@ import * as Layer from "effect/Layer";
 
 import { ServedApi } from "./api.ts";
 import Aula from "./classroom/aula.ts";
+import { DurableObjectClassroom } from "./classroom/notify.ts";
 import { WebCrypto } from "./crypto.ts";
 import { MaterialsBucket } from "./files/bucket.ts";
+import { R2Files } from "./files/r2.ts";
 import { AdminUsersHandlers } from "./handlers/admin-users.ts";
 import { AuthHandlers } from "./handlers/auth.ts";
+import { AdminMaterialsHandlers, MaterialsHandlers } from "./handlers/materials.ts";
 import { MeHandlers } from "./handlers/me.ts";
+import { AdminPollsHandlers, PollsHandlers } from "./handlers/polls.ts";
+import { AdminQuestionsHandlers, QuestionsHandlers } from "./handlers/questions.ts";
+import { AdminRaisedHandsHandlers, RaisedHandsHandlers } from "./handlers/raised-hands.ts";
+import { AdminSessionsHandlers, SessionsHandlers } from "./handlers/sessions.ts";
 import { mailBinding } from "./mail/binding.ts";
 import { EmailSendingMailer } from "./mail/email-sending.ts";
 import { CurrentUserMiddlewareLive } from "./middleware.ts";
@@ -36,8 +54,8 @@ export default class Api extends Cloudflare.Worker<Api>()(
     const database = yield* KurasuDatabase;
     const d1 = yield* Cloudflare.D1.QueryDatabase(database);
 
-    yield* Cloudflare.R2.ReadWriteBucket(MaterialsBucket);
-    yield* Aula;
+    const bucket = yield* Cloudflare.R2.ReadWriteBucket(MaterialsBucket);
+    const aulas = yield* Aula;
 
     const domain = yield* Config.String("KURASU_DOMAIN").pipe(
       Config.withDefault("kurasu.asermax.com"),
@@ -53,19 +71,50 @@ export default class Api extends Cloudflare.Worker<Api>()(
     const sender = `no-reply@${domain}`;
     const email = yield* Cloudflare.Email.Send(yield* mailBinding(sender));
 
-    const adapters = Layer.mergeAll(D1Users, D1Codes).pipe(Layer.provide(Database.layer(d1.raw)));
+    const stores = Layer.mergeAll(
+      D1Users,
+      D1Codes,
+      D1Sessions,
+      D1Polls,
+      D1Responses,
+      D1Materials,
+      D1Questions,
+      D1Hands,
+    ).pipe(Layer.provide(Database.layer(d1.raw)));
 
-    const access = Access.layer(webOrigin).pipe(
-      Layer.provide([EmailSendingMailer(email, sender), JoseSessionTokens(jwtSecret), WebCrypto]),
-      Layer.provideMerge(adapters),
+    const platform = Layer.mergeAll(
+      EmailSendingMailer(email, sender),
+      JoseSessionTokens(jwtSecret),
+      WebCrypto,
+      R2Files(bucket),
+      DurableObjectClassroom(aulas),
     );
 
-    const services = access.pipe(
-      Layer.provideMerge(Layer.mergeAll(JoseSessionTokens(jwtSecret), WebCrypto)),
-    );
+    const services = Layer.mergeAll(
+      Access.layer(webOrigin),
+      Sessions.layer,
+      Polls.layer,
+      Materials.layer,
+      Questions.layer,
+      Hands.layer,
+    ).pipe(Layer.provideMerge(stores), Layer.provideMerge(platform));
 
     const app = HttpApiBuilder.layer(ServedApi).pipe(
-      Layer.provide([AuthHandlers, MeHandlers, AdminUsersHandlers(webOrigin)]),
+      Layer.provide([
+        AuthHandlers,
+        MeHandlers,
+        AdminUsersHandlers(webOrigin),
+        SessionsHandlers,
+        AdminSessionsHandlers,
+        PollsHandlers,
+        AdminPollsHandlers,
+        MaterialsHandlers,
+        AdminMaterialsHandlers,
+        QuestionsHandlers,
+        AdminQuestionsHandlers,
+        RaisedHandsHandlers,
+        AdminRaisedHandsHandlers,
+      ]),
       Layer.provide(CurrentUserMiddlewareLive),
       Layer.provide(services),
       Layer.provide(HttpServer.layerServices),
