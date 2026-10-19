@@ -23,7 +23,7 @@ export const ContentTab = ({ sessionId, session }: Props) => {
 
   return (
     <div className="flex max-w-[760px] flex-col gap-[18px]">
-      {session == null ? (
+      {session == null || sessions.data == null ? (
         <SkeletonOf>
           <section className={`skeleton-block ${card}`}>
             <div className="text-sm opacity-75">Sesión 1 de 6</div>
@@ -33,14 +33,9 @@ export const ContentTab = ({ sessionId, session }: Props) => {
         </SkeletonOf>
       ) : (
         <section aria-label="La sesión" className={card}>
-          {sessions.data == null ? (
-            <SkeletonOf>
-              <div className="skeleton-block w-fit text-sm">Sesión 1 de 6</div>
-            </SkeletonOf>
-          ) : null}
           {number === 0 ? null : (
             <div className="text-sm opacity-75">
-              Sesión {number} de {sessions.data?.length}
+              Sesión {number} de {sessions.data.length}
             </div>
           )}
           <SessionDetailsForm key={`${session.title}|${session.summary}`} session={session} />

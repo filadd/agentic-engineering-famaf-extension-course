@@ -136,13 +136,13 @@
     background-color: color-mix(in srgb, var(--line) 60%, transparent) !important;
     border-color: transparent !important;
     box-shadow: none !important;
+
+    & * {
+      visibility: hidden;
+    }
   }
 
   .skeleton .skeleton-block {
     @apply rounded-md;
-  }
-
-  .skeleton :is(.skeleton-block, .main-button, .pill-button, .icon-button, [role="tab"]) * {
-    visibility: hidden;
   }
 }
