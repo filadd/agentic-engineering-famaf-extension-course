@@ -19,4 +19,5 @@ export const materialFileQuery = (id: string) =>
           .pipe(Effect.flatMap((stream) => stream.pipe(Stream.decodeText(), Stream.mkString))),
       ),
     staleTime: Number.POSITIVE_INFINITY,
+    refetchInterval: false,
   });

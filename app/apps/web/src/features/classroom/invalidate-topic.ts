@@ -40,11 +40,10 @@ export const invalidateTopic = async (
     return;
   }
 
-  await invalidateDetail(queryClient, sessionId);
-
-  if (topic === "session") {
-    await invalidateSessionLists(queryClient);
-  }
+  await Promise.all([
+    invalidateDetail(queryClient, sessionId),
+    topic === "session" ? invalidateSessionLists(queryClient) : undefined,
+  ]);
 };
 
 export const invalidateClassroom = (queryClient: QueryClient, sessionId: string) =>
