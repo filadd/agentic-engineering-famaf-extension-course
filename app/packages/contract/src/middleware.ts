@@ -18,5 +18,3 @@ export class CurrentUserMiddleware extends HttpApiMiddleware.Service<
   },
   error: [Unauthenticated, NoAccess, NotTeacher],
 }) {}
-
-export const sessionCookie = "session";

@@ -28,7 +28,6 @@ export const useClassroom = (sessionId: string) => {
   const queryClient = useQueryClient();
 
   const [people, setPeople] = useState<ReadonlyArray<Person>>([]);
-  const [connected, setConnected] = useState(false);
   const [reconnecting, setReconnecting] = useState(false);
 
   useEffect(() => {
@@ -40,7 +39,6 @@ export const useClassroom = (sessionId: string) => {
     // nothing changed while the socket was down gets lost.
     socket.addEventListener("open", () => {
       opened = true;
-      setConnected(true);
       setReconnecting(false);
       void invalidateClassroom(queryClient, sessionId);
     });
@@ -49,7 +47,6 @@ export const useClassroom = (sessionId: string) => {
     // closes without having opened makes the web ask for the sessions again,
     // and the screen acts on what comes back.
     socket.addEventListener("close", () => {
-      setConnected(false);
       setPeople([]);
 
       if (opened) {
@@ -77,7 +74,6 @@ export const useClassroom = (sessionId: string) => {
 
   return {
     people,
-    connected,
     reconnecting,
     teacherPresent: people.some((person) => person.role === "teacher"),
   };
