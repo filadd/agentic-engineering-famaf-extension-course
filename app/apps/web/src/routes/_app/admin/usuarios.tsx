@@ -13,6 +13,7 @@ import { useUsers } from "../../../features/users/useUsers.ts";
 import { UserRow } from "../../../features/users/UserRow.tsx";
 import { UserSearch } from "../../../features/users/UserSearch.tsx";
 import { UserSearchEmpty } from "../../../features/users/UserSearchEmpty.tsx";
+import { Button } from "../../../ui/Button.tsx";
 import { Icon } from "../../../ui/Icon.tsx";
 
 // The course has about thirty people, all of them in one read: searching and
@@ -44,14 +45,14 @@ const UsersRoute = () => {
       <div className="max-w-[900px] pt-[18px] pr-8 pl-[86px]">
         <div className="flex items-center gap-2.5">
           <UserSearch value={search} onChange={setSearch} />
-          <button type="button" className="pill-button" onClick={() => setShowingQr(true)}>
+          <Button variant="pill" onClick={() => setShowingQr(true)}>
             <Icon name="scan" size={16} />
             QR de registro
-          </button>
-          <button type="button" className="pill-button pill-dark" onClick={() => setAdding(true)}>
+          </Button>
+          <Button variant="pill-dark" onClick={() => setAdding(true)}>
             <Icon name="plus" size={16} />
             Agregar por email
-          </button>
+          </Button>
         </div>
         <AccessFilter users={all} value={filter} onChange={setFilter} />
         {users.data != null && shown.length === 0 ? <UserSearchEmpty /> : null}

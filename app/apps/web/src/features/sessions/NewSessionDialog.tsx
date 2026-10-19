@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { Button } from "../../ui/Button.tsx";
 import { Sheet } from "../../ui/Sheet.tsx";
 import { useCreateSession } from "./useCreateSession.ts";
 
@@ -45,16 +46,16 @@ export const NewSessionDialog = ({ onClose, onCreated }: Props) => {
           cargan desde su página.
         </p>
         <div className="mt-[18px] flex justify-end gap-2">
-          <button type="button" className="pill-button" onClick={onClose}>
+          <Button variant="pill" onClick={onClose}>
             Cancelar
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="pill-dark"
             type="submit"
-            className="pill-button pill-dark"
             disabled={title.trim() === "" || create.isPending}
           >
             Crear sesión
-          </button>
+          </Button>
         </div>
       </form>
     </Sheet>

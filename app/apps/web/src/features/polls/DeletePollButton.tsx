@@ -1,5 +1,6 @@
 import type { AdminPoll } from "@kurasu/contract/polls";
 
+import { Button } from "../../ui/Button.tsx";
 import { ConfirmAction } from "../../ui/ConfirmAction.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 import { useDeletePoll } from "./useDeletePoll.ts";
@@ -14,10 +15,10 @@ export const DeletePollButton = ({ poll }: Props) => {
   return (
     <ConfirmAction
       renderTrigger={(ask) => (
-        <button type="button" className="pill-button border-sand text-coal" onClick={ask}>
+        <Button variant="pill" className="border-sand text-coal" onClick={ask}>
           <Icon name="trash" size={16} />
           Borrar
-        </button>
+        </Button>
       )}
       title={`¿Borrar "${poll.prompt}"?`}
       text={

@@ -1,4 +1,5 @@
 import { Backdrop } from "./Backdrop.tsx";
+import { Button } from "./Button.tsx";
 import { Icon } from "./Icon.tsx";
 
 interface Props {
@@ -22,13 +23,13 @@ export const ConfirmDialog = ({ open, title, text, confirmLabel, onConfirm, onCa
         <h4 className="text-xl font-bold">{title}</h4>
         <p className="mt-2 leading-[1.45] text-muted">{text}</p>
         <div className="mt-4 flex justify-end gap-2">
-          <button type="button" className="pill-button" onClick={onCancel}>
+          <Button variant="pill" onClick={onCancel}>
             Cancelar
-          </button>
-          <button type="button" className="pill-button pill-danger" onClick={onConfirm}>
+          </Button>
+          <Button variant="pill-danger" onClick={onConfirm}>
             <Icon name="trash" size={16} />
             {confirmLabel}
-          </button>
+          </Button>
         </div>
       </div>
     </Backdrop>

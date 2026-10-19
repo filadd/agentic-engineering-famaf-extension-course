@@ -2,7 +2,9 @@ import type { Material } from "@kurasu/contract/materials";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
+import { Button } from "../../ui/Button.tsx";
 import { Icon } from "../../ui/Icon.tsx";
+import { InlineError } from "../../ui/InlineError.tsx";
 import { SlidesFrame } from "../classroom/SlidesFrame.tsx";
 import { DeleteMaterialButton } from "./DeleteMaterialButton.tsx";
 import { isHtml } from "./is-html.ts";
@@ -55,10 +57,10 @@ export const AdminMaterials = ({ sessionId }: Props) => {
               <Icon name="download" size={18} />
               Material
             </h3>
-            <button type="button" className="pill-button" onClick={() => setUploading(true)}>
+            <Button variant="pill" onClick={() => setUploading(true)}>
               <Icon name="upload" size={16} />
               Subir archivo
-            </button>
+            </Button>
           </div>
         }
         renderLeading={(material) => (
@@ -100,13 +102,7 @@ export const AdminMaterials = ({ sessionId }: Props) => {
         </p>
       ) : null}
       {marking?.invalid === true ? (
-        <div
-          role="alert"
-          className="mt-2 flex gap-2 rounded-[14px] bg-rose px-3.5 py-3 text-sm text-coal"
-        >
-          <Icon name="danger-circle" size={18} />
-          <span>{slidesNotices.invalid}</span>
-        </div>
+        <InlineError className="mt-2">{slidesNotices.invalid}</InlineError>
       ) : null}
       {uploading ? (
         <UploadMaterialDialog sessionId={sessionId} onClose={() => setUploading(false)} />

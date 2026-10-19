@@ -1,3 +1,4 @@
+import { Button } from "../../ui/Button.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 
 interface Props {
@@ -6,13 +7,13 @@ interface Props {
 }
 
 export const FollowTeacherToggle = ({ following, onToggle }: Props) => (
-  <button
-    type="button"
+  <Button
+    variant={following ? "pill-dark" : "pill"}
     aria-pressed={following}
     onClick={onToggle}
-    className={`pill-button ml-auto ${following ? "pill-dark" : "border-dashed"}`}
+    className={following ? "ml-auto" : "ml-auto border-dashed"}
   >
     <Icon name="presentation" size={18} />
     {following ? "Siguiendo al profe" : "Seguir al profe"}
-  </button>
+  </Button>
 );

@@ -1,5 +1,6 @@
 import type { Me } from "@kurasu/contract/user";
 
+import { Button } from "../../ui/Button.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 import { Sheet } from "../../ui/Sheet.tsx";
 import { ProfileForm } from "./ProfileForm.tsx";
@@ -22,17 +23,13 @@ export const ProfileDialog = ({ me, open, onClose }: Props) => (
       onSaved={onClose}
       renderActions={(draft) => (
         <div className="mt-3.5 flex justify-end gap-2">
-          <button type="button" className="pill-button" onClick={onClose}>
+          <Button variant="pill" onClick={onClose}>
             Cancelar
-          </button>
-          <button
-            type="submit"
-            className="pill-button pill-dark"
-            disabled={!draft.canSave || draft.saving}
-          >
+          </Button>
+          <Button variant="pill-dark" type="submit" disabled={!draft.canSave || draft.saving}>
             <Icon name="check" size={16} />
             Guardar
-          </button>
+          </Button>
         </div>
       )}
     />

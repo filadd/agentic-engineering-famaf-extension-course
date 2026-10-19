@@ -1,4 +1,5 @@
 import { useIsMobile } from "../../helpers/useIsMobile.ts";
+import { Button } from "../../ui/Button.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 import { useMe } from "../me/useMe.ts";
 import { useLowerHand } from "./useLowerHand.ts";
@@ -19,17 +20,17 @@ export const HandButton = ({ sessionId }: Props) => {
   const raised = (hands.data ?? []).some((hand) => hand.userId === me.data?.id);
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="pill"
       aria-pressed={raised}
       title={raised ? "Bajar la mano" : "Levantar la mano"}
       aria-label={raised ? "Bajar la mano" : "Levantar la mano"}
       disabled={raise.isPending || lower.isPending}
       onClick={() => (raised ? lower.mutate(sessionId) : raise.mutate(sessionId))}
-      className={`pill-button ${raised ? "border-peach bg-peach text-coal" : ""}`}
+      className={raised ? "border-peach bg-peach text-coal" : undefined}
     >
       <Icon name="hand" size={18} />
       {isMobile ? null : <span>{raised ? "Mano levantada" : "Levantar la mano"}</span>}
-    </button>
+    </Button>
   );
 };

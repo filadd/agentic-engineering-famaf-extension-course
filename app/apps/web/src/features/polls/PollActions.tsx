@@ -1,6 +1,7 @@
 import type { AdminPoll } from "@kurasu/contract/polls";
 import type { ReactNode } from "react";
 
+import { Button } from "../../ui/Button.tsx";
 import { DeletePollButton } from "./DeletePollButton.tsx";
 import { useUpdatePoll } from "./useUpdatePoll.ts";
 
@@ -19,24 +20,24 @@ export const PollActions = ({ poll, draftActions, canActivate = true }: Props) =
       <DeletePollButton poll={poll} />
       {draftActions}
       {poll.status === "draft" ? (
-        <button
-          type="button"
-          className="pill-button pill-dark border-coal bg-coal text-white"
+        <Button
+          variant="pill-dark"
+          className="border-coal bg-coal text-white"
           disabled={!canActivate || transition.isPending}
           onClick={() => transition.mutate({ id: poll.id, change: { status: "active" } })}
         >
           Activar
-        </button>
+        </Button>
       ) : null}
       {poll.status === "active" ? (
-        <button
-          type="button"
-          className="pill-button border-sand text-coal"
+        <Button
+          variant="pill"
+          className="border-sand text-coal"
           disabled={transition.isPending}
           onClick={() => transition.mutate({ id: poll.id, change: { status: "closed" } })}
         >
           Cerrar
-        </button>
+        </Button>
       ) : null}
     </div>
   );

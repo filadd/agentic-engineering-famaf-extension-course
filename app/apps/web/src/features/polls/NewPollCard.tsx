@@ -1,6 +1,7 @@
 import type { PollType } from "@kurasu/contract/polls";
 import { useState } from "react";
 
+import { Button } from "../../ui/Button.tsx";
 import { emptyContent, fieldsOf, isComplete } from "./poll-content.ts";
 import { pollTypeLabels } from "./poll-labels.ts";
 import { PollEditor } from "./PollEditor.tsx";
@@ -29,17 +30,17 @@ export const NewPollCard = ({ sessionId, type, onDone }: Props) => {
       <div className="text-[13px] opacity-70">{pollTypeLabels[type]}</div>
       <PollEditor type={type} value={draft} onChange={setDraft} />
       <div className="mt-3 flex justify-end gap-2">
-        <button type="button" className="pill-button border-sand text-coal" onClick={onDone}>
+        <Button variant="pill" className="border-sand text-coal" onClick={onDone}>
           Descartar
-        </button>
-        <button
-          type="button"
-          className="pill-button pill-dark border-coal bg-coal text-white"
+        </Button>
+        <Button
+          variant="pill-dark"
+          className="border-coal bg-coal text-white"
           disabled={!isComplete(type, draft) || create.isPending}
           onClick={() => create.mutate({ sessionId, type, ...fieldsOf(type, draft) })}
         >
           Guardar borrador
-        </button>
+        </Button>
       </div>
     </article>
   );

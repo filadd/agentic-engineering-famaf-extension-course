@@ -1,6 +1,7 @@
 import { enrollmentCodeLength } from "@kurasu/contract/user";
 import { useState } from "react";
 
+import { Button } from "../../ui/Button.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 import { AuthNotice } from "./AuthNotice.tsx";
 import { linkNotices } from "./link-notices.ts";
@@ -40,14 +41,15 @@ export const CodeStep = ({ initialCode, invalid, onSubmit }: Props) => {
         />
       </label>
       <div className="mt-[26px] flex justify-center">
-        <button
+        <Button
+          variant="pill-dark"
           type="submit"
-          className="pill-button pill-dark px-5 py-[11px] font-display text-[15px] font-medium max-[600px]:w-full max-[600px]:justify-center"
+          className="px-5 py-[11px] font-display text-[15px] font-medium max-[600px]:w-full max-[600px]:justify-center"
           disabled={code.length !== enrollmentCodeLength}
         >
           Seguir
           <Icon name="arrow-right" size={18} />
-        </button>
+        </Button>
       </div>
       {invalid ? <AuthNotice text={linkNotices.badCode} /> : null}
     </form>

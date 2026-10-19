@@ -2,6 +2,7 @@ import type { Poll, ResponseValue } from "@kurasu/contract/polls";
 import * as Predicate from "effect/Predicate";
 import { useState } from "react";
 
+import { Button } from "../../ui/Button.tsx";
 import { PollResults } from "./PollResults.tsx";
 import { scaleLabelsOf } from "./scale-labels.ts";
 import { useVote } from "./useVote.ts";
@@ -55,13 +56,14 @@ export const VoteForm = ({ poll, onClosed }: Props) => {
               aria-label={mine == null ? "Tus palabras" : "Más palabras"}
               className="min-w-0 flex-1 rounded-full border-2 border-coal bg-paper px-3.5 py-[7px] text-coal"
             />
-            <button
+            <Button
+              variant="main"
               type="submit"
               disabled={mergeWords([], draft).length === 0 || vote.isPending}
-              className="main-button px-3.5 py-1.5 text-sm"
+              className="px-3.5 py-1.5 text-sm"
             >
               Enviar
-            </button>
+            </Button>
           </form>
         ) : null}
         {words.length === 0 ? null : (

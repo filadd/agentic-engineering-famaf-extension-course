@@ -1,6 +1,7 @@
 import type { PollType } from "@kurasu/contract/polls";
 import { useState } from "react";
 
+import { Button } from "../../ui/Button.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 import { pollTypeLabels } from "./poll-labels.ts";
 
@@ -15,16 +16,16 @@ export const NewPollMenu = ({ onPick }: Props) => {
 
   return (
     <span className="relative">
-      <button
-        type="button"
+      <Button
+        variant="pill-dark"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
-        className="pill-button pill-dark border-coal bg-coal text-white"
+        className="border-coal bg-coal text-white"
       >
         <Icon name="plus" size={16} />
         Nueva encuesta
         <Icon name="chevron-down" size={16} />
-      </button>
+      </Button>
       {open ? (
         <div
           role="menu"

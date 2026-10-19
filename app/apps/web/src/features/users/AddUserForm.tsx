@@ -1,6 +1,8 @@
 import * as Predicate from "effect/Predicate";
 import { useState } from "react";
 
+import { Button } from "../../ui/Button.tsx";
+import { InlineError } from "../../ui/InlineError.tsx";
 import { Sheet } from "../../ui/Sheet.tsx";
 import { useAddUser } from "./useAddUser.ts";
 
@@ -34,23 +36,23 @@ export const AddUserForm = ({ onClose }: Props) => {
           />
         </label>
         {add.error == null ? null : (
-          <div role="alert" className="mt-3 rounded-[14px] bg-rose px-3.5 py-3 text-sm text-coal">
+          <InlineError className="mt-3">
             {Predicate.isTagged(add.error, "EmailTaken")
               ? "Ese email ya está registrado."
               : "No se pudo agregar. Probá de nuevo."}
-          </div>
+          </InlineError>
         )}
         <div className="mt-[18px] flex justify-end gap-2">
-          <button type="button" className="pill-button" onClick={onClose}>
+          <Button variant="pill" onClick={onClose}>
             Cancelar
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="pill-dark"
             type="submit"
-            className="pill-button pill-dark"
             disabled={!email.includes("@") || add.isPending}
           >
             Agregar
-          </button>
+          </Button>
         </div>
       </form>
     </Sheet>

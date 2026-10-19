@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { Backdrop } from "../../ui/Backdrop.tsx";
+import { Button } from "../../ui/Button.tsx";
 import { ConfirmDialog } from "../../ui/ConfirmDialog.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 import { QrCode } from "./QrCode.tsx";
@@ -52,14 +53,14 @@ export const EnrollmentQr = ({ onClose }: Props) => {
               <b aria-label="Código del aula" className="font-display text-7xl tracking-[0.12em]">
                 {code.data.code}
               </b>
-              <button
-                type="button"
-                className="main-button mt-1.5 self-center"
+              <Button
+                variant="main"
+                className="mt-1.5 self-center"
                 onClick={() => setConfirming(true)}
               >
                 <Icon name="refresh" size={16} />
                 Regenerar código
-              </button>
+              </Button>
             </div>
           </div>
         )}

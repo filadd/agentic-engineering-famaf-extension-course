@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { Button } from "../../ui/Button.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 import { AuthNotice } from "./AuthNotice.tsx";
 import { linkNotices } from "./link-notices.ts";
@@ -35,14 +36,15 @@ export const EmailStep = ({ title, initialEmail, notice, sending, onSubmit }: Pr
         />
       </label>
       <div className="mt-[26px] flex justify-center">
-        <button
+        <Button
+          variant="pill-dark"
           type="submit"
-          className="pill-button pill-dark px-5 py-[11px] font-display text-[15px] font-medium max-[600px]:w-full max-[600px]:justify-center"
+          className="px-5 py-[11px] font-display text-[15px] font-medium max-[600px]:w-full max-[600px]:justify-center"
           disabled={!email.includes("@") || sending}
         >
           <Icon name="mail" size={18} />
           Mandame el link
-        </button>
+        </Button>
       </div>
       {notice == null || notice === "badCode" ? null : <AuthNotice text={linkNotices[notice]} />}
     </form>

@@ -1,6 +1,8 @@
 import * as Predicate from "effect/Predicate";
 import { useState } from "react";
 
+import { Button } from "../../ui/Button.tsx";
+import { InlineError } from "../../ui/InlineError.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 import { Sheet } from "../../ui/Sheet.tsx";
 import { Switch } from "../../ui/Switch.tsx";
@@ -101,28 +103,21 @@ export const UploadMaterialDialog = ({ sessionId, onClose }: Props) => {
         </p>
       ) : null}
       {isSlides && check === "invalid" ? (
-        <div
-          role="alert"
-          className="mt-3 flex gap-2 rounded-[14px] bg-rose px-3.5 py-3 text-sm text-coal"
-        >
-          <Icon name="danger-circle" size={18} />
-          <span>{slidesNotices.invalid}</span>
-        </div>
+        <InlineError className="mt-3">{slidesNotices.invalid}</InlineError>
       ) : null}
       {upload.error == null ? null : (
-        <div role="alert" className="mt-3 rounded-[14px] bg-rose px-3.5 py-3 text-sm text-coal">
+        <InlineError className="mt-3">
           {Predicate.isTagged(upload.error, "FileTooLarge")
             ? slidesNotices.tooLarge
             : slidesNotices.failed}
-        </div>
+        </InlineError>
       )}
       <div className="mt-3.5 flex justify-end gap-2">
-        <button type="button" className="pill-button" onClick={onClose}>
+        <Button variant="pill" onClick={onClose}>
           Cancelar
-        </button>
-        <button
-          type="button"
-          className="pill-button pill-dark"
+        </Button>
+        <Button
+          variant="pill-dark"
           disabled={chosen == null || name.trim() === "" || blocked || upload.isPending}
           onClick={() =>
             chosen == null
@@ -131,7 +126,7 @@ export const UploadMaterialDialog = ({ sessionId, onClose }: Props) => {
           }
         >
           Subir
-        </button>
+        </Button>
       </div>
     </Sheet>
   );

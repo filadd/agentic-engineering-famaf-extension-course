@@ -3,6 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ProfileForm } from "../../features/me/ProfileForm.tsx";
 import { ProfilePreview } from "../../features/me/ProfilePreview.tsx";
 import { useMe } from "../../features/me/useMe.ts";
+import { Button } from "../../ui/Button.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 
 const SetupRoute = () => {
@@ -26,14 +27,15 @@ const SetupRoute = () => {
             <div>
               <ProfilePreview name={draft.name} avatar={draft.avatar} />
               <div className="mt-[26px] flex justify-end">
-                <button
+                <Button
+                  variant="pill-dark"
                   type="submit"
-                  className="pill-button pill-dark px-5 py-[11px] font-display text-[15px] font-medium max-[600px]:w-full max-[600px]:justify-center"
+                  className="px-5 py-[11px] font-display text-[15px] font-medium max-[600px]:w-full max-[600px]:justify-center"
                   disabled={!draft.canSave || draft.saving}
                 >
                   Entrar al aula
                   <Icon name="arrow-right" size={18} />
-                </button>
+                </Button>
               </div>
             </div>
           )}

@@ -1,6 +1,7 @@
 import type { AdminPoll } from "@kurasu/contract/polls";
 import { useState } from "react";
 
+import { Button } from "../../ui/Button.tsx";
 import { PollActions } from "./PollActions.tsx";
 import { PollCard } from "./PollCard.tsx";
 import { contentOf, fieldsOf, isComplete } from "./poll-content.ts";
@@ -48,14 +49,14 @@ export const AdminPollCard = ({ poll }: Props) => {
           canActivate={!dirty}
           draftActions={
             poll.status === "draft" && dirty ? (
-              <button
-                type="button"
-                className="pill-button border-sand text-coal"
+              <Button
+                variant="pill"
+                className="border-sand text-coal"
                 disabled={!isComplete(poll.type, draft) || save.isPending}
                 onClick={() => save.mutate({ id: poll.id, change: fieldsOf(poll.type, draft) })}
               >
                 Guardar
-              </button>
+              </Button>
             ) : null
           }
         />

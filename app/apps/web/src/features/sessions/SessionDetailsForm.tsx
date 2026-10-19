@@ -1,6 +1,7 @@
 import type { Session } from "@kurasu/contract/sessions";
 import { useState } from "react";
 
+import { Button } from "../../ui/Button.tsx";
 import { useUpdateSession } from "./useUpdateSession.ts";
 
 interface Props {
@@ -40,13 +41,14 @@ export const SessionDetailsForm = ({ session }: Props) => {
       </label>
       {changed ? (
         <div className="mt-3 flex justify-end">
-          <button
+          <Button
+            variant="main"
             type="submit"
             disabled={title.trim() === "" || update.isPending}
-            className="main-button px-3.5 py-[7px] text-sm"
+            className="px-3.5 py-[7px] text-sm"
           >
             Guardar
-          </button>
+          </Button>
         </div>
       ) : null}
     </form>
