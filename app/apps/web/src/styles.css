@@ -105,7 +105,7 @@
     @apply grid size-[34px] flex-none place-items-center rounded-full text-ink hover:bg-line disabled:opacity-35;
   }
 
-  .text-field {
+  .input-field {
     @apply mt-1.5 block w-full rounded-xl border-[1.5px] border-line bg-field px-3 py-[9px] text-[15px] font-normal text-ink;
   }
 

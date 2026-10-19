@@ -30,7 +30,7 @@ export const AddUserForm = ({ onClose }: Props) => {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="nombre@mail.com"
-            className="text-field"
+            className="input-field"
           />
         </label>
         {add.error == null ? null : (

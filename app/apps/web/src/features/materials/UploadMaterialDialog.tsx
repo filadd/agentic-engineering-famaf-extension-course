@@ -66,7 +66,7 @@ export const UploadMaterialDialog = ({ sessionId, onClose }: Props) => {
           <input
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className="text-field"
+            className="input-field"
           />
         </label>
       )}

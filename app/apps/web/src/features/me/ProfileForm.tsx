@@ -45,7 +45,7 @@ export const ProfileForm = ({ me, onSaved, nameLabel, namePlaceholder, renderAct
           maxLength={40}
           onChange={(event) => setName(event.target.value)}
           placeholder={namePlaceholder}
-          className="text-field"
+          className="input-field"
         />
       </label>
       <div className="mt-5 text-sm font-bold">Tu avatar</div>

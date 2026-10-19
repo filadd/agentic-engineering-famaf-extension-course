@@ -28,7 +28,7 @@ export const NewSessionDialog = ({ onClose, onCreated }: Props) => {
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             placeholder="Ej.: Testing con agentes"
-            className="text-field"
+            className="input-field"
           />
         </label>
         <label className="field-label">
@@ -37,7 +37,7 @@ export const NewSessionDialog = ({ onClose, onCreated }: Props) => {
             value={summary}
             onChange={(event) => setSummary(event.target.value)}
             placeholder="De qué trata la sesión"
-            className="text-field min-h-20 resize-y"
+            className="input-field min-h-20 resize-y"
           />
         </label>
         <p className="mt-3 text-[13px] text-muted">
