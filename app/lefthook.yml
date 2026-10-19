@@ -1,6 +1,10 @@
 # The course repository holds more than the app, so the hook runs only when a
 # commit touches app/. Committing with --no-verify is not allowed. The tests
-# run by hand with `pnpm test`, not on each commit.
+# run by hand with `pnpm test`, not on each commit. tools/hooks/install.sh writes
+# the hook; no_auto_install keeps lefthook from replacing it with one that looks
+# for its config at the repository root.
+no_auto_install: true
+
 pre-commit:
   commands:
     check:
