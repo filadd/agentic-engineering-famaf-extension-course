@@ -93,7 +93,7 @@ erDiagram
 
 ### 👤 Usuario
 
-La entidad `User` tiene `email`, `name`, `avatar`, `role` y `has_access`. El usuario entra con su email, que es único. El avatar es un emoji de animal. El nombre y el avatar quedan vacíos hasta que el usuario completa el setup, y se pueden repetir entre usuarios. Si falta alguno de los dos, la app lleva al usuario al setup cuando entra (ver [login y acceso](login-y-acceso.md)).
+La entidad `User` tiene `email`, `name`, `avatar`, `role` y `has_access`. El usuario entra con su email, que es único. El avatar es un animal de una lista fija, guardado como su clave en inglés, por ejemplo `fox`; la web lo muestra con su emoji y lo busca por su nombre en español. El nombre y el avatar quedan vacíos hasta que el usuario completa el setup, y se pueden repetir entre usuarios. Si falta alguno de los dos, la app lleva al usuario al setup cuando entra (ver [login y acceso](login-y-acceso.md)).
 
 El campo `role` vale `teacher` para el profe o `student` para el estudiante. Con `has_access` en falso, el usuario no puede entrar. La API revisa el acceso en cada pedido, y el profe lo da y lo saca desde Usuarios. Los usuarios no se borran; el profe le saca el acceso a quien no tiene que entrar.
 
@@ -114,7 +114,7 @@ La entidad `Material` es un archivo, en `file`, con el `name` que le puso el pro
 
 La entidad `Poll` tiene `type`, `status`, `prompt` (la consigna) y `deleted_at`, la fecha en que se borró, si se borró. El tipo es `choice` (opción múltiple), `words` (word cloud) o `scale` (escala de 1 a 5), y el estado es `draft`, `active` o `closed`. Las de tipo `choice` tienen su lista de opciones en `options`, y las de tipo `scale` un texto para el 1 en `scale_min_label` y otro para el 5 en `scale_max_label`; los campos del otro tipo quedan vacíos. Borrar una encuesta la deja guardada con sus respuestas, pero nadie la ve.
 
-Cada estudiante tiene a lo sumo una `Response` por encuesta. Su `value` es la opción elegida, un valor de 1 a 5 o la lista de palabras que mandó en el word cloud. Cambiar el voto reemplaza esa respuesta. Nadie ve qué votó cada uno: el profe ve porcentajes y la cantidad de respuestas.
+Cada estudiante tiene a lo sumo una `Response` por encuesta. Su `value` es la opción elegida, un valor de 1 a 5 o la lista de palabras que mandó en el word cloud. Cambiar el voto reemplaza esa respuesta, y en un word cloud sumar palabras es mandar la lista completa otra vez. Una encuesta de opción múltiple tiene de 2 a 10 opciones, y en un word cloud cada estudiante manda hasta 10 palabras de hasta 30 caracteres. Nadie ve qué votó cada uno: el profe ve porcentajes y la cantidad de respuestas.
 
 ### ❓ Pregunta y voto
 

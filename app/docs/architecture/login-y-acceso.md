@@ -76,7 +76,7 @@ sequenceDiagram
     W-->>U: Setup si faltan nombre o avatar, si no la app
 ```
 
-El estudiante escribe su email, y el código si se está registrando (1), y la web le pide el link a la API (2). La API busca el email y aplica las reglas de arriba; si el email es nuevo y el código es el vigente, crea el usuario (3). Guarda el código del link, una fila de `Code` de tipo `user` con el `user_id` del usuario, que reemplaza a la que tuviera (4), y lo manda por mail (5, 6). El mail lleva solo el link, y el usuario no tiene que tipear el código del link.
+El estudiante escribe su email, y el código si se está registrando (1), y la web le pide el link a la API (2). La API busca el email y aplica las reglas de arriba; si el email es nuevo y el código es el vigente, crea el usuario (3). Guarda el código del link, una fila de `Code` de tipo `user` con el `user_id` del usuario, que reemplaza a la que tuviera (4), y lo manda por mail (5, 6). El mail lleva solo el link, y el usuario no tiene que tipear el código del link. Si el mail no sale, la web muestra un error y el código queda guardado; pedir el link otra vez manda uno nuevo, que reemplaza al anterior.
 
 Cuando el usuario abre el link (7, 8), la API borra el código y deja una cookie con el login por una semana (9, 10). Como la API borra el código, el link sirve una sola vez; mientras no se usa, no vence. Si al usuario le faltan nombre o avatar, la web lo lleva al setup antes de entrar (11): ahí elige su nombre y un emoji de animal. Esto vale para cualquier entrada, así que alguien que el profe agregó por email también pasa por el setup la primera vez. El profe entra directo al admin.
 

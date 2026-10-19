@@ -56,6 +56,11 @@ flowchart LR
 
 Un Worker de assets sirve la web. En el navegador, la web pide todo a la API con la cookie del login y carga las slides de la sesión, un HTML del profe. La web habla con ese HTML por la API de las slides (ver [API de las slides](api-de-las-slides.md)). Mientras el usuario está en el aula, la web mantiene un WebSocket abierto con el aula de la sesión. Lo que no viene del servidor lo guarda en el localStorage del navegador.
 
+La web y la API comparten el dominio `kurasu.asermax.com`: los pedidos a `/api` van al Worker de la API y el resto al Worker de assets. El navegador habla con un solo origen, y la cookie del login vale para los dos.
+
+> [!TIP] La API en un dominio propio
+> Se consideró y no se tomó. El login viaja en una cookie que el navegador manda solo al dominio que la dejó; con la API aparte, esa cookie tendría que compartirse entre subdominios y la API tendría que aceptar pedidos de origen cruzado, también los del WebSocket del aula.
+
 La web vuelve a pedir sus datos a la API cada cinco minutos, en todas las pantallas. Fuera del aula no hay avisos: cada pantalla carga sus datos al abrirse y se actualiza con ese pedido. Así se ven, por ejemplo, un cambio de nombre o avatar, o una encuesta que el profe activa mientras el estudiante está en el inicio.
 
 ### ⚙️ API
@@ -68,7 +73,7 @@ El aula de cada sesión es un Durable Object. Mientras el usuario está en el au
 
 ### ✉️ Email Sending
 
-Email Sending manda el mail con el magic link del registro y del login. Un usuario solo entra a la app con el link de ese mail.
+Email Sending manda el mail con el magic link del registro y del login, desde `no-reply@kurasu.asermax.com`. Un usuario solo entra a la app con el link de ese mail.
 
 > [!WARNING] Email Sending tiene requisitos propios
 > Email Sending está en beta, necesita el plan pago de Workers y que el dominio esté en el DNS de Cloudflare. Sin eso no sale ningún mail, y nadie puede registrarse ni entrar.

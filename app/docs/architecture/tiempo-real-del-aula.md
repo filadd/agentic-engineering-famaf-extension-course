@@ -35,6 +35,9 @@ Al entrar al aula, la web abre el WebSocket (1). El Worker de la API revisa el l
 
 Cuando alguien cambia algo del aula, sea el profe o un estudiante que levanta la mano o deja una pregunta (4), la API lo guarda en D1 (5) y le avisa al aula (6). El aula les dice a los conectados qué cambió (7), y cada web vuelve a pedir eso a la API (8). El aviso dice solo qué cambió, y los datos salen siempre de la API, que es la que revisa el acceso. Así viajan la slide, las encuestas, las manos y las preguntas; cómo viaja la slide en detalle está en [API de las slides](api-de-las-slides.md).
 
+> [!WARNING] Un aviso que no llega
+> Si el aula no responde cuando la API le avisa, el cambio ya está guardado en D1 y el pedido de quien lo hizo sale bien igual. Los conectados no se enteran al instante: lo ven cuando su web vuelve a pedir sus datos, a los cinco minutos, o al reconectarse.
+
 La web vuelve a pedir los nombres y los avatares cada cinco minutos, como el resto de sus datos (ver [componentes](componentes.md)); el aula no avisa esos cambios.
 
 > [!WARNING] Perder el acceso no corta la conexión
@@ -57,7 +60,7 @@ stateDiagram-v2
     class Conectada green
 ```
 
-Presente es quien está conectado: el estudiante mientras está en la pantalla del aula, y el profe mientras tiene abierta la página de la sesión, en cualquier pestaña. El estudiante que sale del aula desaparece de Presentes, y reaparece al volver. Cuando alguien entra o sale, el aula misma les avisa a los conectados, sin pasar por la API ni por D1.
+Presente es quien está conectado: el estudiante mientras está en la pantalla del aula, y el profe mientras tiene abierta la página de la sesión, en cualquier pestaña. El estudiante que sale del aula desaparece de Presentes, y reaparece al volver. Cuando alguien entra o sale, el aula misma les avisa a los conectados, sin pasar por la API ni por D1. El aula guarda con cada conexión el nombre y el avatar que la persona tenía al conectarse, y Presentes los muestra así: un cambio de perfil se ve en Presentes cuando esa persona se vuelve a conectar.
 
 Si la conexión se corta, la web avisa y se reconecta sola. Al reconectarse vuelve a pedir todo lo del aula, y recién después sigue con los avisos. Mientras el usuario está desconectado, los demás lo ven fuera de Presentes.
 
