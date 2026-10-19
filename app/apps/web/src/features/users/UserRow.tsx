@@ -1,7 +1,6 @@
 import type { User } from "@kurasu/contract/user";
-import { useState } from "react";
 
-import { ConfirmDialog } from "../../ui/ConfirmDialog.tsx";
+import { ConfirmAction } from "../../ui/ConfirmAction.tsx";
 import { Switch } from "../../ui/Switch.tsx";
 import { animalLooks } from "../me/animals.ts";
 import { useSetAccess } from "./useSetAccess.ts";
@@ -13,9 +12,7 @@ interface Props {
 // Giving access is immediate; taking it away asks first. The teacher's own
 // row has no switch.
 export const UserRow = ({ user }: Props) => {
-  const setAccess = useSetAccess({ onSuccess: () => setConfirming(false) });
-
-  const [confirming, setConfirming] = useState(false);
+  const setAccess = useSetAccess();
 
   return (
     <li
@@ -44,31 +41,29 @@ export const UserRow = ({ user }: Props) => {
         )}
       </div>
       {user.role === "teacher" ? null : (
-        <button
-          type="button"
-          role="switch"
-          aria-checked={user.hasAccess}
-          aria-label={user.hasAccess ? "Con acceso" : "Sin acceso"}
-          disabled={setAccess.isPending}
-          onClick={() =>
-            user.hasAccess
-              ? setConfirming(true)
-              : setAccess.mutate({ id: user.id, hasAccess: true })
-          }
-          className="flex items-center gap-2 text-[13px]"
-        >
-          {user.hasAccess ? "Con acceso" : "Sin acceso"}
-          <Switch on={user.hasAccess} />
-        </button>
+        <ConfirmAction
+          renderTrigger={(ask) => (
+            <button
+              type="button"
+              role="switch"
+              aria-checked={user.hasAccess}
+              aria-label={user.hasAccess ? "Con acceso" : "Sin acceso"}
+              disabled={setAccess.isPending}
+              onClick={() =>
+                user.hasAccess ? ask() : setAccess.mutate({ id: user.id, hasAccess: true })
+              }
+              className="flex items-center gap-2 text-[13px]"
+            >
+              {user.hasAccess ? "Con acceso" : "Sin acceso"}
+              <Switch on={user.hasAccess} />
+            </button>
+          )}
+          title={`¿Sacarle el acceso a ${user.name ?? user.email}?`}
+          text="No va a poder entrar al aula hasta que le vuelvas a dar acceso."
+          confirmLabel="Sacar acceso"
+          onConfirm={() => setAccess.mutateAsync({ id: user.id, hasAccess: false })}
+        />
       )}
-      <ConfirmDialog
-        open={confirming}
-        title={`¿Sacarle el acceso a ${user.name ?? user.email}?`}
-        text="No va a poder entrar al aula hasta que le vuelvas a dar acceso."
-        confirmLabel="Sacar acceso"
-        onConfirm={() => setAccess.mutate({ id: user.id, hasAccess: false })}
-        onCancel={() => setConfirming(false)}
-      />
     </li>
   );
 };

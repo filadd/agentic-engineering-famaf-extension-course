@@ -1,13 +1,9 @@
-# The course repository holds more than the app, so the hooks run only when a
-# commit touches app/. Committing with --no-verify is not allowed.
+# The course repository holds more than the app, so the hook runs only when a
+# commit touches app/. Committing with --no-verify is not allowed. The tests
+# run by hand with `pnpm test`, not on each commit.
 pre-commit:
-  parallel: false
   commands:
     check:
       root: "app/"
       glob: "app/**"
       run: pnpm check
-    test:
-      root: "app/"
-      glob: "app/**"
-      run: pnpm test

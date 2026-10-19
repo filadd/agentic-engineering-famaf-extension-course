@@ -5,11 +5,11 @@ import type {
   PollNotFound,
 } from "@kurasu/contract/errors";
 import type { Poll, ResponseValue } from "@kurasu/contract/polls";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 import type { MutationOptions } from "../../api/api-error.ts";
-import { runApi } from "../../api/run-api.ts";
 import { queryKeys } from "../../api/query-keys.ts";
+import { useApiMutation } from "../../api/useApiMutation.ts";
 
 export interface VoteInput {
   readonly pollId: string;
@@ -25,21 +25,14 @@ export const useVote = (
 ) => {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    ...options,
-    mutationFn: (input) =>
-      runApi((api) =>
-        api.polls.vote({ params: { id: input.pollId }, payload: { myResponse: input.myResponse } }),
-      ),
-    onSuccess: async (poll, input, result, context) => {
+  return useApiMutation({
+    call: (api, input) =>
+      api.polls.vote({ params: { id: input.pollId }, payload: { myResponse: input.myResponse } }),
+    onSuccess: (poll) =>
       queryClient.setQueriesData<ReadonlyArray<Poll>>({ queryKey: queryKeys.allPolls() }, (polls) =>
         polls?.map((each) => (each.id === poll.id ? poll : each)),
-      );
-      await options?.onSuccess?.(poll, input, result, context);
-    },
-    onError: async (error, input, result, context) => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.allPolls() });
-      await options?.onError?.(error, input, result, context);
-    },
+      ),
+    onError: () => queryClient.invalidateQueries({ queryKey: queryKeys.allPolls() }),
+    options,
   });
 };

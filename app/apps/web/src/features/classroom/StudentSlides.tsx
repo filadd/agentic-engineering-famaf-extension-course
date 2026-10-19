@@ -4,8 +4,8 @@ import { samePosition } from "@kurasu/slides/navigation";
 import { useState } from "react";
 
 import { HandButton } from "../hands/HandButton.tsx";
-import { useMaterialFile } from "../materials/useMaterialFile.ts";
 import { useMaterials } from "../materials/useMaterials.ts";
+import { useSlidesMaterial } from "../materials/useSlidesMaterial.ts";
 import { FollowTeacherToggle } from "./FollowTeacherToggle.tsx";
 import { SlideStage } from "./SlideStage.tsx";
 
@@ -24,8 +24,7 @@ interface Own {
 // teacher, the student moves alone from the saved position.
 export const StudentSlides = ({ session, teacherPresent }: Props) => {
   const materials = useMaterials(session.id);
-  const slides = materials.data?.find((material) => material.isSlides);
-  const file = useMaterialFile(slides?.id ?? "", { enabled: slides != null });
+  const slides = useSlidesMaterial(materials.data);
 
   const [following, setFollowing] = useState(true);
   const [own, setOwn] = useState<Own | null>(null);
@@ -36,7 +35,7 @@ export const StudentSlides = ({ session, teacherPresent }: Props) => {
 
   return (
     <SlideStage
-      html={slides == null ? null : (file.data ?? null)}
+      html={slides?.html ?? null}
       position={position}
       onNavigate={(next) => {
         setOwn({ slidesId: slides?.id ?? "", position: next });

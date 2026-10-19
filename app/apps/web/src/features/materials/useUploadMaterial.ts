@@ -1,10 +1,9 @@
 import type { FileTooLarge, SessionNotFound } from "@kurasu/contract/errors";
 import type { Material } from "@kurasu/contract/materials";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import type { MutationOptions } from "../../api/api-error.ts";
-import { runApi } from "../../api/run-api.ts";
 import { queryKeys } from "../../api/query-keys.ts";
+import { useApiMutation } from "../../api/useApiMutation.ts";
 
 export interface MaterialUploadInput {
   readonly sessionId: string;
@@ -28,20 +27,14 @@ const formOf = (input: MaterialUploadInput) => {
 
 export const useUploadMaterial = (
   options?: MutationOptions<Material, MaterialUploadInput, SessionNotFound | FileTooLarge>,
-) => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    ...options,
-    mutationFn: (input) => runApi((api) => api.adminMaterials.upload({ payload: formOf(input) })),
-    onSuccess: async (material, input, result, context) => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: queryKeys.allMaterials() }),
-        queryClient.invalidateQueries({ queryKey: queryKeys.allAdminMaterials() }),
-        queryClient.invalidateQueries({ queryKey: queryKeys.sessions() }),
-        queryClient.invalidateQueries({ queryKey: queryKeys.adminSessions() }),
-      ]);
-      await options?.onSuccess?.(material, input, result, context);
-    },
+) =>
+  useApiMutation({
+    call: (api, input) => api.adminMaterials.upload({ payload: formOf(input) }),
+    invalidates: [
+      queryKeys.allMaterials(),
+      queryKeys.allAdminMaterials(),
+      queryKeys.sessions(),
+      queryKeys.adminSessions(),
+    ],
+    options,
   });
-};

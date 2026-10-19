@@ -1,22 +1,15 @@
 import type { NotStudent, SessionNotFound } from "@kurasu/contract/errors";
 import type { RaisedHand } from "@kurasu/contract/raised-hands";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import type { MutationOptions } from "../../api/api-error.ts";
-import { runApi } from "../../api/run-api.ts";
 import { queryKeys } from "../../api/query-keys.ts";
+import { useApiMutation } from "../../api/useApiMutation.ts";
 
 export const useRaiseHand = (
   options?: MutationOptions<RaisedHand, string, SessionNotFound | NotStudent>,
-) => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    ...options,
-    mutationFn: (sessionId) => runApi((api) => api.raisedHands.raise({ payload: { sessionId } })),
-    onSuccess: async (hand, sessionId, result, context) => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.allRaisedHands() });
-      await options?.onSuccess?.(hand, sessionId, result, context);
-    },
+) =>
+  useApiMutation({
+    call: (api, sessionId) => api.raisedHands.raise({ payload: { sessionId } }),
+    invalidates: [queryKeys.allRaisedHands()],
+    options,
   });
-};

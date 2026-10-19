@@ -1,16 +1,21 @@
 import type { Session } from "@kurasu/contract/sessions";
 
+import { useAdminMaterials } from "../materials/useAdminMaterials.ts";
+import { useSlidesMaterial } from "../materials/useSlidesMaterial.ts";
 import { SlideStage } from "./SlideStage.tsx";
-import { useSessionSlides } from "./useSessionSlides.ts";
 
 interface Props {
   session: Session;
 }
 
 export const PresentedSlides = ({ session }: Props) => {
-  const html = useSessionSlides(session.id);
+  const materials = useAdminMaterials(session.id);
+  const slides = useSlidesMaterial(materials.data);
 
   return (
-    <SlideStage html={html} position={{ slide: session.currentSlide, step: session.currentStep }} />
+    <SlideStage
+      html={slides?.html ?? null}
+      position={{ slide: session.currentSlide, step: session.currentStep }}
+    />
   );
 };

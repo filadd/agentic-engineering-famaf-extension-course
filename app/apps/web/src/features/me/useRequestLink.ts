@@ -1,8 +1,7 @@
 import type { MailNotSent, NoAccess, NotRegistered } from "@kurasu/contract/errors";
-import { useMutation } from "@tanstack/react-query";
 
 import type { MutationOptions } from "../../api/api-error.ts";
-import { runApi } from "../../api/run-api.ts";
+import { useApiMutation } from "../../api/useApiMutation.ts";
 
 export interface LinkRequest {
   readonly email: string;
@@ -14,8 +13,7 @@ export interface LinkRequest {
 export const useRequestLink = (
   options?: MutationOptions<void, LinkRequest, NoAccess | NotRegistered | MailNotSent>,
 ) =>
-  useMutation({
-    meta: { ownsAccessErrors: true },
-    ...options,
-    mutationFn: (input) => runApi((api) => api.auth.requestLink({ payload: input })),
+  useApiMutation({
+    call: (api, input) => api.auth.requestLink({ payload: input }),
+    options: { meta: { ownsAccessErrors: true }, ...options },
   });

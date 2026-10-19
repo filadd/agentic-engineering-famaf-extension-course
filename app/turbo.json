@@ -9,9 +9,13 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "transit": {
+      "dependsOn": ["^transit"]
+    },
     "test": {
-      "outputs": [],
-      "cache": false
+      "dependsOn": ["^transit"],
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/tsconfig.base.json"],
+      "outputs": []
     },
     "dev": {
       "cache": false,
