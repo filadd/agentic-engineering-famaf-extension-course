@@ -74,6 +74,12 @@
       }
     },
     {
+      "files": ["apps/api/test/**"],
+      "rules": {
+        "vitest/no-standalone-expect": "off"
+      }
+    },
+    {
       "files": ["packages/core/**"],
       "rules": {
         "kurasu-boundaries/core-no-adapters": "error"

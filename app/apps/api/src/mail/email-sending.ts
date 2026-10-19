@@ -11,20 +11,20 @@ const escapeHtml = (text: string) =>
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 
-const linkHtml = (url: string) => `<!doctype html>
+const linkHtml = (to: string, url: string) => `<!doctype html>
 <html lang="es">
   <body style="font-family: system-ui, sans-serif; color: #1f2937;">
     <p>Hola,</p>
-    <p>Para entrar a kurasu, abrí este link:</p>
+    <p>Pediste entrar a kurasu con ${escapeHtml(to)}. Para entrar, abrí este link:</p>
     <p><a href="${escapeHtml(url)}">Entrar a kurasu</a></p>
     <p>El link sirve una sola vez. Si no lo pediste, ignorá este mail.</p>
   </body>
 </html>
 `;
 
-const linkText = (url: string) => `Hola,
+const linkText = (to: string, url: string) => `Hola,
 
-Para entrar a kurasu, abrí este link:
+Pediste entrar a kurasu con ${to}. Para entrar, abrí este link:
 
 ${url}
 
@@ -44,8 +44,8 @@ export const EmailSendingMailer = (email: Cloudflare.Email.SendClient, from: str
               from,
               to,
               subject: "Tu link para entrar a kurasu",
-              text: linkText(url),
-              html: linkHtml(url),
+              text: linkText(to, url),
+              html: linkHtml(to, url),
             })
             .pipe(
               Effect.asVoid,
