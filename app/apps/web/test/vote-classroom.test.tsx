@@ -15,6 +15,8 @@ import {
 import { student, teacher } from "./fixtures/people.ts";
 import { apiError, url } from "./helpers/api.ts";
 import { classroomSocket } from "./helpers/classroom-socket.ts";
+import { failingRoute } from "./helpers/failing-route.ts";
+import { heldResponse } from "./helpers/held-response.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
 import { studentClassroom } from "./helpers/student-classroom.ts";
@@ -127,6 +129,69 @@ describe("voting in the classroom's Encuestas tab", () => {
 
     expect(await within(card).findByText("✓ Nada")).toBeTruthy();
     expect(vote.votes).toEqual([{ choice: 0 }]);
+  });
+
+  test("a choice vote counts in the results before the answer, and changing it takes the previous one away", async () => {
+    const { user, panel } = await enter([choice]);
+    const card = await cardIn(panel, choice);
+    const first = heldResponse("patch", `/polls/${choice.id}`);
+
+    server.use(first.handler);
+    await user.click(within(card).getByRole("button", { name: "La mitad" }));
+
+    const results = await within(card).findByRole("list", { name: "Resultados" });
+
+    expect(within(results).getByText("✓ La mitad")).toBeTruthy();
+    expect(within(card).getByText("Votaste · 1 respuesta")).toBeTruthy();
+
+    first.release(
+      HttpResponse.json(voted(choice, { choice: 2 }, { count: 3, choice: [1, 1, 1, 0] })),
+    );
+
+    expect(await within(card).findByText("Votaste · 3 respuestas")).toBeTruthy();
+
+    const second = heldResponse("patch", `/polls/${choice.id}`);
+
+    server.use(second.handler);
+    await user.click(within(card).getByRole("button", { name: "Cambiar mi voto" }));
+    await user.click(within(card).getByRole("button", { name: "Nada" }));
+
+    const changed = await within(card).findByRole("list", { name: "Resultados" });
+
+    expect(within(changed).getByText("✓ Nada")).toBeTruthy();
+    expect(
+      within(changed)
+        .getAllByRole("listitem")
+        .map((option) => option.lastElementChild?.textContent),
+    ).toEqual(["67%", "33%", "0%", "0%"]);
+    expect(within(card).getByText("Votaste · 3 respuestas")).toBeTruthy();
+
+    second.release(
+      HttpResponse.json(voted(choice, { choice: 0 }, { count: 3, choice: [2, 1, 0, 0] })),
+    );
+  });
+
+  test("a failed vote puts the previous vote and results back and shows a toast", async () => {
+    const { user, panel } = await enter([
+      voted(choice, { choice: 3 }, { count: 2, choice: [1, 0, 0, 1] }),
+    ]);
+
+    const card = await cardIn(panel, choice);
+
+    server.use(failingRoute("patch", `/polls/${choice.id}`));
+    await user.click(within(card).getByRole("button", { name: "Cambiar mi voto" }));
+    await user.click(within(card).getByRole("button", { name: "Nada" }));
+
+    expect(await screen.findByText("No se pudo registrar tu voto.")).toBeTruthy();
+
+    const results = await within(card).findByRole("list", { name: "Resultados" });
+
+    expect(within(results).getByText("✓ Casi todo")).toBeTruthy();
+    expect(
+      within(results)
+        .getAllByRole("listitem")
+        .map((option) => option.lastElementChild?.textContent),
+    ).toEqual(["50%", "0%", "0%", "50%"]);
   });
 
   test("cancelling the change shows the results with the previous vote", async () => {

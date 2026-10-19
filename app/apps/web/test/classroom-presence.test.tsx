@@ -5,6 +5,7 @@ import { planning, sessionDetail } from "./fixtures/content.ts";
 import { otherStudent, student, teacher } from "./fixtures/people.ts";
 import { classroomSocket } from "./helpers/classroom-socket.ts";
 import { handStore } from "./helpers/hand-store.ts";
+import { heldResponse } from "./helpers/held-response.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
 import { studentClassroom } from "./helpers/student-classroom.ts";
@@ -48,10 +49,12 @@ describe("/aula present people and the hand", () => {
     expect(within(rowOf(presence, "Lucía")).queryByLabelText("Mano levantada")).toBeNull();
   });
 
-  test("raising the hand posts it, marks the own row and turns the button on", async () => {
+  test("raising the hand marks the own row and turns the button on before the answer, and posts it", async () => {
     const hands = handStore([]);
     const { user, presence } = await enter(hands);
+    const held = heldResponse("post", "/raised-hands");
 
+    server.use(held.handler);
     await user.click(screen.getByRole("button", { name: "Levantar la mano" }));
 
     await waitFor(() =>
@@ -60,7 +63,12 @@ describe("/aula present people and the hand", () => {
     expect(screen.getByRole("button", { name: "Bajar la mano" }).getAttribute("aria-pressed")).toBe(
       "true",
     );
-    expect(hands.writes).toEqual(["POST"]);
+    expect(hands.writes).toEqual([]);
+
+    held.release();
+
+    await waitFor(() => expect(hands.writes).toEqual(["POST"]));
+    expect(within(rowOf(presence, "Lucía")).getByLabelText("Mano levantada")).toBeTruthy();
   });
 
   test("lowering the hand deletes it and the mark goes away", async () => {

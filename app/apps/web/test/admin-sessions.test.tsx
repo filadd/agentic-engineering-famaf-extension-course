@@ -4,7 +4,8 @@ import { describe, expect, test } from "vitest";
 
 import { planning, sessionDetail, tooling, vibeCoding } from "./fixtures/content.ts";
 import { teacher } from "./fixtures/people.ts";
-import { apiError, getJson, url } from "./helpers/api.ts";
+import { getJson, url } from "./helpers/api.ts";
+import { failingRoute } from "./helpers/failing-route.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
 import { sessionStore } from "./helpers/session-store.ts";
@@ -99,10 +100,10 @@ describe("/admin", () => {
     );
   });
 
-  test("a failed reorder goes back to the server's order", async () => {
+  test("a failed reorder goes back to the server's order and shows a toast", async () => {
     const { rail } = await openAdmin();
 
-    server.use(http.put(url("/admin/session-order"), () => apiError("OrderMismatch")));
+    server.use(failingRoute("put", "/admin/session-order"));
 
     const cards = within(rail).getAllByRole("article");
 
@@ -110,9 +111,8 @@ describe("/admin", () => {
     fireEvent.dragOver(cards[0]?.parentElement ?? rail);
     fireEvent.drop(cards[0]?.parentElement ?? rail);
 
-    await waitFor(() =>
-      expect(titlesIn(rail)).toEqual([vibeCoding.title, planning.title, tooling.title]),
-    );
+    expect(await screen.findByText("No se pudo reordenar.")).toBeTruthy();
+    expect(titlesIn(rail)).toEqual([vibeCoding.title, planning.title, tooling.title]);
   });
 
   test("opening a session goes to its page", async () => {

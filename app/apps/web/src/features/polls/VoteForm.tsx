@@ -34,6 +34,13 @@ export const VoteForm = ({ poll, onClosed }: Props) => {
   const words = mine != null && "words" in mine ? mine.words : [];
   const send = (myResponse: ResponseValue) => vote.mutate({ pollId: poll.id, myResponse });
 
+  // A choice or scale vote counts at once, so the results show before the
+  // answer; a word cloud vote keeps its field until the API takes it.
+  const choose = (myResponse: ResponseValue) => {
+    setChanging(false);
+    send(myResponse);
+  };
+
   if (poll.type === "words") {
     return (
       <div>
@@ -118,7 +125,7 @@ export const VoteForm = ({ poll, onClosed }: Props) => {
               type="button"
               aria-pressed={index === chosen}
               disabled={vote.isPending}
-              onClick={() => send({ choice: index })}
+              onClick={() => choose({ choice: index })}
               className={`flex justify-between gap-2.5 rounded-xl border-2 bg-paper px-3.5 py-[9px] text-left text-coal max-[600px]:px-3 max-[600px]:py-2.5 ${
                 index === chosen ? "border-coal" : "border-sand"
               }`}
@@ -136,7 +143,7 @@ export const VoteForm = ({ poll, onClosed }: Props) => {
                 type="button"
                 aria-pressed={value === rated}
                 disabled={vote.isPending}
-                onClick={() => send({ scale: value })}
+                onClick={() => choose({ scale: value })}
                 className={`rounded-[14px] border-2 border-coal py-2 text-xl max-[600px]:py-2.5 ${
                   value === rated ? "bg-coal text-white" : "bg-paper text-coal"
                 }`}

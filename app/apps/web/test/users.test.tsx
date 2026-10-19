@@ -4,6 +4,7 @@ import { describe, expect, test } from "vitest";
 import { ulid } from "./fixtures/ids.ts";
 import { otherStudent, student, teacher, userOf } from "./fixtures/people.ts";
 import { getJson } from "./helpers/api.ts";
+import { heldResponse } from "./helpers/held-response.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
 import { userStore } from "./helpers/user-store.ts";
@@ -133,16 +134,21 @@ describe("/admin/usuarios", () => {
     expect(store.writes).toEqual([{ method: "PATCH", body: { id: student.id, hasAccess: false } }]);
   });
 
-  test("giving the access patches it without asking", async () => {
+  test("giving the access turns the switch on before the answer, without asking", async () => {
     const { user, list, store } = await openUsers();
     const row = within(list).getByRole("listitem", { name: "Tomás" });
+    const held = heldResponse("patch", `/admin/users/${otherStudent.id}`);
 
+    server.use(held.handler);
     await user.click(within(row).getByRole("switch", { name: "Sin acceso" }));
 
-    await waitFor(() =>
-      expect(within(row).getByRole("switch", { name: "Con acceso" })).toBeTruthy(),
-    );
+    expect(await within(row).findByRole("switch", { name: "Con acceso" })).toBeTruthy();
     expect(screen.queryByRole("alertdialog")).toBeNull();
+    expect(store.writes).toEqual([]);
+
+    held.release();
+
+    await waitFor(() => expect(store.writes).toHaveLength(1));
     expect(store.writes).toEqual([
       { method: "PATCH", body: { id: otherStudent.id, hasAccess: true } },
     ]);

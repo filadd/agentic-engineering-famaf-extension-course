@@ -16,7 +16,8 @@ import {
 } from "./fixtures/content.ts";
 import { otherStudent, student, teacher } from "./fixtures/people.ts";
 import { validSlides } from "./fixtures/slides.ts";
-import { getJson, noContent, readJson, url } from "./helpers/api.ts";
+import { apiError, getJson, noContent, readJson, url } from "./helpers/api.ts";
+import { heldResponse } from "./helpers/held-response.ts";
 import { pollStore } from "./helpers/poll-store.ts";
 import { recorder } from "./helpers/recorder.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
@@ -102,6 +103,21 @@ describe("session page: classroom slides", () => {
     await waitFor(() => expect(frame.lastGo()).toEqual({ slide: 2, step: 2 }));
   });
 
+  test("moving without access goes to the login without a toast", async () => {
+    const { user, router } = await openPage("aula");
+
+    server.use(http.patch(url(`/admin/sessions/${planning.id}`), () => apiError("NoAccess")));
+
+    const frame = await slidesFrame();
+
+    await frame.announce();
+    await waitFor(() => expect(frame.lastGo()).toEqual({ slide: 2, step: 2 }));
+    await user.click(screen.getByRole("button", { name: "Siguiente" }));
+
+    await waitFor(() => expect(router.state.location.pathname).toBe("/login"));
+    expect(screen.queryByText("No se pudo mover la slide.")).toBeNull();
+  });
+
   test("presenting opens /admin/presentar/$id in another tab", async () => {
     await openPage("aula");
 
@@ -169,7 +185,7 @@ describe("session page: classroom panel and badges", () => {
     expect((await within(aulaTab()).findByLabelText("1 manos levantadas")).textContent).toBe("1");
   });
 
-  test("lowering a hand deletes that hand and it leaves the row", async () => {
+  test("lowering a hand takes it off the row before the answer and deletes that hand", async () => {
     const lowered = recorder<string>();
 
     let hands = [
@@ -197,7 +213,9 @@ describe("session page: classroom panel and badges", () => {
     await user.click(within(panelTabs).getByRole("tab", { name: "Encuestas" }));
 
     const presence = await screen.findByRole("list", { name: "Presentes" });
+    const held = heldResponse("delete", "/admin/raised-hands");
 
+    server.use(held.handler);
     await user.click(
       await within(presence).findByRole("button", {
         name: `Bajar la mano de ${otherStudent.name}`,
@@ -207,7 +225,14 @@ describe("session page: classroom panel and badges", () => {
     await waitFor(() =>
       expect(within(presence).queryByRole("button", { name: /Bajar la mano/ })).toBeNull(),
     );
-    expect(lowered.calls).toEqual([`?sessionId=${planning.id}&userId=${otherStudent.id}`]);
+    expect(lowered.calls).toEqual([]);
+
+    held.release();
+
+    await waitFor(() =>
+      expect(lowered.calls).toEqual([`?sessionId=${planning.id}&userId=${otherStudent.id}`]),
+    );
+    expect(within(presence).queryByRole("button", { name: /Bajar la mano/ })).toBeNull();
   });
 
   test("an answered question goes last, dimmed, and reopening it brings it back", async () => {
@@ -294,6 +319,69 @@ describe("session page: classroom panel and badges", () => {
       { method: "PATCH", body: { status: "active" } },
       { method: "PATCH", body: { status: "closed" } },
     ]);
+  });
+
+  test("marking a question answered dims it before the answer", async () => {
+    const first = asked(1, "¿Primera?");
+    const held = heldResponse("patch", `/admin/questions/${first.id}`);
+    const answers = recorder<unknown>();
+
+    server.use(
+      http.patch(url("/admin/questions/:id"), async ({ request }) => {
+        answers.record(await request.json());
+
+        return HttpResponse.json({ ...first, answered: true });
+      }),
+    );
+
+    const { user } = await openPage("aula", { questions: [first, asked(2, "¿Segunda?")] });
+
+    server.use(held.handler);
+    await user.click(await screen.findByRole("tab", { name: "Preguntas" }));
+
+    const panel = screen.getByRole("tabpanel");
+    const row = await within(panel).findByRole("listitem", { name: "¿Primera?" });
+
+    await user.click(within(row).getByRole("button", { name: "Marcar como respondida" }));
+
+    await waitFor(() =>
+      expect(within(panel).getByRole("listitem", { name: "¿Primera?" }).className).toContain(
+        "opacity-50",
+      ),
+    );
+    expect(answers.calls).toEqual([]);
+
+    held.release();
+
+    await waitFor(() => expect(answers.calls).toEqual([{ answered: true }]));
+  });
+
+  test("activating a poll from the panel shows it active before the answer", async () => {
+    const draftPoll = adminPoll(choicePoll(planning.id), "draft", { count: 0 });
+    const store = pollStore([draftPoll]);
+    const held = heldResponse("patch", `/admin/polls/${draftPoll.id}`);
+
+    server.use(...store.handlers);
+
+    const { user } = await openPage("aula");
+
+    server.use(...store.handlers);
+    server.use(held.handler);
+
+    const panel = await screen.findByRole("tabpanel");
+    const card = await within(panel).findByRole("article", { name: draftPoll.prompt });
+
+    await user.click(within(card).getByRole("button", { expanded: false }));
+    await user.click(within(card).getByRole("button", { name: "Activar" }));
+
+    expect(await within(card).findByText("Activa")).toBeTruthy();
+    expect(store.writes).toEqual([]);
+
+    held.release();
+
+    await waitFor(() =>
+      expect(store.writes).toEqual([{ method: "PATCH", body: { status: "active" } }]),
+    );
   });
 
   test("the teacher is present from another tab and the panel never hides", async () => {
