@@ -26,9 +26,11 @@ const RegisterRoute = () => {
 
   // A code that is not the current one comes back as NotRegistered; the
   // person fixes it in the code step.
+  const visibleStep = notice === "badCode" ? "code" : step;
+
   return (
     <AuthCard>
-      {step === "checkMail" ? (
+      {visibleStep === "checkMail" ? (
         <CheckMailNotice
           email={email}
           onOtherEmail={() => {
@@ -37,7 +39,7 @@ const RegisterRoute = () => {
           }}
         />
       ) : null}
-      {step === "code" || notice === "badCode" ? (
+      {visibleStep === "code" ? (
         <CodeStep
           initialCode={code}
           invalid={notice === "badCode"}
@@ -48,7 +50,7 @@ const RegisterRoute = () => {
           }}
         />
       ) : null}
-      {step === "email" && notice !== "badCode" ? (
+      {visibleStep === "email" ? (
         <EmailStep
           title="Sumate al aula"
           initialEmail={email}

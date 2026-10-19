@@ -5,7 +5,7 @@ import * as Schema from "effect/Schema";
 import { SlidesGo, SlidesInvalid, SlidesManifest } from "./messages.ts";
 import type { Position } from "./messages.ts";
 
-const ManifestType = Schema.Struct({ type: Schema.Literal("kurasu:manifest") });
+const ManifestType = Schema.Struct({ type: SlidesManifest.fields.type });
 
 const isManifestMessage = Schema.is(ManifestType);
 
