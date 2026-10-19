@@ -104,9 +104,23 @@ describe("voting in the classroom's Encuestas tab", () => {
 
     expect(await within(card).findByRole("list", { name: "Resultados" })).toBeTruthy();
     expect(vote.votes).toEqual([{ words: ["contexto"] }]);
+
+    const more = heldResponse("patch", `/polls/${words.id}`);
+
+    server.use(more.handler);
+    await user.click(within(card).getByRole("button", { name: "Sumar más palabras" }));
+    await user.type(within(card).getByLabelText("Más palabras"), "agentes");
+    await user.click(within(card).getByRole("button", { name: "Enviar" }));
+
+    expect(await within(card).findByRole("button", { name: "Enviando…" })).toBeTruthy();
+    expect(within(card).getByRole("button", { name: "Cancelar" })).toHaveProperty("disabled", true);
+
+    more.release();
+
+    await waitFor(() => expect(vote.votes).toHaveLength(2));
   });
 
-  test("sending words waits with Enviando… and the field disabled", async () => {
+  test("sending words waits with Enviando…, the field disabled and, when adding more, Cancelar disabled", async () => {
     const vote = voteHandler((myResponse) =>
       voted(words, myResponse, { count: 1, words: [{ word: "contexto", count: 1 }] }),
     );
