@@ -5,8 +5,11 @@
     <title>Slides sin slides</title>
   </head>
   <body>
+    <script type="application/json" id="manifest">
+      { "type": "kurasu:manifest", "slides": [] }
+    </script>
     <script>
-      const manifest = { type: "kurasu:manifest", slides: [] };
+      const manifest = JSON.parse(document.getElementById("manifest").textContent);
 
       parent.postMessage(manifest, "*");
     </script>

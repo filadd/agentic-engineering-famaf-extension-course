@@ -14,11 +14,11 @@
       </ul>
     </section>
     <section data-slide="3" hidden><h2>Revisar lo que produce el agente</h2></section>
+    <script type="application/json" id="manifest">
+      { "type": "kurasu:manifest", "slides": [{ "steps": 1 }, { "steps": 3 }, { "steps": 1 }] }
+    </script>
     <script>
-      const manifest = {
-        type: "kurasu:manifest",
-        slides: [{ steps: 1 }, { steps: 3 }, { steps: 1 }],
-      };
+      const manifest = JSON.parse(document.getElementById("manifest").textContent);
 
       parent.postMessage(manifest, "*");
 
