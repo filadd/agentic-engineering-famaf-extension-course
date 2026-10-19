@@ -7,7 +7,7 @@ import * as Crypto from "effect/Crypto";
 import * as Effect from "effect/Effect";
 import { HttpApiBuilder } from "effect/http-api";
 
-import { ServedApi } from "../api.ts";
+import { KurasuApi } from "@kurasu/contract/api";
 
 // `webOrigin` is where the QR of the enrollment code points, as
 // `/registro?codigo=<code>`. The teacher cannot take their own access away:
@@ -18,7 +18,7 @@ export const AdminUsersHandlers = (webOrigin: string) => {
     url: `${webOrigin}/registro?codigo=${encodeURIComponent(code)}`,
   });
 
-  return HttpApiBuilder.group(ServedApi, "adminUsers", (handlers) =>
+  return HttpApiBuilder.group(KurasuApi, "adminUsers", (handlers) =>
     handlers
       .handle("list", () =>
         Effect.gen(function* () {

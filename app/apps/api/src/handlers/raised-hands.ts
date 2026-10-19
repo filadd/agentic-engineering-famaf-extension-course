@@ -3,9 +3,9 @@ import { Hands } from "@kurasu/core/hands/hands";
 import * as Effect from "effect/Effect";
 import { HttpApiBuilder } from "effect/http-api";
 
-import { ServedApi } from "../api.ts";
+import { KurasuApi } from "@kurasu/contract/api";
 
-export const RaisedHandsHandlers = HttpApiBuilder.group(ServedApi, "raisedHands", (handlers) =>
+export const RaisedHandsHandlers = HttpApiBuilder.group(KurasuApi, "raisedHands", (handlers) =>
   handlers
     .handle("list", ({ query }) =>
       Effect.gen(function* () {
@@ -31,7 +31,7 @@ export const RaisedHandsHandlers = HttpApiBuilder.group(ServedApi, "raisedHands"
 );
 
 export const AdminRaisedHandsHandlers = HttpApiBuilder.group(
-  ServedApi,
+  KurasuApi,
   "adminRaisedHands",
   (handlers) =>
     handlers

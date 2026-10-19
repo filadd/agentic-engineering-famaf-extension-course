@@ -7,6 +7,7 @@ import type {
   SessionSummary,
 } from "@kurasu/contract/sessions";
 import type { Ulid } from "@kurasu/contract/ulid";
+import type { User } from "@kurasu/contract/user";
 import * as Context from "effect/Context";
 import * as Crypto from "effect/Crypto";
 import * as Effect from "effect/Effect";
@@ -47,13 +48,15 @@ const changedTopics = (change: SessionChange): ReadonlyArray<ClassroomTopic> => 
 // The sessions as each side sees them. The student sees only enabled sessions,
 // without `enabled`; the featured one is the last of them. The teacher sees
 // every session not deleted. A session is deleted only while disabled, and a
-// reorder lists every session not deleted.
+// reorder lists every session not deleted. A student enters only the classroom
+// of the featured session; the teacher, that of any session not deleted.
 export class Sessions extends Context.Service<
   Sessions,
   {
     readonly listVisible: () => Effect.Effect<ReadonlyArray<SessionSummary>>;
     readonly getVisible: (id: Ulid) => Effect.Effect<Session, SessionNotFound>;
     readonly featured: () => Effect.Effect<Option.Option<SessionSummary>>;
+    readonly classroomOf: (viewer: User, id: Ulid) => Effect.Effect<void, SessionNotFound>;
     readonly listAll: () => Effect.Effect<ReadonlyArray<SessionSummary>>;
     readonly get: (id: Ulid) => Effect.Effect<Session, SessionNotFound>;
     readonly create: (input: SessionInput) => Effect.Effect<Session>;
@@ -74,11 +77,25 @@ export class Sessions extends Context.Service<
 
       const listVisible = () => store.listEnabled();
 
+      const featured = () =>
+        Effect.map(listVisible(), (sessions) => Option.fromNullishOr(sessions.at(-1)));
+
       return Sessions.of({
         listVisible,
         getVisible: (id) => withStore(visibleSession(id)).pipe(Effect.map(toStudentSession)),
-        featured: () =>
-          Effect.map(listVisible(), (sessions) => Option.fromNullishOr(sessions.at(-1))),
+        featured,
+        classroomOf: Effect.fn("Sessions.classroomOf")(function* (viewer, id) {
+          if (viewer.role === "teacher") {
+            return yield* withStore(existingSession(id)).pipe(Effect.asVoid);
+          }
+
+          const session = Option.filter(yield* featured(), (found) => found.id === id);
+
+          return yield* Effect.fromOption(session).pipe(
+            Effect.mapError(() => new SessionNotFound()),
+            Effect.asVoid,
+          );
+        }),
         listAll: () => Effect.map(store.listAll(), (sessions) => sessions.map(toSummary)),
         get: (id) => withStore(existingSession(id)),
         create: Effect.fn("Sessions.create")(function* (input) {

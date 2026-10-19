@@ -22,8 +22,9 @@ import * as HttpServer from "effect/http/HttpServer";
 import { HttpApiBuilder } from "effect/http-api";
 import * as Layer from "effect/Layer";
 
-import { ServedApi } from "./api.ts";
+import { KurasuApi } from "@kurasu/contract/api";
 import Aula from "./classroom/aula.ts";
+import { ClassroomHandlers } from "./classroom/connect.ts";
 import { DurableObjectClassroom } from "./classroom/notify.ts";
 import { WebCrypto } from "./crypto.ts";
 import { MaterialsBucket } from "./files/bucket.ts";
@@ -99,7 +100,7 @@ export default class Api extends Cloudflare.Worker<Api>()(
       Hands.layer,
     ).pipe(Layer.provideMerge(stores), Layer.provideMerge(platform));
 
-    const app = HttpApiBuilder.layer(ServedApi).pipe(
+    const app = HttpApiBuilder.layer(KurasuApi).pipe(
       Layer.provide([
         AuthHandlers,
         MeHandlers,
@@ -114,6 +115,7 @@ export default class Api extends Cloudflare.Worker<Api>()(
         AdminQuestionsHandlers,
         RaisedHandsHandlers,
         AdminRaisedHandsHandlers,
+        ClassroomHandlers(aulas),
       ]),
       Layer.provide(CurrentUserMiddlewareLive),
       Layer.provide(services),

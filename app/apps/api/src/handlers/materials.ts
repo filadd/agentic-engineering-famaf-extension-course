@@ -9,7 +9,7 @@ import { HttpApiBuilder } from "effect/http-api";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
 
-import { ServedApi } from "../api.ts";
+import { KurasuApi } from "@kurasu/contract/api";
 
 const decodeUploadFields = Schema.decodeUnknownEffect(
   Schema.Struct({
@@ -22,7 +22,7 @@ const decodeUploadFields = Schema.decodeUnknownEffect(
 const contentDisposition = (name: string) =>
   `attachment; filename*=UTF-8''${encodeURIComponent(name)}`;
 
-export const MaterialsHandlers = HttpApiBuilder.group(ServedApi, "materials", (handlers) =>
+export const MaterialsHandlers = HttpApiBuilder.group(KurasuApi, "materials", (handlers) =>
   handlers
     .handle("list", ({ query }) =>
       Effect.gen(function* () {
@@ -49,7 +49,7 @@ export const MaterialsHandlers = HttpApiBuilder.group(ServedApi, "materials", (h
 // before the file, so the session is checked and the file streams to R2
 // without being buffered whole.
 export const AdminMaterialsHandlers = HttpApiBuilder.group(
-  ServedApi,
+  KurasuApi,
   "adminMaterials",
   (handlers) =>
     handlers

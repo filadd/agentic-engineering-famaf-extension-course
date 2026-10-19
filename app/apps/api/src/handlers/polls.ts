@@ -3,9 +3,9 @@ import { Polls } from "@kurasu/core/polls/polls";
 import * as Effect from "effect/Effect";
 import { HttpApiBuilder } from "effect/http-api";
 
-import { ServedApi } from "../api.ts";
+import { KurasuApi } from "@kurasu/contract/api";
 
-export const PollsHandlers = HttpApiBuilder.group(ServedApi, "polls", (handlers) =>
+export const PollsHandlers = HttpApiBuilder.group(KurasuApi, "polls", (handlers) =>
   handlers
     .handle("list", ({ query }) =>
       Effect.gen(function* () {
@@ -23,7 +23,7 @@ export const PollsHandlers = HttpApiBuilder.group(ServedApi, "polls", (handlers)
     ),
 );
 
-export const AdminPollsHandlers = HttpApiBuilder.group(ServedApi, "adminPolls", (handlers) =>
+export const AdminPollsHandlers = HttpApiBuilder.group(KurasuApi, "adminPolls", (handlers) =>
   handlers
     .handle("list", ({ query }) =>
       Effect.gen(function* () {

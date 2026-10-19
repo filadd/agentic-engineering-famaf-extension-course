@@ -3,9 +3,9 @@ import { Questions } from "@kurasu/core/questions/questions";
 import * as Effect from "effect/Effect";
 import { HttpApiBuilder } from "effect/http-api";
 
-import { ServedApi } from "../api.ts";
+import { KurasuApi } from "@kurasu/contract/api";
 
-export const QuestionsHandlers = HttpApiBuilder.group(ServedApi, "questions", (handlers) =>
+export const QuestionsHandlers = HttpApiBuilder.group(KurasuApi, "questions", (handlers) =>
   handlers
     .handle("list", ({ query }) =>
       Effect.gen(function* () {
@@ -38,7 +38,7 @@ export const QuestionsHandlers = HttpApiBuilder.group(ServedApi, "questions", (h
 );
 
 export const AdminQuestionsHandlers = HttpApiBuilder.group(
-  ServedApi,
+  KurasuApi,
   "adminQuestions",
   (handlers) =>
     handlers

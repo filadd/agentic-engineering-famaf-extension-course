@@ -2,9 +2,9 @@ import { Sessions } from "@kurasu/core/sessions/sessions";
 import * as Effect from "effect/Effect";
 import { HttpApiBuilder } from "effect/http-api";
 
-import { ServedApi } from "../api.ts";
+import { KurasuApi } from "@kurasu/contract/api";
 
-export const SessionsHandlers = HttpApiBuilder.group(ServedApi, "sessions", (handlers) =>
+export const SessionsHandlers = HttpApiBuilder.group(KurasuApi, "sessions", (handlers) =>
   handlers
     .handle("list", () =>
       Effect.gen(function* () {
@@ -22,7 +22,7 @@ export const SessionsHandlers = HttpApiBuilder.group(ServedApi, "sessions", (han
     ),
 );
 
-export const AdminSessionsHandlers = HttpApiBuilder.group(ServedApi, "adminSessions", (handlers) =>
+export const AdminSessionsHandlers = HttpApiBuilder.group(KurasuApi, "adminSessions", (handlers) =>
   handlers
     .handle("list", () =>
       Effect.gen(function* () {

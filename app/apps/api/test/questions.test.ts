@@ -5,6 +5,7 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 
 import { apiTest } from "./helpers/api-test.ts";
+import { isChanged, openClassroom } from "./helpers/classroom.ts";
 import { bodyOf, failedWith } from "./helpers/body.ts";
 import { request } from "./helpers/http.ts";
 import { cookieFor } from "./helpers/login.ts";
@@ -115,21 +116,28 @@ test(
 
 test(
   "asking answers the question as the student's own, with no votes",
-  Effect.gen(function* () {
-    const response = yield* asAna("POST", "/api/questions", {
-      sessionId: actions,
-      body: "¿Cómo se usa un agente?",
-    });
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, actions, yield* cookieFor(teacher));
 
-    expect(response.status).toBe(201);
-    expect(yield* bodyOf(Question, response)).toMatchObject({
-      sessionId: actions,
-      body: "¿Cómo se usa un agente?",
-      votes: 0,
-      myVote: false,
-      mine: true,
-    });
-  }),
+      const response = yield* asAna("POST", "/api/questions", {
+        sessionId: actions,
+        body: "¿Cómo se usa un agente?",
+      });
+
+      expect(response.status).toBe(201);
+      expect(yield* bodyOf(Question, response)).toMatchObject({
+        sessionId: actions,
+        body: "¿Cómo se usa un agente?",
+        votes: 0,
+        myVote: false,
+        mine: true,
+      });
+
+      yield* socket.waitFor(isChanged("questions"));
+    }),
+  ),
 );
 
 test(
@@ -156,17 +164,24 @@ test(
 
 test(
   "voting someone else's question adds one vote, and voting again adds none",
-  Effect.gen(function* () {
-    const path = "/api/questions/01QV5000000000000000000000";
-    const first = yield* asAna("PATCH", path, { myVote: true });
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, actions, yield* cookieFor(teacher));
 
-    expect(first.status).toBe(200);
-    expect(yield* bodyOf(Question, first)).toMatchObject({ votes: 1, myVote: true });
+      const path = "/api/questions/01QV5000000000000000000000";
+      const first = yield* asAna("PATCH", path, { myVote: true });
 
-    const again = yield* asAna("PATCH", path, { myVote: true });
+      expect(first.status).toBe(200);
+      expect(yield* bodyOf(Question, first)).toMatchObject({ votes: 1, myVote: true });
 
-    expect(yield* bodyOf(Question, again)).toMatchObject({ votes: 1, myVote: true });
-  }),
+      const again = yield* asAna("PATCH", path, { myVote: true });
+
+      expect(yield* bodyOf(Question, again)).toMatchObject({ votes: 1, myVote: true });
+
+      yield* socket.waitFor(isChanged("questions"));
+    }),
+  ),
 );
 
 test(
@@ -207,16 +222,21 @@ test(
 
 test(
   "deleting one's own question takes it away with its votes",
-  Effect.gen(function* () {
-    const { url } = yield* stack;
-    const id = "01QV9000000000000000000000";
-    const response = yield* asAna("DELETE", `/api/questions/${id}`);
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, actions, yield* cookieFor(teacher));
+      const id = "01QV9000000000000000000000";
+      const response = yield* asAna("DELETE", `/api/questions/${id}`);
 
-    expect(response.status).toBe(204);
-    expect((yield* studentQuestions(url, actions)).map((question) => question.id)).not.toContain(
-      id,
-    );
-  }),
+      expect(response.status).toBe(204);
+      expect((yield* studentQuestions(url, actions)).map((question) => question.id)).not.toContain(
+        id,
+      );
+
+      yield* socket.waitFor(isChanged("questions"));
+    }),
+  ),
 );
 
 test(
@@ -254,17 +274,22 @@ test(
 
 test(
   "marking a question as answered hides it from the student",
-  Effect.gen(function* () {
-    const { url } = yield* stack;
-    const id = "01QVB000000000000000000000";
-    const response = yield* answer(url, id, true);
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, actions, yield* cookieFor(teacher));
+      const id = "01QVB000000000000000000000";
+      const response = yield* answer(url, id, true);
 
-    expect(response.status).toBe(200);
-    expect(yield* bodyOf(AdminQuestion, response)).toMatchObject({ id, answered: true });
-    expect((yield* studentQuestions(url, actions)).map((question) => question.id)).not.toContain(
-      id,
-    );
-  }),
+      expect(response.status).toBe(200);
+      expect(yield* bodyOf(AdminQuestion, response)).toMatchObject({ id, answered: true });
+      expect((yield* studentQuestions(url, actions)).map((question) => question.id)).not.toContain(
+        id,
+      );
+
+      yield* socket.waitFor(isChanged("questions"));
+    }),
+  ),
 );
 
 test(

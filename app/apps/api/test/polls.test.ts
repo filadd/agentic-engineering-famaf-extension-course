@@ -19,6 +19,7 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 
 import { apiTest } from "./helpers/api-test.ts";
+import { isChanged, openClassroom } from "./helpers/classroom.ts";
 import { bodyOf, failedWith } from "./helpers/body.ts";
 import { request } from "./helpers/http.ts";
 import { cookieFor } from "./helpers/login.ts";
@@ -147,16 +148,21 @@ test(
 
 test(
   "voting on a choice poll answers the poll with the vote and its results",
-  Effect.gen(function* () {
-    const { url } = yield* stack;
-    const response = yield* vote(url, voter, "01PV1000000000000000000000", { choice: 1 });
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, withPolls, yield* cookieFor(teacher));
+      const response = yield* vote(url, voter, "01PV1000000000000000000000", { choice: 1 });
 
-    expect(response.status).toBe(200);
-    expect(yield* bodyOf(Poll, response)).toMatchObject({
-      myResponse: { choice: 1 },
-      results: { count: 1, choice: [0, 1, 0] },
-    });
-  }),
+      expect(response.status).toBe(200);
+      expect(yield* bodyOf(Poll, response)).toMatchObject({
+        myResponse: { choice: 1 },
+        results: { count: 1, choice: [0, 1, 0] },
+      });
+
+      yield* socket.waitFor(isChanged("polls"));
+    }),
+  ),
 );
 
 test(
@@ -311,21 +317,28 @@ test(
 
 test(
   "a new choice poll with three options is a draft",
-  Effect.gen(function* () {
-    const response = yield* asTeacher("POST", "/api/admin/polls", {
-      sessionId: teachers,
-      type: "choice",
-      prompt: "¿Cuál?",
-      options: ["A", "B", "C"],
-    });
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, teachers, yield* cookieFor(teacher));
 
-    expect(response.status).toBe(201);
-    expect(yield* bodyOf(AdminPoll, response)).toMatchObject({
-      status: "draft",
-      options: ["A", "B", "C"],
-      results: { count: 0, choice: [0, 0, 0] },
-    });
-  }),
+      const response = yield* asTeacher("POST", "/api/admin/polls", {
+        sessionId: teachers,
+        type: "choice",
+        prompt: "¿Cuál?",
+        options: ["A", "B", "C"],
+      });
+
+      expect(response.status).toBe(201);
+      expect(yield* bodyOf(AdminPoll, response)).toMatchObject({
+        status: "draft",
+        options: ["A", "B", "C"],
+        results: { count: 0, choice: [0, 0, 0] },
+      });
+
+      expect(yield* socket.quietFor(isChanged("polls"))).toBe(true);
+    }),
+  ),
 );
 
 test(
@@ -411,27 +424,39 @@ test(
 
 test(
   "activating a draft shows it to the students",
-  Effect.gen(function* () {
-    const { url } = yield* stack;
-    const id = "01PD3000000000000000000000";
-    const response = yield* asTeacher("PATCH", `/api/admin/polls/${id}`, { status: "active" });
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, teachers, yield* cookieFor(teacher));
+      const id = "01PD3000000000000000000000";
+      const response = yield* asTeacher("PATCH", `/api/admin/polls/${id}`, { status: "active" });
 
-    expect(response.status).toBe(200);
-    expect(yield* bodyOf(AdminPoll, response)).toMatchObject({ status: "active" });
-    expect(ids(yield* studentPolls(url, reader, "?status=active"))).toContain(id);
-  }),
+      expect(response.status).toBe(200);
+      expect(yield* bodyOf(AdminPoll, response)).toMatchObject({ status: "active" });
+      expect(ids(yield* studentPolls(url, reader, "?status=active"))).toContain(id);
+
+      yield* socket.waitFor(isChanged("polls"));
+    }),
+  ),
 );
 
 test(
   "closing an active poll answers it closed",
-  Effect.gen(function* () {
-    const response = yield* asTeacher("PATCH", "/api/admin/polls/01PD4000000000000000000000", {
-      status: "closed",
-    });
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, teachers, yield* cookieFor(teacher));
 
-    expect(response.status).toBe(200);
-    expect(yield* bodyOf(AdminPoll, response)).toMatchObject({ status: "closed" });
-  }),
+      const response = yield* asTeacher("PATCH", "/api/admin/polls/01PD4000000000000000000000", {
+        status: "closed",
+      });
+
+      expect(response.status).toBe(200);
+      expect(yield* bodyOf(AdminPoll, response)).toMatchObject({ status: "closed" });
+
+      yield* socket.waitFor(isChanged("polls"));
+    }),
+  ),
 );
 
 test(
@@ -460,12 +485,17 @@ test(
 
 test(
   "deleting an active poll hides it from the students",
-  Effect.gen(function* () {
-    const { url } = yield* stack;
-    const id = "01PD7000000000000000000000";
-    const response = yield* asTeacher("DELETE", `/api/admin/polls/${id}`);
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, teachers, yield* cookieFor(teacher));
+      const id = "01PD7000000000000000000000";
+      const response = yield* asTeacher("DELETE", `/api/admin/polls/${id}`);
 
-    expect(response.status).toBe(204);
-    expect(ids(yield* studentPolls(url, reader, ""))).not.toContain(id);
-  }),
+      expect(response.status).toBe(204);
+      expect(ids(yield* studentPolls(url, reader, ""))).not.toContain(id);
+
+      yield* socket.waitFor(isChanged("polls"));
+    }),
+  ),
 );

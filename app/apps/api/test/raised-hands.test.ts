@@ -5,6 +5,7 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 
 import { apiTest } from "./helpers/api-test.ts";
+import { isChanged, openClassroom } from "./helpers/classroom.ts";
 import { bodyOf, failedWith } from "./helpers/body.ts";
 import { request } from "./helpers/http.ts";
 import { cookieFor } from "./helpers/login.ts";
@@ -75,21 +76,26 @@ test(
 
 test(
   "raising the hand answers it with the student's name and avatar",
-  Effect.gen(function* () {
-    const { url } = yield* stack;
-    const cookie = yield* cookieFor(ana);
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, toRaise, yield* cookieFor(teacher));
+      const cookie = yield* cookieFor(ana);
 
-    const response = yield* request(url, "POST", "/api/raised-hands", {
-      cookie,
-      body: { sessionId: toRaise },
-    });
+      const response = yield* request(url, "POST", "/api/raised-hands", {
+        cookie,
+        body: { sessionId: toRaise },
+      });
 
-    expect(response.status).toBe(201);
-    expect(yield* bodyOf(RaisedHand, response)).toEqual({
-      sessionId: toRaise,
-      user: { id: ana, name: "Ana", avatar: "fox" },
-    });
-  }),
+      expect(response.status).toBe(201);
+      expect(yield* bodyOf(RaisedHand, response)).toEqual({
+        sessionId: toRaise,
+        user: { id: ana, name: "Ana", avatar: "fox" },
+      });
+
+      yield* socket.waitFor(isChanged("hands"));
+    }),
+  ),
 );
 
 test(
@@ -112,17 +118,22 @@ test(
 
 test(
   "lowering one's own hand leaves the others",
-  Effect.gen(function* () {
-    const { url } = yield* stack;
-    const cookie = yield* cookieFor(ana);
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, toLowerOwn, yield* cookieFor(teacher));
+      const cookie = yield* cookieFor(ana);
 
-    const response = yield* request(url, "DELETE", `/api/raised-hands?sessionId=${toLowerOwn}`, {
-      cookie,
-    });
+      const response = yield* request(url, "DELETE", `/api/raised-hands?sessionId=${toLowerOwn}`, {
+        cookie,
+      });
 
-    expect(response.status).toBe(204);
-    expect(owners(yield* studentHands(url, toLowerOwn))).toEqual([beto]);
-  }),
+      expect(response.status).toBe(204);
+      expect(owners(yield* studentHands(url, toLowerOwn))).toEqual([beto]);
+
+      yield* socket.waitFor(isChanged("hands"));
+    }),
+  ),
 );
 
 test(
@@ -147,18 +158,23 @@ test(
 
 test(
   "the teacher lowers a student's hand",
-  Effect.gen(function* () {
-    const { url } = yield* stack;
-    const cookie = yield* cookieFor(teacher);
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, toLowerByTeacher, yield* cookieFor(teacher));
+      const cookie = yield* cookieFor(teacher);
 
-    const response = yield* request(
-      url,
-      "DELETE",
-      `/api/admin/raised-hands?sessionId=${toLowerByTeacher}&userId=${ana}`,
-      { cookie },
-    );
+      const response = yield* request(
+        url,
+        "DELETE",
+        `/api/admin/raised-hands?sessionId=${toLowerByTeacher}&userId=${ana}`,
+        { cookie },
+      );
 
-    expect(response.status).toBe(204);
-    expect(yield* studentHands(url, toLowerByTeacher)).toEqual([]);
-  }),
+      expect(response.status).toBe(204);
+      expect(yield* studentHands(url, toLowerByTeacher)).toEqual([]);
+
+      yield* socket.waitFor(isChanged("hands"));
+    }),
+  ),
 );

@@ -6,6 +6,7 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 
 import { apiTest } from "./helpers/api-test.ts";
+import { isChanged, openClassroom } from "./helpers/classroom.ts";
 import { bodyOf, failedWith } from "./helpers/body.ts";
 import { download, request, upload, type UploadFile } from "./helpers/http.ts";
 import { cookieFor } from "./helpers/login.ts";
@@ -161,41 +162,52 @@ test(
 
 test(
   "an uploaded file comes back identical",
-  Effect.gen(function* () {
-    const { url } = yield* stack;
-    const file = pdf("libro.pdf", 23 * 1024 * 1024 + 17);
-    const response = yield* teacherUpload(url, withMaterial, "Libro", false, file);
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, withMaterial, yield* cookieFor(teacher));
+      const file = pdf("libro.pdf", 23 * 1024 * 1024 + 17);
+      const response = yield* teacherUpload(url, withMaterial, "Libro", false, file);
 
-    expect(response.status).toBe(201);
+      expect(response.status).toBe(201);
 
-    const material = yield* bodyOf(Material, response);
+      const material = yield* bodyOf(Material, response);
 
-    expect(material).toMatchObject({
-      sessionId: withMaterial,
-      name: "Libro",
-      isSlides: false,
-      size: file.bytes.length,
-      contentType: "application/pdf",
-    });
+      expect(material).toMatchObject({
+        sessionId: withMaterial,
+        name: "Libro",
+        isSlides: false,
+        size: file.bytes.length,
+        contentType: "application/pdf",
+      });
 
-    const cookie = yield* cookieFor(student);
-    const downloaded = yield* download(url, material.id, cookie);
+      const cookie = yield* cookieFor(student);
+      const downloaded = yield* download(url, material.id, cookie);
 
-    expect(downloaded.bytes.length).toBe(file.bytes.length);
-    expect(Buffer.from(downloaded.bytes).equals(Buffer.from(file.bytes))).toBe(true);
-  }),
+      expect(downloaded.bytes.length).toBe(file.bytes.length);
+      expect(Buffer.from(downloaded.bytes).equals(Buffer.from(file.bytes))).toBe(true);
+
+      yield* socket.waitFor(isChanged("material"));
+    }),
+  ),
 );
 
 test(
   "the first slides of a session move the position to slide 1, step 1",
-  Effect.gen(function* () {
-    const { url } = yield* stack;
-    const response = yield* teacherUpload(url, withoutSlides, "Slides", true, html("s.html"));
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, withoutSlides, yield* cookieFor(teacher));
+      const response = yield* teacherUpload(url, withoutSlides, "Slides", true, html("s.html"));
 
-    expect(response.status).toBe(201);
-    expect(yield* bodyOf(Material, response)).toMatchObject({ isSlides: true });
-    expect(yield* position(url, withoutSlides)).toEqual([1, 1]);
-  }),
+      expect(response.status).toBe(201);
+      expect(yield* bodyOf(Material, response)).toMatchObject({ isSlides: true });
+      expect(yield* position(url, withoutSlides)).toEqual([1, 1]);
+
+      yield* socket.waitFor(isChanged("material"));
+      yield* socket.waitFor(isChanged("slide"));
+    }),
+  ),
 );
 
 test(
@@ -238,79 +250,102 @@ test(
 
 test(
   "marking another HTML as slides unmarks the previous and moves the position to 1, 1",
-  Effect.gen(function* () {
-    const { url } = yield* stack;
-    const cookie = yield* cookieFor(teacher);
-    const other = "01MMF200000000000000000000";
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, twoHtml, yield* cookieFor(teacher));
+      const cookie = yield* cookieFor(teacher);
+      const other = "01MMF200000000000000000000";
 
-    const response = yield* request(url, "PATCH", `/api/admin/materials/${other}`, {
-      cookie,
-      body: { isSlides: true },
-    });
+      const response = yield* request(url, "PATCH", `/api/admin/materials/${other}`, {
+        cookie,
+        body: { isSlides: true },
+      });
 
-    expect(response.status).toBe(200);
-    expect(yield* bodyOf(Material, response)).toMatchObject({ id: other, isSlides: true });
-    expect(slidesOf(yield* teacherMaterials(url, twoHtml))).toEqual([other]);
-    expect(yield* position(url, twoHtml)).toEqual([1, 1]);
-  }),
+      expect(response.status).toBe(200);
+      expect(yield* bodyOf(Material, response)).toMatchObject({ id: other, isSlides: true });
+      expect(slidesOf(yield* teacherMaterials(url, twoHtml))).toEqual([other]);
+      expect(yield* position(url, twoHtml)).toEqual([1, 1]);
+
+      yield* socket.waitFor(isChanged("material"));
+      yield* socket.waitFor(isChanged("slide"));
+    }),
+  ),
 );
 
 test(
   "unmarking the slides leaves the session without slides at slide 1, step 1",
-  Effect.gen(function* () {
-    const { url } = yield* stack;
-    const cookie = yield* cookieFor(teacher);
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, slidesToUnmark, yield* cookieFor(teacher));
+      const cookie = yield* cookieFor(teacher);
 
-    const response = yield* request(
-      url,
-      "PATCH",
-      "/api/admin/materials/01MMG100000000000000000000",
-      {
-        cookie,
-        body: { isSlides: false },
-      },
-    );
+      const response = yield* request(
+        url,
+        "PATCH",
+        "/api/admin/materials/01MMG100000000000000000000",
+        {
+          cookie,
+          body: { isSlides: false },
+        },
+      );
 
-    expect(response.status).toBe(200);
-    expect(slidesOf(yield* teacherMaterials(url, slidesToUnmark))).toEqual([]);
-    expect(yield* position(url, slidesToUnmark)).toEqual([1, 1]);
-  }),
+      expect(response.status).toBe(200);
+      expect(slidesOf(yield* teacherMaterials(url, slidesToUnmark))).toEqual([]);
+      expect(yield* position(url, slidesToUnmark)).toEqual([1, 1]);
+
+      yield* socket.waitFor(isChanged("material"));
+      yield* socket.waitFor(isChanged("slide"));
+    }),
+  ),
 );
 
 test(
   "deleting a file takes away its download",
-  Effect.gen(function* () {
-    const { url } = yield* stack;
-    const uploaded = yield* teacherUpload(url, withMaterial, "Para borrar", false, pdf("b.pdf"));
-    const material = yield* bodyOf(Material, uploaded);
-    const cookie = yield* cookieFor(teacher);
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, withMaterial, yield* cookieFor(teacher));
+      const uploaded = yield* teacherUpload(url, withMaterial, "Para borrar", false, pdf("b.pdf"));
+      const material = yield* bodyOf(Material, uploaded);
+      const cookie = yield* cookieFor(teacher);
 
-    const response = yield* request(url, "DELETE", `/api/admin/materials/${material.id}`, {
-      cookie,
-    });
+      const response = yield* request(url, "DELETE", `/api/admin/materials/${material.id}`, {
+        cookie,
+      });
 
-    expect(response.status).toBe(204);
-    expect((yield* download(url, material.id, cookie)).status).toBe(404);
-  }),
+      expect(response.status).toBe(204);
+      expect((yield* download(url, material.id, cookie)).status).toBe(404);
+
+      yield* socket.waitFor(isChanged("material"));
+    }),
+  ),
 );
 
 test(
   "deleting the slides moves the position to slide 1, step 1",
-  Effect.gen(function* () {
-    const { url } = yield* stack;
-    const cookie = yield* cookieFor(teacher);
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, slidesToDelete, yield* cookieFor(teacher));
+      const cookie = yield* cookieFor(teacher);
 
-    const response = yield* request(
-      url,
-      "DELETE",
-      "/api/admin/materials/01MMH100000000000000000000",
-      {
-        cookie,
-      },
-    );
+      const response = yield* request(
+        url,
+        "DELETE",
+        "/api/admin/materials/01MMH100000000000000000000",
+        {
+          cookie,
+        },
+      );
 
-    expect(response.status).toBe(204);
-    expect(yield* teacherMaterials(url, slidesToDelete)).toEqual([]);
-    expect(yield* position(url, slidesToDelete)).toEqual([1, 1]);
-  }),
+      expect(response.status).toBe(204);
+      expect(yield* teacherMaterials(url, slidesToDelete)).toEqual([]);
+      expect(yield* position(url, slidesToDelete)).toEqual([1, 1]);
+
+      yield* socket.waitFor(isChanged("material"));
+      yield* socket.waitFor(isChanged("slide"));
+    }),
+  ),
 );

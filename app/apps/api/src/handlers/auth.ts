@@ -3,7 +3,7 @@ import { Access } from "@kurasu/core/access/access";
 import * as Effect from "effect/Effect";
 import { HttpApiBuilder } from "effect/http-api";
 
-import { ServedApi } from "../api.ts";
+import { KurasuApi } from "@kurasu/contract/api";
 import { sessionMaxAgeSeconds } from "../session-tokens.ts";
 import { toMe } from "./me-view.ts";
 
@@ -14,7 +14,7 @@ const cookieOptions = {
   path: "/",
 } as const;
 
-export const AuthHandlers = HttpApiBuilder.group(ServedApi, "auth", (handlers) =>
+export const AuthHandlers = HttpApiBuilder.group(KurasuApi, "auth", (handlers) =>
   handlers
     .handle("requestLink", ({ payload }) =>
       Effect.gen(function* () {

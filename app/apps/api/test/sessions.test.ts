@@ -7,6 +7,7 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 
 import { apiTest } from "./helpers/api-test.ts";
+import { isChanged, openClassroom } from "./helpers/classroom.ts";
 import { bodyOf, failedWith } from "./helpers/body.ts";
 import { request } from "./helpers/http.ts";
 import { cookieFor } from "./helpers/login.ts";
@@ -198,37 +199,42 @@ test(
 
 test(
   "disabling a session hides it from the student and keeps its polls, hands and position",
-  Effect.gen(function* () {
-    const { url } = yield* stack;
-    const cookie = yield* cookieFor(student);
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, featured, yield* cookieFor(student));
+      const cookie = yield* cookieFor(student);
 
-    expect((yield* patch(url, featured, { enabled: false })).status).toBe(200);
+      expect((yield* patch(url, featured, { enabled: false })).status).toBe(200);
 
-    const hidden = yield* request(url, "GET", `/api/sessions/${featured}`, { cookie });
+      const hidden = yield* request(url, "GET", `/api/sessions/${featured}`, { cookie });
 
-    expect(hidden.status).toBe(404);
-    expect((yield* patch(url, featured, { enabled: true })).status).toBe(200);
+      expect(hidden.status).toBe(404);
+      expect((yield* patch(url, featured, { enabled: true })).status).toBe(200);
 
-    const session = yield* request(url, "GET", `/api/sessions/${featured}`, { cookie });
+      const session = yield* request(url, "GET", `/api/sessions/${featured}`, { cookie });
 
-    expect(yield* bodyOf(Session, session)).toMatchObject({ currentSlide: 4, currentStep: 2 });
+      expect(yield* bodyOf(Session, session)).toMatchObject({ currentSlide: 4, currentStep: 2 });
 
-    const polls = yield* request(url, "GET", `/api/polls?sessionId=${featured}&status=active`, {
-      cookie,
-    });
+      const polls = yield* request(url, "GET", `/api/polls?sessionId=${featured}&status=active`, {
+        cookie,
+      });
 
-    expect((yield* bodyOf(Schema.Array(Poll), polls)).map((poll) => poll.id)).toEqual([
-      "01SSPA00000000000000000000",
-    ]);
+      expect((yield* bodyOf(Schema.Array(Poll), polls)).map((poll) => poll.id)).toEqual([
+        "01SSPA00000000000000000000",
+      ]);
 
-    const hands = yield* request(url, "GET", `/api/raised-hands?sessionId=${featured}`, {
-      cookie,
-    });
+      const hands = yield* request(url, "GET", `/api/raised-hands?sessionId=${featured}`, {
+        cookie,
+      });
 
-    expect(yield* bodyOf(Schema.Array(RaisedHandSummary), hands)).toEqual([
-      { sessionId: featured, userId: student },
-    ]);
-  }),
+      expect(yield* bodyOf(Schema.Array(RaisedHandSummary), hands)).toEqual([
+        { sessionId: featured, userId: student },
+      ]);
+
+      yield* socket.waitFor(isChanged("session"));
+    }),
+  ),
 );
 
 test(
@@ -247,13 +253,18 @@ test(
 
 test(
   "moving the slide answers the session with the new position",
-  Effect.gen(function* () {
-    const { url } = yield* stack;
-    const response = yield* patch(url, toMove, { currentSlide: 5, currentStep: 3 });
+  Effect.scoped(
+    Effect.gen(function* () {
+      const { url } = yield* stack;
+      const socket = yield* openClassroom(url, toMove, yield* cookieFor(teacher));
+      const response = yield* patch(url, toMove, { currentSlide: 5, currentStep: 3 });
 
-    expect(response.status).toBe(200);
-    expect(yield* bodyOf(Session, response)).toMatchObject({ currentSlide: 5, currentStep: 3 });
-  }),
+      expect(response.status).toBe(200);
+      expect(yield* bodyOf(Session, response)).toMatchObject({ currentSlide: 5, currentStep: 3 });
+
+      yield* socket.waitFor(isChanged("slide"));
+    }),
+  ),
 );
 
 test(

@@ -5,10 +5,10 @@ import * as Effect from "effect/Effect";
 import { HttpApiBuilder } from "effect/http-api";
 import * as Option from "effect/Option";
 
-import { ServedApi } from "../api.ts";
+import { KurasuApi } from "@kurasu/contract/api";
 import { toMe } from "./me-view.ts";
 
-export const MeHandlers = HttpApiBuilder.group(ServedApi, "me", (handlers) =>
+export const MeHandlers = HttpApiBuilder.group(KurasuApi, "me", (handlers) =>
   handlers
     .handle("get", () => Effect.map(CurrentUser, toMe))
     .handle("update", ({ payload }) =>
