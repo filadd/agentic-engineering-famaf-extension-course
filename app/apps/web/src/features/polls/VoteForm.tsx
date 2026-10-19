@@ -176,7 +176,12 @@ export const VoteForm = ({ poll, onClosed }: Props) => {
       )}
       {mine == null ? null : (
         <div className="mt-2.5 flex justify-end">
-          <button type="button" className={textLink} onClick={() => setChanging(false)}>
+          <button
+            type="button"
+            className={textLink}
+            disabled={vote.isPending}
+            onClick={() => setChanging(false)}
+          >
             Cancelar
           </button>
         </div>

@@ -190,6 +190,32 @@ describe("voting in the classroom's Encuestas tab", () => {
     ).toEqual(["33%", "33%", "33%", "0%"]);
   });
 
+  test("while the changed vote waits, the new option shows loading and Cancelar is disabled", async () => {
+    const { user, panel } = await enter([
+      voted(choice, { choice: 3 }, { count: 1, choice: [0, 0, 0, 1] }),
+    ]);
+
+    const card = await cardIn(panel, choice);
+    const held = heldResponse("patch", `/polls/${choice.id}`);
+
+    server.use(held.handler);
+    await user.click(within(card).getByRole("button", { name: "Cambiar mi voto" }));
+    await user.click(within(card).getByRole("button", { name: "Nada" }));
+
+    await waitFor(() =>
+      expect(within(card).getByRole("button", { name: "Nada" }).getAttribute("aria-busy")).toBe(
+        "true",
+      ),
+    );
+    expect(within(card).getByRole("button", { name: "Cancelar" })).toHaveProperty("disabled", true);
+
+    held.release(
+      HttpResponse.json(voted(choice, { choice: 0 }, { count: 1, choice: [1, 0, 0, 0] })),
+    );
+
+    expect(await within(card).findByText("✓ Nada")).toBeTruthy();
+  });
+
   test("a failed vote puts the option back and shows a toast", async () => {
     const { user, panel } = await enter([
       voted(choice, { choice: 3 }, { count: 2, choice: [1, 0, 0, 1] }),
