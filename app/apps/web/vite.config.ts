@@ -43,9 +43,10 @@ const apiUpgradesToProxy = (): Plugin => ({
   },
 });
 
-// Under `alchemy dev` the API Worker listens on port 1337, and Vite forwards
+// Under `alchemy dev` the API Worker asks for port 1337, and Vite forwards
 // /api to it (the classroom WebSocket included), so the browser talks to a
-// single origin as it does in production.
+// single origin as it does in production. When 1337 is taken the Worker starts
+// on the first free port and the proxy misses it, so free 1337 first.
 export default defineConfig({
   plugins: [
     apiUpgradesToProxy(),
