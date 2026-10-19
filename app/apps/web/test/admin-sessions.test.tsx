@@ -4,7 +4,9 @@ import { describe, expect, test } from "vitest";
 
 import { planning, sessionDetail, tooling, vibeCoding } from "./fixtures/content.ts";
 import { teacher } from "./fixtures/people.ts";
-import { apiError, getJson, url } from "./helpers/api.ts";
+import { getJson, url } from "./helpers/api.ts";
+import { failingRoute } from "./helpers/failing-route.ts";
+import { heldResponse } from "./helpers/held-response.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
 import { sessionStore } from "./helpers/session-store.ts";
@@ -86,6 +88,52 @@ describe("/admin", () => {
     expect(dialog.querySelector("p")).toBeNull();
   });
 
+  test("creating a session waits with Creando… and Cancelar disabled", async () => {
+    const { user, rail } = await openAdmin();
+    const held = heldResponse("post", "/admin/sessions");
+
+    server.use(held.handler);
+    await user.click(within(rail).getByRole("button", { name: "Nueva sesión" }));
+
+    const dialog = screen.getByRole("dialog", { name: "Nueva sesión" });
+
+    await user.type(within(dialog).getByLabelText("Título"), "Testing con agentes");
+    await user.click(within(dialog).getByRole("button", { name: "Crear sesión" }));
+
+    const creating = await within(dialog).findByRole("button", { name: "Creando…" });
+
+    expect(creating.getAttribute("aria-busy")).toBe("true");
+    expect(creating).toHaveProperty("disabled", true);
+    expect(within(dialog).getByRole("button", { name: "Cancelar" })).toHaveProperty(
+      "disabled",
+      true,
+    );
+
+    held.release();
+
+    await waitFor(() => expect(titlesIn(rail).at(-1)).toBe("Testing con agentes"));
+  });
+
+  test("a failed create keeps the sheet open with the title, the summary and the error", async () => {
+    const { user, rail } = await openAdmin();
+
+    server.use(failingRoute("post", "/admin/sessions"));
+    await user.click(within(rail).getByRole("button", { name: "Nueva sesión" }));
+
+    const dialog = screen.getByRole("dialog", { name: "Nueva sesión" });
+
+    await user.type(within(dialog).getByLabelText("Título"), "Testing con agentes");
+    await user.type(within(dialog).getByLabelText("Resumen"), "Cómo pedir tests.");
+    await user.click(within(dialog).getByRole("button", { name: "Crear sesión" }));
+
+    expect((await within(dialog).findByRole("alert")).textContent).toBe(
+      "No se pudo crear la sesión. Probá de nuevo.",
+    );
+    expect(within(dialog).getByLabelText("Título")).toHaveProperty("value", "Testing con agentes");
+    expect(within(dialog).getByLabelText("Resumen")).toHaveProperty("value", "Cómo pedir tests.");
+    expect(titlesIn(rail)).toEqual([vibeCoding.title, planning.title, tooling.title]);
+  });
+
   test("dragging a card reorders the list on drop and puts the whole order", async () => {
     const { rail, store } = await openAdmin();
 
@@ -111,10 +159,10 @@ describe("/admin", () => {
     );
   });
 
-  test("a failed reorder goes back to the server's order", async () => {
+  test("a failed reorder goes back to the server's order and shows a toast", async () => {
     const { rail } = await openAdmin();
 
-    server.use(http.put(url("/admin/session-order"), () => apiError("OrderMismatch")));
+    server.use(failingRoute("put", "/admin/session-order"));
 
     const cards = within(rail).getAllByRole("article");
 
@@ -122,9 +170,8 @@ describe("/admin", () => {
     fireEvent.dragOver(cards[0]?.parentElement ?? rail);
     fireEvent.drop(cards[0]?.parentElement ?? rail);
 
-    await waitFor(() =>
-      expect(titlesIn(rail)).toEqual([vibeCoding.title, planning.title, tooling.title]),
-    );
+    expect(await screen.findByText("No se pudo reordenar.")).toBeTruthy();
+    expect(titlesIn(rail)).toEqual([vibeCoding.title, planning.title, tooling.title]);
   });
 
   test("opening a session goes to its page", async () => {

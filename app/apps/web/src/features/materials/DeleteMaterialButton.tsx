@@ -31,6 +31,8 @@ export const DeleteMaterialButton = ({ material }: Props) => {
           : "Los estudiantes dejan de verlo en el material."
       }
       confirmLabel="Borrar"
+      pendingLabel="Borrando…"
+      errorText="No se pudo borrar el material. Probá de nuevo."
       onConfirm={() => remove.mutateAsync(material.id)}
     />
   );

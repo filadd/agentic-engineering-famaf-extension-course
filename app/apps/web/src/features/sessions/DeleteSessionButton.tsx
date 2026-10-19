@@ -27,6 +27,8 @@ export const DeleteSessionButton = ({ session }: Props) => {
         title={`¿Borrar "${session.title}"?`}
         text="Se borran su material, sus encuestas y sus preguntas."
         confirmLabel="Borrar"
+        pendingLabel="Borrando…"
+        errorText="No se pudo borrar la sesión. Probá de nuevo."
         onConfirm={() => remove.mutateAsync(session.id)}
       />
     </div>

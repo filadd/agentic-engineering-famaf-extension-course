@@ -2,6 +2,7 @@ import type { Animal, Me } from "@kurasu/contract/user";
 import { useState } from "react";
 import type { ReactNode } from "react";
 
+import { InlineError } from "../../ui/InlineError.tsx";
 import { AvatarPicker } from "./AvatarPicker.tsx";
 import { useUpdateProfile } from "./useUpdateProfile.ts";
 
@@ -50,6 +51,9 @@ export const ProfileForm = ({ me, onSaved, nameLabel, namePlaceholder, renderAct
       </label>
       <div className="mt-5 text-sm font-bold">Tu avatar</div>
       <AvatarPicker value={avatar} onChange={setAvatar} />
+      {save.isError ? (
+        <InlineError className="mt-4">No se pudo guardar tu perfil. Probá de nuevo.</InlineError>
+      ) : null}
       {renderActions({ name, avatar, canSave, saving: save.isPending })}
     </form>
   );

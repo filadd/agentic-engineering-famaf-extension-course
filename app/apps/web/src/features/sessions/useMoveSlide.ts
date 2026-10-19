@@ -3,6 +3,7 @@ import type { Position } from "@kurasu/slides/messages";
 import { useQueryClient } from "@tanstack/react-query";
 
 import type { EndpointError, MutationOptions } from "../../api/api-error.ts";
+import { optimisticPatch } from "../../api/optimistic-patch.ts";
 import { queryKeys } from "../../api/query-keys.ts";
 import { useApiMutation } from "../../api/useApiMutation.ts";
 
@@ -11,8 +12,6 @@ export interface SlideMove {
   readonly position: Position;
 }
 
-// The teacher's slide moves before the API answers; a failed move puts the
-// previous position back.
 export const useMoveSlide = (
   options?: MutationOptions<Session, SlideMove, EndpointError<"adminSessions", "update">>,
 ) => {
@@ -24,23 +23,17 @@ export const useMoveSlide = (
         params: { id: input.id },
         payload: { currentSlide: input.position.slide, currentStep: input.position.step },
       }),
-    onMutate: async (input) => {
-      const key = queryKeys.adminSession(input.id);
-
-      await queryClient.cancelQueries({ queryKey: key });
-
-      const previous = queryClient.getQueryData<Session>(key);
-
-      queryClient.setQueryData<Session>(key, (session) =>
-        session == null
-          ? session
-          : { ...session, currentSlide: input.position.slide, currentStep: input.position.step },
-      );
-
-      return { previous };
-    },
-    onError: (_error, input, result) =>
-      queryClient.setQueryData(queryKeys.adminSession(input.id), result?.previous),
+    optimistic: [
+      optimisticPatch<Session, SlideMove>({
+        key: (input) => queryKeys.adminSession(input.id),
+        patch: (session, input) => ({
+          ...session,
+          currentSlide: input.position.slide,
+          currentStep: input.position.step,
+        }),
+      }),
+    ],
+    errorToast: () => "No se pudo mover la slide.",
     onSuccess: (session, input) =>
       queryClient.setQueryData(queryKeys.adminSession(input.id), session),
     options,

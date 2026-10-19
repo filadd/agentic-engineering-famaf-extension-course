@@ -40,7 +40,9 @@ export const EmailStep = ({ title, initialEmail, notice, sending, onSubmit }: Pr
           variant="pill-dark"
           type="submit"
           className="px-5 py-[11px] font-display text-[15px] font-medium max-[600px]:w-full max-[600px]:justify-center"
-          disabled={!email.includes("@") || sending}
+          disabled={!email.includes("@")}
+          pending={sending}
+          pendingLabel="Enviando…"
         >
           <Icon name="mail" size={18} />
           Mandame el link

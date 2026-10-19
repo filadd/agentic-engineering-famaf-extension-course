@@ -3,6 +3,8 @@ import * as Predicate from "effect/Predicate";
 import { useState } from "react";
 
 import { Button } from "../../ui/Button.tsx";
+import { InlineError } from "../../ui/InlineError.tsx";
+import { Spinner } from "../../ui/Spinner.tsx";
 import { PollResults } from "./PollResults.tsx";
 import { scaleLabelsOf } from "./scale-labels.ts";
 import { useVote } from "./useVote.ts";
@@ -33,6 +35,7 @@ export const VoteForm = ({ poll, onClosed }: Props) => {
   const editing = mine == null || changing;
   const words = mine != null && "words" in mine ? mine.words : [];
   const send = (myResponse: ResponseValue) => vote.mutate({ pollId: poll.id, myResponse });
+  const sending = vote.isPending ? vote.variables.myResponse : null;
 
   if (poll.type === "words") {
     return (
@@ -54,17 +57,25 @@ export const VoteForm = ({ poll, onClosed }: Props) => {
                   : "Más palabras, separadas por coma"
               }
               aria-label={mine == null ? "Tus palabras" : "Más palabras"}
+              disabled={vote.isPending}
               className="min-w-0 flex-1 rounded-full border-2 border-coal bg-paper px-3.5 py-[7px] text-coal"
             />
             <Button
               variant="main"
               type="submit"
-              disabled={mergeWords([], draft).length === 0 || vote.isPending}
+              disabled={mergeWords([], draft).length === 0}
+              pending={vote.isPending}
+              pendingLabel="Enviando…"
               className="px-3.5 py-1.5 text-sm"
             >
               Enviar
             </Button>
           </form>
+        ) : null}
+        {vote.isError && !Predicate.isTagged(vote.error, "PollNotActive") ? (
+          <InlineError className="mt-2">
+            No se pudo enviar tu respuesta. Probá de nuevo.
+          </InlineError>
         ) : null}
         {words.length === 0 ? null : (
           <div className="mt-2 text-[13px] opacity-70">Tus palabras: {words.join(", ")}</div>
@@ -106,6 +117,8 @@ export const VoteForm = ({ poll, onClosed }: Props) => {
 
   const chosen = mine != null && "choice" in mine ? mine.choice : null;
   const rated = mine != null && "scale" in mine ? mine.scale : null;
+  const sendingChoice = sending != null && "choice" in sending ? sending.choice : null;
+  const sendingScale = sending != null && "scale" in sending ? sending.scale : null;
   const [minLabel, maxLabel] = scaleLabelsOf(poll);
 
   return (
@@ -117,13 +130,15 @@ export const VoteForm = ({ poll, onClosed }: Props) => {
               key={option}
               type="button"
               aria-pressed={index === chosen}
+              aria-busy={index === sendingChoice ? true : undefined}
               disabled={vote.isPending}
               onClick={() => send({ choice: index })}
-              className={`flex justify-between gap-2.5 rounded-xl border-2 bg-paper px-3.5 py-[9px] text-left text-coal max-[600px]:px-3 max-[600px]:py-2.5 ${
+              className={`flex items-center justify-between gap-2.5 rounded-xl border-2 bg-paper px-3.5 py-[9px] text-left text-coal max-[600px]:px-3 max-[600px]:py-2.5 ${
                 index === chosen ? "border-coal" : "border-sand"
               }`}
             >
               {option}
+              {index === sendingChoice ? <Spinner size={18} /> : null}
             </button>
           ))}
         </div>
@@ -134,14 +149,22 @@ export const VoteForm = ({ poll, onClosed }: Props) => {
               <button
                 key={value}
                 type="button"
+                aria-label={String(value)}
                 aria-pressed={value === rated}
+                aria-busy={value === sendingScale ? true : undefined}
                 disabled={vote.isPending}
                 onClick={() => send({ scale: value })}
-                className={`rounded-[14px] border-2 border-coal py-2 text-xl max-[600px]:py-2.5 ${
+                className={`grid place-items-center rounded-[14px] border-2 border-coal py-2 text-xl max-[600px]:py-2.5 ${
                   value === rated ? "bg-coal text-white" : "bg-paper text-coal"
                 }`}
               >
-                {value}
+                {value === sendingScale ? (
+                  <span className="grid h-7 place-items-center">
+                    <Spinner size={18} />
+                  </span>
+                ) : (
+                  value
+                )}
               </button>
             ))}
           </div>

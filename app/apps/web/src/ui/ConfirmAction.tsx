@@ -5,30 +5,36 @@ import { ConfirmDialog } from "./ConfirmDialog.tsx";
 
 interface Props<A> extends Pick<
   ComponentProps<typeof ConfirmDialog>,
-  "title" | "text" | "confirmLabel"
+  "title" | "text" | "confirmLabel" | "pendingLabel"
 > {
   renderTrigger: (ask: () => void) => ReactNode;
   onConfirm: () => Promise<A>;
+  errorText: string;
 }
 
-// The dialog closes once `onConfirm` succeeds and stays open when it fails;
-// the query client already handles the error.
-export const ConfirmAction = <A,>({ renderTrigger, onConfirm, ...dialog }: Props<A>) => {
-  const [confirming, setConfirming] = useState(false);
+type Step = "closed" | "asking" | "confirming" | "failed";
+
+// The dialog closes once `onConfirm` succeeds; while it runs the dialog waits,
+// and when it fails it stays open with `errorText`.
+export const ConfirmAction = <A,>({ renderTrigger, onConfirm, errorText, ...dialog }: Props<A>) => {
+  const [step, setStep] = useState<Step>("closed");
 
   return (
     <>
-      {renderTrigger(() => setConfirming(true))}
+      {renderTrigger(() => setStep("asking"))}
       <ConfirmDialog
         {...dialog}
-        open={confirming}
-        onConfirm={() =>
+        open={step !== "closed"}
+        pending={step === "confirming"}
+        error={step === "failed" ? errorText : undefined}
+        onConfirm={() => {
+          setStep("confirming");
           void onConfirm().then(
-            () => setConfirming(false),
-            () => undefined,
-          )
-        }
-        onCancel={() => setConfirming(false)}
+            () => setStep("closed"),
+            () => setStep("failed"),
+          );
+        }}
+        onCancel={() => setStep("closed")}
       />
     </>
   );

@@ -4,6 +4,7 @@ import { describe, expect, test } from "vitest";
 
 import { student } from "./fixtures/people.ts";
 import { noContent, url } from "./helpers/api.ts";
+import { failingRoute } from "./helpers/failing-route.ts";
 import { recorder } from "./helpers/recorder.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { studentHome } from "./helpers/screens.ts";
@@ -71,6 +72,31 @@ describe("user menu", () => {
     expect(screen.queryByRole("menu")).toBeNull();
   });
 
+  test("a failed profile save keeps the form with what was typed and shows the error", async () => {
+    server.use(...studentHome(student), failingRoute("patch", "/me"));
+
+    const { user } = await renderRoute("/");
+
+    await user.click(within(await openMenu(user)).getByRole("button", { name: "Editar perfil" }));
+
+    const dialog = screen.getByRole("dialog", { name: "Tu perfil" });
+    const name = within(dialog).getByLabelText("Nombre");
+
+    await user.clear(name);
+    await user.type(name, "Lu");
+    await user.click(within(dialog).getByRole("button", { name: "panda" }));
+    await user.click(within(dialog).getByRole("button", { name: "Guardar" }));
+
+    expect((await within(dialog).findByRole("alert")).textContent).toBe(
+      "No se pudo guardar tu perfil. Probá de nuevo.",
+    );
+    expect(within(dialog).getByLabelText("Nombre")).toHaveProperty("value", "Lu");
+    expect(within(dialog).getByRole("button", { name: "panda" }).getAttribute("aria-pressed")).toBe(
+      "true",
+    );
+    expect(screen.getByRole("heading", { name: "Hola, Lucía" })).toBeTruthy();
+  });
+
   test("turning on the dark mode marks the page dark and keeps it", async () => {
     server.use(...studentHome(student));
 
@@ -121,5 +147,17 @@ describe("user menu", () => {
 
     await waitFor(() => expect(router.state.location.pathname).toBe("/login"));
     expect(logouts.calls).toEqual(["POST"]);
+  });
+
+  test("a failed logout shows a toast and stays on the page", async () => {
+    server.use(...studentHome(student), failingRoute("post", "/auth/logout"));
+
+    const { router, user } = await renderRoute("/");
+
+    await user.click(within(await openMenu(user)).getByRole("button", { name: "Cerrar sesión" }));
+
+    expect(await screen.findByText("No se pudo cerrar la sesión.")).toBeTruthy();
+    expect(router.state.location.pathname).toBe("/");
+    expect(screen.getByRole("heading", { name: "Hola, Lucía" })).toBeTruthy();
   });
 });

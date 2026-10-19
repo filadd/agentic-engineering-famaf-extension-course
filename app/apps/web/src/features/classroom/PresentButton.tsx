@@ -1,5 +1,4 @@
-import { Link } from "@tanstack/react-router";
-
+import { ButtonLink } from "../../ui/ButtonLink.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 
 interface Props {
@@ -7,13 +6,14 @@ interface Props {
 }
 
 export const PresentButton = ({ sessionId }: Props) => (
-  <Link
+  <ButtonLink
+    variant="pill"
     to="/admin/presentar/$id"
     params={{ id: sessionId }}
     target="_blank"
-    className="pill-button ml-auto"
+    className="ml-auto"
   >
     <Icon name="external-link" size={16} />
     Presentar en otra pestaña
-  </Link>
+  </ButtonLink>
 );

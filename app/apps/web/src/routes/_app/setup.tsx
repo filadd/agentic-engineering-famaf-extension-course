@@ -32,7 +32,9 @@ const SetupRoute = () => {
                 variant="pill-dark"
                 type="submit"
                 className="px-5 py-[11px] font-display text-[15px] font-medium max-[600px]:w-full max-[600px]:justify-center"
-                disabled={!draft.canSave || draft.saving}
+                disabled={!draft.canSave}
+                pending={draft.saving}
+                pendingLabel="Guardando…"
               >
                 Entrar al aula
                 <Icon name="arrow-right" size={18} />

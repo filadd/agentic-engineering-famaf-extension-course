@@ -15,6 +15,8 @@ import {
 import { student, teacher } from "./fixtures/people.ts";
 import { apiError, url } from "./helpers/api.ts";
 import { classroomSocket } from "./helpers/classroom-socket.ts";
+import { failingRoute } from "./helpers/failing-route.ts";
+import { heldResponse } from "./helpers/held-response.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
 import { studentClassroom } from "./helpers/student-classroom.ts";
@@ -104,6 +106,34 @@ describe("voting in the classroom's Encuestas tab", () => {
     expect(vote.votes).toEqual([{ words: ["contexto"] }]);
   });
 
+  test("sending words waits with Enviando… and the field disabled", async () => {
+    const vote = voteHandler((myResponse) =>
+      voted(words, myResponse, { count: 1, words: [{ word: "contexto", count: 1 }] }),
+    );
+
+    const held = heldResponse("patch", `/polls/${words.id}`);
+
+    server.use(vote.handler);
+
+    const { user, panel } = await enter([words]);
+    const card = await cardIn(panel, words);
+
+    server.use(held.handler);
+    await user.type(within(card).getByLabelText("Tus palabras"), "contexto");
+    await user.click(within(card).getByRole("button", { name: "Enviar" }));
+
+    const sending = await within(card).findByRole("button", { name: "Enviando…" });
+
+    expect(sending).toHaveProperty("disabled", true);
+    expect(within(card).getByLabelText("Tus palabras")).toHaveProperty("disabled", true);
+    expect(within(card).queryByRole("list", { name: "Resultados" })).toBeNull();
+
+    held.release();
+
+    expect(await within(card).findByRole("list", { name: "Resultados" })).toBeTruthy();
+    expect(vote.votes).toEqual([{ words: ["contexto"] }]);
+  });
+
   test("changing the vote marks the previous one and takes the new one", async () => {
     const vote = voteHandler((myResponse) =>
       voted(choice, myResponse, { count: 1, choice: [1, 0, 0, 0] }),
@@ -127,6 +157,59 @@ describe("voting in the classroom's Encuestas tab", () => {
 
     expect(await within(card).findByText("✓ Nada")).toBeTruthy();
     expect(vote.votes).toEqual([{ choice: 0 }]);
+  });
+
+  test("the chosen option shows loading until the answer and then the server's results", async () => {
+    const { user, panel } = await enter([choice]);
+    const card = await cardIn(panel, choice);
+    const held = heldResponse("patch", `/polls/${choice.id}`);
+
+    server.use(held.handler);
+    await user.click(within(card).getByRole("button", { name: "La mitad" }));
+
+    await waitFor(() =>
+      expect(within(card).getByRole("button", { name: "La mitad" }).getAttribute("aria-busy")).toBe(
+        "true",
+      ),
+    );
+    expect(within(card).getByRole("button", { name: "Nada" })).toHaveProperty("disabled", true);
+    expect(within(card).queryByRole("list", { name: "Resultados" })).toBeNull();
+
+    held.release(
+      HttpResponse.json(voted(choice, { choice: 2 }, { count: 3, choice: [1, 1, 1, 0] })),
+    );
+
+    const results = await within(card).findByRole("list", { name: "Resultados" });
+
+    expect(within(results).getByText("✓ La mitad")).toBeTruthy();
+    expect(within(card).getByText("Votaste · 3 respuestas")).toBeTruthy();
+    expect(
+      within(results)
+        .getAllByRole("listitem")
+        .map((option) => option.lastElementChild?.textContent),
+    ).toEqual(["33%", "33%", "33%", "0%"]);
+  });
+
+  test("a failed vote puts the option back and shows a toast", async () => {
+    const { user, panel } = await enter([
+      voted(choice, { choice: 3 }, { count: 2, choice: [1, 0, 0, 1] }),
+    ]);
+
+    const card = await cardIn(panel, choice);
+
+    server.use(failingRoute("patch", `/polls/${choice.id}`));
+    await user.click(within(card).getByRole("button", { name: "Cambiar mi voto" }));
+    await user.click(within(card).getByRole("button", { name: "Nada" }));
+
+    expect(await screen.findByText("No se pudo registrar tu voto. Probá de nuevo.")).toBeTruthy();
+
+    const nothing = within(card).getByRole("button", { name: "Nada" });
+
+    expect(nothing.getAttribute("aria-pressed")).toBe("false");
+    expect(nothing.getAttribute("aria-busy")).toBeNull();
+    expect(
+      within(card).getByRole("button", { name: "Casi todo" }).getAttribute("aria-pressed"),
+    ).toBe("true");
   });
 
   test("cancelling the change shows the results with the previous vote", async () => {

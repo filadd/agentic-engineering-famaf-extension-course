@@ -135,12 +135,14 @@ export const UploadMaterialDialog = ({ sessionId, onClose }: Props) => {
         </InlineError>
       )}
       <div className="mt-3.5 flex justify-end gap-2">
-        <Button variant="pill" onClick={onClose}>
+        <Button variant="pill" onClick={onClose} disabled={upload.isPending}>
           Cancelar
         </Button>
         <Button
           variant="pill-dark"
-          disabled={chosen == null || name.trim() === "" || checking || upload.isPending}
+          disabled={chosen == null || name.trim() === "" || checking}
+          pending={upload.isPending}
+          pendingLabel="Subiendo…"
           onClick={() =>
             chosen == null
               ? undefined

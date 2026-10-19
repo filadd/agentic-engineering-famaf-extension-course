@@ -18,6 +18,8 @@ export const useVote = (
   return useApiMutation({
     call: (api, input) =>
       api.polls.vote({ params: { id: input.pollId }, payload: { myResponse: input.myResponse } }),
+    errorToast: (input) =>
+      "words" in input.myResponse ? undefined : "No se pudo registrar tu voto. Probá de nuevo.",
     onSuccess: (poll) =>
       queryClient.setQueriesData<ReadonlyArray<Poll>>({ queryKey: queryKeys.allPolls() }, (polls) =>
         polls?.map((each) => (each.id === poll.id ? poll : each)),

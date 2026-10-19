@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { Button } from "../../ui/Button.tsx";
+import { InlineError } from "../../ui/InlineError.tsx";
 import { Sheet } from "../../ui/Sheet.tsx";
 import { useCreateSession } from "./useCreateSession.ts";
 
@@ -41,14 +42,19 @@ export const NewSessionDialog = ({ onClose, onCreated }: Props) => {
             className="input-field min-h-20 resize-y"
           />
         </label>
+        {create.isError ? (
+          <InlineError className="mt-3">No se pudo crear la sesión. Probá de nuevo.</InlineError>
+        ) : null}
         <div className="mt-[18px] flex justify-end gap-2">
-          <Button variant="pill" onClick={onClose}>
+          <Button variant="pill" disabled={create.isPending} onClick={onClose}>
             Cancelar
           </Button>
           <Button
             variant="pill-dark"
             type="submit"
-            disabled={title.trim() === "" || create.isPending}
+            disabled={title.trim() === ""}
+            pending={create.isPending}
+            pendingLabel="Creando…"
           >
             Crear sesión
           </Button>

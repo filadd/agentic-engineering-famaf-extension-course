@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { ButtonLink } from "../../ui/ButtonLink.tsx";
 
 export const InvalidLinkNotice = () => (
   <div>
@@ -7,12 +7,13 @@ export const InvalidLinkNotice = () => (
       Cada link sirve una sola vez. Pedí uno nuevo para entrar.
     </p>
     <div className="mt-[26px] flex justify-center">
-      <Link
+      <ButtonLink
+        variant="pill-dark"
         to="/login"
-        className="pill-button pill-dark px-5 py-[11px] font-display text-[15px] font-medium"
+        className="px-5 py-[11px] font-display text-[15px] font-medium"
       >
         Ir al login
-      </Link>
+      </ButtonLink>
     </div>
   </div>
 );

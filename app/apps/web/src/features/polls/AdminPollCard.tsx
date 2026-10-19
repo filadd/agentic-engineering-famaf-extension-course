@@ -2,6 +2,7 @@ import type { AdminPoll } from "@kurasu/contract/polls";
 import { useState } from "react";
 
 import { Button } from "../../ui/Button.tsx";
+import { InlineError } from "../../ui/InlineError.tsx";
 import { PollActions } from "./PollActions.tsx";
 import { PollCard } from "./PollCard.tsx";
 import { contentOf, fieldsOf, isComplete } from "./poll-content.ts";
@@ -38,7 +39,14 @@ export const AdminPollCard = ({ poll }: Props) => {
       showCounts
       body={
         poll.status === "draft" ? (
-          <PollEditor type={poll.type} value={draft} onChange={setDraft} />
+          <>
+            <PollEditor type={poll.type} value={draft} onChange={setDraft} />
+            {save.isError ? (
+              <InlineError className="mt-3">
+                No se pudo guardar la encuesta. Probá de nuevo.
+              </InlineError>
+            ) : null}
+          </>
         ) : (
           <div className="mt-2 text-xs text-stone">{answers(poll.results.count)}</div>
         )
@@ -52,7 +60,9 @@ export const AdminPollCard = ({ poll }: Props) => {
               <Button
                 variant="pill"
                 className="border-sand text-coal"
-                disabled={!isComplete(poll.type, draft) || save.isPending}
+                disabled={!isComplete(poll.type, draft)}
+                pending={save.isPending}
+                pendingLabel="Guardando…"
                 onClick={() => save.mutate({ id: poll.id, change: fieldsOf(poll.type, draft) })}
               >
                 Guardar

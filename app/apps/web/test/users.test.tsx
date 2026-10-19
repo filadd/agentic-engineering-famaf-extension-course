@@ -4,6 +4,7 @@ import { describe, expect, test } from "vitest";
 import { ulid } from "./fixtures/ids.ts";
 import { otherStudent, student, teacher, userOf } from "./fixtures/people.ts";
 import { getJson } from "./helpers/api.ts";
+import { heldResponse } from "./helpers/held-response.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
 import { userStore } from "./helpers/user-store.ts";
@@ -134,10 +135,12 @@ describe("/admin/usuarios", () => {
     );
   });
 
-  test("taking the access asks for confirmation and leaves the row without access", async () => {
+  test("taking the access asks for confirmation, waits with Sacando… and leaves the row without access", async () => {
     const { user, list, store } = await openUsers();
     const row = within(list).getByRole("listitem", { name: "Lucía" });
+    const held = heldResponse("patch", `/admin/users/${student.id}`);
 
+    server.use(held.handler);
     await user.click(within(row).getByRole("switch", { name: "Con acceso" }));
 
     const confirm = screen.getByRole("alertdialog", { name: "¿Sacarle el acceso a Lucía?" });
@@ -145,6 +148,13 @@ describe("/admin/usuarios", () => {
     expect(store.writes).toEqual([]);
 
     await user.click(within(confirm).getByRole("button", { name: "Sacar acceso" }));
+
+    expect(await within(confirm).findByRole("button", { name: "Sacando…" })).toBeTruthy();
+    expect(
+      within(row).getByRole("switch", { name: "Con acceso" }).getAttribute("aria-checked"),
+    ).toBe("true");
+
+    held.release();
 
     await waitFor(() =>
       expect(
@@ -154,16 +164,21 @@ describe("/admin/usuarios", () => {
     expect(store.writes).toEqual([{ method: "PATCH", body: { id: student.id, hasAccess: false } }]);
   });
 
-  test("giving the access patches it without asking", async () => {
+  test("giving the access turns the switch on before the answer, without asking", async () => {
     const { user, list, store } = await openUsers();
     const row = within(list).getByRole("listitem", { name: "Tomás" });
+    const held = heldResponse("patch", `/admin/users/${otherStudent.id}`);
 
+    server.use(held.handler);
     await user.click(within(row).getByRole("switch", { name: "Sin acceso" }));
 
-    await waitFor(() =>
-      expect(within(row).getByRole("switch", { name: "Con acceso" })).toBeTruthy(),
-    );
+    expect(await within(row).findByRole("switch", { name: "Con acceso" })).toBeTruthy();
     expect(screen.queryByRole("alertdialog")).toBeNull();
+    expect(store.writes).toEqual([]);
+
+    held.release();
+
+    await waitFor(() => expect(store.writes).toHaveLength(1));
     expect(store.writes).toEqual([
       { method: "PATCH", body: { id: otherStudent.id, hasAccess: true } },
     ]);
