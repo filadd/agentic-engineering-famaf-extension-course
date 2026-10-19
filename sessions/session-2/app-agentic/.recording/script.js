@@ -8266,6 +8266,452 @@ window.RECORDING = {
       "url": "kurasu.asermax.com/registro",
       "caption": "Registro en producción",
       "action": null
+    },
+    {
+      "time": "03:40:36",
+      "kind": "tool",
+      "text": "Subagent(kurasu-review-3: agentic review de T24 y T25)"
+    },
+    {
+      "time": "03:44:28",
+      "kind": "note",
+      "text": "kurasu-review-3 terminó"
+    },
+    {
+      "time": "03:44:43",
+      "kind": "assistant",
+      "text": "El tercer review no encontró nada para arreglar; check y tests pasan. Quedan dos hallazgos para decidir: que useApiMutation deduzca el error de cada endpoint y que el proxy de Vite siga el puerto real de la API."
+    },
+    {
+      "time": "03:45:32",
+      "kind": "user",
+      "text": "apliquemos esos dos cambios"
+    },
+    {
+      "time": "03:45:51",
+      "kind": "tool",
+      "text": "Subagent(kurasu-t26: errores deducidos del contrato y proxy de dev que sigue a la API)"
+    },
+    {
+      "time": "03:53:43",
+      "kind": "note",
+      "text": "kurasu-t26 terminó"
+    },
+    {
+      "time": "03:53:55",
+      "kind": "tool",
+      "text": "Subagent(kurasu-review-4: agentic review de T26)"
+    },
+    {
+      "time": "03:54:06",
+      "kind": "assistant",
+      "text": "T26: EndpointError toma del contrato los errores de cada endpoint, sin casts, y los 44 hooks dejan de escribirlos a mano. El Stack le pasa a Vite la URL real de la API; con el 1337 ocupado, el proxy siguió al 1338."
+    },
+    {
+      "time": "03:57:36",
+      "kind": "note",
+      "text": "kurasu-review-4 terminó"
+    },
+    {
+      "time": "03:57:45",
+      "kind": "tool",
+      "text": "Bash(redeploy a prod con T26)"
+    },
+    {
+      "time": "03:58:31",
+      "kind": "assistant",
+      "text": "El review de T26 no encontró nada y el redeploy solo actualizó la web. kurasu está en prod; faltan las pruebas de prod (T17), que necesitan que el usuario entre como profe."
+    },
+    {
+      "time": "09:36:28",
+      "kind": "user",
+      "text": "listo, logueado como profe, como seguimos?"
+    },
+    {
+      "time": "09:36:48",
+      "kind": "assistant",
+      "text": "Con eso pasan C1 y C4. Para el resto propone estudiantes con alias + de la casilla del usuario: uno desde el celular por el QR y otro para Claude, que abre el link que le pegue el usuario."
+    },
+    {
+      "time": "09:53:56",
+      "kind": "user",
+      "text": "antes de eso, como hacemos para que le llegue el mail a dpiloni?"
+    },
+    {
+      "time": "09:54:03",
+      "kind": "assistant",
+      "text": "dpiloni ya está dado de alta como profe: entra a /login, escribe su mail y pide el link. Sirve una sola vez; si no lo ve, que revise spam. Mejor que lo pida él cuando vaya a entrar."
+    },
+    {
+      "time": "10:37:31",
+      "kind": "user",
+      "text": "bueno volvamos al testing; para C6 lo que quiero hacer es subir las clases 1 y 2, con su contenido y slides; para la 1 no hace falta que hagamos la adaptación para la API interna, pero para la 2 sí\nhagamos así: tu sube la primera y dejame las slides de la segunda lista así pruebo la creación por mi cuenta; dejame todo preparado y dame el summary de la clase así la subo"
+    },
+    {
+      "time": "10:37:41",
+      "kind": "tool",
+      "text": "Bash(lee cómo navega el deck de la clase 2 y el protocolo de slides de kurasu)"
+    },
+    {
+      "time": "10:38:21",
+      "kind": "tool",
+      "text": "Edit(sessions/session-2/deck/index.html: manifest y kurasu:go)"
+    },
+    {
+      "time": "10:38:37",
+      "kind": "tool",
+      "text": "Browser(prueba el deck en un iframe igual al de kurasu)"
+    },
+    {
+      "time": "10:39:13",
+      "kind": "tool",
+      "text": "Bash(arma los archivos de las clases 1 y 2)"
+    },
+    {
+      "time": "10:39:27",
+      "kind": "assistant",
+      "text": "El deck de la clase 2 manda el manifest con sus 25 slides y se mueve con kurasu:go; abierto solo funciona como antes. La clase 1 va como material, sin slides. Pide un link para entrar como profe."
+    },
+    {
+      "time": "10:42:41",
+      "kind": "user",
+      "text": "https://kurasu.asermax.com/entrar?codigo=…"
+    },
+    {
+      "time": "10:42:46",
+      "kind": "tool",
+      "text": "Browser(entra como profe y crea la clase 1)"
+    },
+    {
+      "time": "10:43:04",
+      "kind": "screenshot",
+      "src": "screenshots/364.png",
+      "url": "kurasu.asermax.com/admin",
+      "caption": "Admin de prod vacío",
+      "action": {
+        "kind": "click",
+        "x": 0.09375,
+        "y": 0.31,
+        "w": 0.86875,
+        "h": 0.065
+      }
+    },
+    {
+      "time": "10:43:16",
+      "kind": "screenshot",
+      "src": "screenshots/365.png",
+      "url": "kurasu.asermax.com/admin",
+      "caption": "Clase 1 creada",
+      "action": null
+    },
+    {
+      "time": "10:43:21",
+      "kind": "tool",
+      "text": "Browser(sube el material de la clase 1)"
+    },
+    {
+      "time": "10:43:31",
+      "kind": "screenshot",
+      "src": "screenshots/366.png",
+      "url": "kurasu.asermax.com/admin/sesiones/01M5A6DR0TFJ38232T5DZ9QZ67",
+      "caption": "Subir las slides en PDF",
+      "action": null
+    },
+    {
+      "time": "10:44:17",
+      "kind": "tool",
+      "text": "Browser(habilita la clase 1 y compara el sha256 de las descargas)"
+    },
+    {
+      "time": "10:44:20",
+      "kind": "screenshot",
+      "src": "screenshots/367.png",
+      "url": "kurasu.asermax.com/admin/sesiones/01M5A6DR0TFJ38232T5DZ9QZ67",
+      "caption": "Clase 1 con su material",
+      "action": null
+    },
+    {
+      "time": "10:44:34",
+      "kind": "assistant",
+      "text": "La clase 1 está en prod y habilitada, con cuatro archivos de material. Bajados de nuevo, tienen el mismo sha256 que los locales: R2 anda del lado del profe. Le toca al usuario la clase 2."
+    },
+    {
+      "time": "10:49:58",
+      "kind": "user",
+      "text": "modifiquemos las slides en el repo, no solo el scrtach; y no voy a subir el ejercicio por ahora"
+    },
+    {
+      "time": "10:50:04",
+      "kind": "tool",
+      "text": "Bash(git commit -m \"feat(session-2): let kurasu drive the deck through its slides API\")"
+    },
+    {
+      "time": "10:50:07",
+      "kind": "assistant",
+      "text": "La adaptación ya estaba en sessions/session-2/deck/index.html; la copia de .scratch era idéntica. Quedó commiteada en 2ec004a."
+    },
+    {
+      "time": "10:54:54",
+      "kind": "user",
+      "text": "listo"
+    },
+    {
+      "time": "10:54:58",
+      "kind": "tool",
+      "text": "Browser(revisa la clase 2 en la pestaña Aula)"
+    },
+    {
+      "time": "10:55:13",
+      "kind": "screenshot",
+      "src": "screenshots/368.png",
+      "url": "kurasu.asermax.com/admin/sesiones/01M5A6P3P3493033V5XGR7NRA8",
+      "caption": "Clase 2 en la pestaña Aula",
+      "action": null
+    },
+    {
+      "time": "10:55:22",
+      "kind": "assistant",
+      "text": "La clase 2 está habilitada y su deck de 25 slides entra en el aula. El WebSocket abre por wss en prod, así que C3 queda completa. Pregunta por el ejercicio y el respaldo que faltan en la clase 1."
+    },
+    {
+      "time": "10:56:31",
+      "kind": "user",
+      "text": "los borre a proposito\nsigo con los logins"
+    },
+    {
+      "time": "10:56:33",
+      "kind": "assistant",
+      "text": "Quedan así. Cuando el usuario agregue acarrasco+claude@filadd.com en Usuarios, pide el link desde la API."
+    },
+    {
+      "time": "10:58:42",
+      "kind": "user",
+      "text": "listo, ya lo agregué"
+    },
+    {
+      "time": "10:58:45",
+      "kind": "tool",
+      "text": "Bash(pide el link para acarrasco+claude@filadd.com)"
+    },
+    {
+      "time": "10:59:23",
+      "kind": "user",
+      "text": "https://kurasu.asermax.com/entrar?codigo=…"
+    },
+    {
+      "time": "10:59:26",
+      "kind": "tool",
+      "text": "Browser(entra como el estudiante Claude y completa el setup)"
+    },
+    {
+      "time": "10:59:38",
+      "kind": "screenshot",
+      "src": "screenshots/369.png",
+      "url": "kurasu.asermax.com/setup",
+      "caption": "Claude completa el setup",
+      "action": null
+    },
+    {
+      "time": "10:59:41",
+      "kind": "screenshot",
+      "src": "screenshots/370.png",
+      "url": "kurasu.asermax.com/",
+      "caption": "Inicio con las dos clases",
+      "action": null
+    },
+    {
+      "time": "10:59:54",
+      "kind": "tool",
+      "text": "Browser(abre el aula de la clase 2)"
+    },
+    {
+      "time": "11:00:00",
+      "kind": "screenshot",
+      "src": "screenshots/371.png",
+      "url": "kurasu.asermax.com/aula",
+      "caption": "Claude en el aula de la clase 2",
+      "action": null
+    },
+    {
+      "time": "11:00:09",
+      "kind": "assistant",
+      "text": "C6 pasa: como estudiante, el PDF de la clase 1 y el HTML de la clase 2 bajan con el mismo sha256 que en el repo. En /aula sigue al profe, y Presentes muestra al profe, al celular y a Claude."
+    },
+    {
+      "time": "11:01:00",
+      "kind": "user",
+      "text": "1. listo con esto"
+    },
+    {
+      "time": "11:01:03",
+      "kind": "tool",
+      "text": "Browser(mira la slide desde el aula de Claude)"
+    },
+    {
+      "time": "11:01:04",
+      "kind": "screenshot",
+      "src": "screenshots/372.png",
+      "url": "kurasu.asermax.com/aula",
+      "caption": "Claude sigue al profe",
+      "action": null
+    },
+    {
+      "time": "11:01:08",
+      "kind": "assistant",
+      "text": "Lo sigue sin tocar nada: está en la slide 5/25, \"Más diseño, mejores resultados\"."
+    },
+    {
+      "time": "11:02:23",
+      "kind": "user",
+      "text": "listo"
+    },
+    {
+      "time": "11:02:26",
+      "kind": "tool",
+      "text": "Browser(vota la encuesta como Claude)"
+    },
+    {
+      "time": "11:02:31",
+      "kind": "screenshot",
+      "src": "screenshots/373.png",
+      "url": "kurasu.asermax.com/aula",
+      "caption": "Llega la encuesta al aula",
+      "action": null
+    },
+    {
+      "time": "11:02:33",
+      "kind": "screenshot",
+      "src": "screenshots/374.png",
+      "url": "kurasu.asermax.com/aula",
+      "caption": "Claude vota",
+      "action": null
+    },
+    {
+      "time": "11:02:37",
+      "kind": "assistant",
+      "text": "La encuesta llegó al instante, sin recargar. Votó \"Opcion 2\" y ve 1 respuesta; ahora falta el voto del celular y la mano."
+    },
+    {
+      "time": "11:03:45",
+      "kind": "user",
+      "text": "listo"
+    },
+    {
+      "time": "11:03:49",
+      "kind": "tool",
+      "text": "Browser(mira Presentes desde el aula de Claude)"
+    },
+    {
+      "time": "11:03:50",
+      "kind": "screenshot",
+      "src": "screenshots/375.png",
+      "url": "kurasu.asermax.com/aula",
+      "caption": "Mano levantada en Presentes",
+      "action": null
+    },
+    {
+      "time": "11:03:54",
+      "kind": "tool",
+      "text": "Browser(hace una pregunta como Claude)"
+    },
+    {
+      "time": "11:04:01",
+      "kind": "screenshot",
+      "src": "screenshots/376.png",
+      "url": "kurasu.asermax.com/aula",
+      "caption": "Claude pregunta",
+      "action": null
+    },
+    {
+      "time": "11:04:03",
+      "kind": "screenshot",
+      "src": "screenshots/377.png",
+      "url": "kurasu.asermax.com/aula",
+      "caption": "Pregunta enviada",
+      "action": null
+    },
+    {
+      "time": "11:04:07",
+      "kind": "assistant",
+      "text": "Envió \"¿Cuánto conviene diseñar antes de pedirle código al agente?\". Al profe le tiene que llegar a Preguntas y la mano del celular a Presentes."
+    },
+    {
+      "time": "11:04:42",
+      "kind": "user",
+      "text": "listo, la vi y bajé la mano; llego la pregunta también"
+    },
+    {
+      "time": "11:04:51",
+      "kind": "assistant",
+      "text": "C7 pasa: la slide, la encuesta con los dos votos, la mano y la pregunta llegaron al instante. Para C8, el profe cierra la sesión y el aula queda más de un minuto sin actividad."
+    },
+    {
+      "time": "11:05:46",
+      "kind": "user",
+      "text": "listo, cerré la sesión"
+    },
+    {
+      "time": "11:05:54",
+      "kind": "tool",
+      "text": "Bash(cierra la pestaña de profe y espera más de un minuto)"
+    },
+    {
+      "time": "11:06:17",
+      "kind": "user",
+      "text": "a mi ya me desaparecio"
+    },
+    {
+      "time": "11:06:25",
+      "kind": "assistant",
+      "text": "El profe que seguía en Presentes era una pestaña de Claude, que cerró a las 11:05:57. Desde ahí quedan solo el celular y Claude, sin actividad."
+    },
+    {
+      "time": "11:07:15",
+      "kind": "assistant",
+      "text": "Pasó más de un minuto. Que el profe vuelva a abrir la sesión en la pestaña Aula."
+    },
+    {
+      "time": "11:09:03",
+      "kind": "user",
+      "text": "done"
+    },
+    {
+      "time": "11:09:06",
+      "kind": "tool",
+      "text": "Browser(mira Presentes desde el aula de Claude)"
+    },
+    {
+      "time": "11:09:06",
+      "kind": "screenshot",
+      "src": "screenshots/378.png",
+      "url": "kurasu.asermax.com/aula",
+      "caption": "Presentes después de hibernar",
+      "action": null
+    },
+    {
+      "time": "11:09:22",
+      "kind": "assistant",
+      "text": "C8 pasa: Presentes trae a los tres después de hibernar. El árbol C pasa entero y T17 queda cerrada: kurasu está lanzado con las clases 1 y 2. Pregunta si borra los datos de prueba."
+    },
+    {
+      "time": "11:10:13",
+      "kind": "user",
+      "text": "borremos del todo los usuarios de prueba, la encuentsa y las preguntas, cosa de que quede la sesión en 0 para la clase"
+    },
+    {
+      "time": "11:10:22",
+      "kind": "tool",
+      "text": "Bash(wrangler d1 execute: lista los datos de prueba en prod)"
+    },
+    {
+      "time": "11:10:34",
+      "kind": "tool",
+      "text": "Bash(wrangler d1 execute: borra los alias, la encuesta, la pregunta y sus votos)"
+    },
+    {
+      "time": "11:10:44",
+      "kind": "assistant",
+      "text": "Prod quedó en 0 para la clase: solo los dos profes, sin encuestas, preguntas, votos ni manos, y el profe de la clase 2 vuelve a la slide 1. Las sesiones, su material y el código de registro siguen."
     }
   ],
 };

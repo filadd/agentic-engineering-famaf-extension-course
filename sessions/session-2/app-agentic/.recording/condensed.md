@@ -7407,3 +7407,567 @@ This is how Claude Code surfaces a prompt a plugin submits between turns — it 
 [03:40:35] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; git add .claude/skills/session-replay/scripts/replay.mjs && git commit -q -m "fix(ski
 [03:40:36] TOOL mcp__herdr-subagents__subagent: spawn
 [03:40:47] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; node .claude/skills/session-replay/scrip
+[03:41:08] TOOL Write: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement/brief-replay-2.md
+[03:41:09] TOOL mcp__herdr-subagents__subagent: spawn
+[03:41:18] ASSISTANT
+T25 terminó (`5432b8e` a `032d7ee`) y ya lo redesplegué: prod quedó en el mismo commit que la branch. La web responde 200, `/api/me` da 401 sin cookie y las navegaciones reciben el shell.
+
+- **Capturas de prod para el replay:** saqué dos, del login y del registro en `kurasu.asermax.com`. Al hacerlo encontré un bug en el skill de replay: `shot` numeraba por cantidad de líneas del manifest, así que después de borrar capturas pisó la 294 de la validación. La restauré, guardé la de prod como 362 y corregí `shot` para que numere después de la más alta (`2a2962d`).
+- **En paralelo:**
+  - `kurasu-review-3` corre el agentic review sobre T24 y T25.
+  - `kurasu-replay-2` agrega al replay el tramo de F6 al deploy.
+
+
+## [03:41:19] USER
+The herdr-subagents plugin sent a message:
+Child "kurasu-review-3" reached done. Use the subagent tool — collect, pane_id w3Z:p1X — to read its result.
+
+This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above.
+
+[03:41:21] TOOL mcp__herdr-subagents__subagent: collect
+[03:41:24] TOOL mcp__herdr-subagents__subagent: prompt
+[03:41:27] ASSISTANT
+El review de T24 y T25 se había frenado por los cambios del replay que hay en el working tree: las capturas 362 y 363 y el `manifest.jsonl`. Le dije que siga, que deje esos archivos como están y que commitee solo sus arreglos en `app/`.
+
+
+## [03:44:28] USER
+The herdr-subagents plugin sent a message:
+Child "kurasu-review-3" reached done. Use the subagent tool — collect, pane_id w3Z:p1X — to read its result.
+
+This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above.
+
+[03:44:30] TOOL mcp__herdr-subagents__subagent: collect
+[03:44:33] TOOL mcp__herdr-subagents__subagent: close
+[03:44:34] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; grep -n "KURASU_MAIL_ALLOWED\|KURASU_D1_IMPORT\|not declared\|\.env\.schema" .mahou/w
+[03:44:37] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; python3 - <<'EOF'
+[03:44:43] ASSISTANT
+El tercer agentic review, sobre T24 y T25, no encontró nada para arreglar. `pnpm check` y `pnpm test --force` pasan, así que no hace falta redesplegar.
+
+Dejó tres hallazgos sin aplicar:
+
+- **Corregido después:** la wiki decía que `.env.schema` no declaraba las dos variables de los tests, y T25 justamente las declaró. Corregí `.mahou/wiki/architecture.md` (`62aec3f`).
+- **Quedan para que decidas:**
+  - **`useApiMutation`:** que deduzca solo el tipo de error de cada endpoint, en vez de escribirlo a mano en cada hook. Cambia el hook base que usan todas las mutaciones.
+  - **Proxy de Vite:** que siga el puerto real de la API en dev, en vez del 1337 fijo. Cambia cómo dev enruta los pedidos.
+
+Falta que `kurasu-replay-2` termine el tramo del deploy en el replay.
+
+
+## [03:45:32] USER
+apliquemos esos dos cambios
+
+[03:45:50] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; cat >> tasks.md <<'EOF'
+[03:45:51] TOOL mcp__herdr-subagents__subagent: spawn
+[03:46:01] ASSISTANT
+Ya lancé los dos cambios como T26, en el subagente `kurasu-t26` sobre `session-2-deck-tweaks`.
+
+- **Errores deducidos:** `useApiMutation` (y `useApiQuery`, si aplica) toman el tipo de error del endpoint desde el contrato, más los errores del middleware. Los hooks dejan de escribir a mano sus uniones de error. Si deducirlo exige casts en cada hook, va a frenar y preguntar.
+- **Proxy de dev:** el proxy `/api` de Vite apunta a la URL real del Worker de la API que conoce el Stack, en vez del 1337 fijo. Lo prueba con el 1337 ocupado a propósito. Si Alchemy no tiene una forma limpia de pasar esa URL a Vite, propone que la API falle si el 1337 está ocupado, en vez de moverse a otro puerto en silencio.
+
+Al terminar corre check, tests y el build de la web, y actualiza `local-dev.md` y `web.md` en la wiki. Después corro el review de esos cambios y redespliego.
+
+
+## [03:49:11] USER
+The herdr-subagents plugin sent a message:
+Child "kurasu-replay-2" reached done. Use the subagent tool — collect, pane_id w3Z:p1Y — to read its result.
+
+This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above.
+
+[03:49:13] TOOL mcp__herdr-subagents__subagent: collect
+[03:49:16] TOOL mcp__herdr-subagents__subagent: close
+[03:49:17] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; git status --short $R | head; git add $R
+[03:49:22] ASSISTANT
+El replay ya tiene el tramo del deploy, commiteado en `2095ab1`.
+
+- **Lo nuevo:** 35 beats que van de F6 al redeploy con T25, más las dos capturas de prod (el login y el registro en `kurasu.asermax.com`). El replay ahora tiene 1386 beats; los 1351 anteriores no cambiaron.
+- **Probado:** el subagente lo reprodujo de punta a punta en el player, hasta la última captura.
+
+Agregó dos beats que no le pedí, sobre la generación del `JWT_SECRET` de prod. Los dejé porque son parte de cómo se preparó el deploy.
+
+`kurasu-t26` sigue con los errores deducidos y el proxy de dev.
+
+
+## [03:53:43] USER
+The herdr-subagents plugin sent a message:
+Child "kurasu-t26" reached done. Use the subagent tool — collect, pane_id w3Z:p1Z — to read its result.
+
+This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above.
+
+[03:53:45] TOOL mcp__herdr-subagents__subagent: collect
+[03:53:49] TOOL mcp__herdr-subagents__subagent: close
+[03:53:54] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement; B=$(git -C /home/agus/workspace/filadd/agentic-engine
+[03:53:55] TOOL mcp__herdr-subagents__subagent: spawn
+[03:54:06] ASSISTANT
+T26 quedó hecha, y ya lancé el review de esos cambios.
+
+- **Errores deducidos** (`cd6fbfe`): un tipo nuevo, `EndpointError<"grupo", "endpoint">`, toma del cliente del contrato los errores de cada endpoint, sin casts. Los 44 hooks dejaron de escribir sus uniones a mano. El tipo es más preciso que antes: el login y la apertura del link ya no incluyen `Unauthenticated`, porque esos endpoints no pasan por el middleware.
+- **Proxy de dev** (`c8e1616`): la única vía que tiene Alchemy para pasarle un valor a Vite son las variables `VITE_` del `env` del Website. Por ahí el Stack le pasa la URL real de la API en dev, y Vite apunta el proxy ahí. En prod no se pasa nada.
+- **Prueba:** con el 1337 ocupado a propósito, la API arrancó en 1338. Por el 5173, `/api/me` respondió 401 sin cookie y 200 con cookie, y el WebSocket del aula abrió y recibió `presence`.
+- **Wiki** (`57cfd0f`): `local-dev.md` y `web.md` quedaron actualizadas.
+- **Checks:** `pnpm check`, `pnpm test --force` y el build de la web pasan.
+
+`kurasu-review-4` corre el agentic review de T26. Cuando termine, redespliego. El cambio toca la definición del Website en infra, así que reviso que el plan de prod solo actualice los Workers.
+
+
+## [03:57:36] USER
+The herdr-subagents plugin sent a message:
+Child "kurasu-review-4" reached done. Use the subagent tool — collect, pane_id w3Z:p10 — to read its result.
+
+This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above.
+
+[03:57:38] TOOL mcp__herdr-subagents__subagent: collect
+[03:57:42] TOOL mcp__herdr-subagents__subagent: close
+[03:57:45] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/app/apps/infra; ./node_modules/.bin/alchemy profile refresh --no-input 2>&1 | tail -1;
+[03:58:17] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; python3 - <<'EOF'
+[03:58:31] ASSISTANT
+kurasu está implementado, revisado, validado y en producción en `https://kurasu.asermax.com`. Solo falta terminar las pruebas de prod (T17), que necesitan que entres con tu cuenta de profe.
+
+El último review (T26) no encontró nada para arreglar y redesplegué: el plan actualizó solo la web, y prod quedó en `57cfd0f`, el mismo commit que la branch.
+
+**Estado**
+
+- **Branch:** `session-2-deck-tweaks`, sin push. Los commits de la app arrancan en `5437d8d`.
+- **Tasks:** T1 a T26 en `done`, salvo T17. T22 se canceló por decisión tuya; T23 arregló F6 e ignoró F3 y F4.
+- **Tests:** `pnpm check` limpio; pasan 140 tests de la web y 129 de la API, y queda en skip el de 101 MB (A89), por decisión tuya.
+- **Agentic review:** cuatro pasadas, con arreglos en la primera y la segunda; la tercera y la cuarta no encontraron nada. Quedaron sin aplicar los hallazgos que cambiarían el contrato o decisiones del diseño. El detalle está en `.scratch/aula-virtual/reports/agentic-review*/`.
+- **Validación manual (T16):** las 82 filas pasan contra el stack local. Reporte en `.scratch/aula-virtual/reports/validate/index.html`.
+- **Docs y wiki:** al día con lo construido, en `app/docs/architecture/` y `.mahou/wiki/`, que suma la entrada `alchemy/local-dev.md`.
+- **Replay:** 1386 beats, hasta el último deploy con dos capturas de prod.
+
+**En Cloudflare**
+
+| Recurso | Nombre |
+|---|---|
+| Web | `kurasu-web-prod-ggxh667th2wniwbb`, en `kurasu.asermax.com` |
+| API | `kurasu-api-prod-l5tmgps5s5tjmdmr`, con la ruta `kurasu.asermax.com/api/*` |
+| D1 | `kurasu-DB-prod-cf3n2lgjj75t3s7t` |
+| R2 | `kurasu-bucket-prod-nvxfolr4l67k3rm4` |
+| Mail | `no-reply@kurasu.asermax.com` |
+| Estado de Alchemy | Worker `alchemy-state-store` |
+
+El `JWT_SECRET` de prod está en `app/.env.production.local`, fuera de git.
+
+**Árbol C (T17)**
+
+| Fila | Estado |
+|---|---|
+| C1 · los profes | Dados de alta en el D1 con rol teacher. Falta que entren. |
+| C2 · migraciones | PASS |
+| C3 · dominio y ruteo | Parcial: la web carga y `/api/*` y el upgrade del aula llegan al Worker. Falta probarlo con sesión. |
+| C4 · mail real | El link a `acarrasco@filadd.com` salió (204). Falta ver que haya llegado. |
+| C5 · registro con el QR desde el celular | Pendiente, la hacés vos |
+| C6 · material y slides en R2 | Pendiente: el clasificador de permisos bloqueó crear identidades de prueba con el secreto de prod |
+| C7 · aula en vivo | Pendiente, mismo bloqueo |
+| C8 · Presentes después de hibernar | Pendiente, mismo bloqueo |
+
+Para cerrar T17:
+
+1. Abrí el link que te llegó por mail (C1 y C4). Sirve una sola vez y no vence.
+2. Con tu sesión de profe abierta, corremos C3, C6, C7 y C8: yo como estudiante en otro navegador.
+3. Probás el registro con el QR desde el celular (C5).
+
+`dpiloni@filadd.com` entra cuando pida su link.
+
+
+## [09:36:28] USER
+listo, logueado como profe, como seguimos?
+
+[09:36:48] ASSISTANT
+Bien. Con eso pasan C1 y C4, si el mail llegó a la bandeja de entrada y no a spam (confirmámelo).
+
+Para las filas que faltan hacen falta estudiantes reales, y no puedo leer mails. Usamos alias `+` de tu casilla: los mails te llegan a vos y me pasás el link del mío.
+
+1. **Una sesión de prueba (C6).** Desde el admin, creá una sesión "Prueba de lanzamiento" y habilitala. En la pestaña Contenido subí estos dos archivos del repo:
+   - `app/apps/web/test/fixtures/guia.pdf`, como material;
+   - `app/apps/web/test/fixtures/slides-valid.html`, marcado como slides.
+2. **El estudiante del celular (C5).** En Usuarios abrí el QR, escanealo con el celular y registrate con `acarrasco+celular@filadd.com`. Abrí el link del mail en el celular, completá el setup y entrá al aula.
+3. **Mi estudiante.** En Usuarios agregá `acarrasco+claude@filadd.com` con "Agregar por email". Después lo pido yo desde mi navegador, y cuando te llegue el mail pegame acá el link (`https://kurasu.asermax.com/entrar?codigo=…`). Lo abro yo y completo el setup.
+
+Con eso corremos juntos:
+
+- **C3:** compruebo desde mi navegador que la cookie sirve para la web y la API y que el aula abre por `wss`.
+- **C6:** descargo el PDF como estudiante y comparo el sha256 con el del archivo del repo; veo las slides en el aula.
+- **C7:** vos en la pestaña Aula, el celular y yo en `/aula`. Avanzás la slide, activás una encuesta, y vemos que llegan al instante; además, el celular levanta la mano y yo pregunto.
+- **C8:** el celular y yo quedamos en el aula más de un minuto sin hacer nada, después entrás vos y vemos que Presentes trae a los tres.
+
+Mientras tanto saco capturas para el replay, y al final borro la sesión de prueba y les saco el acceso a los dos alias desde Usuarios. Avisame cuando estés con los pasos 1 a 3.
+
+
+## [09:53:56] USER
+antes de eso, como hacemos para que le llegue el mail a dpiloni?
+
+[09:54:03] ASSISTANT
+dpiloni ya está dado de alta como profe con acceso. Solo tiene que entrar a `https://kurasu.asermax.com/login`, escribir `dpiloni@filadd.com` y tocar "Mandame el link". El mail le llega en el momento, desde `no-reply@kurasu.asermax.com`.
+
+Lo que conviene decirle:
+
+- El link sirve una sola vez y no vence. Si pide otro, el anterior deja de servir.
+- Si no lo ve en la bandeja de entrada, que revise spam. Tu mail llegó bien, pero es la primera vez que este dominio le manda a otra persona.
+- Al abrir el link pasa por el setup (nombre y animal) y después entra al admin.
+
+Puedo mandarle yo el link con un pedido a la API, pero el mail le llegaría sin aviso. Es mejor que lo pida él cuando vaya a entrar.
+
+
+## [10:37:31] USER
+bueno volvamos al testing; para C6 lo que quiero hacer es subir las clases 1 y 2, con su contenido y slides; para la 1 no hace falta que hagamos la adaptación para la API interna, pero para la 2 sí
+hagamos así: tu sube la primera y dejame las slides de la segunda lista así pruebo la creación por mi cuenta; dejame todo preparado y dame el summary de la clase así la subo
+
+[10:37:41] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; for s in session-1 session-2; do echo "== $s"; find sessions/$s -maxdepth 2 -not -pat
+[10:37:49] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/sessions; du -sh session-1/deck/index.html "session-1/Clase 1 - Curso FaMAF.pdf" sessi
+[10:37:52] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/sessions/session-2/deck; grep -n "<script" index.html; awk '/<script>/{f=1} f' index.h
+[10:37:55] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/sessions/session-2/deck; grep -n "stepsOf\|const render\|const go\b\|const go =\|hashc
+[10:37:58] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/sessions/session-2/deck; sed -n 2280,2470p index.html; grep -n 'class="hud\|class="ste
+[10:38:08] ASSISTANT
+Estoy viendo cómo navega el deck de la clase 2 para adaptarlo a la API de slides de kurasu. Ahora miro el protocolo que espera la web.
+
+[10:38:09] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/app; cat packages/slides/src/messages.ts; cat apps/web/test/fixtures/slides-valid.html
+[10:38:21] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/sessions/session-2/deck; python3 - <<'EOF'
+[10:38:29] TOOL Bash: mkdir -p /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/slides-check; cd /home/agus/workspace/filadd/agentic-engin
+[10:38:37] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/slides-check; export AGENT_BROWSER_SESSION=slidescheck; agent-br
+[10:38:37] TOOL Read: /tmp/deck-3-3.png
+[10:38:37] TOOL Read: /tmp/deck-13-10.png
+[10:38:46] TOOL Bash: export AGENT_BROWSER_SESSION=slidescheck; agent-browser open "file:///home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/sessions/session-2/d
+[10:38:55] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/sessions; head -40 session-1/slides.md; echo ======; head -40 session-2/slides.md; ech
+[10:38:58] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/sessions; grep -n "^# \|^## " session-1/slides.md | head -60; echo; echo SESSION2; gre
+[10:39:07] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/sessions/session-1/exercise; ls -la proyecto-de-respaldo proyecto-de-respaldo/public; 
+[10:39:13] TOOL Bash: D=/home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/clases; S=/home/agus/workspace/filadd/agentic-engineering-famaf-e
+[10:39:27] ASSISTANT
+Dejé la clase 2 lista para que la subas, y para subir yo la clase 1 te pedí un link.
+
+**Clase 2 (la subís vos)**
+
+Los archivos están en `.scratch/aula-virtual/clases/clase-2/`:
+
+- `clase-2-slides.html`: el deck adaptado a la API de slides. Al subirlo, marcá "Usar como slides del aula" y la revisión del modal debería pasar.
+- `ejercicio.md`: el enunciado del ejercicio, como material.
+
+Para crear la sesión:
+
+- **Título:** Planificar y revisar
+- **Resumen:** Explorar, diseñar y documentar antes de escribir código, para que el agente trabaje sobre decisiones tomadas. Revisar lo que produce: los casos de test se deciden antes del código, y lo construido se verifica usándolo en la API, los datos y la pantalla.
+
+Cambié el deck en el repo (`sessions/session-2/deck/index.html`), sin commitear. Solo actúa cuando corre dentro de kurasu:
+
+- manda el manifest con sus 25 slides;
+- se mueve con los mensajes `kurasu:go`;
+- deja el teclado, la barra de direcciones y su propio HUD a la web.
+
+Como el deck cuenta los pasos desde 0 y kurasu desde 1, cada slide declara un paso más. Abierto solo, el deck funciona igual que antes (teclado, HUD y `#slide.paso`). Lo probé en un iframe aislado igual al de kurasu: va a la slide 3 paso 3 y a la 13 paso 10, y no tira errores.
+
+**Clase 1 (la subo yo)**
+
+Va como material, sin marcar slides, porque no la adaptamos:
+
+- `clase-1-slides.pdf`
+- `clase-1-slides.html` (el deck, 1,9 MB)
+- `ejercicio.md`
+- `proyecto-de-respaldo.zip`
+
+Para crear la sesión:
+
+- **Título:** La experiencia vibe coding
+- **Resumen:** Qué es un coding agent: un LLM con tools dentro de un harness, tokens, ventana de contexto y context rot. Instalamos Pi, elegimos un proyecto y lo vibecodeamos sin mirar el código, para después abrir los archivos y ver qué escribió el agente.
+
+Te pedí un link para tu cuenta (`acarrasco@filadd.com`); la API respondió 204. **Pegame el link del mail nuevo** y entro con él en mi navegador para crear la clase 1.
+
+- Tu sesión abierta sigue valiendo, porque el link nuevo no la cierra. Lo que pasa es que el link anterior deja de servir, si te quedaba alguno sin usar.
+- Si preferís que los resúmenes digan otra cosa, decime antes de que suba la clase 1.
+
+
+## [10:42:41] USER
+https://kurasu.asermax.com/entrar?codigo=…
+
+[10:42:46] TOOL Bash: export AGENT_BROWSER_SESSION=profe-prod; agent-browser open "https://kurasu.asermax.com/entrar?codigo=…" >/dev/nu
+[10:42:55] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; export AGENT_BROWSER_SESSION=profe-prod;
+[10:43:00] TOOL Bash: export AGENT_BROWSER_SESSION=profe-prod; agent-browser eval '[...document.querySelectorAll("button")].map(b=>b.outerHTML.slice(0,160)).join("\n")'
+[10:43:03] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; export AGENT_BROWSER_SESSION=profe-prod;
+[10:43:09] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; export AGENT_BROWSER_SESSION=profe-prod;
+[10:43:14] ASSISTANT
+La sesión "La experiencia vibe coding" ya está creada en prod. Ahora subo su material.
+
+[10:43:15] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; export AGENT_BROWSER_SESSION=profe-prod;
+[10:43:21] TOOL Bash: export AGENT_BROWSER_SESSION=profe-prod; agent-browser click @e29 >/dev/null; sleep 1; agent-browser snapshot -i | sed -n 1,60p | grep -v "^- \(link\|heading\|t
+[10:43:26] TOOL Bash: D=/home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/clases/clase-1; export AGENT_BROWSER_SESSION=profe-prod; agent-br
+[10:43:31] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; export AGENT_BROWSER_SESSION=profe-prod;
+[10:43:41] TOOL Bash: D=/home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/clases/clase-1; export AGENT_BROWSER_SESSION=profe-prod; up() { a
+[10:43:49] TOOL Bash: D=/home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/clases/clase-1; export AGENT_BROWSER_SESSION=profe-prod; agent-br
+[10:44:13] ASSISTANT
+Los cuatro archivos de la clase 1 ya están subidos. Habilito la sesión y compruebo que el PDF se descarga idéntico.
+
+[10:44:17] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; export AGENT_BROWSER_SESSION=profe-prod;
+[10:44:27] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/sessions/session-2/app-agentic/.recording/screenshots/367.png
+[10:44:34] ASSISTANT
+La clase 1 ya está en prod y habilitada: "La experiencia vibe coding", con el resumen que te pasé y cuatro archivos de material. Ninguno está marcado como slides.
+
+| Material | Tamaño |
+|---|---|
+| Slides de la clase 1 (PDF) | 2,3 MB |
+| Slides de la clase 1 (HTML) | 1,8 MB |
+| Ejercicio de la clase 1 | 7 KB |
+| Proyecto de respaldo (zip) | 4 KB |
+
+Los bajé de nuevo desde prod y los cuatro tienen el mismo sha256 que los archivos locales, así que la subida y la descarga por R2 andan (C6, del lado del profe). La cookie también sirvió para la web y para la API (parte de C3). Saqué cuatro capturas para el replay (364 a 367).
+
+Te toca la clase 2:
+
+1. "+ Nueva sesión" con:
+   - **Título:** Planificar y revisar
+   - **Resumen:** Explorar, diseñar y documentar antes de escribir código, para que el agente trabaje sobre decisiones tomadas. Revisar lo que produce: los casos de test se deciden antes del código, y lo construido se verifica usándolo en la API, los datos y la pantalla.
+2. En Contenido, "Subir archivo" con `.scratch/aula-virtual/clases/clase-2/clase-2-slides.html`, y prendé "Usar como slides del aula". La revisión debería pasar y habilitar "Subir".
+3. Subí también `clase-2/ejercicio.md` como material.
+4. Habilitala. Al ser la última habilitada, queda como la destacada, y su aula es la que se usa para C7 y C8.
+
+Avisame cuando esté y seguimos con los estudiantes.
+
+
+## [10:49:58] USER
+modifiquemos las slides en el repo, no solo el scrtach; y no voy a subir el ejercicio por ahora
+
+[10:50:04] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; cmp sessions/session-2/deck/index.html .scratch/aula-virtual/clases/clase-2/clase-2-s
+[10:50:07] ASSISTANT
+La adaptación ya estaba hecha en el repo: el archivo de `.scratch` es una copia idéntica de `sessions/session-2/deck/index.html`. Faltaba commitearla, y ya está:
+
+`2ec004a feat(session-2): let kurasu drive the deck through its slides API`
+
+Subí directamente `sessions/session-2/deck/index.html` con "Usar como slides del aula" prendido. Queda sin el ejercicio, como dijiste.
+
+
+## [10:54:54] USER
+listo
+
+[10:54:58] TOOL Bash: export AGENT_BROWSER_SESSION=profe-prod; agent-browser eval 'fetch("/api/admin/sessions").then(r=>r.json()).then(async ss=>{const o=[];for(const s of ss){const 
+[10:55:06] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; export AGENT_BROWSER_SESSION=profe-prod;
+[10:55:15] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/sessions/session-2/app-agentic/.recording/screenshots/368.png
+[10:55:22] ASSISTANT
+La clase 2 quedó bien: está habilitada, y su HTML está marcado como slides y entra en el aula. Desde la pestaña Aula del profe se ve el deck de 25 slides, en la 2 ("Hoy"), y Presentes me muestra como profe. Con eso el WebSocket del aula abre por `wss` en prod, y C3 queda completa.
+
+Una pregunta antes de seguir: a la clase 1 le quedan solo los dos archivos de slides, el PDF y el HTML. El ejercicio y el proyecto de respaldo, que había subido y verificado, ya no están. ¿Los borraste vos porque por ahora no van los ejercicios? Si no fue así, los vuelvo a subir.
+
+Sigamos con los estudiantes:
+
+1. **C5, desde el celular.** En Usuarios abrí el QR, escanealo con el celular y registrate con `acarrasco+celular@filadd.com`. Abrí el link del mail en el celular, completá el setup y entrá al aula.
+2. **Mi estudiante.** Agregá `acarrasco+claude@filadd.com` en Usuarios ("Agregar por email"). Avisame y pido el link. Cuando te llegue el mail, pegámelo acá.
+
+
+## [10:56:31] USER
+los borre a proposito
+sigo con los logins
+
+[10:56:33] ASSISTANT
+Perfecto, quedan así.
+
+Cuando hayas agregado `acarrasco+claude@filadd.com` en Usuarios, avisame y pido el link desde la API. También lo podés pedir vos desde `/login` con ese email. En los dos casos, pegame el link del mail cuando llegue.
+
+
+## [10:58:42] USER
+listo, ya lo agregué
+
+[10:58:45] TOOL Bash: curl -s -w "link %{http_code}\n" -X POST https://kurasu.asermax.com/api/auth/link -H 'content-type: application/json' -d '{"email":"acarrasco+claude@filadd.com"
+[10:58:50] ASSISTANT
+Pedí el link para `acarrasco+claude@filadd.com` y la API respondió 204, así que el mail salió. Te tiene que llegar a tu casilla. Cuando lo tengas, pegámelo acá.
+
+
+## [10:59:23] USER
+https://kurasu.asermax.com/entrar?codigo=…
+
+[10:59:26] TOOL Bash: export AGENT_BROWSER_SESSION=claude-est; agent-browser open "https://kurasu.asermax.com/entrar?codigo=…" >/dev/nu
+[10:59:36] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; export AGENT_BROWSER_SESSION=claude-est;
+[10:59:46] TOOL Bash: export AGENT_BROWSER_SESSION=claude-est; agent-browser eval 'fetch("/api/sessions").then(r=>r.json()).then(async ss=>{const o=[];for(const s of ss){const ms=awa
+[10:59:47] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/sessions/session-2/app-agentic/.recording/screenshots/370.png
+[10:59:54] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; export AGENT_BROWSER_SESSION=claude-est;
+[10:59:54] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/sessions/session-2/app-agentic/.recording/screenshots/371.png
+[11:00:09] ASSISTANT
+Ya estoy adentro como estudiante "Claude" (avatar pulpo), y C6 pasa:
+
+- **Descargas:** como estudiante bajé el PDF de la clase 1 y el HTML de la clase 2, y los dos son idénticos a los del repo (mismo sha256).
+- **Slides:** en `/aula` veo el deck de la clase 2 en 1/25, "Siguiendo al profe".
+- **Presentes:** muestra a los tres. Vos como profe, yo con "Vos" y "Prueba" con el panda, que supongo que es el celular.
+
+Saqué tres capturas para el replay (369 a 371).
+
+Sigue C7, el aula en vivo. Hacé esto en orden y te digo qué veo después de cada paso:
+
+1. Desde la pestaña Aula del profe, avanzá un par de pasos o slides. Yo tengo que seguirte al instante.
+2. En Encuestas, creá una encuesta corta (por ejemplo de opción múltiple) y activala. Me tiene que aparecer en el panel y la voto desde acá; votala también desde el celular.
+3. Desde el celular, levantá la mano. Te tiene que aparecer en Presentes y en el badge.
+4. Yo hago una pregunta desde mi aula. Te tiene que llegar a la pestaña Preguntas.
+
+Avisame cuando hagas el paso 1.
+
+
+## [11:01:00] USER
+1. listo con esto
+
+[11:01:03] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; export AGENT_BROWSER_SESSION=claude-est;
+[11:01:04] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/sessions/session-2/app-agentic/.recording/screenshots/372.png
+[11:01:08] ASSISTANT
+Te sigo bien: estoy en la slide 5/25, "Más diseño, mejores resultados", con "Siguiendo al profe" prendido, y llegué ahí sin tocar nada. Lo guardé en la captura 372.
+
+Seguí con el paso 2: creá y activá una encuesta desde Encuestas y avisame.
+
+
+## [11:02:23] USER
+listo
+
+[11:02:26] TOOL Bash: export AGENT_BROWSER_SESSION=claude-est; agent-browser snapshot -i | sed -n '/Encuestas/,/Presentes/p' | head -30
+[11:02:30] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; export AGENT_BROWSER_SESSION=claude-est;
+[11:02:37] ASSISTANT
+La encuesta me llegó al instante: apareció "Prueba", con sus tres opciones, en el panel del aula sin recargar (captura 373). Voté "Opcion 2" y ahora veo "Votaste · 1 respuesta", con Opcion 2 al 100% (captura 374).
+
+Presentes volvió a mostrar a los tres. Hace un momento llegó a marcar 2, mientras el celular se reconectaba.
+
+Ahora votá desde el celular y fijate en tu panel del profe que la cantidad de respuestas pase a 2. Después levantá la mano desde el celular (paso 3) y avisame.
+
+
+## [11:03:45] USER
+listo
+
+[11:03:49] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; export AGENT_BROWSER_SESSION=claude-est;
+[11:03:50] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/sessions/session-2/app-agentic/.recording/screenshots/375.png
+[11:03:54] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; export AGENT_BROWSER_SESSION=claude-est;
+[11:03:59] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; export AGENT_BROWSER_SESSION=claude-est;
+[11:04:07] ASSISTANT
+Envié la pregunta "¿Cuánto conviene diseñar antes de pedirle código al agente?". En mi aula aparece marcada como "Tuya" (capturas 376 y 377).
+
+Fijate en tu pestaña Aula del profe:
+
+- **Preguntas:** tiene que aparecer al instante. Si estás en otra pestaña de la sesión, aparece en el badge de Aula.
+- **La mano del celular:** tiene que estar en tus Presentes. Bajala desde ahí y avisame; compruebo que se baja también para el resto.
+
+Con eso cerramos C7 y queda C8: el celular y yo quedamos un minuto sin actividad, y después entra un tercero.
+
+
+## [11:04:42] USER
+listo, la vi y bajé la mano; llego la pregunta también
+
+[11:04:46] TOOL Bash: export AGENT_BROWSER_SESSION=claude-est; agent-browser eval '[...document.querySelectorAll("li")].filter(e=>/Profe|Vos|Prueba/.test(e.innerText)).map(e=>e.inner
+[11:04:51] ASSISTANT
+C7 pasa. La mano que bajaste ya no aparece en mis Presentes, y llegaron al instante la slide, la encuesta con los dos votos, la mano y la pregunta.
+
+Para C8, que es lo último:
+
+1. Cerrá la página de la sesión en tu navegador de profe (la pestaña Aula, o andá a la lista de sesiones) y no entres a la sesión desde ningún lado.
+2. El celular y yo quedamos en el aula sin tocar nada. Avisame cuando la cierres; arranco a contar y te aviso cuando pase un poco más de un minuto.
+3. Ahí volvés a abrir la sesión en la pestaña Aula, y vemos si Presentes trae a los tres, en tu vista y en la mía.
+
+
+## [11:05:46] USER
+listo, cerré la sesión
+
+[11:05:49] TOOL Bash: export AGENT_BROWSER_SESSION=claude-est; date +%T; agent-browser eval '[...document.querySelectorAll("li")].filter(e=>/Profe|Vos|Prueba/.test(e.innerText)).map(
+[11:05:54] TOOL Bash: AGENT_BROWSER_SESSION=profe-prod agent-browser close >/dev/null 2>&1; sleep 3; export AGENT_BROWSER_SESSION=claude-est; date +%T; agent-browser eval '[...docume
+[11:05:59] TOOL Bash: sleep 75; date +%T
+[11:06:02] TOOL Bash: until [ $(date +%s) -ge $(( $(date -d 11:05:57 +%s) + 75 )) ]; do sleep 2; done; date +%T
+
+## [11:06:17] USER
+a mi ya me desaparecio
+
+[11:06:21] TOOL Bash: date +%T
+[11:06:25] ASSISTANT
+Sí, es por mí: el profe que seguía en Presentes no eras vos, era una pestaña de profe que yo había dejado abierta en la pestaña Aula. La cerré a las 11:05:57 y ahí desapareció de las vistas.
+
+Desde esa hora quedamos solo el celular y yo en el aula, sin actividad. Te aviso cuando pase el minuto, a eso de las 11:07:15, para que vuelvas a abrir la sesión en la pestaña Aula.
+
+[11:07:15] ASSISTANT
+Ya pasó más de un minuto y cuarto sin actividad en el aula. Abrí ahora la sesión "Planificar y revisar" en la pestaña Aula del profe y fijate cuántos te muestra Presentes. Avisame y yo miro el mío.
+
+
+## [11:09:03] USER
+done
+
+[11:09:06] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; export AGENT_BROWSER_SESSION=claude-est;
+[11:09:14] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; python3 - <<'EOF'
+[11:09:22] ASSISTANT
+C8 pasa: después de más de un minuto sin actividad, cuando volviste a entrar, mi Presentes muestra a los tres (Agus C. como profe, Prueba y yo). Confirmame que en tu vista también ves tres.
+
+Con eso **el árbol C pasa entero** y cerré T17 en `tasks.md`. kurasu queda lanzado en prod con las clases 1 y 2 cargadas.
+
+| Fila | Resultado |
+|---|---|
+| C1, C4 | Entraste con el link real del mail |
+| C2 | Migraciones aplicadas una sola vez |
+| C3 | Web, API, la cookie y el `wss` del aula andan |
+| C5 | Registro con el QR desde el celular |
+| C6 | Los archivos bajan idénticos de R2 y las slides de la clase 2 andan en el aula |
+| C7 | Slide, encuesta, votos, mano y pregunta llegan al instante |
+| C8 | Presentes trae a los tres después de hibernar |
+
+Las capturas de prod (364 a 378) están commiteadas en `10dcf2a`. Cuando quieras, armo el tramo final del replay con estas pruebas.
+
+En prod quedaron datos de la prueba:
+
+- **En la clase 2:** la encuesta "Prueba" y mi pregunta.
+- **Los dos estudiantes alias:** `acarrasco+celular@` ("Prueba") y `acarrasco+claude@` ("Claude").
+
+¿Los borro antes de la clase? Puedo borrar la encuesta y la pregunta desde la web, y sacarles el acceso a los alias desde Usuarios. Si en cambio querés que los usuarios desaparezcan del todo, tiene que ser con una escritura directa al D1, porque la app no borra usuarios.
+
+
+## [11:10:13] USER
+borremos del todo los usuarios de prueba, la encuentsa y las preguntas, cosa de que quede la sesión en 0 para la clase
+
+[11:10:18] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/app; grep -n "CREATE TABLE" -A9 packages/database/migrations/0002_session_content/migr
+[11:10:20] ASSISTANT
+Primero listo lo que hay en prod antes de borrar nada.
+
+[11:10:22] TOOL Bash: wrangler d1 execute kurasu-DB-prod-cf3n2lgjj75t3s7t --remote --json --command "select id,email,name,role from users; select id,session_id,prompt,status,deleted_
+[11:10:34] TOOL Bash: wrangler d1 execute kurasu-DB-prod-cf3n2lgjj75t3s7t --remote --json --command "delete from question_votes where question_id='01M5A7KXM687NR7KR0KMEKPJAJ'; delete
+[11:10:38] TOOL Bash: AGENT_BROWSER_SESSION=claude-est agent-browser close >/dev/null 2>&1; AGENT_BROWSER_SESSION=slidescheck agent-browser close >/dev/null 2>&1; echo ok
+[11:10:44] ASSISTANT
+Listo, la base de prod quedó limpia para la clase.
+
+- **Usuarios:** quedan solo los dos profes, `acarrasco@` y `dpiloni@`. Los alias `+celular` ("Prueba") y `+claude` ("Claude") ya no existen.
+- **Contenido de la prueba:** borré la encuesta "Prueba" con sus dos votos, mi pregunta y su voto, y no queda ninguna mano. Encuestas, respuestas, preguntas, votos y manos están en 0.
+- **Clase 2:** volví la posición del profe a slide 1, paso 1, porque había quedado en la 5.
+- **Lo que no toqué:** las dos sesiones con su material y sus slides, y el código de registro vigente, que es el que va en el QR de la clase. También vi que dpiloni ya entró y completó el setup.
+
+Cerré mis navegadores de prueba.
+
+Si el celular sigue con el aula abierta, lo va a mandar al login en el próximo pedido, porque ese usuario ya no existe. Cerrá esa pestaña.
+
+
+## [11:12:05] USER
+/mahou:learn nada nuevo para registrar o estamos bien?
+
+[11:12:21] TOOL Bash: cat /home/agus/workspace/asermax/claude-plugins/mahou/skills/learn/references/discover.md; cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-co
+[11:12:23] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; grep -n "_shell\|index.html\|outputPath" .mahou/wiki/alchemy/local-dev.md .mahou/wiki
+[11:12:59] ASSISTANT
+Voy en modo discovery, sobre el tramo de la implementación: desde `/mahou:implement` hasta la limpieza de prod. Lo anterior de la sesión quedó compactado y ya pasó por sus propios learn. Estos son los puntos donde el flujo cambió de rumbo, en orden. Por ahora son solo observaciones, no propuestas.
+
+**1. Cómo se repartió el repositorio.** `mahou:implement` pide un subagente por repositorio y una branch nueva desde la default. Vos elegiste quedarte en `session-2-deck-tweaks` y partir el único repositorio en fases: la base primero, y después la API y la web en paralelo, cada una en su worktree, con merge al final. El skill no tiene esa forma: la armé en el momento, con briefs por fase y merges a mano.
+
+**2. El subagente de la base avanzó sobre la API.** El brief le permitía implementar "lo mínimo de T6" para el test de humo, y se llevó medio T6 y empezó T8. Lo notaste vos y le mandé que parara. El brief de implement no le pone un límite a una fase que prepara terreno para otra.
+
+**3. Hallazgos que el review salteó y vos pediste aplicar.** Pasó dos veces:
+- `ConfirmDeleteButton`, `useApiMutation`, `Backdrop` y `useSlidesMaterial`, que el primer review salteó porque su skill no crea archivos nuevos;
+- los errores deducidos del contrato y el proxy que sigue a la API, que el tercer review salteó por estar fuera del diff o por cambiar cómo funciona dev.
+
+Las dos veces terminó en una task aparte. `mahou:agentic-review` reporta lo salteado, pero `implement` no tiene un paso para traerte esas decisiones: aparecieron porque leíste el resumen.
+
+**4. Decisiones que diste directo en la pestaña de un subagente.** Al subagente del refactor le dijiste en su pestaña que sacara los tests de lefthook. Me enteré por su reporte, que decía "por tu decisión", y tuve que preguntarte si era cierto. El protocolo de delegación no dice cómo se registran las decisiones que el usuario da directo a un hijo.
+
+**5. Clases propias contra utilidades de Tailwind.** Preguntaste por qué había clases propias, lancé T22 para reemplazarlas y la cancelaste al enterarte de que `@layer components` es el mecanismo de Tailwind para eso. Quedó en la wiki local (`web.md`), junto con el choque de `text-field`.
+
+**6. La validación encontró lo que los tests no veían.** Encontró tres cosas:
+- el código de registro con un formato distinto en la web y en la API: ningún diseño fijaba el formato, los tests de la web usan MSW y los de la API mandan el código tal cual;
+- el WebSocket que no pasaba por el proxy de Vite;
+- el texto invisible de los inputs.
+
+Las tres cayeron en filas `test + manual`, que es lo que pide `.mahou/test-design.md`.
+
+**7. Puertos y procesos compartidos entre subagentes.** Los tests del worktree de refactor ocupaban el 1337 que el dev server necesitaba. El subagente de T21 intentó un `pkill` contra procesos del otro worktree; el clasificador lo bloqueó, y después le bloqueó todo. Tuve que pausar al otro subagente y destrabar este con vos. Ni los briefs ni el skill dicen qué hacer con procesos o puertos que no lanzó el propio subagente.
+
+**8. Documentación sin borradores, otra vez.** Para la documentación y la wiki dijiste "no me preguntes, aplicá los cambios". `mahou:write-documentation` y `learn` piden mostrar el borrador y esperar. Es la misma corrección que diste en sesiones anteriores ("no hace falta que me muestres los drafts").
+
+**9. La web en prod respondía 500.** En modo SPA, TanStack Start prerenderiza el shell como `_shell.html`. Sin `index.html` entre los assets, Cloudflare manda `/` al Worker, y el render del servidor falla. Se arregló con `spa.prerender.outputPath: "/index"`. Ese hecho no está en ninguna wiki, ni en la local ni en la global.
+
+**10. Las pruebas de prod sin identidades de prueba.** El clasificador bloqueó al subagente cuando quiso firmar cookies con el secreto de prod y leer el D1 de prod. Las filas C quedaron para hacerlas con vos logueado. Las identidades de los estudiantes las improvisamos con alias `+` de tu casilla, uno en tu celular y otro en mi navegador. `.mahou/test-design.md` dice que el árbol C lo corren "Claude y el usuario a mano", pero no cómo se arman las identidades.
+
+**11. C6 terminó siendo la carga de las clases reales.** Cambiaste la prueba a subir las clases 1 y 2, con la adaptación del deck de la 2 a la API de slides. Yo había copiado los archivos al scratch, y pediste que la modificación quedara en el repo; ya estaba ahí, solo faltaba commitearla. La adaptación (pasos desde 0 contra pasos desde 1, el HUD, el teclado y el hash) se va a repetir con los decks de las clases 3 a 6, y no está escrita en ningún lado.
+
+**12. El replay.** Pediste seguir grabando con poco detalle. Durante el tramo arreglé tres cosas del skill del repo: los puntos que se amontonaban, el salto de la terminal en las búsquedas largas, y `shot`, que pisaba una captura al numerar por la cantidad de líneas. Las tres están arregladas y commiteadas.
+
+**13. Borrar datos de prueba en prod.** La app no borra usuarios: para dejar la sesión en 0 hizo falta escribir directo en el D1 de prod.
+
+¿Coincide con lo que recordás? Decime qué querés guardar de esto.
+
+[11:16:52] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; node .claude/skills/session-replay/scrip
