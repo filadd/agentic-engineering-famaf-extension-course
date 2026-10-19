@@ -196,3 +196,40 @@
 {"n":196,"time":"16:03:42","src":"screenshots/196.png","url":"localhost:5190/","caption":"Sesiones dividida en Admin y Estudiante","action":null}
 {"n":197,"time":"16:42:53","src":"screenshots/197.png","url":"localhost:5190/","caption":"Árbol de shape completo","action":null}
 {"n":198,"time":"18:52:53","src":"screenshots/198.png","url":"localhost:5190/","caption":"Árbol de diseño completo","action":null}
+{"n":199,"time":"19:47:13","src":"screenshots/199.png","url":"[::1]:5190/","caption":"Mapa del diseño del programa","action":null}
+{"n":200,"time":"19:57:48","src":"screenshots/200.png","url":"[::1]:5190/","caption":"Capas y librerías propuestas","action":null}
+{"n":201,"time":"19:59:23","src":"screenshots/201.png","url":"[::1]:5190/","caption":"RPC contra HTTP","action":null}
+{"n":202,"time":"20:00:31","src":"screenshots/202.png","url":"[::1]:5190/","caption":"Propuesta por capa","action":null}
+{"n":203,"time":"20:01:43","src":"screenshots/203.png","url":"[::1]:5190/","caption":"HttpApi elegido","action":null}
+{"n":204,"time":"20:03:34","src":"screenshots/204.png","url":"[::1]:5190/","caption":"Workspace propio y Tailwind","action":null}
+{"n":205,"time":"20:05:05","src":"screenshots/205.png","url":"[::1]:5190/","caption":"Web en su propio Worker","action":null}
+{"n":206,"time":"20:05:38","src":"screenshots/206.png","url":"[::1]:5190/","caption":"Q2 cerrada","action":null}
+{"n":207,"time":"20:07:50","src":"screenshots/207.png","url":"[::1]:5190/","caption":"Layout de paquetes propuesto","action":null}
+{"n":208,"time":"20:09:51","src":"screenshots/208.png","url":"[::1]:5190/","caption":"Rama 2: qué despliega el Stack","action":null}
+{"n":209,"time":"20:14:39","src":"screenshots/209.png","url":"[::1]:5190/","caption":"Rama 3: callstack del login","action":null}
+{"n":210,"time":"20:21:04","src":"screenshots/210.png","url":"[::1]:5190/","caption":"Interfaces del login","action":null}
+{"n":211,"time":"20:22:23","src":"screenshots/211.png","url":"[::1]:5190/","caption":"Rama 3 settled","action":null}
+{"n":212,"time":"20:24:33","src":"screenshots/212.png","url":"[::1]:5190/","caption":"Rama 4: callstack del contenido","action":null}
+{"n":213,"time":"20:29:05","src":"screenshots/213.png","url":"[::1]:5190/","caption":"Rutas REST por recurso","action":null}
+{"n":214,"time":"20:35:06","src":"screenshots/214.png","url":"[::1]:5190/","caption":"Interfaces del contenido","action":null}
+{"n":215,"time":"20:36:22","src":"screenshots/215.png","url":"[::1]:5190/","caption":"Rama 5: el aula","action":null}
+{"n":216,"time":"20:37:37","src":"screenshots/216.png","url":"[::1]:5190/","caption":"Interfaces del aula","action":null}
+{"n":217,"time":"20:39:33","src":"screenshots/217.png","url":"[::1]:5190/","caption":"Rama 6: protocolo de las slides","action":null}
+{"n":218,"time":"20:41:23","src":"screenshots/218.png","url":"[::1]:5190/","caption":"Interfaces de las slides","action":null}
+{"n":219,"time":"20:43:40","src":"screenshots/219.png","url":"[::1]:5190/","caption":"Rama 6 settled","action":null}
+{"n":220,"time":"20:45:03","src":"screenshots/220.png","url":"[::1]:5190/","caption":"Rama 7: rutas de la web","action":null}
+{"n":221,"time":"20:46:40","src":"screenshots/221.png","url":"[::1]:5190/","caption":"Datos y estado local de la web","action":null}
+{"n":222,"time":"20:48:54","src":"screenshots/222.png","url":"[::1]:5190/","caption":"Árboles de componentes","action":null}
+{"n":223,"time":"20:52:49","src":"screenshots/223.png","url":"[::1]:5190/","caption":"Componentes compartidos","action":null}
+{"n":224,"time":"20:55:26","src":"screenshots/224.png","url":"[::1]:5190/","caption":"Slots entre ángulos","action":null}
+{"n":225,"time":"20:57:46","src":"screenshots/225.png","url":"[::1]:5190/","caption":"Estado de las pantallas","action":null}
+{"n":226,"time":"20:59:25","src":"screenshots/226.png","url":"[::1]:5190/","caption":"Hooks de la API","action":null}
+{"n":227,"time":"21:05:10","src":"screenshots/227.png","url":"[::1]:5190/","caption":"Estado del admin por pantalla","action":null}
+{"n":228,"time":"21:08:54","src":"screenshots/228.png","url":"[::1]:5190/","caption":"Props y archivos de la web","action":null}
+{"n":229,"time":"21:12:01","src":"screenshots/229.png","url":"[::1]:5190/","caption":"Standards","action":null}
+{"n":230,"time":"21:15:15","src":"screenshots/230.png","url":"[::1]:5190/","caption":"Estándares en la wiki local","action":null}
+{"n":231,"time":"21:15:53","src":"screenshots/231.png","url":"[::1]:5190/","caption":"Linters","action":null}
+{"n":232,"time":"21:18:10","src":"screenshots/232.png","url":"[::1]:5190/","caption":"Linters con anti-slop","action":null}
+{"n":233,"time":"21:19:06","src":"screenshots/233.png","url":"[::1]:5190/","caption":"Rama 9: tests","action":null}
+{"n":234,"time":"21:21:56","src":"screenshots/234.png","url":"[::1]:5190/","caption":"Tests de integración","action":null}
+{"n":235,"time":"21:26:58","src":"screenshots/235.png","url":"[::1]:5190/","caption":"Tests con el harness de Alchemy","action":null}
