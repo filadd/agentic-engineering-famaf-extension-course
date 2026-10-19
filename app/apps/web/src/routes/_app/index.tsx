@@ -32,12 +32,9 @@ const HomeRoute = () => {
     <main className="px-12 pt-8 pb-10 max-[600px]:px-4 max-[600px]:pt-5 max-[600px]:pb-8">
       <AppHeader title={<Greeting />} />
       {sessions.data == null ? (
-        <>
-          <SkeletonOf>
-            <HighlightedSession session={sessionExamples[2]} polls={[]} />
-          </SkeletonOf>
-          <EarlierSessions sessions={sessionExamples.slice(0, 2)} loading />
-        </>
+        <SkeletonOf>
+          <HighlightedSession session={sessionExamples[2]} polls={[]} />
+        </SkeletonOf>
       ) : null}
       {sessions.data != null && highlighted == null ? (
         <p className="mt-[18px] text-muted">
@@ -51,7 +48,20 @@ const HomeRoute = () => {
           polls={activePolls.data?.filter((poll) => poll.sessionId === highlighted.id)}
         />
       )}
-      {earlier.length === 0 ? null : <EarlierSessions sessions={earlier} />}
+      {sessions.data != null && earlier.length === 0 ? null : (
+        <section aria-label="Sesiones anteriores">
+          <h2 className="mt-7 text-lg font-bold max-[600px]:mt-6 max-[600px]:text-[17px]">
+            Sesiones anteriores
+          </h2>
+          {sessions.data == null ? (
+            <SkeletonOf>
+              <EarlierSessions sessions={sessionExamples.slice(0, 2)} />
+            </SkeletonOf>
+          ) : (
+            <EarlierSessions sessions={earlier} />
+          )}
+        </section>
+      )}
     </main>
   );
 };
