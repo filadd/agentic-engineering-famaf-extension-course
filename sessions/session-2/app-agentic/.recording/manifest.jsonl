@@ -293,3 +293,18 @@
 {"n":361,"time":"02:43:04","src":"screenshots/361.png","url":"localhost:5173/aula","caption":"Reconectada, con el cambio","action":null}
 {"n":362,"time":"03:39:47","src":"screenshots/362.png","url":"kurasu.asermax.com/login","caption":"kurasu en producción","action":null}
 {"n":363,"time":"03:40:26","src":"screenshots/363.png","url":"kurasu.asermax.com/registro","caption":"Registro en producción","action":null}
+{"n":364,"time":"10:43:04","src":"screenshots/364.png","url":"kurasu.asermax.com/admin","caption":"Admin de prod vacío","action":{"kind":"click","x":0.09375,"y":0.31,"w":0.86875,"h":0.065}}
+{"n":365,"time":"10:43:16","src":"screenshots/365.png","url":"kurasu.asermax.com/admin","caption":"Clase 1 creada","action":null}
+{"n":366,"time":"10:43:31","src":"screenshots/366.png","url":"kurasu.asermax.com/admin/sesiones/01M5A6DR0TFJ38232T5DZ9QZ67","caption":"Subir las slides en PDF","action":null}
+{"n":367,"time":"10:44:20","src":"screenshots/367.png","url":"kurasu.asermax.com/admin/sesiones/01M5A6DR0TFJ38232T5DZ9QZ67","caption":"Clase 1 con su material","action":null}
+{"n":368,"time":"10:55:13","src":"screenshots/368.png","url":"kurasu.asermax.com/admin/sesiones/01M5A6P3P3493033V5XGR7NRA8","caption":"Clase 2 en la pestaña Aula","action":null}
+{"n":369,"time":"10:59:38","src":"screenshots/369.png","url":"kurasu.asermax.com/setup","caption":"Claude completa el setup","action":null}
+{"n":370,"time":"10:59:41","src":"screenshots/370.png","url":"kurasu.asermax.com/","caption":"Inicio con las dos clases","action":null}
+{"n":371,"time":"11:00:00","src":"screenshots/371.png","url":"kurasu.asermax.com/aula","caption":"Claude en el aula de la clase 2","action":null}
+{"n":372,"time":"11:01:04","src":"screenshots/372.png","url":"kurasu.asermax.com/aula","caption":"Claude sigue al profe","action":null}
+{"n":373,"time":"11:02:31","src":"screenshots/373.png","url":"kurasu.asermax.com/aula","caption":"Llega la encuesta al aula","action":null}
+{"n":374,"time":"11:02:33","src":"screenshots/374.png","url":"kurasu.asermax.com/aula","caption":"Claude vota","action":null}
+{"n":375,"time":"11:03:50","src":"screenshots/375.png","url":"kurasu.asermax.com/aula","caption":"Mano levantada en Presentes","action":null}
+{"n":376,"time":"11:04:01","src":"screenshots/376.png","url":"kurasu.asermax.com/aula","caption":"Claude pregunta","action":null}
+{"n":377,"time":"11:04:03","src":"screenshots/377.png","url":"kurasu.asermax.com/aula","caption":"Pregunta enviada","action":null}
+{"n":378,"time":"11:09:06","src":"screenshots/378.png","url":"kurasu.asermax.com/aula","caption":"Presentes después de hibernar","action":null}
