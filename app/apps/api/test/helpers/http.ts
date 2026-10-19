@@ -14,10 +14,7 @@ export interface RequestOptions {
 }
 
 // A request to the local API with an optional JSON body and session cookie.
-// The body is parsed as JSON when there is one. A request that fails before
-// any response is tried again: the API answers an oversized upload before
-// reading all of it and closes that connection, which the client may still
-// pick for its next request.
+// The body is parsed as JSON when there is one.
 export const request = (
   url: string,
   method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE",
@@ -25,9 +22,7 @@ export const request = (
   options: RequestOptions = {},
 ) =>
   Effect.gen(function* () {
-    const client = (yield* HttpClient.HttpClient).pipe(
-      HttpClient.retryTransient({ retryOn: "errors-only", times: 2 }),
-    );
+    const client = yield* HttpClient.HttpClient;
 
     let outgoing = HttpClientRequest.make(method)(`${url}${path}`);
 

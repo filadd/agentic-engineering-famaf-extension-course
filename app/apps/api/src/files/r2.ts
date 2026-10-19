@@ -66,16 +66,21 @@ export const R2Files = (bucket: Bucket) =>
                 }
               });
 
-            const write = (
-              chunk: Uint8Array,
-            ): Effect.Effect<void, FileTooLarge | Cloudflare.R2.R2Error, RuntimeContext> => {
+            // Past the limit the rest of the file is read and dropped, and the
+            // upload fails once it ends: answering before the client finished
+            // sending makes it lose the answer when the connection closes.
+            const write = (chunk: Uint8Array) => {
               size += chunk.length;
 
-              return size > maxFileBytes ? Effect.fail(new FileTooLarge()) : copy(chunk);
+              return size > maxFileBytes ? Effect.void : copy(chunk);
             };
 
             const store = Effect.gen(function* () {
               yield* Stream.runForEach(file.body, write);
+
+              if (size > maxFileBytes) {
+                return yield* new FileTooLarge();
+              }
 
               if (upload == null) {
                 yield* bucket.put(key, part.slice(0, filled), options);
