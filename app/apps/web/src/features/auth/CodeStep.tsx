@@ -1,10 +1,9 @@
+import { enrollmentCodeLength } from "@kurasu/contract/user";
 import { useState } from "react";
 
 import { Icon } from "../../ui/Icon.tsx";
 import { AuthNotice } from "./AuthNotice.tsx";
 import { linkNotices } from "./link-notices.ts";
-
-export const enrollmentCodeLength = 5;
 
 interface Props {
   initialCode: string;

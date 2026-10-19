@@ -1,3 +1,4 @@
+import { maxUsers } from "@kurasu/contract/admin-users";
 import { EmailTaken } from "@kurasu/contract/errors";
 import { User } from "@kurasu/contract/user";
 import { Users } from "@kurasu/core/access/users";
@@ -56,7 +57,7 @@ export const D1Users = Layer.effect(
           .select()
           .from(users)
           .orderBy(asc(users.email))
-          .limit(100)
+          .limit(maxUsers)
           .pipe(Effect.orDie, Effect.flatMap(Effect.forEach(toUser))),
       create: (user) =>
         Effect.gen(function* () {
