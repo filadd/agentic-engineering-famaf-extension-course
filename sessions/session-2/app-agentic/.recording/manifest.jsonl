@@ -252,3 +252,42 @@
 {"n":252,"time":"22:28:37","src":"screenshots/252.png","url":"localhost:5190/","caption":"Q3: el mail resuelto, falta la base","action":null}
 {"n":253,"time":"22:30:28","src":"screenshots/253.png","url":"localhost:5190/","caption":"Diseño de tests cerrado","action":null}
 {"n":254,"time":"22:30:30","src":"screenshots/254.png","url":"localhost:5190/","caption":"Los tres árboles settled","action":null}
+{"n":256,"time":"01:26:00","src":"screenshots/256.png","url":"localhost:5173/login","caption":"Email del profe","action":{"kind":"click","x":0.42926025390625,"y":0.6316015625,"w":0.1414794921875,"h":0.05677734375}}
+{"n":257,"time":"01:26:01","src":"screenshots/257.png","url":"localhost:5173/login","caption":"Revisá tu mail","action":null}
+{"n":258,"time":"01:26:15","src":"screenshots/258.png","url":"localhost:5173/admin","caption":"Admin del profe, vacío","action":null}
+{"n":261,"time":"01:29:43","src":"screenshots/261.png","url":"localhost:5173/registro","caption":"Código del QR rechazado","action":null}
+{"n":263,"time":"01:30:11","src":"screenshots/263.png","url":"localhost:5173/admin/usuarios","caption":"Tres alumnos sin nombre","action":null}
+{"n":267,"time":"01:34:21","src":"screenshots/267.png","url":"localhost:5173/admin","caption":"Primera sesión, deshabilitada","action":null}
+{"n":272,"time":"01:35:31","src":"screenshots/272.png","url":"localhost:5173/","caption":"Lucía ve la sesión 1","action":null}
+{"n":276,"time":"01:37:07","src":"screenshots/276.png","url":"localhost:5173/admin/sesiones/01M5970RNB819ZZPKV4NMVN7CK","caption":"Material con slides","action":null}
+{"n":277,"time":"01:38:31","src":"screenshots/277.png","url":"localhost:5173/admin/sesiones/01M5970RNB819ZZPKV4NMVN7CK","caption":"HTML sin API de slides rechazado","action":null}
+{"n":278,"time":"01:38:56","src":"screenshots/278.png","url":"localhost:5173/admin/sesiones/01M5970RNB819ZZPKV4NMVN7CK","caption":"Aula del profe con slides","action":null}
+{"n":279,"time":"02:14:51","src":"screenshots/279.png","url":"localhost:5173/admin/usuarios","caption":"QR con código de 5 letras","action":null}
+{"n":280,"time":"02:15:02","src":"screenshots/280.png","url":"localhost:5173/registro","caption":"Sofía abre el QR","action":{"kind":"type","x":0.328125,"y":0.5391015625,"w":0.34375,"h":0.06,"text":"sofia@dev.kurasu.test"}}
+{"n":282,"time":"02:15:10","src":"screenshots/282.png","url":"localhost:5173/setup","caption":"Setup de Sofía, legible","action":{"kind":"click","x":0.561328125,"y":0.7275,"w":0.126171875,"h":0.05677734375}}
+{"n":283,"time":"02:15:20","src":"screenshots/283.png","url":"localhost:5173/","caption":"Inicio de Sofía","action":null}
+{"n":285,"time":"02:16:06","src":"screenshots/285.png","url":"localhost:5173/aula","caption":"Aula de Lucía con presentes","action":null}
+{"n":287,"time":"02:20:36","src":"screenshots/287.png","url":"localhost:5173/aula","caption":"Lucía navega sola","action":null}
+{"n":291,"time":"02:22:24","src":"screenshots/291.png","url":"localhost:5173/admin/presentar/01M5970RNB819ZZPKV4NMVN7CK","caption":"Presentar sigue al profe","action":null}
+{"n":293,"time":"02:22:58","src":"screenshots/293.png","url":"localhost:5173/admin/sesiones/01M5970RNB819ZZPKV4NMVN7CK","caption":"Badge de manos en Aula","action":null}
+{"n":294,"time":"02:22:59","src":"screenshots/294.png","url":"localhost:5173/aula","caption":"Manos en Presentes","action":null}
+{"n":299,"time":"02:24:04","src":"screenshots/299.png","url":"localhost:5173/admin/sesiones/01M5970RNB819ZZPKV4NMVN7CK","caption":"Badge de pregunta nueva","action":null}
+{"n":301,"time":"02:24:27","src":"screenshots/301.png","url":"localhost:5173/aula","caption":"Tomás ve el orden nuevo","action":null}
+{"n":303,"time":"02:24:50","src":"screenshots/303.png","url":"localhost:5173/admin/sesiones/01M5970RNB819ZZPKV4NMVN7CK","caption":"Respondida, al final","action":null}
+{"n":307,"time":"02:26:00","src":"screenshots/307.png","url":"localhost:5173/admin/sesiones/01M5970RNB819ZZPKV4NMVN7CK","caption":"Opción múltiple con 3 opciones","action":null}
+{"n":309,"time":"02:26:40","src":"screenshots/309.png","url":"localhost:5173/aula","caption":"Badge en la franja oculta","action":null}
+{"n":311,"time":"02:27:36","src":"screenshots/311.png","url":"localhost:5173/admin/sesiones/01M5970RNB819ZZPKV4NMVN7CK","caption":"Resultados para el profe","action":null}
+{"n":316,"time":"02:29:21","src":"screenshots/316.png","url":"localhost:5173/admin/sesiones/01M5970RNB819ZZPKV4NMVN7CK","caption":"Nube de palabras del profe","action":null}
+{"n":317,"time":"02:29:44","src":"screenshots/317.png","url":"localhost:5173/","caption":"Inicio con tres encuestas","action":null}
+{"n":318,"time":"02:29:54","src":"screenshots/318.png","url":"localhost:5173/","caption":"Mateo votó desde el inicio","action":null}
+{"n":324,"time":"02:31:19","src":"screenshots/324.png","url":"localhost:5173/","caption":"Cerrada con su respuesta","action":null}
+{"n":326,"time":"02:32:00","src":"screenshots/326.png","url":"localhost:5173/admin/sesiones/01M5970RNB819ZZPKV4NMVN7CK","caption":"Cerradas plegadas en el panel","action":null}
+{"n":332,"time":"02:33:44","src":"screenshots/332.png","url":"localhost:5173/admin/sesiones/01M5970RNB819ZZPKV4NMVN7CK","caption":"Chip de slides en Slides v2","action":null}
+{"n":338,"time":"02:35:17","src":"screenshots/338.png","url":"localhost:5173/","caption":"Una sesión abierta a la vez","action":null}
+{"n":341,"time":"02:35:53","src":"screenshots/341.png","url":"localhost:5173/admin","caption":"Orden nuevo de sesiones","action":null}
+{"n":351,"time":"02:38:33","src":"screenshots/351.png","url":"localhost:5173/admin/usuarios","caption":"Código y QR nuevos","action":null}
+{"n":354,"time":"02:39:39","src":"screenshots/354.png","url":"localhost:5173/","caption":"Perfil nuevo en el header","action":null}
+{"n":356,"time":"02:39:56","src":"screenshots/356.png","url":"localhost:5173/","caption":"Inicio en modo oscuro","action":null}
+{"n":357,"time":"02:39:59","src":"screenshots/357.png","url":"localhost:5173/aula","caption":"Aula en modo oscuro","action":null}
+{"n":359,"time":"02:40:18","src":"screenshots/359.png","url":"localhost:5173/admin","caption":"Lista de sesiones en oscuro","action":null}
+{"n":361,"time":"02:43:04","src":"screenshots/361.png","url":"localhost:5173/aula","caption":"Reconectada, con el cambio","action":null}

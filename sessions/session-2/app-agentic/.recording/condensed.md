@@ -6253,3 +6253,894 @@ Con (a), cada archivo de test de la API despliega su propio stage con la base va
 - **`shape.md`:** la regla de la Q19 marcada como reemplazada.
 
 El registro completo está en `.scratch/aula-virtual/test-design/kurasu.md`. Las capturas del replay van de la 236 a la 254, también sin commitear.
+
+
+## [22:48:01] USER
+/mahou:implement vamos a por la implementación, asegurate de leer todo el contenido del scratch folder para que no se nos pase nada, usemos /delegate para enviar a subagentes usando los valores por defecto de claude
+
+[22:48:04] TOOL Skill: 
+[22:48:06] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; cat .mahou/implement.md 2>/dev/null; echo ---; ls .mahou .mahou/wiki; echo ---; cat .
+[22:48:09] TOOL Skill: 
+[22:48:11] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; cat status.md; wc -l *.md program-design/*.md test-design/kuras
+[22:48:21] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/program-design/kurasu.md
+[22:48:23] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/program-design/kurasu.md
+[22:48:25] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design/kurasu.md
+[22:48:27] ASSISTANT
+Estoy leyendo el scratch (diseño del programa ya leído, ahora el diseño de tests) para armar los briefs de los subagentes.
+
+[22:48:28] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design/kurasu.md
+[22:48:30] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design/kurasu.md
+[22:48:35] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; cat research-stack-local.md research-tests-alchemy.md research-
+[22:48:36] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; cat shape.md; grep -n "^#" design.md
+[22:48:39] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; sed -n 1,133p design.md; sed -n 487,515p design.md; ls ../../ap
+[22:48:42] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; cat research-librerias.md research-effect-tanstack.md research-
+[22:48:43] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; cat research-ratstack.md research-cloudflare-2.md research-dura
+[22:48:44] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; cat prototypes-estructura.md; sed -n 1,40p decisiones.md; grep 
+[22:48:49] TOOL Read: /home/agus/.claude/projects/-home-agus-workspace-filadd-agentic-engineering-famaf-extension-course/f0579e23-1ab3-49d8-8e0f-26c17d001b3d/tool-results/bxtqoza4o.t
+[22:48:49] TOOL Read: /home/agus/.claude/projects/-home-agus-workspace-filadd-agentic-engineering-famaf-extension-course/f0579e23-1ab3-49d8-8e0f-26c17d001b3d/tool-results/bp6eb11bq.t
+[22:48:51] TOOL Read: /home/agus/.claude/projects/-home-agus-workspace-filadd-agentic-engineering-famaf-extension-course/f0579e23-1ab3-49d8-8e0f-26c17d001b3d/tool-results/bgbmha7sk.t
+[22:48:59] ASSISTANT
+Ya leí el scratch (diseño del programa, diseño de tests, tasks, shape, diseño de sistema, research y estructura de prototipos). Reviso el estado de git antes de armar la propuesta.
+
+[22:49:00] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; git status --short | head; git fetch -q origin; git log --oneline origin/main..HEAD |
+[22:49:18] TOOL AskUserQuestion: 
+[22:50:13] TOOL Bash: cat /home/agus/workspace/asermax/claude-plugins/mahou/skills/wiki/references/INDEX.md; ls /home/agus/workspace/asermax/claude-plugins/mahou/skills/wiki/referenc
+
+## [22:49:46] USER
+también tienes acceso a las skills de cloudflare y al mcp para hacer el deploy y validar que todo este andando cuando termines, la idea es que trabajes de manera autonoma a menos que surja algo muy urgente
+
+[22:50:19] ASSISTANT
+Entendido: sigo solo, y al final hago el deploy y lo valido con las skills y el MCP de Cloudflare. Ahora escribo los briefs y despacho la base (T1 a T5).
+
+[22:50:21] TOOL Bash: mkdir -p /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement; ls /home/agus/workspace/asermax/claude-plugins/
+[22:50:58] TOOL Write: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement/common.md
+[22:51:27] TOOL Write: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement/phase-base.md
+[22:51:30] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement; { echo '<supervisor-agent>'; echo; echo '# Brief: kur
+[22:51:33] TOOL mcp__herdr-subagents__subagent: spawn
+[22:51:41] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; awk '/^## A apps\/api\//{f=1} /^## B apps\/web\//{f=0} f' test-
+[22:51:43] ASSISTANT
+La base (T1 a T5) ya está corriendo en el subagente `kurasu-base`. Mientras tanto, preparo los briefs de la API y la web.
+
+[22:51:55] TOOL Write: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement/phase-api.md
+[22:52:10] TOOL Write: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement/phase-web.md
+[22:52:15] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; python3 - <<'EOF'
+[22:52:19] ASSISTANT
+Despaché la base y quedó corriendo.
+
+- **Base:** el subagente `kurasu-base` está haciendo T1 a T5 (workspace y cerco, contrato, base de datos, infra y harness de tests) directo en `session-2-deck-tweaks`.
+- **API y web:** los briefs ya están armados, con sus filas copiadas tal cual del diseño de tests, en `.scratch/aula-virtual/implement/`. Cuando la base reporte, las lanzo en paralelo, cada una en su worktree (`kurasu-api` y `kurasu-web`).
+- **Después:** las mergeo en `session-2-deck-tweaks`, corro la revisión y la validación manual, y hago el deploy con la validación en prod.
+
+Sigo solo. Te escribo si surge algo urgente.
+
+
+## [22:57:10] USER
+solo por si acaso, necesitamos guardar el replay para esta última parte también pero no hace falta que sea en tanto detalle, nos interesa más el resultado general y los tests manuales para mostrar en el replay; no hay falta ir en mucho detalle de lo que está haciendo los subagentes, con que mencionemos que se ejecutaron alcanza
+podrías abrir el replay actual para ver como esta?
+ah y otro detalle, no vamos a hacer human review esta vez, solo el agentic review y ve directo a la validación y el deploy cuando termines
+
+[22:57:13] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; ls sessions/session-2/app-agentic/ sessions/session-2/app-agentic/.recording | head -
+[22:57:16] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; sed -n 1,80p .claude/skills/session-replay/SKILL.md; ls .claude/skills/session-replay
+[22:57:22] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; python3 -c "
+[22:57:26] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; sed -n 15497p /home/agus/.claude/projects/-home-agus-workspace-filadd-agentic-enginee
+[22:57:30] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; node .claude/skills/session-replay/scrip
+[22:57:34] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; python3 - <<'EOF'
+[22:57:38] ASSISTANT
+Te abrí el replay actual (`player.html`) en el navegador, armado con el `script.js` de 1228 beats que termina en el cierre del diseño de tests.
+
+- **Replay de esta parte:** sumé el segmento 6 a la grabación. Arranca en el prompt de `/mahou:implement` (01:48Z). Va con poco detalle: menciona que corrieron los subagentes y muestra el resultado general y las pruebas a mano. Durante la validación manual saco capturas con `shot`.
+- **Sin human review:** después de la implementación corre solo el agentic review. Después siguen la validación manual (T16) y el deploy con la validación en prod (T17).
+
+Las dos cosas quedaron anotadas en `status.md`. La base (`kurasu-base`) sigue trabajando.
+
+
+## [22:58:55] USER
+hmm tenemos demasiados puntos en el replay y se rompio la interfaz, como podemos mejorarlo para que sea más sencillo? quizas una separación por defecto entre puntos y un scroll en el contenedor?
+
+[22:58:58] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.claude/skills/session-replay/assets; grep -n "dot" player.html | head -60; grep -n "\
+[22:59:01] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.claude/skills/session-replay/assets/player.html
+[22:59:02] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.claude/skills/session-replay/assets; grep -n 'id="seek"\|id="controls"' player.html; 
+[22:59:21] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.claude/skills/session-replay/assets; python3 - <<'EOF'
+[22:59:28] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.claude/skills/session-replay/assets; python3 - <<'EOF'
+[22:59:34] TOOL Read: /tmp/replay-dots-1.png
+[22:59:36] ASSISTANT
+Los puntos ya quedan separados. Ahora pruebo el scroll y el tooltip con los puntos del final.
+
+[22:59:37] TOOL Bash: cd /tmp; agent-browser --session replaycheck eval 'const s=document.getElementById("seek"); s.scrollLeft=s.scrollWidth; [s.children.length, s.scrollWidth, s.cli
+[22:59:40] TOOL Read: /tmp/replay-dots-2.png
+[22:59:43] TOOL Bash: agent-browser --session replaycheck close >/dev/null 2>&1; cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; (xdg-open sessions/session
+[22:59:50] ASSISTANT
+Ya está arreglado y te volví a abrir el replay.
+
+- **Separación fija:** los puntos guardan 14px entre sí, unidos por la línea punteada, y ya no se aprietan para entrar en el ancho.
+- **Scroll horizontal:** la fila se desplaza con la barra fina o con la rueda del mouse, que acá mueve los puntos de costado. Cuando avanza el replay, el punto del prompt actual se centra solo.
+- **Tooltip:** el texto del prompt aparece arriba del punto y no lo corta el contenedor. Cerca de los bordes de la pantalla se corre hacia adentro.
+
+Lo probé con los 255 puntos del replay actual, haciendo scroll hasta el final y pasando el mouse sobre los últimos puntos.
+
+El cambio está en el skill (`.claude/skills/session-replay/assets/player.html`) y en la copia de `.recording/player.html`, sin commitear. La base (`kurasu-base`) sigue trabajando.
+
+
+## [23:02:28] USER
+un detalle más y te dejo para que sigas esperando los detalles de la implementación: cuando vayamos a un punto directamente que no sea contiguo al actual, evitemos la animación de scrolling, vayamos directamente a ese punto
+
+[23:02:33] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; python3 - <<'EOF'
+[23:02:41] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; agent-browser --session replaycheck open
+[23:02:48] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; (xdg-open sessions/session-2/app-agentic/.recording/player.html >/dev/null 2>&1 &); e
+[23:02:52] ASSISTANT
+Listo, y te lo volví a abrir.
+
+- **Salto directo:** si vas a un punto que no es el de al lado (con un click en un punto lejano o en el reproductor), la fila se ubica de inmediato, sin animación.
+- **Paso a paso:** el scroll suave queda solo cuando el replay pasa al prompt siguiente o al anterior.
+
+Lo probé haciendo click en el punto 200 desde el inicio: la fila quedó centrada en ese punto apenas se movió.
+
+El cambio está en el skill y en la copia de `.recording`. Sigo esperando el reporte de la base.
+
+
+## [23:03:45] USER
+me refería al scroll de la "terminal" no al de abajo; vuelve atras ese cambio y corrige el correcto
+
+[23:03:49] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.claude/skills/session-replay/assets; python3 - <<'EOF'
+[23:03:52] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.claude/skills/session-replay/assets; sed -n 80,92p player.html; sed -n 460,472p playe
+[23:03:58] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.claude/skills/session-replay/assets; python3 - <<'EOF'
+[23:04:05] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; node .claude/skills/session-replay/scrip
+[23:04:13] ASSISTANT
+Revertí el cambio de los puntos (vuelven a moverse siempre con scroll suave) y corregí el de la terminal, que es el que pedías.
+
+Cuando vas a un prompt que no es el anterior ni el siguiente, la terminal se rearma y queda directo abajo de todo, sin la animación. Entre prompts contiguos sigue el scroll suave.
+
+Lo probé con un click en el punto 200 desde el inicio: en el primer momento después de rearmarse, la terminal ya estaba en 34707 de 34753. Lo que se mueve después es la reproducción, que agrega líneas nuevas.
+
+Te volví a abrir el replay. El cambio está en el skill y en la copia de `.recording`, sin commitear.
+
+
+## [23:32:39] USER
+puede ser que el subagente base este trabajando en la API también?
+
+[23:32:42] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; git log --oneline -8; git status --short | head -40; grep -n "^## T" .scratch/aula-vi
+[23:32:46] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/app/apps/api; git show --stat HEAD | head -30; wc -l src/handlers/*.ts src/middleware.
+[23:32:56] TOOL mcp__herdr-subagents__subagent: prompt
+[23:33:03] ASSISTANT
+Sí: la base está trabajando en parte de la API.
+
+- **Ya commiteado:** el commit de la infra (`0214960`) trae lo que el humo del harness usa para loguear, y es un pedazo de T6.
+  - El servicio `Access`, con pedir el link y abrir la sesión.
+  - Los handlers de auth (link, session, logout) y de me.
+  - `CurrentUserMiddleware`, los tokens con jose y el mailer de Email Sending.
+  - El commit lo dice: "The API Worker serves the login slice… The other groups and the classroom are skeletons".
+- **Sin commitear todavía:** el subagente está tocando `classroom/aula.ts` y el mailer, y tiene un `test/ws-spike.test.ts`. Está probando el WebSocket del aula en modo dev, que es uno de los puntos del research que nadie había probado.
+
+El brief le permitía implementar lo mínimo de T6 que hiciera falta para el humo; lo que hizo va más lejos que el mínimo. Le mandé una instrucción:
+
+- que cierre T5 cuando el harness quede probado (HTTP, mail y WebSocket), sin seguir con handlers ni con el aula;
+- que liste en el reporte qué partes de T6 y T8 quedaron hechas y probadas;
+- que deje T6 y T8 en `pending` en `tasks.md`, con una línea sobre lo que ya existe.
+
+Así el subagente de la API arranca desde ahí.
+
+
+## [23:35:34] USER
+The herdr-subagents plugin sent a message:
+Child "kurasu-base" reached done. Use the subagent tool — collect, pane_id w3Z:p1B — to read its result.
+
+This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above.
+
+[23:35:37] TOOL mcp__herdr-subagents__subagent: collect
+[23:35:43] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement; cat > report-base.md <<'EOF'
+[23:36:02] TOOL Write: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement/report-base.md
+[23:36:11] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement; python3 - <<'EOF'
+[23:36:16] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement; A=/home/agus/workspace/filadd/agentic-engineering-fam
+[23:36:17] TOOL mcp__herdr-subagents__subagent: close
+[23:36:18] TOOL mcp__herdr-subagents__subagent: spawn
+[23:36:19] TOOL mcp__herdr-subagents__subagent: spawn
+[23:36:44] ASSISTANT
+La base terminó: T1 a T5 están commiteados en `session-2-deck-tweaks` y `pnpm check` y `pnpm test` pasan. Ya lancé la API y la web en paralelo.
+
+- **La API (T6 a T8)** va en el subagente `kurasu-api`, worktree `kurasu-api`. Arranca desde la parte de T6 que dejó la base (login, middleware, tokens, mailer y los handlers de auth y me).
+  - También le pedí que el link del mail apunte a la web local en dev; hoy apunta al dominio de prod y así no se puede probar a mano.
+- **La web (T9 a T15)** va en `kurasu-web`, worktree `kurasu-web`.
+
+**Commits de la base:**
+
+| Commit | Qué agrega |
+|---|---|
+| `5437d8d` | Workspace y cerco |
+| `b9b3bfa` | Contrato |
+| `1862e3a` | Puertos y D1 |
+| `0214960` | Infra |
+| `f95dbbc` | Harness de tests |
+
+El harness de la API funciona contra el Stack local de Alchemy: despliega un stage por archivo, aplica las migraciones y carga los fixtures, responde HTTP, deja el mail local y hace fallar el mail a una dirección fuera de la lista. Un ensayo también abrió el WebSocket en modo dev, con 101, mensaje del aula y `notify` por RPC.
+
+**Desvíos que tomó la base (los acepto salvo que digas otra cosa):**
+
+- **Contrato:**
+  - Agregó `UserNotFound` (404) para `PATCH /api/admin/users/{id}` con un id que no existe.
+  - `POST /api/questions` rechaza un texto con espacios al principio o al final.
+  - El material se sube como `FormData` en stream.
+- **Worker y aula:**
+  - El Worker arma la app HTTP en cada pedido, porque al planificar el deploy no hay bindings. Falta medir cuánto cuesta en prod.
+  - El binding del Durable Object se llama `Aula` y no `AULA`, porque Alchemy le pone el nombre de la clase.
+- **Estado y recursos en dev:**
+  - En dev y en test el estado de Alchemy es local; en esta máquina no hay credenciales de Cloudflare. Prod usa `Cloudflare.state()`.
+  - La zona, el subdominio del mail y la ruta `/api/*` existen solo fuera de dev.
+- **Herramientas:**
+  - Vitest 5 ya no usa `vitest.workspace.ts`; los proyectos van en `vitest.config.ts`.
+  - drizzle-kit 1.0 genera cada migración como una carpeta con su `migration.sql`.
+
+**Para el deploy:** no hay credenciales de Cloudflare en la máquina para Alchemy. Cuando llegue T17 voy a ver si alcanzan las del MCP de Cloudflare o si hace falta que corras un login.
+
+**Agentic review:** como la API y la web salen de la base y después se juntan, corro el review una sola vez sobre `session-2-deck-tweaks` mergeada, con todo el cambio medido contra `main`. Así sus arreglos no quedan sueltos entre branches.
+
+
+## [23:38:55] USER
+dale, seguí
+hagamos el login ahora si hace falta
+
+[23:38:58] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/app; ls node_modules/.bin | grep -i "alchemy\|wrangler"; npx alchemy --help 2>&1 | hea
+[23:39:22] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/app/apps/infra; ls node_modules/.bin | grep -i alchemy; ./node_modules/.bin/alchemy --
+[23:39:27] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/app/apps/infra; ./node_modules/.bin/alchemy profile --help 2>&1 | head -40; ./node_mod
+[23:39:33] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/app/apps/infra; ./node_modules/.bin/alchemy profile list --no-input 2>&1 | head; ./nod
+[23:39:44] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/app/apps/infra; ./node_modules/.bin/alchemy profile edit --help 2>&1 | sed -n 1,30p
+[23:39:49] ASSISTANT
+Sí, hace falta. El perfil `default` de Alchemy existe pero no tiene ningún proveedor conectado. Wrangler está logueado, pero Alchemy usa sus propios perfiles. Corré esto en el prompt; abre el login de Cloudflare en el navegador:
+
+```
+! cd app/apps/infra && ./node_modules/.bin/alchemy profile edit --add Cloudflare
+```
+
+Si te pregunta el método, elegí OAuth o el login por navegador. Cuando termines, chequeo con `alchemy profile show` que quedó conectado. Mientras tanto, la API y la web siguen trabajando.
+
+
+## [23:41:02] USER
+listo!
+
+[23:41:04] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/app/apps/infra; ./node_modules/.bin/alchemy profile show --no-input 2>&1 | head -20
+[23:41:09] ASSISTANT
+Quedó conectado: el perfil `default` tiene Cloudflare por OAuth, con la cuenta `2b32439a…`.
+
+El access token vence en una hora (03:40Z), así que antes del deploy corro `alchemy profile refresh`. Si el refresh no alcanza, te pido el login de nuevo.
+
+La API y la web siguen trabajando; te aviso cuando reporten.
+
+
+## [00:24:51] USER
+The herdr-subagents plugin sent a message:
+Child "kurasu-api" reached done. Use the subagent tool — collect, pane_id w30:p2 — to read its result.
+
+This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above.
+
+[00:24:55] TOOL mcp__herdr-subagents__subagent: collect
+[00:25:05] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement; cat > report-api.md <<'EOF'
+[00:25:06] TOOL mcp__herdr-subagents__subagent: close
+[00:25:12] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; git merge --ff-only kurasu-api 2>&1 | tail -3; git log --oneline -3; git worktree lis
+[00:25:19] ASSISTANT
+La API terminó y ya la mergeé en `session-2-deck-tweaks` (fast-forward hasta `f5489f6`). La web sigue trabajando.
+
+**Resultado:**
+- T6, T7 y T8 están hechas. Las filas A1 a A122 tienen su test y pasan los 125 tests: la suite corrió tres veces seguidas sin fallar, en unos 50 s cada vez. `pnpm check` también pasa.
+- El login completo anda a mano contra `alchemy dev`: pedir el link, el mail local con un link a `localhost:5173/entrar`, abrir el link y `GET /api/me`. Abrir el mismo link otra vez da 401.
+- El link del mail y el del QR usan `KURASU_WEB_ORIGIN`: la web local en dev y `https://kurasu.asermax.com` en prod.
+
+**Pendientes; los cubro en el agentic review salvo que digas otra cosa:**
+- Dos pedidos mal formados responden 500 en vez de 400, porque el contrato no tiene un error para esos casos:
+  - una subida multipart con el archivo antes de los campos;
+  - editar un borrador de encuesta con campos de otro tipo.
+
+  La web no manda ninguno de los dos.
+- El test de A1 no puede leer el remitente `no-reply@` del mail local. Igual queda forzado, porque el binding solo acepta ese remitente.
+- Borrar una sesión avisa `session` al aula y reordenar no avisa nada. Ninguna fila del diseño define esos avisos.
+
+**Decisión del subagente que acepto:** para que un archivo de más de 100 MB reciba bien el 413 en local, la API lo lee entero antes de responder. En prod Cloudflare lo corta en el borde.
+
+
+## [00:33:19] USER
+- arreglemos y guardemos las definiciones de los pedidos mal formados
+- los avisos de borrar y reordenar no suman mucho así que está bien
+
+sigamos, que queda? esperar a la web?
+
+[00:33:29] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design; grep -n "A#22\|A#23\|A#28" trees.mjs | head; grep -
+[00:33:31] TOOL Read: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design/trees.mjs
+[00:33:50] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design; cp trees.mjs /tmp/trees.bak.mjs; python3 - <<'EOF'
+[00:33:55] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design; python3 - <<'EOF'
+[00:34:04] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; python3 - <<'EOF'
+[00:34:07] ASSISTANT
+Dejé registradas las definiciones en el diseño del programa (4.2) y en el diseño de tests (filas A71, A74 y A91). Ahora lanzo el arreglo en la API.
+
+[00:34:21] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; cat >> tasks.md <<'EOF'
+[00:34:22] TOOL mcp__herdr-subagents__subagent: spawn
+[00:34:35] ASSISTANT
+Arreglé los pedidos mal formados y dejé guardadas sus definiciones. Los avisos de borrar y reordenar quedan como están.
+
+- **Definiciones:**
+  - Crear una encuesta, o editar un borrador, con contenido de otro tipo responde 400 `InvalidPollContent` y no guarda nada.
+  - Una subida con los campos después del archivo, o con campos que no decodifican, responde 400 `InvalidUpload` y no deja fila ni archivo.
+
+  Quedaron en el diseño del programa (4.2), en el diseño de tests (filas nuevas A71, A74 y A91; las filas de la API desde A71 cambiaron de número) y como T18 en `tasks.md`.
+- **Arreglo:** lo está haciendo el subagente `kurasu-api-400` en `session-2-deck-tweaks`, con los dos errores en el contrato y sus tests.
+
+Lo que queda, en orden:
+
+1. **Esperar a la web** (T9 a T15), que sigue trabajando en `kurasu-web`, y mergearla.
+2. **Agentic review** del cambio entero contra `main`.
+3. **Validación manual (T16):** las 80 filas a mano contra el Stack local, con capturas para el replay.
+4. **Deploy a prod y pruebas en prod (T17):** alta de los dos profes y las 8 pruebas del árbol C.
+
+
+## [00:36:28] USER
+The herdr-subagents plugin sent a message:
+Child "kurasu-web" reached done. Use the subagent tool — collect, pane_id w41:p2 — to read its result.
+
+This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above.
+
+[00:36:30] TOOL mcp__herdr-subagents__subagent: collect
+[00:36:38] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement; cat > report-web.md <<'EOF'
+[00:36:38] TOOL mcp__herdr-subagents__subagent: close
+[00:36:48] ASSISTANT
+La web terminó: T9 a T15 están commiteadas en `kurasu-web`.
+
+- **Tests y build:** pasan 137 tests de la web, que cubren las filas B1 a B137. `pnpm check` está limpio y `vite build` anda.
+- **Sin probar todavía contra la API real:** los tests usan MSW con el contrato. La primera vez que la web y la API corran juntas va a ser en la validación manual.
+
+Sus desvíos son de UI y siguen las filas del diseño de tests:
+
+- Los chips de la card no muestran cantidades, porque la lista de sesiones no las trae.
+- Cada HTML subido que no es slides tiene el botón "Usar como slides del aula", que B106 necesita.
+- Borrar una sesión vuelve a `/admin`, como pide B98.
+- Una encuesta nueva existe solo en la página hasta "Guardar borrador", porque la API pide la pregunta para crearla.
+
+**Siguiente paso:**
+
+1. Cuando `kurasu-api-400` termine T18 en `session-2-deck-tweaks`, mergeo `kurasu-web` ahí. Espero para no tocar la branch mientras el subagente commitea.
+   - Puede haber conflictos en `pnpm-workspace.yaml`, en el `package.json` de la raíz y en el lockfile, porque la web sumó `happy-dom` y `msw` a la raíz.
+2. Después corro el agentic review del cambio entero.
+
+
+## [00:59:19] USER
+parece que el subagente se esta enredando con el tema d euploads de 100MB
+me parece que no es tan importante el caso, lo podemos obviar si se complica mucho
+
+[00:59:25] TOOL mcp__herdr-subagents__subagent: prompt
+[00:59:29] ASSISTANT
+Le mandé la instrucción al subagente: que no siga con el caso de más de 100 MB.
+
+- **A89** (archivo de 101 MB, respuesta 413) queda como está, o en `skip` con el porqué: en prod Cloudflare corta los pedidos a los 100 MB en el borde.
+- **El tope de 100 MB** no se toca para resolverlo.
+- **T18** (`InvalidPollContent` e `InvalidUpload`) se termina igual, con el resto de la suite pasando.
+
+Cuando reporte, anoto en el diseño de tests qué pasó con A89.
+
+
+## [01:04:43] USER
+agreguemos la carpeta de cache de turbo a gitignore y commiteemos los cambios de replay también
+
+[01:04:48] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; git status --short | head -30; cat app/.gitignore; cat .gitignore 2>/dev/null | head 
+[01:04:56] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; git log --oneline -15 --format=%s | grep -i "skills\|session-2" | head -5; printf '.t
+[01:05:01] ASSISTANT
+Listo: agregué el ignore y commiteé los cambios del replay, en tres commits sobre `session-2-deck-tweaks`.
+
+- `2205362 chore: ignore turbo's cache folder`: el `.turbo/` sin trackear estaba en la raíz del repo y no en `app/` (que ya lo ignora). Lo agregué a un `.gitignore` nuevo en la raíz.
+- `8257919 fix(skills): keep the replay's prompt dots apart and jump the terminal on long seeks`: el player del skill.
+- `c17f0bb docs(session-2): start the implementation leg of the agentic app recording`: la copia del player en `.recording/` y el segmento 6 en `session.json`.
+
+lefthook no corrió check ni test en ninguno de los tres, porque no tocan `app/`. El working tree quedó limpio.
+
+`kurasu-api-400` ya commiteó T18 (`6c20dc4`, los dos errores 400 tipados). Espero su reporte para ver qué hizo con el caso de 100 MB.
+
+
+## [01:05:01] USER
+The herdr-subagents plugin sent a message:
+Child "kurasu-api-400" reached done. Use the subagent tool — collect, pane_id w3Z:p1E — to read its result.
+
+This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above.
+
+[01:05:03] TOOL mcp__herdr-subagents__subagent: collect
+[01:05:06] TOOL mcp__herdr-subagents__subagent: close
+[01:05:09] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/test-design; python3 - <<'EOF'
+[01:05:12] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; git log --oneline -3; git status --short | head; cd app && pnpm install 2>&1 | tail -
+[01:05:18] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/app; pnpm check 2>&1 | tail -6; pnpm test 2>&1 | grep -E "Test Files|Tests |Tasks:|FAI
+[01:06:32] TOOL Bash: sed -n 1,60p /home/agus/workspace/asermax/claude-plugins/mahou/skills/agentic-review/SKILL.md; git -C /home/agus/workspace/filadd/agentic-engineering-famaf-exte
+[01:06:44] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement; A=/home/agus/workspace/filadd/agentic-engineering-fam
+[01:06:45] TOOL mcp__herdr-subagents__subagent: spawn
+[01:06:55] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; python3 - <<'EOF'
+[01:07:01] ASSISTANT
+T18 terminó y la web ya está mergeada, así que la implementación queda completa en `session-2-deck-tweaks`.
+
+- **T18:** crear o editar una encuesta con contenido de otro tipo responde 400 `InvalidPollContent`, y una subida mal formada responde 400 `InvalidUpload` sin dejar nada en R2 (`6c20dc4`).
+  - Además, una opción múltiple sin opciones, una subida sin archivo y una con dos archivos también responden con estos errores; antes daban 500.
+- **A89 (101 MB):** quedó en `skip`. Con T18, el test falla de forma intermitente con `EPIPE` solo cuando corre en paralelo con el resto de la suite; solo, pasó 5 de 5. Lo anoté en el diseño de tests.
+- **Merge de la web:** entró sin conflictos (`91852d5`). Después del merge, `pnpm check` está limpio y pasan 137 tests de la web y 127 de la API, más uno en skip.
+- **Agentic review:** lo está corriendo `kurasu-review` sobre `app/`, contra el último commit antes del código de la app. Commitea sus arreglos cuando check y test pasen.
+
+Después viene la validación manual contra el Stack local, con las capturas para el replay.
+
+
+## [01:23:08] USER
+The herdr-subagents plugin sent a message:
+Child "kurasu-review" reached done. Use the subagent tool — collect, pane_id w3Z:p1H — to read its result.
+
+This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above.
+
+[01:23:10] TOOL mcp__herdr-subagents__subagent: collect
+[01:23:17] TOOL mcp__herdr-subagents__subagent: close
+[01:23:18] TOOL Bash: sed -n 1,80p /home/agus/workspace/asermax/claude-plugins/mahou/skills/validate/SKILL.md
+[01:23:24] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; node -e '
+[01:23:49] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement; A=/home/agus/workspace/filadd/agentic-engineering-fam
+[01:23:53] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement; python3 - <<'EOF'
+[01:23:54] TOOL mcp__herdr-subagents__subagent: spawn
+[01:24:03] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; sed -i 's/agentic review en curso;/agentic review hecho (7 comm
+[01:24:11] ASSISTANT
+El agentic review terminó, con dos rondas: la segunda no encontró nada más para arreglar. Ya arranqué la validación manual.
+
+**Arreglos del review:** quedaron en siete commits, de `5e9450c` a `5412d07`, sin cambiar endpoints, schemas ni nada que el usuario vea.
+
+- **Backend:** helpers compartidos para leer la primera fila y para buscar la sesión.
+- **Tests de la API:** helpers compartidos en los tests.
+- **Web:**
+  - Las invalidaciones pasan por `queryKeys`.
+  - Los archivos de material ya no se vuelven a pedir cada 5 minutos.
+  - El aviso de 100 MB y el tag del manifest salen de su fuente.
+  - Las mutaciones optimistas pisaban el `onMutate` de la pantalla. Lo corrigió y ahora lo llaman.
+- **Comentarios:** sacó tres que solo repetían el código.
+
+Después de los arreglos, `pnpm check` pasa y los tests también: 137 de la web, y 127 de la API más el de 101 MB en skip.
+
+**Lo que salteó:**
+- Lo que cambiaría el contrato o una decisión del diseño, como la paginación, los paths de la API o el refetch de 5 minutos.
+- Lo que necesitaría archivos nuevos, como un `ConfirmDeleteButton` o un `useApiMutation`.
+
+El detalle está en `.scratch/aula-virtual/reports/agentic-review/`.
+
+**Validación manual (T16):** la corre `kurasu-validate` con `mahou:validate` contra el Stack local, `pnpm dev` en `localhost:5173`.
+
+- **Filas:** las 82 marcadas para hacer a mano, A8, A56 y las 80 de la web.
+- **Identidades:** son locales y ficticias, un profe sembrado y tres estudiantes que se registran por el QR.
+- **Replay:** saca entre 25 y 40 capturas con `shot` en los momentos que muestran la app de punta a punta.
+- **Si algo falla:** no arregla nada; cada falla vuelve como decisión.
+- **Reporte:** queda en `.scratch/aula-virtual/reports/validate/index.html`.
+
+Después viene el deploy a prod (T17).
+
+
+## [01:28:14] USER
+hmm me gusta lo del confirm delet button y use api mutation, son cosas que se pueden generalizar?
+también veo que tardan un poco mucho los tests, podemos ver de optimizarlos un poco? creemos un nuevo worktree para trabajar estas dos cosas mientras continua la validación manual
+
+[01:28:20] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/reports/agentic-review; ls -R | head -40; grep -rn -i "ConfirmDe
+[01:28:23] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/reports/agentic-review; grep -rn -i -A12 "ConfirmDeleteButton\|u
+[01:28:26] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/reports/agentic-review; sed -n 1,10p round-1/altitude-web.md | c
+[01:28:56] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; cat >> tasks.md <<'EOF'
+[01:28:58] TOOL mcp__herdr-subagents__subagent: spawn
+[01:29:02] TOOL Bash: tail -3 /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/tasks.md; ls /home/agus/workspace/filadd/agentic-engineerin
+[01:29:04] ASSISTANT
+Falló el armado del brief por unos backticks del shell; lo reescribo con archivos y lanzo el worktree.
+
+[01:29:17] TOOL Write: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement/phase-refactor.md
+[01:29:22] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; cat >> tasks.md <<'EOF'
+[01:29:24] TOOL mcp__herdr-subagents__subagent: spawn
+[01:29:39] ASSISTANT
+Sí, las dos se pueden generalizar. El review las salteó solo porque necesitaban archivos nuevos, y su skill no crea archivos.
+
+- **`ConfirmDeleteButton`:** `DeleteMaterialButton`, `DeletePollButton`, `DeleteSessionButton` y `DeleteOwnQuestion` repiten casi línea por línea lo mismo: el estado `confirming`, el botón, el `ConfirmDialog` con "Borrar" y el cierre cuando termina el borrado. Solo cambian el estilo del botón, los textos y la mutación. `UserRow` (sacar el acceso) y `EnrollmentQr` (regenerar el código) repiten el mismo estado y el mismo armado.
+- **`useApiMutation`:** los 20 hooks de mutación repiten `useQueryClient()`, el spread de `options` y un `onSuccess` que invalida y después llama al de la pantalla con sus cuatro argumentos. Con el helper, cada hook queda en su llamada a la API y lo que invalida. Sigue habiendo un hook por operación, como pide la convención de la wiki. Los hooks de lectura (`use*Polls`, `use*Materials`…) tienen la misma forma y pueden tener su `useApiQuery`.
+
+El review encontró dos más del mismo tipo, y también entran:
+
+- un **`Backdrop`**, porque el overlay que se cierra con un click en el fondo está pegado tres veces;
+- un **`useSlidesMaterial`**, porque la búsqueda del material de slides y su HTML está escrita en tres lugares.
+
+Lancé `kurasu-refactor` en un worktree nuevo, en la branch `kurasu-refactor`, que sale de `session-2-deck-tweaks`. Trabaja dos tasks nuevas de `tasks.md`:
+
+- **T19 · Las piezas generalizadas.** Lo que ve el usuario no cambia, y los 137 tests de la web tienen que seguir pasando sin tocar sus expectativas.
+- **T20 · Tests más rápidos.**
+  1. Primero mide: el total, la API y la web, cada archivo, y en la API cuánto es levantar el stage, cuánto el `destroy` y cuánto los tests.
+  2. Después aplica lo que no cambia el nivel de los tests (paralelismo, esperas, setup repetido, la caché de turbo, lo que corre lefthook).
+  3. Si algo cambia una regla de la wiki, como el stage por archivo o check y test en cada commit, me pregunta primero con los números.
+
+El worktree no toca el checkout principal ni los puertos del dev server, así que la validación manual sigue corriendo ahí sin cambios. Cuando las dos terminen, mergeo `kurasu-refactor`.
+
+
+## [01:40:28] USER
+puedes pedir un reporte de como vamos con la validación?
+
+[01:40:35] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/reports/validate 2>/dev/null && ls -la | head; python3 - <<'EOF'
+[01:40:43] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/reports/validate; python3 - <<'EOF'
+[01:40:56] ASSISTANT
+La validación va por la mitad: el reporte en disco tiene 7 filas anotadas, 5 PASS y 2 FAIL. Las capturas ya van más adelante, hasta la 278, que es la pestaña Contenido del profe con la subida de slides. El subagente actualiza el reporte por tandas.
+
+| Fila | Resultado |
+|---|---|
+| A8 · abrir un link vigente (cookie de 7 días con todos sus atributos) | PASS |
+| B10 · el profe abre su link y llega a `/admin` | PASS |
+| B12 · el mismo link por segunda vez muestra "Este link ya no sirve" | PASS |
+| B3 · email no registrado: el aviso aparece y no sale ningún mail | PASS |
+| B18 · setup: busca "zorro", lo elige, pone el nombre y el avatar aparece en el header | PASS |
+| B5 · registro por el QR | **FAIL** |
+| B6 · registro escribiendo el código a mano | **FAIL** |
+
+**Por qué fallan B5 y B6.** La API y la web no coinciden en el formato del código de registro:
+
+- La API lo genera como 48 caracteres hexadecimales en minúsculas y lo compara exacto.
+- La web lo pasa a mayúsculas y limita el campo a 5 caracteres, como el `K7F2Q` del prototipo.
+- Por eso el QR manda el código en mayúsculas y la API responde 404 `NotRegistered`. Escrito a mano, el campo lo corta a 5 caracteres. Por curl, el mismo código en minúsculas da 204.
+- Ni el diseño del sistema ni el del programa fijaban el formato; quedó uno distinto de cada lado. Los tests no lo detectaron porque los de la web usan MSW y los de la API mandan el código tal cual.
+
+La pregunta es qué formato tiene el código de registro. Opciones:
+
+- **5 caracteres en mayúsculas, como el prototipo:** de un alfabeto sin caracteres que se confunden (sin 0/O ni 1/I), y la API lo compara pasándolo a mayúsculas. Es el que se puede leer en voz alta y escribir a mano en clase. Con un alfabeto de 32 símbolos hay unos 33 millones de combinaciones, y el profe lo puede regenerar.
+- **Largo como ahora:** la web acepta los 48 caracteres y no cambia las mayúsculas. Escribirlo a mano se vuelve impráctico.
+
+El código del link del mail no cambia en ninguna de las dos: sigue largo, porque nunca se escribe a mano.
+
+Cuando decidas, se lo paso al subagente de validación como arreglo, si para preguntar. Si no, lo hago después de que termine, y vuelvo a correr B5 y B6.
+
+
+## [01:42:02] USER
+The herdr-subagents plugin sent a message:
+Child "kurasu-validate" reached done. Use the subagent tool — collect, pane_id w3Z:p1K — to read its result.
+
+This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above.
+
+[01:42:04] TOOL mcp__herdr-subagents__subagent: collect
+[01:42:22] ASSISTANT
+El subagente de validación se detuvo para preguntar: una falla bloquea más de la mitad de las filas que faltan.
+
+**Cómo va:**
+- PASS: A8, B3, B10, B12, B15, B18, B90, B93, B95, B96, B101, B102, B103 y B133.
+- FAIL: B5 y B6, el código de registro de mi mensaje anterior.
+- Sin correr: el resto.
+
+Encontró además dos fallas más:
+
+- **F2 · el socket del aula no conecta en dev.** `ws://localhost:5173/api/classroom` cierra con 1006: el proxy `/api` de Vite está configurado, pero otro manejador de upgrade contesta primero con un 404 de TanStack Start. Conectando directo a la API (`ws://localhost:1337`) abre y manda `presence`.
+  - Bloquea todo lo "al instante" y Presentes, unas 28 filas: B58 a B61, B67 a B70, B77 a B79, B85, B86, B121 a B126 y más.
+  - Es un problema de dev; en prod la ruta `/api/*` va directo al Worker de la API.
+- **F1 · texto invisible en los inputs.** Tailwind 4 genera una utilidad `text-field` a partir del color `--color-field` del tema, que es blanco. Esa utilidad le gana a la clase `.text-field` de la app, así que el setup y los modales muestran texto blanco sobre blanco.
+
+**Lo que propongo, salvo que digas otra cosa:**
+
+- **F1:** renombrar la clase de la app, por ejemplo a `.input-field`, para que no choque con la utilidad. No hay otra salida razonable.
+- **F2:** un plugin de Vite solo de dev que deje que el proxy `/api` de Vite atienda los upgrades de `/api`. Así dev usa el mismo camino que prod, como dice el diseño ("en dev, Vite reenvía `/api`"), y no cambia el código de la app.
+  - Lo descartable sería apuntar el socket directo a `localhost:1337` en dev: la web tomaría otro camino que en prod, y la API podría rechazar el Origin.
+
+**Lo que necesito que decidas:**
+
+- **B5 y B6, el formato del código de registro:** ¿5 caracteres en mayúsculas como el prototipo, con un alfabeto sin 0/O ni 1/I y la API comparando en mayúsculas? ¿O se queda largo, de 48 caracteres, y la web lo acepta completo?
+
+**Cómo sigo cuando decidas:** un subagente aplica los tres arreglos en `session-2-deck-tweaks`, con sus tests. Después, la validación retoma las filas que faltan y vuelve a correr B5 y B6.
+
+Aparte: `/tmp` se llenó durante la corrida. Lo que más ocupa es `/tmp/alc-trial` (1.8 GB), un ensayo viejo del research, y `/tmp/kurasu-t20` (1.5 GB), del subagente de T20. ¿Borro `/tmp/alc-trial`?
+
+[01:44:52] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/app/apps/web/src; grep -n "^\s*\.[a-z-]* *{\|@layer\|@apply\|@theme" styles.css | head
+[01:44:55] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/app/apps/web/src; for c in main-button pill-button pill-dark pill-danger icon-button t
+[01:45:05] TOOL Bash: df -h /tmp | tail -1; du -sh /tmp/* 2>/dev/null | sort -rh | head -30; ls -la --time-style=+%m-%d_%H:%M /tmp | awk '{print $6, $7}' | sort | head -60
+[01:45:12] TOOL Bash: cd /tmp; ls -d *.png *.mmd *.json *.md *.txt *.js *.html 2>/dev/null | wc -l; ls -d *.png *.mmd *.json *.md *.txt *.js *.html 2>/dev/null | head -80 | tr '\n' '
+[01:45:17] TOOL Bash: cd /tmp; find /tmp -maxdepth 1 -type f -user agus -mmin +60 \( -name '*.png' -o -name '*.mmd' -o -name '*.json' -o -name '*.md' -o -name '*.txt' -o -name '*.js'
+[01:45:30] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; python3 - <<'EOF'
+[01:45:40] TOOL mcp__herdr-subagents__subagent: prompt
+[01:45:56] TOOL Write: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement/phase-fix-validate.md
+[01:45:59] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement; { echo '<supervisor-agent>'; echo; echo '# Brief: kur
+[01:46:04] TOOL mcp__herdr-subagents__subagent: prompt
+[01:46:16] ASSISTANT
+**Por qué hay clases propias en vez de utilidades de Tailwind:**
+
+- **Qué hizo la web:** casi todo usa utilidades de Tailwind, salvo ocho clases en `@layer components` de `styles.css`, armadas con `@apply`: `main-button`, `pill-button`, `pill-dark`, `pill-danger`, `icon-button`, `text-field`, `field-label` y `paper`. El subagente de la web las copió de las clases que usaban los prototipos.
+- **Cuánto se usan:** `pill-button` está en 22 archivos, `paper` en 14, `pill-dark` en 13 y `icon-button` en 9.
+- **Por qué no está prohibido:** la wiki solo dice "Tailwind 4", así que nada lo impedía. Pero choca con la forma del resto de la web, que reparte lo común en componentes con slots.
+- **Qué hago:** sumé T22 al worktree `kurasu-refactor`. Esas clases pasan a componentes de `ui/` (`Button` con sus variantes, `IconButton`, `TextField`, `FieldLabel`, `Paper`) que usan utilidades directamente, y `styles.css` queda sin clases propias. Va junto con T19, que ya está tocando `ui/`.
+
+**Arreglos de la validación (T21):** quedaron en `tasks.md`, y el formato del código está registrado en el diseño del programa (3.2, `EnrollmentCode`).
+
+- El código de registro tiene 5 caracteres en mayúsculas, sin 0, O, 1 ni I, y la API lo compara en mayúsculas. El link del mail sigue con el código largo.
+- F1 se arregla renombrando `.text-field` en `session-2-deck-tweaks`, para que la validación pueda seguir. Cuando T22 se mergee, la clase desaparece.
+- F2 se arregla con el plugin de Vite solo de dev, como propuse, y se prueba de punta a punta con `presence` llegando por el proxy.
+
+**`/tmp`:** pasó del 75% al 26% de uso.
+
+- Borré los ensayos viejos del research (`alc-trial`, `rl`, `vp-trial`, `alch`, `trial`, `e4`, los clones de ratstack), los íconos y las capturas sueltas de más de una hora (canvas, diagramas, replay).
+- Dejé lo que todavía se usa: los `kurasu-*` de los subagentes y las cachés de node y de Claude.
+
+**Orden:** le pedí a la validación que apague el dev server y quede en pausa. Apenas confirme, lanzo T21 en el checkout principal. Cuando esté commiteada, la validación retoma, vuelve a correr B5 y B6, y sigue con las filas que faltan.
+
+
+## [01:46:17] USER
+The herdr-subagents plugin sent a message:
+Child "kurasu-validate" reached done. Use the subagent tool — collect, pane_id w3Z:p1K — to read its result.
+
+This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above.
+
+[01:46:19] TOOL mcp__herdr-subagents__subagent: collect
+[01:46:23] TOOL mcp__herdr-subagents__subagent: spawn
+[01:46:33] ASSISTANT
+La validación quedó en pausa:
+
+- **Dev server:** apagado. Los puertos 5173 y 1337 están libres.
+- **Navegador:** las sesiones de `profe`, `lucia`, `tomas` y `mateo` siguen abiertas.
+- **Reporte:** tiene 14 filas en PASS, 4 en FAIL (B5, B6, F1 y F2) y 66 sin correr. T16 sigue `in progress`.
+
+Lancé `kurasu-fix-validate` con T21 en `session-2-deck-tweaks`: el código de registro de 5 caracteres, el renombre de `.text-field` y el plugin de Vite para el socket del aula. Lo prueba de punta a punta. Cuando lo commitee, la validación retoma: vuelve a correr B5 y B6 y sigue con las filas que faltan.
+
+`kurasu-refactor` sigue en su worktree con T19, T20 y ahora T22.
+
+
+## [01:47:51] USER
+cambie de opinion, dejemos los custom components, no sabía que existia eso
+
+[01:47:57] TOOL mcp__herdr-subagents__subagent: prompt
+[01:47:59] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; python3 - <<'EOF'
+[01:48:05] ASSISTANT
+Listo: las clases de `@layer components` se quedan como están, y T22 está cerrada en `tasks.md` como cancelada por vos.
+
+Le avisé a `kurasu-refactor` que revierta lo que haya empezado de T22 y siga solo con T19 y T20.
+
+El renombre de `.text-field` para F1 (dentro de T21) sigue en pie, porque arregla el choque con la utilidad de Tailwind que dejaba el texto blanco sobre blanco.
+
+
+## [01:58:20] USER
+el fix de validate parece estar esperando por un puerto, quien tiene ese puerto?
+
+[01:58:24] TOOL Bash: ss -ltnp 2>/dev/null | grep -E ':(5173|1337|517[4-9]|133[8-9])\b'; for p in $(ss -ltnp 2>/dev/null | grep -E ':(5173|1337)\b' | grep -oP 'pid=\K[0-9]+' | sort -
+[01:58:27] TOOL Bash: ss -ltnp 2>/dev/null | grep -E 'node|workerd|bun|vite' | cut -c1-200; ps -eo pid,etime,cmd | grep -E 'alchemy|workerd|vite|pnpm (dev|test)' | grep -v grep | cut
+[01:58:30] TOOL Bash: for p in 1048993 1049008 1057829; do echo "== $p $(readlink /proc/$p/cwd)"; tr '\0' ' ' < /proc/$p/cmdline | grep -oE 'eval .{0,300}' | head -1; done; ps -eo pi
+[01:58:34] TOOL mcp__herdr-subagents__subagent: read
+[01:58:44] TOOL mcp__herdr-subagents__subagent: prompt
+[01:58:51] ASSISTANT
+El puerto que espera es el 1337, y lo tiene `kurasu-refactor`, el worktree de T19 y T20.
+
+- **Por qué choca:** cada stage de los tests de la API levanta su Worker empezando por el 1337 y sube si está ocupado (1339, 1341…). Como T20 está midiendo tiempos, corre la suite una y otra vez.
+- **Lo que hace el fix:** el proxy `/api` de Vite apunta fijo a 1337. Si el dev server arranca con el puerto ocupado, su API se va a otro y el proxy no la encuentra. Por eso el subagente de T21 apagó su `pnpm dev` y espera, con un tope de 15 minutos, a que el 1337 quede libre.
+
+Le pedí a `kurasu-refactor` que no lance más tests de la API hasta que le avise, y que mientras tanto siga con el código de T19 y los tests de la web. Así el 1337 se libera cuando termine la corrida en curso y T21 puede probar el socket. Sus mediciones de T20 igual iban a salir distorsionadas con otro stack corriendo al lado.
+
+El problema de fondo ya figuraba como no resuelto en el reporte de la base: el proxy de dev apunta a un puerto fijo y la API no. Cuando terminen las dos cosas, retomo el refactor con el puerto libre.
+
+
+## [02:03:19] USER
+The herdr-subagents plugin sent a message:
+Child "kurasu-refactor" reached done. Use the subagent tool — collect, pane_id w42:p2 — to read its result.
+
+This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above.
+
+[02:03:21] TOOL mcp__herdr-subagents__subagent: collect
+[02:03:26] TOOL mcp__herdr-subagents__subagent: close
+[02:03:31] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement; cat > report-refactor.md <<'EOF'
+[02:03:40] ASSISTANT
+`kurasu-refactor` terminó T19 y T20 en su branch. No la mergeo hasta que T21 termine en el checkout principal. El subagente ya no corre nada, así que el puerto 1337 quedó libre para T21.
+
+**T19 · piezas generalizadas:**
+- `useApiQuery` y `useApiMutation` arman en un solo lugar la llamada, la invalidación y los callbacks. Sigue habiendo un hook por operación, ahora reducido a su llamada y a lo que invalida.
+- `ui/Backdrop` es el overlay. `ui/ConfirmAction` es la confirmación genérica, que usan los cuatro botones de borrar y sacar el acceso.
+- `useSlidesMaterial` busca las slides en un solo lugar.
+- Los 137 tests de la web pasan sin cambios.
+- **Excepción:** `EnrollmentQr` no usa `ConfirmAction`. El diálogo de confirmación quedaría dentro del modal del QR y heredaría su texto centrado.
+
+**T20 · tests más rápidos:**
+- Ahora turbo guarda en caché los tests de cada paquete. Si cambia solo la web, se corre solo la web: 15 s en vez de 60.
+- `pnpm test` sin caché bajó poco, de unos 60 s a 55 s.
+- En la API, casi todo el tiempo se va en levantar un stage por archivo (unos 5 s cada uno) y en el arranque en frío del Worker (unos 3,7 s). Con más workers, los tests empiezan a fallar por sobrecarga. Achicar ese costo requiere compartir stages, y eso cambia la regla de un stage por archivo, así que no lo aplicó.
+
+**Lo que necesito que confirmes:** el subagente cambió lefthook para que corra solo `pnpm check` en cada commit, sin los tests. El commit bajó de 68 s a 7 s. Dice que lo hizo "por tu decisión", pero yo no le mandé esa instrucción.
+
+- **Si se lo dijiste vos en su pestaña:** queda así, y actualizo `fence.md`, que todavía dice que lefthook corre check y test en cada commit.
+- **Si no:** lo reviertes al mergear, y lefthook vuelve a correr check y test.
+
+**Pendientes del reporte:**
+- Cada corrida de los tests de la API agrega unos 130 MB a `apps/api/.alchemy`, y nada lo limpia: en ese worktree ya ocupa 632 MB.
+- Falta la tercera medición del "después", que quedó cortada por la pausa del 1337.
+
+
+## [02:04:10] USER
+yo le dije
+
+[02:04:13] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; grep -n "lefthook" .mahou/wiki/fence.md .mahou/wiki/INDEX.md; grep -rn "lefthook\|cad
+[02:04:18] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; python3 - <<'EOF'
+[02:04:22] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/implement; python3 - <<'EOF'
+[02:04:27] ASSISTANT
+Entonces queda así: lefthook corre solo `pnpm check` en cada commit, y los tests se corren a mano con `pnpm test`.
+
+Actualicé la regla donde estaba escrita:
+
+- **`.mahou/wiki/fence.md`:** lefthook corre `check` en cada commit, sin `--no-verify`; los tests se corren a mano antes de entregar el trabajo, porque la suite de la API tarda alrededor de un minuto; turbo guarda en caché los tests de cada paquete hasta que cambia el paquete o algo de lo que depende. El cambio está sin commitear y va junto con el merge de `kurasu-refactor`.
+- **Diseño del programa** (layout del paquete y Standards): misma decisión.
+- **Brief común de los subagentes:** de ahora en más corren `pnpm test` ellos mismos antes de commitear.
+
+Sigo esperando a T21 (`kurasu-fix-validate`). Después mergeo `kurasu-refactor` y la validación retoma.
+
+
+## [02:04:28] USER
+The herdr-subagents plugin sent a message:
+Child "kurasu-fix-validate" is blocked on a dialog. Use the subagent tool — read, pane_id w3Z:p1N — to see what it is asking, then tell the human to answer it in that tab.
+
+This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above.
+
+[02:04:29] TOOL mcp__herdr-subagents__subagent: read
+[02:04:38] ASSISTANT
+`kurasu-fix-validate` (pestaña `kurasu-fix-validate`, pane `w3Z:p1N`) está bloqueado en un diálogo de permisos.
+
+- **Qué pasó:** el puerto 1337 ya está libre, pero el clasificador de auto mode le bloqueó tres comandos seguidos.
+  1. Un `pkill` contra los procesos del worktree `kurasu-refactor`, que no le correspondía.
+  2. Arrancar `pnpm dev`.
+  3. La espera que está en el diálogo: un loop sobre `/tmp/kurasu-dev.log` hasta 180 s.
+- **Qué contestar:** **3. No**. Como `pnpm dev` no arrancó, esa espera no va a terminar nunca. Si no contestás, se rechaza sola en unos dos minutos.
+- **Después**, en esa misma pestaña, autorizalo a levantar el dev server, por ejemplo: "podés levantar `pnpm dev` en `app/` del checkout principal; el worktree de refactor ya no corre nada". Si el clasificador lo vuelve a frenar, aprobá el comando de `pnpm dev`.
+
+No respondo el diálogo por vos. Si querés que lo haga yo, decime qué opción elijo.
+
+
+## [02:04:38] USER
+The herdr-subagents plugin sent a message:
+Child "kurasu-fix-validate" is no longer blocked and is working again.
+
+This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above.
+
+[02:04:39] ASSISTANT
+`kurasu-fix-validate` ya no está bloqueado y sigue con T21. Te aviso cuando reporte.
+
+
+## [02:04:59] USER
+The herdr-subagents plugin sent a message:
+Child "kurasu-fix-validate" reached idle. Use the subagent tool — collect, pane_id w3Z:p1N — to read its result.
+
+This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above.
+
+[02:05:01] TOOL mcp__herdr-subagents__subagent: collect
+[02:05:04] TOOL Bash: ss -ltnp 2>/dev/null | grep -E ':(5173|13[0-9][0-9])\b'; pgrep -af "kurasu-refactor" | grep -v pgrep | head -3; echo done
+[02:05:11] TOOL mcp__herdr-subagents__subagent: prompt
+[02:05:17] ASSISTANT
+`kurasu-fix-validate` se había detenido: después del `pkill` equivocado contra el otro worktree, el clasificador le bloqueaba hasta `pnpm check`.
+
+- **Ya hecho en el working tree, sin commitear:**
+  - El código de registro de 5 caracteres, con sus tests.
+  - El renombre de `.text-field` a `.input-field`. Compiló el CSS para comprobar que ninguna otra clase choca con una utilidad.
+  - El plugin de Vite: el que contestaba primero el upgrade era el plugin de Cloudflare de Alchemy, y ahora los upgrades a `/api/` van al proxy de Vite.
+- **Falta:**
+  - Probar el socket de punta a punta (que llegue `presence` por el 5173).
+  - Correr `pnpm check` y `pnpm test`.
+  - El commit.
+
+Comprobé que no queda ningún proceso de `kurasu-refactor` y que los puertos 1337 a 1341 y 5173 están libres. Le pasé eso y le pedí que siga sin tocar procesos que no lanzó él. Si el clasificador le vuelve a bloquear un comando, para y avisa cuál es. En ese caso vas a tener que aprobarlo en su pestaña.
+
+
+## [02:11:53] USER
+The herdr-subagents plugin sent a message:
+Child "kurasu-fix-validate" reached idle. Use the subagent tool — collect, pane_id w3Z:p1N — to read its result.
+
+This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above.
+
+[02:11:55] TOOL mcp__herdr-subagents__subagent: collect
+[02:11:59] TOOL mcp__herdr-subagents__subagent: close
+[02:12:00] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; git status --short | head; git merge kurasu-refactor --no-edit 2>&1 | tail -5; git st
+[02:12:03] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/app; grep -rn "text-field" apps/web/src | head; pnpm install 2>&1 | tail -2; pnpm chec
+[02:13:12] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; git add .mahou/wiki/fence.md && git commit -q -m "docs(wiki): leave kurasu's tests to
+[02:13:19] TOOL mcp__herdr-subagents__subagent: prompt
+[02:13:25] ASSISTANT
+La validación ya retomó con los arreglos de T21 y el refactor adentro.
+
+- **T21:** quedó commiteada en tres commits (`7f3e73f`, `9a7f0b3` y `94a8f98`).
+  - El código de registro ahora tiene 5 caracteres en mayúsculas.
+  - `.text-field` pasó a llamarse `.input-field`.
+  - El socket del aula por el 5173 anda en dev: probado de punta a punta, llega `presence`.
+- **Merge de `kurasu-refactor` (T19 y T20):** entró sin conflictos. Después del merge, `pnpm check` está limpio y `pnpm test --force` pasa: 137 tests de la web, y 129 de la API más uno en skip.
+- **Wiki:** commiteé el cambio de `fence.md` (lefthook solo con check, tests a mano) en `84cf79d`.
+
+`kurasu-validate` levanta de nuevo el dev server y vuelve a correr B5 y B6. Además revisa que los inputs se lean y que el modal del QR muestre el código nuevo, y sigue con las 66 filas que faltaban, sacando las capturas.
+
+Cuando termine, corro el agentic review sobre los arreglos que vinieron después del primero: T18, T19, T20 y T21. Después sigue el deploy (T17).
+
+
+## [02:41:06] USER
+me das un resumen del estado de la validación?
+
+[02:41:12] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual/reports/validate; ls -la --time-style=+%H:%M index.html; date +%
+[02:41:18] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; python3 - <<'EOF'
+[02:41:28] ASSISTANT
+La validación está casi terminada. El reporte (actualizado hace un minuto) tiene 80 de las 82 filas en **PASS**, y el subagente sigue trabajando: va por la captura 360 del replay, cerrar sesión después del modo oscuro.
+
+- **Pasaron:** todo el login y el registro, incluidos B5 y B6 con el código nuevo de 5 caracteres; el inicio y el voto de los tres tipos; el aula del estudiante (slides, seguir al profe, Presentes, la mano, preguntas y material al instante); el admin (sesiones, material y slides, encuestas, la pestaña Aula con badges, Presentar); y Usuarios con el QR. F1 quedó resuelto: los inputs ya se leen.
+- **Faltan:** B75 (celular) y B86 (cortar y reconectar `alchemy dev` con el aula abierta).
+
+Encontró problemas que no son filas del diseño de tests. No arregla nada; vuelven como decisiones:
+
+- **F4 · un estudiante que sale del aula sigue en Presentes.** Si sale con una navegación completa (escribiendo la URL o con un link de afuera), la página entra al back/forward cache de Chrome con el WebSocket abierto. Tomás siguió figurando 30 s y desapareció recién al cerrar el navegador. La API saca bien a quien cierra el socket; el problema está en la web.
+  - Arreglo posible: cerrar el socket en `pagehide` y volver a abrirlo en `pageshow`.
+  - Es la parte a mano de B67 ("al ir al inicio, el estudiante desaparece de Presentes").
+- **F6 · Escape no cierra las hojas.** Material, Encuestas y Preguntas se cierran con la X pero no con Escape. Una hoja que quedó abierta tapaba el inicio.
+- **F3 · el modal del QR vacío con un código viejo.** Pasa solo con un código de registro de 48 caracteres guardado antes de T21: el GET responde 500 y el modal no muestra ni el error ni el botón de regenerar. En prod el D1 arranca vacío, así que no debería pasar.
+  - Sí muestra que un error del GET del código deja el modal en blanco.
+- **F2,** el socket por el proxy de Vite, sigue en el reporte como hallazgo histórico. Quedó resuelto con T21.
+
+Cuando termine B75 y B86 te traigo el reporte final, y decidimos qué hacer con F4, F6 y F3 antes del deploy.
+
+
+## [02:45:22] USER
+The herdr-subagents plugin sent a message:
+Child "kurasu-validate" reached done. Use the subagent tool — collect, pane_id w3Z:p1K — to read its result.
+
+This is how Claude Code surfaces a prompt a plugin submits between turns — it starts this turn in the user's place. Address the message above.
+
+[02:45:24] TOOL mcp__herdr-subagents__subagent: collect
+[02:45:29] TOOL mcp__herdr-subagents__subagent: close
+[02:45:38] ASSISTANT
+La validación manual (T16) terminó, y las **82 filas pasan** contra el Stack local: A8, A56 y las 80 de la web.
+
+- B5 y B6 pasaron en la segunda tanda, con el código de 5 caracteres.
+- F1 (inputs ilegibles) y F2 (socket por el proxy de Vite) quedaron resueltos con T21 y verificados.
+- B75 se probó en un viewport de celular. En un celular real no se corrió.
+- **Reporte:** `.scratch/aula-virtual/reports/validate/index.html`.
+- **Replay:** quedaron 39 capturas (de la 256 a la 361) sin commitear. Las commiteo junto con la grabación.
+
+Quedaron abiertos tres hallazgos fuera de las filas, en una task nueva, T23. Mi propuesta para cada uno:
+
+- **F4 · un estudiante que sale de `/aula` con una navegación completa sigue en Presentes.** Pasa al escribir la URL o al seguir un link externo: la página entra al back/forward cache de Chrome con el socket abierto. Saliendo con la flecha de la app desaparece bien, y la API y el proxy sacan bien a quien cierra el socket.
+  - Propuesta: `useClassroom` cierra el socket en `pagehide` y lo vuelve a abrir en `pageshow`. Ya existe la lógica de reconexión, que pide todo de nuevo al reabrir.
+- **F6 · Escape no cierra las hojas** (Material, Encuestas, Preguntas, Tu perfil); la X sí.
+  - Propuesta: que Escape cierre `Sheet` y `ConfirmDialog`, como la X. En `ConfirmDialog`, cerrar con Escape equivale a cancelar.
+- **F3 · el modal del QR queda en blanco si falla el GET del código.** Apareció con un código guardado en el formato viejo, que en prod no va a existir. Igual muestra que un error deja al profe sin QR ni botón para regenerar.
+  - Propuesta: el modal muestra un error y deja "Regenerar código" disponible.
+
+Una observación que no es falla: en B61, una vez, cuando el profe se fue, un estudiante saltó de la slide 2 a la 1. Pasó justo después de "Seguir al profe" y no se pudo reproducir en dos intentos más.
+
+**¿Aplico los tres arreglos así?** Los haría en `session-2-deck-tweaks`, con sus tests. Después corre el agentic review sobre todo lo que cambió desde el primer review (T18 a T23). Antes del deploy, la validación vuelve a correr B67 a mano para confirmar F4.
+
+
+## [02:48:10] USER
+me voy a dormir, hagamos estos fixes y luego continúa con el deploy:
+- F4: ignoremos el caso
+- F6: sumemos escape para cerrar modales y hojas
+- F3: ignoremos este, fue un caso puntual por el cambio que hicimos
+- F2: cuando terminemos con la implementación también asegúrate de updatear la documentación y la wiki, no me preguntes, aplica los cambios
+
+intenta hacer el deploy por tu cuenta a menos que algo se complique mucho
+duda: esto se crea con que nombre en cloudflare?
+haz un refresh de alchemy para asegurarnos qué sigues teniendo el token!
+
+[02:48:16] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/app/apps/infra; ./node_modules/.bin/alchemy profile refresh --no-input 2>&1 | tail -5;
+[02:48:26] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/app; A=$(find node_modules/.pnpm -maxdepth 1 -name "alchemy@2.0.0-beta.83*" | head -1)
+[02:48:29] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/app; A=$(ls -d node_modules/.pnpm/alchemy@2.0.0-beta.83*/node_modules/alchemy | head -
+[02:48:33] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/app; grep -rnoE '(Worker|DurableObject|D1\.Database|R2\.Bucket|Email\.SendEmail|Websit
+[02:48:39] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; grep -n "^## T23" -A12 tasks.md
+[02:48:50] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/aula-virtual; python3 - <<'EOF'
+[02:48:51] TOOL mcp__herdr-subagents__subagent: spawn
+[02:49:07] ASSISTANT
+Que descanses. Ya arranqué con los arreglos.
+
+- **F6:** lo está haciendo el subagente `kurasu-f6`. Escape cierra todas las hojas y los diálogos (en una confirmación, equivale a Cancelar), y si hay un diálogo encima de otro cierra solo el de arriba. Va con sus tests.
+- **F4 y F3:** quedan ignorados, anotado así en T23.
+- **Token de Alchemy:** lo refresqué y quedó conectado; ahora vence a las 06:48Z. Los tokens duran una hora, así que hago otro refresh justo antes del deploy.
+
+**Nombres en Cloudflare:** Alchemy arma el nombre físico como `<stack>-<id>-<stage>-<sufijo>`, con un sufijo aleatorio de 16 caracteres. Para prod serían más o menos así:
+
+| Recurso | Nombre aproximado |
+|---|---|
+| Worker de la API (con el Durable Object `Aula`) | `kurasu-api-prod-…` |
+| Worker de la web, en el custom domain `kurasu.asermax.com` | `kurasu-web-prod-…` |
+| D1 | `kurasu-db-prod-…` |
+| R2 | `kurasu-bucket-prod-…` |
+| Subdominio de mail | `kurasu.asermax.com` (`no-reply@kurasu.asermax.com`) |
+| Ruta | `kurasu.asermax.com/api/*` |
+| Zona | `asermax.com`, que ya existe: se adopta y no se borra |
+
+Además, `Cloudflare.state()` crea en la cuenta un Worker con su Durable Object para guardar el estado de Alchemy. Después del deploy te paso los nombres exactos.
+
+**Lo que sigue, sin preguntarte:**
+
+1. **Agentic review** de todo lo que cambió después del primero: T21, T19, T20 y T23.
+2. **Docs y wiki.** Las alineo con lo que quedó construido y aplico los cambios directo. Entran:
+   - los dos errores 400;
+   - el código de registro de 5 caracteres;
+   - el origen web por stage;
+   - el proxy de WebSocket en dev y el plugin de Vite;
+   - lefthook y el caché de los tests.
+3. **Deploy a prod (T17)** con `alchemy deploy --stage prod`, más el alta de `acarrasco@filadd.com` y `dpiloni@filadd.com` como profes.
+4. **Pruebas de prod (árbol C).** Corro las que puedo hacer solo: migraciones, dominio y ruteo, que el mail salga, material y slides en R2, y el aula con dos navegadores. Las que necesitan una casilla de Gmail o un celular real (C4 y C5) te las dejo armadas para cuando te despiertes.
+
+Si algo se complica mucho en el deploy, paro ahí y te dejo el estado escrito.
+
+
+## [02:50:26] USER
+ah y ve armando el replay mientras tanto también
+
+[02:50:30] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; cat .claude/skills/session-replay/references/editor.md | head -120; grep -n "condense
+[02:50:35] TOOL Bash: cd /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course; R=sessions/session-2/app-agentic/.recording; tail -c 1500 $R/script.js; node .claude/
