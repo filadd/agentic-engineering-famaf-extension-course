@@ -15,6 +15,7 @@ import { ServedApi } from "./api.ts";
 import Aula from "./classroom/aula.ts";
 import { WebCrypto } from "./crypto.ts";
 import { MaterialsBucket } from "./files/bucket.ts";
+import { AdminUsersHandlers } from "./handlers/admin-users.ts";
 import { AuthHandlers } from "./handlers/auth.ts";
 import { MeHandlers } from "./handlers/me.ts";
 import { mailBinding } from "./mail/binding.ts";
@@ -42,21 +43,29 @@ export default class Api extends Cloudflare.Worker<Api>()(
       Config.withDefault("kurasu.asermax.com"),
     );
 
+    // Where the links of the mail and the QR point. Deployed it is the domain;
+    // under `alchemy dev` it is the local web, set in .env.schema.
+    const webOrigin = yield* Config.String("KURASU_WEB_ORIGIN").pipe(
+      Config.withDefault(`https://${domain}`),
+    );
+
     const jwtSecret = yield* Config.Redacted("JWT_SECRET");
     const sender = `no-reply@${domain}`;
     const email = yield* Cloudflare.Email.Send(yield* mailBinding(sender));
 
     const adapters = Layer.mergeAll(D1Users, D1Codes).pipe(Layer.provide(Database.layer(d1.raw)));
 
-    const access = Access.layer(`https://${domain}`).pipe(
+    const access = Access.layer(webOrigin).pipe(
       Layer.provide([EmailSendingMailer(email, sender), JoseSessionTokens(jwtSecret), WebCrypto]),
       Layer.provideMerge(adapters),
     );
 
-    const services = access.pipe(Layer.provideMerge(JoseSessionTokens(jwtSecret)));
+    const services = access.pipe(
+      Layer.provideMerge(Layer.mergeAll(JoseSessionTokens(jwtSecret), WebCrypto)),
+    );
 
     const app = HttpApiBuilder.layer(ServedApi).pipe(
-      Layer.provide([AuthHandlers, MeHandlers]),
+      Layer.provide([AuthHandlers, MeHandlers, AdminUsersHandlers(webOrigin)]),
       Layer.provide(CurrentUserMiddlewareLive),
       Layer.provide(services),
       Layer.provide(HttpServer.layerServices),

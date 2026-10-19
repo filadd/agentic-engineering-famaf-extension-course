@@ -6,13 +6,11 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 
-import { Codes, type NewCode } from "./codes.ts";
+import { Codes } from "./codes.ts";
 import { Mailer } from "./mailer.ts";
+import { newCode } from "./new-code.ts";
 import { SessionTokens } from "./session-tokens.ts";
 import { Users } from "./users.ts";
-
-const toHex = (bytes: Uint8Array) =>
-  Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
 
 export interface OpenedSession {
   readonly user: User;
@@ -45,11 +43,7 @@ export class Access extends Context.Service<
         const mailer = yield* Mailer;
         const tokens = yield* SessionTokens;
         const crypto = yield* Crypto.Crypto;
-
-        const newCode: Effect.Effect<NewCode> = Effect.all({
-          id: crypto.randomULID,
-          code: Effect.map(crypto.randomBytes(24), toHex),
-        }).pipe(Effect.orDie);
+        const freshCode = Effect.provideService(newCode, Crypto.Crypto, crypto);
 
         const isCurrentEnrollment = (enrollmentCode: string | undefined) =>
           enrollmentCode == null
@@ -67,7 +61,7 @@ export class Access extends Context.Service<
                 return yield* new NoAccess();
               }
 
-              const code = yield* newCode;
+              const code = yield* freshCode;
 
               yield* codes.issueUserCode(existing.value.id, code);
 
@@ -79,7 +73,7 @@ export class Access extends Context.Service<
             }
 
             const id = yield* crypto.randomULID.pipe(Effect.orDie);
-            const code = yield* newCode;
+            const code = yield* freshCode;
 
             yield* users
               .register({ id, email }, code)
