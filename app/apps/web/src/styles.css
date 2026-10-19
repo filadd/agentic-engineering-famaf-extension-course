@@ -32,6 +32,7 @@
 @theme inline {
   --font-sans: "Atkinson Hyperlegible", sans-serif;
   --font-display: "Rubik", sans-serif;
+  --font-emoji: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
 
   --color-window: var(--window);
   --color-ink: var(--ink);
@@ -115,5 +116,33 @@
 
   .paper {
     @apply rounded-[18px] bg-paper text-coal;
+  }
+
+  /* The wrapper adds no box, so the real part keeps its layout; only its
+     leaves turn grey. The colours are important because the part's own
+     utilities (a card's ink, an avatar's colour) would win over this layer.
+     A shadow of the background colour hides an emoji, which ignores color. */
+  .skeleton {
+    display: contents;
+  }
+
+  .skeleton * {
+    color: transparent !important;
+  }
+
+  .skeleton *::placeholder {
+    color: transparent !important;
+  }
+
+  .skeleton :not(:has(*)) {
+    @apply animate-pulse rounded-md;
+    background-color: var(--line) !important;
+    text-shadow: 0 0 0 var(--line) !important;
+    box-decoration-break: clone;
+  }
+
+  .skeleton img {
+    object-position: -100vw 0;
+    background-color: var(--side) !important;
   }
 }

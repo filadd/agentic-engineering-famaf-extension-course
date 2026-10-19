@@ -5,6 +5,7 @@ import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { useThemeClass } from "../helpers/local-ui/useThemeClass.ts";
 import styles from "../styles.css?url";
 import { RootDocument } from "../ui/RootDocument.tsx";
+import { Toaster } from "../ui/Toaster.tsx";
 
 export interface RouterContext {
   queryClient: QueryClient;
@@ -18,6 +19,7 @@ const RootLayout = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <Toaster />
     </QueryClientProvider>
   );
 };
