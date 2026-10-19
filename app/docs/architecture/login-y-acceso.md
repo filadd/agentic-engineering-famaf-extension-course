@@ -94,7 +94,7 @@ El WebSocket del aula revisa el acceso una sola vez, al abrirse; qué pasa con q
 
 El profe administra los usuarios desde la pantalla Usuarios, a la que llega desde la lista de sesiones. Ahí busca, filtra por acceso, da y saca el acceso y agrega usuarios por email. Los usuarios no se borran: el profe le saca el acceso a quien no tiene que entrar. Un usuario agregado por email ya tiene acceso, y aparece solo con su email hasta que hace el setup. El usuario del profe, con `role` en `teacher`, se crea a mano.
 
-El QR de registro y su código están uno junto al otro. El código es una fila de `Code` sin `user_id`. La app lo genera la primera vez que el profe abre el QR, y el profe lo regenera con un botón: el anterior deja de servir para registrarse. Sacarle el acceso a alguien y regenerar el código piden confirmación, como toda acción destructiva (ver [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)). Cómo se guardan los dos tipos de código está en el [modelo de datos](modelo-de-datos.md).
+El QR de registro y su código están uno junto al otro. El código es una fila de `Code` sin `user_id`. La app lo genera la primera vez que el profe abre el QR, y el profe lo regenera con un botón: el anterior deja de servir para registrarse. Sacarle el acceso a alguien y regenerar el código piden confirmación, como toda acción destructiva (ver [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)). El profe no se puede sacar el acceso a sí mismo: la API lo rechaza, porque no habría otro profe que se lo devuelva. Cómo se guardan los dos tipos de código está en el [modelo de datos](modelo-de-datos.md).
 
 [Prototipo de la pantalla Usuarios del profe, con el QR y el código de registro](../prototipos/admin-usuarios.html)
 

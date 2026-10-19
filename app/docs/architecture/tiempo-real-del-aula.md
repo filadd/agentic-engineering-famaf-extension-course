@@ -62,7 +62,7 @@ stateDiagram-v2
 
 Presente es quien está conectado: el estudiante mientras está en la pantalla del aula, y el profe mientras tiene abierta la página de la sesión, en cualquier pestaña. El estudiante que sale del aula desaparece de Presentes, y reaparece al volver. Cuando alguien entra o sale, el aula misma les avisa a los conectados, sin pasar por la API ni por D1. El aula guarda con cada conexión el nombre y el avatar que la persona tenía al conectarse, y Presentes los muestra así: un cambio de perfil se ve en Presentes cuando esa persona se vuelve a conectar.
 
-Si la conexión se corta, la web avisa y se reconecta sola. Al reconectarse vuelve a pedir todo lo del aula, y recién después sigue con los avisos. Mientras el usuario está desconectado, los demás lo ven fuera de Presentes.
+Si la conexión se corta, la web avisa y se reconecta sola. Al reconectarse vuelve a pedir todo lo del aula, y recién después sigue con los avisos. Mientras el usuario está desconectado, los demás lo ven fuera de Presentes. Si la conexión no llega a abrirse, la web vuelve a pedir la lista de sesiones, y si la del aula ya no es la destacada, el estudiante vuelve al inicio.
 
 > [!NOTE] Por qué la web pide todo antes de seguir con los avisos
 > Mientras la conexión está cortada, la web no recibe avisos. Al pedir todo lo del aula primero, no se pierde nada de lo que cambió mientras tanto.
