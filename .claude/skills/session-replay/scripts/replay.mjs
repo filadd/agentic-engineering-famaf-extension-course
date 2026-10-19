@@ -172,7 +172,12 @@ const promptText = (text) => {
 };
 
 // A prompt the user types while the agent is mid-turn is stored as a queued-command attachment, not a user entry.
-const isQueuedPrompt = (e) => e.type === "attachment" && e.attachment?.type === "queued_command" && e.attachment.origin?.kind === "human";
+// A canvas voice message that arrives while the agent is mid-turn is queued the same way, as a task notification.
+const isQueuedPrompt = (e) =>
+  e.type === "attachment" &&
+  e.attachment?.type === "queued_command" &&
+  (e.attachment.origin?.kind === "human" ||
+    (e.attachment.origin?.kind === "task-notification" && /<event>voice: /.test(e.attachment.prompt ?? "")));
 
 const condenseClaude = (transcript, since, until) => {
   const lines = [];
@@ -188,7 +193,7 @@ const condenseClaude = (transcript, since, until) => {
     const time = clock(new Date(entry.timestamp));
 
     if (isQueuedPrompt(entry)) {
-      lines.push(`\n## [${time}] USER\n${entry.attachment.prompt.trim()}\n`);
+      lines.push(`\n## [${time}] USER\n${promptText(entry.attachment.prompt.trim())}\n`);
       continue;
     }
 
@@ -227,6 +232,9 @@ const condenseClaude = (transcript, since, until) => {
   return lines.join("\n");
 };
 
+// In pi, a canvas voice message reaches the agent as a process notification for the watch's output line.
+const isPiVoice = (e) => e.type === "custom_message" && e.details?.logMatch?.line?.startsWith("voice: ") === true;
+
 const condensePi = (transcript, since, until) => {
   const lines = [];
 
@@ -234,11 +242,17 @@ const condensePi = (transcript, since, until) => {
     .split("\n")
     .filter(Boolean)
     .map((line) => JSON.parse(line))
-    .filter((e) => e.type === "message" && (e.message.role === "user" || e.message.role === "assistant"))
+    .filter((e) => (e.type === "message" && (e.message.role === "user" || e.message.role === "assistant")) || isPiVoice(e))
     .filter((e) => e.timestamp >= since && (until == null || e.timestamp < until));
 
   for (const entry of entries) {
     const time = clock(new Date(entry.timestamp));
+
+    if (isPiVoice(entry)) {
+      lines.push(`\n## [${time}] USER\n${promptText(`<event>${entry.details.logMatch.line}</event>`)}\n`);
+      continue;
+    }
+
     const content = entry.message.content;
 
     if (entry.message.role === "user") {
