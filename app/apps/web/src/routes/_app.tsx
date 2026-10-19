@@ -1,19 +1,16 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Navigate, Outlet, useLocation } from "@tanstack/react-router";
 
-import { isAccessError } from "../api/access-error.ts";
-import { meQuery } from "../features/me/me-query.ts";
+import { useMe } from "../features/me/useMe.ts";
 
-export const Route = createFileRoute("/_app")({
-  beforeLoad: async ({ context, location }) => {
-    const me = await context.queryClient.ensureQueryData(meQuery()).catch((error: Error) => {
-      throw isAccessError(error) ? redirect({ to: "/login" }) : error;
-    });
+// The login check does not hold the page: it draws with its skeletons while
+// /api/me answers. Without a session, the query client sends to the login.
+const AppLayout = () => {
+  const me = useMe();
+  const location = useLocation();
 
-    if ((me.name == null || me.avatar == null) && location.pathname !== "/setup") {
-      throw redirect({ to: "/setup" });
-    }
+  const incomplete = me.data != null && (me.data.name == null || me.data.avatar == null);
 
-    return { me };
-  },
-  component: Outlet,
-});
+  return incomplete && location.pathname !== "/setup" ? <Navigate to="/setup" /> : <Outlet />;
+};
+
+export const Route = createFileRoute("/_app")({ component: AppLayout });

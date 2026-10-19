@@ -1,4 +1,6 @@
+import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 import { DeleteOwnQuestion } from "./DeleteOwnQuestion.tsx";
+import { questionExamples } from "./question-examples.ts";
 import { QuestionForm } from "./QuestionForm.tsx";
 import { QuestionList } from "./QuestionList.tsx";
 import { useQuestions } from "./useQuestions.ts";
@@ -14,10 +16,23 @@ interface Props {
 export const StudentQuestions = ({ sessionId, readOnly }: Props) => {
   const questions = useQuestions(sessionId);
 
-  return questions.data == null ? null : (
+  const form = readOnly ? null : <QuestionForm sessionId={sessionId} />;
+
+  return questions.data == null ? (
+    <div>
+      {form}
+      <SkeletonOf>
+        <QuestionList
+          questions={questionExamples}
+          renderVotes={(question) => <VoteToggle question={question} readOnly />}
+          renderActions={() => null}
+        />
+      </SkeletonOf>
+    </div>
+  ) : (
     <QuestionList
       questions={questions.data.toSorted((a, b) => b.votes - a.votes)}
-      header={readOnly ? null : <QuestionForm sessionId={sessionId} />}
+      header={form}
       renderVotes={(question) => <VoteToggle question={question} readOnly={readOnly} />}
       renderActions={(question) =>
         question.mine && !readOnly ? <DeleteOwnQuestion question={question} /> : null

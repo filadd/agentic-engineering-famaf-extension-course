@@ -1,40 +1,57 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 
 import { AppHeader } from "../../features/me/AppHeader.tsx";
+import { Greeting } from "../../features/me/Greeting.tsx";
 import { useMe } from "../../features/me/useMe.ts";
+import { usePolls } from "../../features/polls/usePolls.ts";
 import { EarlierSessions } from "../../features/sessions/EarlierSessions.tsx";
 import { HighlightedSession } from "../../features/sessions/HighlightedSession.tsx";
+import { sessionExamples } from "../../features/sessions/session-examples.ts";
 import { useSessions } from "../../features/sessions/useSessions.ts";
+import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 
 // The highlighted session is the last enabled one; the earlier ones go below,
-// the newest first.
+// the newest first. Until /api/me says who entered, the page draws the
+// student's skeleton without asking for the student's lists, which the
+// teacher cannot read.
 const HomeRoute = () => {
   const me = useMe();
-  const sessions = useSessions();
+
+  const student = me.data?.role === "student";
+  const sessions = useSessions({ enabled: student });
+  const activePolls = usePolls({ status: "active" }, { enabled: student });
 
   const highlighted = sessions.data?.at(-1);
   const earlier = sessions.data?.slice(0, -1).toReversed() ?? [];
 
+  if (me.data?.role === "teacher") {
+    return <Navigate to="/admin" />;
+  }
+
   return (
     <main className="px-12 pt-8 pb-10 max-[600px]:px-4 max-[600px]:pt-5 max-[600px]:pb-8">
-      <AppHeader title={`Hola, ${me.data?.name ?? ""}`} />
+      <AppHeader title={<Greeting />} />
+      {sessions.data == null ? (
+        <SkeletonOf>
+          <HighlightedSession session={sessionExamples[2]} polls={[]} />
+          <EarlierSessions sessions={sessionExamples.slice(0, 2)} />
+        </SkeletonOf>
+      ) : null}
       {sessions.data != null && highlighted == null ? (
         <p className="mt-[18px] text-muted">
           Todavía no hay sesiones habilitadas. Cuando el profe habilite la primera, aparece acá
           arriba.
         </p>
       ) : null}
-      {highlighted == null ? null : <HighlightedSession session={highlighted} />}
+      {highlighted == null ? null : (
+        <HighlightedSession
+          session={highlighted}
+          polls={activePolls.data?.filter((poll) => poll.sessionId === highlighted.id)}
+        />
+      )}
       {earlier.length === 0 ? null : <EarlierSessions sessions={earlier} />}
     </main>
   );
 };
 
-export const Route = createFileRoute("/_app/")({
-  beforeLoad: ({ context }) => {
-    if (context.me.role === "teacher") {
-      throw redirect({ to: "/admin" });
-    }
-  },
-  component: HomeRoute,
-});
+export const Route = createFileRoute("/_app/")({ component: HomeRoute });

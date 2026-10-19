@@ -2,9 +2,11 @@ import type { PollType } from "@kurasu/contract/polls";
 import { useState } from "react";
 
 import { Icon } from "../../ui/Icon.tsx";
+import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 import { AdminPollCard } from "./AdminPollCard.tsx";
 import { NewPollCard } from "./NewPollCard.tsx";
 import { NewPollMenu } from "./NewPollMenu.tsx";
+import { adminPollExamples } from "./poll-examples.ts";
 import { byStatus } from "./poll-order.ts";
 import { useAdminPolls } from "./useAdminPolls.ts";
 
@@ -35,9 +37,15 @@ export const AdminPollsTab = ({ sessionId }: Props) => {
             onDone={() => setCreating(null)}
           />
         )}
-        {byStatus(polls.data ?? []).map((poll) => (
-          <AdminPollCard key={poll.id} poll={poll} />
-        ))}
+        {polls.data == null ? (
+          <SkeletonOf>
+            {adminPollExamples.map((poll) => (
+              <AdminPollCard key={poll.id} poll={poll} />
+            ))}
+          </SkeletonOf>
+        ) : (
+          byStatus(polls.data).map((poll) => <AdminPollCard key={poll.id} poll={poll} />)
+        )}
       </div>
     </div>
   );

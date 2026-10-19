@@ -1,7 +1,9 @@
 import { useState } from "react";
 
 import { Icon } from "../../ui/Icon.tsx";
+import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 import { AdminPollCard } from "./AdminPollCard.tsx";
+import { adminPollExamples } from "./poll-examples.ts";
 import { byStatus } from "./poll-order.ts";
 import { useAdminPolls } from "./useAdminPolls.ts";
 
@@ -16,7 +18,19 @@ export const AdminPanelPolls = ({ sessionId }: Props) => {
 
   const [closedOpen, setClosedOpen] = useState(false);
 
-  const all = byStatus(polls.data ?? []);
+  if (polls.data == null) {
+    return (
+      <SkeletonOf>
+        <div className="flex flex-col gap-2.5">
+          {adminPollExamples.map((poll) => (
+            <AdminPollCard key={poll.id} poll={poll} />
+          ))}
+        </div>
+      </SkeletonOf>
+    );
+  }
+
+  const all = byStatus(polls.data);
   const current = all.filter((poll) => poll.status !== "closed");
   const closed = all.filter((poll) => poll.status === "closed");
 

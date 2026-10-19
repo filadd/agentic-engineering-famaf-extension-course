@@ -1,5 +1,6 @@
 import type { Session } from "@kurasu/contract/sessions";
 
+import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 import { useAdminMaterials } from "../materials/useAdminMaterials.ts";
 import { useSlidesMaterial } from "../materials/useSlidesMaterial.ts";
 import { useMoveSlide } from "../sessions/useMoveSlide.ts";
@@ -17,12 +18,19 @@ export const TeacherSlides = ({ session }: Props) => {
   const slides = useSlidesMaterial(materials.data);
   const move = useMoveSlide();
 
-  return (
+  const position = { slide: session.currentSlide, step: session.currentStep };
+  const controls = <PresentButton sessionId={session.id} />;
+
+  return materials.data == null || (slides != null && slides.html == null) ? (
+    <SkeletonOf>
+      <SlideStage html={null} position={position} controls={controls} />
+    </SkeletonOf>
+  ) : (
     <SlideStage
       html={slides?.html ?? null}
-      position={{ slide: session.currentSlide, step: session.currentStep }}
-      onNavigate={(position) => move.mutate({ id: session.id, position })}
-      controls={<PresentButton sessionId={session.id} />}
+      position={position}
+      onNavigate={(next) => move.mutate({ id: session.id, position: next })}
+      controls={controls}
     />
   );
 };

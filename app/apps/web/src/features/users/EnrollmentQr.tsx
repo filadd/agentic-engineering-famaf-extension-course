@@ -4,6 +4,8 @@ import { Backdrop } from "../../ui/Backdrop.tsx";
 import { Button } from "../../ui/Button.tsx";
 import { ConfirmDialog } from "../../ui/ConfirmDialog.tsx";
 import { Icon } from "../../ui/Icon.tsx";
+import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
+import { enrollmentCodeExample } from "./enrollment-code-example.ts";
 import { QrCode } from "./QrCode.tsx";
 import { useEnrollmentCode } from "./useEnrollmentCode.ts";
 import { useRegenerateEnrollmentCode } from "./useRegenerateEnrollmentCode.ts";
@@ -19,6 +21,26 @@ export const EnrollmentQr = ({ onClose }: Props) => {
   const regenerate = useRegenerateEnrollmentCode({ onSuccess: () => setConfirming(false) });
 
   const [confirming, setConfirming] = useState(false);
+
+  const shown = code.data ?? enrollmentCodeExample;
+
+  const codeView = (
+    <div className="mt-[22px] mb-2.5 flex items-center justify-center gap-9">
+      <div className="size-[340px] flex-none overflow-hidden rounded-[18px]">
+        <QrCode text={shown.url} label={`QR de registro: ${shown.url}`} />
+      </div>
+      <div className="flex size-[340px] flex-none flex-col justify-center gap-2.5 rounded-[18px] bg-side p-6">
+        <small className="text-lg text-muted">Código del aula</small>
+        <b aria-label="Código del aula" className="font-display text-7xl tracking-[0.12em]">
+          {shown.code}
+        </b>
+        <Button variant="main" className="mt-1.5 self-center" onClick={() => setConfirming(true)}>
+          <Icon name="refresh" size={16} />
+          Regenerar código
+        </Button>
+      </div>
+    </div>
+  );
 
   return (
     <Backdrop layer="projection" onClose={onClose}>
@@ -43,27 +65,7 @@ export const EnrollmentQr = ({ onClose }: Props) => {
           <b className="font-display text-ink">{globalThis.location.host}/registro</b> y escribí el
           código
         </p>
-        {code.data == null ? null : (
-          <div className="mt-[22px] mb-2.5 flex items-center justify-center gap-9">
-            <div className="size-[340px] flex-none overflow-hidden rounded-[18px]">
-              <QrCode text={code.data.url} label={`QR de registro: ${code.data.url}`} />
-            </div>
-            <div className="flex size-[340px] flex-none flex-col justify-center gap-2.5 rounded-[18px] bg-side p-6">
-              <small className="text-lg text-muted">Código del aula</small>
-              <b aria-label="Código del aula" className="font-display text-7xl tracking-[0.12em]">
-                {code.data.code}
-              </b>
-              <Button
-                variant="main"
-                className="mt-1.5 self-center"
-                onClick={() => setConfirming(true)}
-              >
-                <Icon name="refresh" size={16} />
-                Regenerar código
-              </Button>
-            </div>
-          </div>
-        )}
+        {code.data == null ? <SkeletonOf>{codeView}</SkeletonOf> : codeView}
       </div>
       <ConfirmDialog
         open={confirming}

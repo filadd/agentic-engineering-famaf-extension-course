@@ -1,8 +1,10 @@
 import { useState } from "react";
 
 import { Icon } from "../../ui/Icon.tsx";
+import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 import { Avatar } from "./Avatar.tsx";
 import { LogoutButton } from "./LogoutButton.tsx";
+import { meExample } from "./me-example.ts";
 import { ProfileDialog } from "./ProfileDialog.tsx";
 import { ThemeSwitch } from "./ThemeSwitch.tsx";
 import { useMe } from "./useMe.ts";
@@ -13,7 +15,11 @@ export const UserMenu = () => {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(false);
 
-  return me.data == null ? null : (
+  return me.data == null ? (
+    <SkeletonOf>
+      <Avatar animal={meExample.avatar} size="large" />
+    </SkeletonOf>
+  ) : (
     <div className="relative">
       <button
         type="button"

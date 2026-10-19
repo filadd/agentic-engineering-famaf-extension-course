@@ -3,6 +3,7 @@ import type { Position } from "@kurasu/slides/messages";
 import { samePosition } from "@kurasu/slides/navigation";
 import { useState } from "react";
 
+import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 import { HandButton } from "../hands/HandButton.tsx";
 import { useMaterials } from "../materials/useMaterials.ts";
 import { useSlidesMaterial } from "../materials/useSlidesMaterial.ts";
@@ -33,7 +34,28 @@ export const StudentSlides = ({ session, teacherPresent }: Props) => {
   const ownPosition = own != null && own.slidesId === slides?.id ? own.position : teacherPosition;
   const position = teacherPresent && following ? teacherPosition : ownPosition;
 
-  return (
+  const controls = (
+    <>
+      {teacherPresent ? (
+        <FollowTeacherToggle
+          following={following}
+          onToggle={() => {
+            setOwn({ slidesId: slides?.id ?? "", position });
+            setFollowing(!following);
+          }}
+        />
+      ) : (
+        <span className="ml-auto" />
+      )}
+      <HandButton sessionId={session.id} />
+    </>
+  );
+
+  return materials.data == null || (slides != null && slides.html == null) ? (
+    <SkeletonOf>
+      <SlideStage html={null} position={position} controls={controls} />
+    </SkeletonOf>
+  ) : (
     <SlideStage
       html={slides?.html ?? null}
       position={position}
@@ -41,22 +63,7 @@ export const StudentSlides = ({ session, teacherPresent }: Props) => {
         setOwn({ slidesId: slides?.id ?? "", position: next });
         setFollowing(samePosition(next, teacherPosition));
       }}
-      controls={
-        <>
-          {teacherPresent ? (
-            <FollowTeacherToggle
-              following={following}
-              onToggle={() => {
-                setOwn({ slidesId: slides?.id ?? "", position });
-                setFollowing(!following);
-              }}
-            />
-          ) : (
-            <span className="ml-auto" />
-          )}
-          <HandButton sessionId={session.id} />
-        </>
-      }
+      controls={controls}
     />
   );
 };

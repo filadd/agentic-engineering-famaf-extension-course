@@ -1,3 +1,4 @@
+import { useQueryErrorResetBoundary } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 
 import { Button } from "./Button.tsx";
@@ -9,8 +10,11 @@ interface Props {
 }
 
 // It replaces the whole page, header included, so it only offers the way home.
+// The queries' boundary resets too: without it, a query that threw stays in
+// its error and throws again as soon as the page mounts.
 export const ErrorScreen = ({ reset }: Props) => {
   const navigate = useNavigate();
+  const queries = useQueryErrorResetBoundary();
 
   return (
     <main className="grid min-h-full place-items-center p-10 max-[600px]:px-5 max-[600px]:py-7">
@@ -25,7 +29,10 @@ export const ErrorScreen = ({ reset }: Props) => {
         <div className="mt-[26px] flex justify-center max-[600px]:flex-col">
           <Button
             variant="main"
-            onClick={() => void navigate({ to: "/" }).then(reset)}
+            onClick={() => {
+              queries.reset();
+              void navigate({ to: "/" }).then(reset);
+            }}
             className="max-[600px]:w-full max-[600px]:py-[13px]"
           >
             <Icon name="arrow-left" size={18} />

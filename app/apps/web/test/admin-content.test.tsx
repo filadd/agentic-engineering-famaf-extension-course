@@ -19,6 +19,8 @@ const openContent = async (enabled: boolean) => {
   const rendered = await renderRoute(`/admin/sesiones/${planning.id}`);
   const card = await screen.findByRole("region", { name: "La sesión" });
 
+  await within(card).findByRole("switch");
+
   return { ...rendered, card, store: page.store };
 };
 

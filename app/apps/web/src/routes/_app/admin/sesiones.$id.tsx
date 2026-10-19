@@ -9,10 +9,12 @@ import { BackButton } from "../../../features/me/BackButton.tsx";
 import { AdminPollsTab } from "../../../features/polls/AdminPollsTab.tsx";
 import { useNewQuestions } from "../../../features/questions/useNewQuestions.ts";
 import { ContentTab } from "../../../features/sessions/ContentTab.tsx";
+import { sessionExamples } from "../../../features/sessions/session-examples.ts";
 import { sessionTabOf } from "../../../features/sessions/session-tab.ts";
 import { SessionTabs } from "../../../features/sessions/SessionTabs.tsx";
 import { useAdminSession } from "../../../features/sessions/useAdminSession.ts";
 import { useLocalUi } from "../../../helpers/local-ui/useLocalUi.ts";
+import { SkeletonOf } from "../../../ui/SkeletonOf.tsx";
 
 const SessionSearch = Schema.Struct({ tab: Schema.optional(Schema.String) });
 
@@ -37,7 +39,15 @@ const AdminSessionRoute = () => {
       <div className="px-8 pt-[26px] pb-1">
         <AppHeader
           leading={<BackButton to="/admin" label="Volver a las sesiones" />}
-          title={session.data?.title ?? ""}
+          title={
+            session.data == null ? (
+              <SkeletonOf>
+                <span>{sessionExamples[0].title}</span>
+              </SkeletonOf>
+            ) : (
+              session.data.title
+            )
+          }
         />
       </div>
       <SessionTabs
@@ -46,25 +56,24 @@ const AdminSessionRoute = () => {
         newQuestions={newQuestions}
         raisedHands={hands.data?.length ?? 0}
       />
-      {session.data == null ? null : (
-        <div className="flex min-h-0 flex-1 flex-col">
-          {tab === "aula" ? (
-            <TeacherClassroom
-              session={session.data}
-              people={classroom.people}
-              newQuestions={newInPanel}
-            />
-          ) : (
-            <div className="flex-1 overflow-auto pt-[18px] pr-8 pb-7 pl-[86px]">
-              {tab === "contenido" ? (
-                <ContentTab session={session.data} />
-              ) : (
-                <AdminPollsTab sessionId={id} />
-              )}
-            </div>
-          )}
-        </div>
-      )}
+      <div className="flex min-h-0 flex-1 flex-col">
+        {tab === "aula" ? (
+          <TeacherClassroom
+            sessionId={id}
+            session={session.data}
+            people={classroom.people}
+            newQuestions={newInPanel}
+          />
+        ) : (
+          <div className="flex-1 overflow-auto pt-[18px] pr-8 pb-7 pl-[86px]">
+            {tab === "contenido" ? (
+              <ContentTab sessionId={id} session={session.data} />
+            ) : (
+              <AdminPollsTab sessionId={id} />
+            )}
+          </div>
+        )}
+      </div>
     </main>
   );
 };

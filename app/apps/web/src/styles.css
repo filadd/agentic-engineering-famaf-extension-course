@@ -145,4 +145,11 @@
     object-position: -100vw 0;
     background-color: var(--side) !important;
   }
+
+  /* A drawn image, such as the QR, draws its marks in currentColor, so they
+     turn transparent with the text and leave the grey box. */
+  .skeleton svg[role="img"] {
+    @apply animate-pulse;
+    background-color: var(--line) !important;
+  }
 }

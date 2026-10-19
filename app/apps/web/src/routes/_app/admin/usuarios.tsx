@@ -9,12 +9,14 @@ import { passesFilter } from "../../../features/users/access-filter.ts";
 import type { AccessFilterId } from "../../../features/users/access-filter.ts";
 import { AddUserForm } from "../../../features/users/AddUserForm.tsx";
 import { EnrollmentQr } from "../../../features/users/EnrollmentQr.tsx";
+import { userExamples } from "../../../features/users/user-examples.ts";
 import { useUsers } from "../../../features/users/useUsers.ts";
 import { UserRow } from "../../../features/users/UserRow.tsx";
 import { UserSearch } from "../../../features/users/UserSearch.tsx";
 import { UserSearchEmpty } from "../../../features/users/UserSearchEmpty.tsx";
 import { Button } from "../../../ui/Button.tsx";
 import { Icon } from "../../../ui/Icon.tsx";
+import { SkeletonOf } from "../../../ui/SkeletonOf.tsx";
 
 // The course has about thirty people, all of them in one read: searching and
 // filtering happen here, without asking the API again.
@@ -56,11 +58,21 @@ const UsersRoute = () => {
         </div>
         <AccessFilter users={all} value={filter} onChange={setFilter} />
         {users.data != null && shown.length === 0 ? <UserSearchEmpty /> : null}
-        <ul aria-label="Usuarios" className="mt-3.5 flex flex-col gap-2">
-          {shown.map((user) => (
-            <UserRow key={user.id} user={user} />
-          ))}
-        </ul>
+        {users.data == null ? (
+          <SkeletonOf>
+            <ul className="mt-3.5 flex flex-col gap-2">
+              {userExamples.map((user) => (
+                <UserRow key={user.id} user={user} />
+              ))}
+            </ul>
+          </SkeletonOf>
+        ) : (
+          <ul aria-label="Usuarios" className="mt-3.5 flex flex-col gap-2">
+            {shown.map((user) => (
+              <UserRow key={user.id} user={user} />
+            ))}
+          </ul>
+        )}
       </div>
       {adding ? <AddUserForm onClose={() => setAdding(false)} /> : null}
       {showingQr ? <EnrollmentQr onClose={() => setShowingQr(false)} /> : null}

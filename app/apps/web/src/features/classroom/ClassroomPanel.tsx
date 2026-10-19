@@ -5,7 +5,9 @@ import type { ClassroomTab } from "../../helpers/local-ui/local-ui.ts";
 import { useIsMobile } from "../../helpers/useIsMobile.ts";
 import { useLocalUi } from "../../helpers/local-ui/useLocalUi.ts";
 import { Icon } from "../../ui/Icon.tsx";
+import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 import type { IconName } from "../../ui/icons.ts";
+import { personExamples } from "./person-examples.ts";
 import { PresenceList } from "./PresenceList.tsx";
 
 export interface PanelTab {
@@ -17,7 +19,7 @@ export interface PanelTab {
 }
 
 interface Props {
-  people: ReadonlyArray<Person>;
+  people: ReadonlyArray<Person> | undefined;
   meId: string | undefined;
   tabs: ReadonlyArray<PanelTab>;
   hideable: boolean;
@@ -45,7 +47,14 @@ export const ClassroomPanel = ({
     id: "presence",
     label: "Presentes",
     icon: "users",
-    content: <PresenceList people={people} meId={meId} renderHand={renderHand} />,
+    content:
+      people == null ? (
+        <SkeletonOf>
+          <PresenceList people={personExamples} meId={meId} renderHand={() => null} />
+        </SkeletonOf>
+      ) : (
+        <PresenceList people={people} meId={meId} renderHand={renderHand} />
+      ),
   };
 
   const shown = isMobile ? [...tabs, presence] : tabs;
@@ -122,7 +131,8 @@ export const ClassroomPanel = ({
             className="flex w-full items-center gap-1.5 px-4 text-left font-display text-[15px] font-bold text-ink"
           >
             <Icon name="users" size={18} />
-            Presentes ({people.length}){ui.presenceCollapsed ? presenceBadge : null}
+            Presentes{people == null ? null : ` (${people.length})`}
+            {ui.presenceCollapsed ? presenceBadge : null}
             <span className="ml-auto">
               <Icon name={ui.presenceCollapsed ? "chevron-up" : "chevron-down"} size={16} />
             </span>

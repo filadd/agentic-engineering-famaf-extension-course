@@ -1,3 +1,4 @@
+import type { Me } from "@kurasu/contract/user";
 import { screen, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { describe, expect, test } from "vitest";
@@ -10,12 +11,13 @@ import { studentHome, teacherHome } from "./helpers/screens.ts";
 import { server } from "./helpers/server.ts";
 
 describe("_app and /setup", () => {
-  test("without a login the home sends to the login", async () => {
+  test("without a login the home sends to the login, without the error screen", async () => {
     server.use(http.get(url("/me"), () => apiError("Unauthenticated")));
 
     const { router } = await renderRoute("/");
 
     await waitFor(() => expect(router.state.location.pathname).toBe("/login"));
+    expect(screen.queryByRole("heading", { name: "No se pudo cargar la página" })).toBeNull();
   });
 
   test("without access the classroom sends to the login", async () => {
@@ -38,10 +40,13 @@ describe("_app and /setup", () => {
     const updates = recorder<unknown>();
     const done = { ...newcomer, name: "Lucía", avatar: "fox" as const };
 
+    let me: Me = newcomer;
+
     server.use(
-      getJson("/me", newcomer),
+      http.get(url("/me"), () => HttpResponse.json(me)),
       http.patch(url("/me"), async ({ request }) => {
         updates.record(await request.json());
+        me = done;
 
         return HttpResponse.json(done);
       }),

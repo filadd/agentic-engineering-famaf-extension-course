@@ -2,6 +2,7 @@ import type { AdminQuestion } from "@kurasu/contract/questions";
 import { screen, waitFor, within } from "@testing-library/react";
 import * as Schema from "effect/Schema";
 import { http, HttpResponse } from "msw";
+import type { HttpHandler } from "msw";
 import { describe, expect, test } from "vitest";
 
 import {
@@ -29,9 +30,11 @@ const slides = material(1, planning.id, "Slides.html", {
   contentType: "text/html",
 });
 
+// `overrides` answer before the page's own handlers.
 const openPage = async (
   tab: string,
   options: Partial<Parameters<typeof teacherSession>[0]> = {},
+  overrides: ReadonlyArray<HttpHandler> = [],
 ) => {
   const page = teacherSession({
     sessions: [{ ...sessionDetail(planning, 2, 2), enabled: true }],
@@ -42,6 +45,7 @@ const openPage = async (
   });
 
   server.use(...page.handlers);
+  server.use(...overrides);
 
   const rendered = await renderRoute(`/admin/sesiones/${planning.id}?tab=${tab}`);
 
@@ -188,9 +192,10 @@ describe("session page: classroom panel and badges", () => {
       }),
     );
 
-    const { user } = await openPage("aula");
+    const { user } = await openPage("aula", {}, [
+      http.get(url("/admin/raised-hands"), () => HttpResponse.json(hands)),
+    ]);
 
-    server.use(http.get(url("/admin/raised-hands"), () => HttpResponse.json(hands)));
     const panelTabs = await screen.findByRole("tablist", { name: "Pestañas del panel" });
 
     await user.click(within(panelTabs).getByRole("tab", { name: "Preguntas" }));
@@ -265,11 +270,7 @@ describe("session page: classroom panel and badges", () => {
       adminPoll(scalePoll(planning.id), "closed", { count: 1, scale: [1, 0, 0, 0, 0] }),
     ]);
 
-    server.use(...store.handlers);
-
-    const { user } = await openPage("aula");
-
-    server.use(...store.handlers);
+    const { user } = await openPage("aula", {}, store.handlers);
 
     const panel = await screen.findByRole("tabpanel");
 

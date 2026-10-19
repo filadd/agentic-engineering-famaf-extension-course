@@ -4,6 +4,8 @@ import { useEffect } from "react";
 
 import { Badge } from "../../ui/Badge.tsx";
 import { Icon } from "../../ui/Icon.tsx";
+import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
+import { HandButton } from "../hands/HandButton.tsx";
 import { HandIndicator } from "../hands/HandIndicator.tsx";
 import { useRaisedHands } from "../hands/useRaisedHands.ts";
 import { StudentMaterialList } from "../materials/StudentMaterialList.tsx";
@@ -13,8 +15,10 @@ import { useMe } from "../me/useMe.ts";
 import { StudentPollsTab } from "../polls/StudentPollsTab.tsx";
 import { usePolls } from "../polls/usePolls.ts";
 import { StudentQuestions } from "../questions/StudentQuestions.tsx";
+import { sessionExamples } from "../sessions/session-examples.ts";
 import { useSession } from "../sessions/useSession.ts";
 import { ClassroomPanel } from "./ClassroomPanel.tsx";
+import { SlideStage } from "./SlideStage.tsx";
 import { StudentSlides } from "./StudentSlides.tsx";
 import { useClassroom } from "./useClassroom.ts";
 
@@ -45,7 +49,15 @@ export const StudentClassroom = ({ sessionId }: Props) => {
       <div className="px-8 pt-[26px] pb-1.5 max-[600px]:px-3.5 max-[600px]:pt-3.5 max-[600px]:pb-1">
         <AppHeader
           leading={<BackButton to="/" label="Volver a las sesiones" />}
-          title={session.data?.title ?? ""}
+          title={
+            session.data == null ? (
+              <SkeletonOf>
+                <span>{sessionExamples[0].title}</span>
+              </SkeletonOf>
+            ) : (
+              session.data.title
+            )
+          }
         />
       </div>
       {classroom.reconnecting ? (
@@ -59,7 +71,20 @@ export const StudentClassroom = ({ sessionId }: Props) => {
       ) : null}
       <div className="flex min-h-0 flex-1 max-[600px]:flex-col">
         <div className="flex min-w-0 flex-1 flex-col px-8 pt-3.5 pb-[22px] max-[600px]:flex-none max-[600px]:px-3.5 max-[600px]:pt-2 max-[600px]:pb-2.5">
-          {session.data == null ? null : (
+          {session.data == null ? (
+            <SkeletonOf>
+              <SlideStage
+                html={null}
+                position={{ slide: 1, step: 1 }}
+                controls={
+                  <>
+                    <span className="ml-auto" />
+                    <HandButton sessionId={sessionId} />
+                  </>
+                }
+              />
+            </SkeletonOf>
+          ) : (
             <StudentSlides session={session.data} teacherPresent={classroom.teacherPresent} />
           )}
         </div>

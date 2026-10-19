@@ -27,7 +27,8 @@ const decodeMessage = Schema.decodeUnknownOption(Schema.fromJsonString(Classroom
 export const useClassroom = (sessionId: string) => {
   const queryClient = useQueryClient();
 
-  const [people, setPeople] = useState<ReadonlyArray<Person>>([]);
+  // Undefined until the first `presence` arrives.
+  const [people, setPeople] = useState<ReadonlyArray<Person>>();
   const [reconnecting, setReconnecting] = useState(false);
 
   useEffect(() => {
@@ -75,6 +76,6 @@ export const useClassroom = (sessionId: string) => {
   return {
     people,
     reconnecting,
-    teacherPresent: people.some((person) => person.role === "teacher"),
+    teacherPresent: people?.some((person) => person.role === "teacher") ?? false,
   };
 };

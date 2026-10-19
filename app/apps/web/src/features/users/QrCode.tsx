@@ -14,11 +14,13 @@ export const QrCode = ({ text, label }: Props) => {
       role="img"
       aria-label={label}
       viewBox={`0 0 ${qr.size} ${qr.size}`}
-      className="block size-full bg-paper"
+      className="block size-full bg-paper text-coal"
     >
       {qr.data.flatMap((row, y) =>
         row.flatMap((dark, x) =>
-          dark ? [<rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} fill="#1f1b18" />] : [],
+          dark
+            ? [<rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} fill="currentColor" />]
+            : [],
         ),
       )}
     </svg>

@@ -1,5 +1,7 @@
 import { Sheet } from "../../ui/Sheet.tsx";
+import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 import { ClosedPolls } from "./ClosedPolls.tsx";
+import { closedPollExamples } from "./poll-examples.ts";
 import { usePolls } from "./usePolls.ts";
 
 interface Props {
@@ -12,7 +14,13 @@ export const ClosedPollsSheet = ({ sessionId, onClose }: Props) => {
 
   return (
     <Sheet open onClose={onClose} title="Encuestas cerradas">
-      {closedPolls.data == null ? null : <ClosedPolls polls={closedPolls.data} />}
+      {closedPolls.data == null ? (
+        <SkeletonOf>
+          <ClosedPolls polls={closedPollExamples} />
+        </SkeletonOf>
+      ) : (
+        <ClosedPolls polls={closedPolls.data} />
+      )}
     </Sheet>
   );
 };

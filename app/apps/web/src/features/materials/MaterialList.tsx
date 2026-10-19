@@ -5,14 +5,12 @@ import { MaterialRow } from "./MaterialRow.tsx";
 
 interface Props {
   materials: ReadonlyArray<Material>;
-  toolbar?: ReactNode;
   renderLeading?: (material: Material) => ReactNode;
   renderActions: (material: Material) => ReactNode;
 }
 
-export const MaterialList = ({ materials, toolbar, renderLeading, renderActions }: Props) => (
+export const MaterialList = ({ materials, renderLeading, renderActions }: Props) => (
   <div>
-    {toolbar}
     {materials.length === 0 ? (
       <div className="py-1.5 text-sm text-muted">Todavía no hay material.</div>
     ) : (

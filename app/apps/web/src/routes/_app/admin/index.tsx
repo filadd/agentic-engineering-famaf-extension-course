@@ -1,14 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { AppHeader } from "../../../features/me/AppHeader.tsx";
-import { useMe } from "../../../features/me/useMe.ts";
+import { Greeting } from "../../../features/me/Greeting.tsx";
 import { AdminHighlighted } from "../../../features/sessions/AdminHighlighted.tsx";
 import { AdminSessionRail } from "../../../features/sessions/AdminSessionRail.tsx";
+import { sessionExamples } from "../../../features/sessions/session-examples.ts";
 import { useAdminSessions } from "../../../features/sessions/useAdminSessions.ts";
 import { UsersButton } from "../../../features/sessions/UsersButton.tsx";
+import { SkeletonOf } from "../../../ui/SkeletonOf.tsx";
 
 const AdminHomeRoute = () => {
-  const me = useMe();
   const sessions = useAdminSessions();
 
   const all = sessions.data ?? [];
@@ -16,7 +17,12 @@ const AdminHomeRoute = () => {
 
   return (
     <main className="px-12 pt-8 pb-10">
-      <AppHeader title={`Hola, ${me.data?.name ?? ""}`} actions={<UsersButton />} />
+      <AppHeader title={<Greeting />} actions={<UsersButton />} />
+      {sessions.data == null ? (
+        <SkeletonOf>
+          <AdminHighlighted session={sessionExamples[2]} number={3} total={3} />
+        </SkeletonOf>
+      ) : null}
       {sessions.data != null && all.length === 0 ? (
         <div className="mt-10 text-center text-muted">
           <h3 className="mb-1.5 text-[22px] font-bold text-ink">Todavía no hay sesiones</h3>
@@ -35,12 +41,16 @@ const AdminHomeRoute = () => {
           total={all.length}
         />
       )}
-      {sessions.data == null ? null : (
-        <section aria-label="Todas las sesiones">
-          <h2 className="mt-7 text-lg font-bold">Todas las sesiones</h2>
+      <section aria-label="Todas las sesiones">
+        <h2 className="mt-7 text-lg font-bold">Todas las sesiones</h2>
+        {sessions.data == null ? (
+          <SkeletonOf>
+            <AdminSessionRail sessions={sessionExamples} highlightedId={sessionExamples[2].id} />
+          </SkeletonOf>
+        ) : (
           <AdminSessionRail sessions={all} highlightedId={highlighted?.id} />
-        </section>
-      )}
+        )}
+      </section>
     </main>
   );
 };

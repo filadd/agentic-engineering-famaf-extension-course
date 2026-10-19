@@ -1,4 +1,6 @@
+import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 import { AnsweredToggle } from "./AnsweredToggle.tsx";
+import { questionExamples } from "./question-examples.ts";
 import { QuestionList } from "./QuestionList.tsx";
 import { useAdminQuestions } from "./useAdminQuestions.ts";
 import { VoteCount } from "./VoteCount.tsx";
@@ -11,9 +13,17 @@ interface Props {
 export const AdminQuestions = ({ sessionId }: Props) => {
   const questions = useAdminQuestions(sessionId);
 
-  return (
+  return questions.data == null ? (
+    <SkeletonOf>
+      <QuestionList
+        questions={questionExamples}
+        renderVotes={(question) => <VoteCount question={question} />}
+        renderActions={(question) => <AnsweredToggle question={question} />}
+      />
+    </SkeletonOf>
+  ) : (
     <QuestionList
-      questions={(questions.data ?? []).toSorted(
+      questions={questions.data.toSorted(
         (a, b) => Number(a.answered) - Number(b.answered) || b.votes - a.votes,
       )}
       renderVotes={(question) => <VoteCount question={question} />}
