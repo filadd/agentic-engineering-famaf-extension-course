@@ -30,7 +30,7 @@ stateDiagram-v2
     class Borrada red
 ```
 
-Una encuesta (`Poll`) se crea en el estado `draft`, un borrador que solo ve el profe y que puede editar. Cuando la activa, pasa a `active` y los estudiantes la ven en la card de la sesión y en el aula, y votan; ven los resultados al votar, y pueden cambiar el voto mientras está activa. Puede haber varias activas a la vez, y una activa no vuelve a borrador. Cuando el profe la cierra, pasa a `closed` y queda con sus resultados en el modal Encuestas de la sesión y en el aula, y no se reabre.
+Una encuesta (`Poll`) se crea en el estado `draft`, un borrador que solo ve el profe y que puede editar. Existe recién cuando el profe la guarda como borrador. Solo las encuestas de opción múltiple tienen opciones, y solo las de escala tienen textos para el 1 y el 5. La API rechaza y no guarda una encuesta que trae el contenido del otro tipo. Cuando la activa, pasa a `active` y los estudiantes la ven en la card de la sesión y en el aula, y votan; ven los resultados al votar, y pueden cambiar el voto mientras está activa. Puede haber varias activas a la vez, y una activa no vuelve a borrador. Cuando el profe la cierra, pasa a `closed` y queda con sus resultados en el modal Encuestas de la sesión y en el aula, y no se reabre.
 
 El profe puede borrar una encuesta en cualquier estado: queda guardada con sus respuestas, con la fecha en `deleted_at`, y nadie la ve. Si una activa tiene un error, el profe la borra y crea otra.
 
@@ -52,7 +52,7 @@ stateDiagram-v2
     class Borrada red
 ```
 
-Una sesión (`Session`) se crea deshabilitada (`enabled` en falso), con título y resumen, al final de la lista del profe. Se habilita o se deshabilita solo desde su página. Deshabilitarla la saca de la vista del estudiante y saca a todos del aula, pero conserva todo lo que tiene: las encuestas activas, las manos levantadas y la posición del profe siguen ahí cuando se vuelve a habilitar. Solo una deshabilitada se borra, con confirmación; queda guardada con todo lo que cuelga de ella, con la fecha en `deleted_at`.
+Una sesión (`Session`) se crea deshabilitada (`enabled` en falso), con título y resumen, al final de la lista del profe. Se habilita o se deshabilita solo desde su página. Deshabilitarla la saca de la vista del estudiante y saca a todos del aula, pero conserva todo lo que tiene: las encuestas activas, las manos levantadas y la posición del profe siguen ahí cuando se vuelve a habilitar. Solo una deshabilitada se borra, con confirmación; queda guardada con todo lo que cuelga de ella, con la fecha en `deleted_at`, y el profe vuelve a la lista de sesiones.
 
 ## ❓ Pregunta
 
@@ -74,7 +74,7 @@ Una pregunta (`Question`) está abierta o respondida, según su campo `answered`
 
 ## 🏠 Inicio del estudiante
 
-En el inicio, el estudiante ve solo las sesiones habilitadas, en el orden de la lista del profe. Arriba está la sesión destacada, la habilitada que está más adelante en la lista. Es la única desde la que se entra al aula; las demás están en "Todas las sesiones". Cada card muestra el resumen, las encuestas activas, donde el estudiante vota, y los links a Material, Encuestas y Preguntas. Cada link abre un modal, que en celular es una hoja desde abajo y en escritorio va centrado. Una sesión anterior muestra su material, sus encuestas cerradas y sus preguntas para leer, y en ella no se pregunta ni se vota.
+En el inicio, el estudiante ve solo las sesiones habilitadas, en el orden de la lista del profe. Arriba está la sesión destacada, la habilitada que está más adelante en la lista. Es la única desde la que se entra al aula; las demás están en "Todas las sesiones". Cada card muestra el resumen, las encuestas activas, donde el estudiante vota, y los links a Material, Encuestas y Preguntas, sin cantidades. Cada link abre un modal, que en celular es una hoja desde abajo y en escritorio va centrado. Una sesión anterior muestra su material, sus encuestas cerradas y sus preguntas para leer, y en ella no se pregunta ni se vota.
 
 El inicio no recibe avisos: una encuesta que el profe activa o cierra aparece en el inicio cuando la web vuelve a pedir sus datos, cada cinco minutos, o cuando el estudiante vuelve a cargar la página (ver [componentes](componentes.md)).
 
@@ -86,13 +86,15 @@ El profe ve la lista de sesiones, crea una nueva al final de la lista, las reord
 
 [Prototipo de la lista de sesiones del profe](../prototipos/admin-sesiones.html)
 
-La página de una sesión tiene las pestañas Contenido, Encuestas y Aula. En esa página, el profe habilita o deshabilita la sesión con el switch de su card, y una deshabilitada se borra desde la misma card. En Contenido edita el título y el resumen. El profe sube el material con un nombre desde un modal, y no lo puede reordenar ni renombrar. En Encuestas crea encuestas de cada tipo, edita los borradores, y activa, cierra y borra las encuestas. La pestaña Aula está en [tiempo real del aula](tiempo-real-del-aula.md), y la subida de las slides en [API de las slides](api-de-las-slides.md).
+La página de una sesión tiene las pestañas Contenido, Encuestas y Aula. En esa página, el profe habilita o deshabilita la sesión con el switch de su card, y una deshabilitada se borra desde la misma card. En Contenido edita el título y el resumen. El profe sube el material con un nombre desde un modal, y no lo puede reordenar ni renombrar. La API rechaza una subida mal formada y no guarda ni el material ni el archivo. En Encuestas crea encuestas de cada tipo, edita los borradores, y activa, cierra y borra las encuestas. La pestaña Aula está en [tiempo real del aula](tiempo-real-del-aula.md), y la subida de las slides en [API de las slides](api-de-las-slides.md).
 
 [Prototipo del admin de una sesión, con sus pestañas Contenido, Encuestas y Aula](../prototipos/admin-sesion.html)
 
 ## 🛑 Qué acciones piden confirmación
 
 Toda acción destructiva pide confirmación: borrar una sesión, una encuesta, un material o una pregunta propia, sacarle el acceso a alguien y regenerar el código de registro. No la piden los cambios que se deshacen fácil, como marcar una pregunta como respondida o bajar una mano.
+
+La confirmación es un diálogo que se abre encima de lo que haya, también sobre un modal o una hoja. Escape cierra solo el diálogo de arriba, igual que su botón Cerrar o Cancelar: una confirmación abierta sobre una hoja se cierra y la hoja queda.
 
 ---
 

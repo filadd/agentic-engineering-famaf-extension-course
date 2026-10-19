@@ -56,7 +56,7 @@ flowchart LR
 
 Un Worker de assets sirve la web. En el navegador, la web pide todo a la API con la cookie del login y carga las slides de la sesión, un HTML del profe. La web habla con ese HTML por la API de las slides (ver [API de las slides](api-de-las-slides.md)). Mientras el usuario está en el aula, la web mantiene un WebSocket abierto con el aula de la sesión. Lo que no viene del servidor lo guarda en el localStorage del navegador.
 
-La web y la API comparten el dominio `kurasu.asermax.com`: los pedidos a `/api` van al Worker de la API y el resto al Worker de assets. El navegador habla con un solo origen, y la cookie del login vale para los dos.
+La web y la API comparten el dominio `kurasu.asermax.com`: los pedidos a `/api` van al Worker de la API y el resto al Worker de assets. El navegador habla con un solo origen, y la cookie del login vale para los dos. En desarrollo pasa lo mismo: la web local reenvía a la API local los pedidos a `/api`, también el WebSocket del aula.
 
 > [!TIP] La API en un dominio propio
 > Se consideró y no se tomó. El login viaja en una cookie que el navegador manda solo al dominio que la dejó; con la API aparte, esa cookie tendría que compartirse entre subdominios y la API tendría que aceptar pedidos de origen cruzado, también los del WebSocket del aula.

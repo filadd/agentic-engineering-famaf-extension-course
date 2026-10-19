@@ -128,9 +128,12 @@ La entidad `RaisedHand` une a un estudiante con una sesión. Existe hasta que al
 
 La entidad `Code` guarda los dos tipos de código que usa la app, y el campo `type` los distingue: `enrollment` para el código de registro y `user` para el código de un usuario.
 
-El código de registro, el que el profe muestra junto al QR en Usuarios, es una fila de `Code` de tipo `enrollment`, sin `user_id`. La app lo genera la primera vez que el profe abre el QR, y el profe lo regenera con un botón: el anterior deja de servir y queda guardado con la fecha en `deleted_at`. Hay un solo código de registro vigente, la fila de tipo `enrollment` sin `deleted_at`.
+El código de registro, el que el profe muestra junto al QR en Usuarios, es una fila de `Code` de tipo `enrollment`, sin `user_id`. Tiene cinco caracteres en mayúsculas, de un alfabeto sin 0, O, 1 ni I. La app lo genera la primera vez que el profe abre el QR, y el profe lo regenera con un botón: el anterior deja de servir y queda guardado con la fecha en `deleted_at`. Hay un solo código de registro vigente, la fila de tipo `enrollment` sin `deleted_at`.
 
-El código del magic link es una fila de `Code` de tipo `user`, con el `user_id` del usuario al que la app le manda el mail, tanto para confirmar el registro como para entrar. Cada usuario tiene a lo sumo uno: pedir otro reemplaza al anterior, y usarlo borra la fila. No vence. El mail lleva solo el link, y el usuario no tiene que tipear el código del link.
+> [!NOTE] Por qué el código de registro es corto y sin 0, O, 1 ni I
+> El estudiante lo escribe a mano cuando no escanea el QR. Cinco caracteres se copian rápido, y sin esos cuatro no hay letras y números que se confundan.
+
+El código del magic link es una fila de `Code` de tipo `user`, con el `user_id` del usuario al que la app le manda el mail, tanto para confirmar el registro como para entrar. Cada usuario tiene a lo sumo uno: pedir otro reemplaza al anterior, y usarlo borra la fila. No vence. El mail lleva solo el link, y el usuario no tiene que tipear el código del link, así que este código es largo.
 
 ---
 

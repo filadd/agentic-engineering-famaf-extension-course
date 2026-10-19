@@ -95,7 +95,7 @@ La web carga el HTML de las slides en un marco aislado de la página. El HTML co
 
 ## 📤 Subir las slides
 
-El profe sube el HTML como cualquier material, desde el modal de subida del admin de la sesión, y lo marca como slides, con el campo `is_slides` del `Material`. Antes de mandarlo, la web del profe carga el HTML en el mismo marco aislado del aula y espera su `manifest` hasta cinco segundos. Si no llega, o no tiene la forma de esta API, el modal muestra un error y el archivo no queda como slides. La revisión es la misma al marcar como slides un material ya subido. Marcar otro HTML como slides desmarca el anterior (ver [modelo de datos](modelo-de-datos.md)). El estudiante también descarga el mismo HTML desde Material.
+El profe sube el HTML como cualquier material, desde el modal de subida del admin de la sesión, y lo marca como slides, con el campo `is_slides` del `Material`. Antes de mandarlo, la web del profe carga el HTML en el mismo marco aislado del aula y espera su `manifest` hasta cinco segundos. Si no llega, o no tiene la forma de esta API, el modal muestra un error y el archivo no queda como slides. El profe puede marcar después como slides un HTML ya subido, desde la lista del material en la pestaña Contenido, y la web hace la misma revisión. Marcar otro HTML como slides desmarca el anterior (ver [modelo de datos](modelo-de-datos.md)). El estudiante también descarga el mismo HTML desde Material.
 
 > [!TIP] Revisar el HTML en el servidor
 > Para ver si el HTML anuncia su `manifest` hay que correrlo en un navegador. La web del profe ya tiene uno; en el servidor haría falta un navegador remoto, con su costo y sus límites, para revisar archivos que sube una sola persona, el profe.

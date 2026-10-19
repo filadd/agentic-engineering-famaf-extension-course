@@ -49,23 +49,22 @@ La web vuelve a pedir los nombres y los avatares cada cinco minutos, como el res
 stateDiagram-v2
     direction LR
     [*] --> Conectando: entra al aula
-    Conectando --> Cargando: login y acceso válidos
-    Cargando --> Conectada: pidió todo lo del aula
+    Conectando --> Conectada: login y acceso válidos, vuelve a pedir todo lo del aula
     Conectada --> Conectando: se corta, se reconecta sola
     Conectada --> [*]: sale del aula
 
     classDef grey fill:#f3f4f6,stroke:#4b5563,color:#1f2937
     classDef green fill:#dcfce7,stroke:#16a34a,color:#1f2937
-    class Conectando,Cargando grey
+    class Conectando grey
     class Conectada green
 ```
 
 Presente es quien está conectado: el estudiante mientras está en la pantalla del aula, y el profe mientras tiene abierta la página de la sesión, en cualquier pestaña. El estudiante que sale del aula desaparece de Presentes, y reaparece al volver. Cuando alguien entra o sale, el aula misma les avisa a los conectados, sin pasar por la API ni por D1. El aula guarda con cada conexión el nombre y el avatar que la persona tenía al conectarse, y Presentes los muestra así: un cambio de perfil se ve en Presentes cuando esa persona se vuelve a conectar.
 
-Si la conexión se corta, la web avisa y se reconecta sola. Al reconectarse vuelve a pedir todo lo del aula, y recién después sigue con los avisos. Mientras el usuario está desconectado, los demás lo ven fuera de Presentes. Si la conexión no llega a abrirse, la web vuelve a pedir la lista de sesiones, y si la del aula ya no es la destacada, el estudiante vuelve al inicio.
+Si la conexión se corta, la web se reconecta sola, y el aula del estudiante muestra un aviso mientras tanto. Al reconectarse, la web vuelve a pedir todo lo del aula y sigue con los avisos que lleguen. Mientras el usuario está desconectado, los demás lo ven fuera de Presentes. Si la conexión no llega a abrirse, la web vuelve a pedir la lista de sesiones, y si la del aula ya no es la destacada, el estudiante vuelve al inicio.
 
-> [!NOTE] Por qué la web pide todo antes de seguir con los avisos
-> Mientras la conexión está cortada, la web no recibe avisos. Al pedir todo lo del aula primero, no se pierde nada de lo que cambió mientras tanto.
+> [!NOTE] Por qué la web pide todo al reconectarse
+> Mientras la conexión está cortada, la web no recibe avisos. Al pedir todo lo del aula cuando se reconecta, no se pierde nada de lo que cambió mientras tanto. Si llega un aviso mientras ese pedido sigue en curso, la web no tiene que esperar a que el pedido termine: los datos que el aviso le hace pedir ya vienen en ese pedido.
 
 La mano levantada, una fila de `RaisedHand`, y la slide actual, en `current_slide` y `current_step` de la `Session`, viven en D1, no en la conexión, así que no se pierden con un corte ni con un deploy, que reinicia el aula y corta todas las conexiones. La mano sigue levantada si el estudiante sale y vuelve, hasta que alguien la baja.
 
