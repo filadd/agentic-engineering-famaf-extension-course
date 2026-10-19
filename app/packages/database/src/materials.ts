@@ -6,7 +6,7 @@ import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 
-import { batch, Database } from "./database.ts";
+import { batch, Database, firstRow } from "./database.ts";
 import { materials, sessions } from "./schema.ts";
 
 const decodeMaterial = Schema.decodeUnknownEffect(Material);
@@ -24,14 +24,7 @@ export const D1Materials = Layer.effect(
         .from(materials)
         .where(eq(materials.id, id))
         .limit(1)
-        .pipe(
-          Effect.orDie,
-          Effect.flatMap((rows) => {
-            const row = rows[0];
-
-            return row == null ? Effect.succeedNone : Effect.asSome(toMaterial(row));
-          }),
-        );
+        .pipe(Effect.orDie, Effect.flatMap(firstRow(toMaterial)));
 
     const unmarkOtherSlides = (sessionId: string, keepId: string) =>
       db

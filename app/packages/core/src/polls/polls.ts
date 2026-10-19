@@ -96,9 +96,6 @@ export class Polls extends Context.Service<
       const classroom = yield* Classroom;
       const crypto = yield* Crypto.Crypto;
 
-      const withSessions = <A, E>(effect: Effect.Effect<A, E, SessionsStore>) =>
-        Effect.provideService(effect, SessionsStore, sessions);
-
       const forStudent = (viewer: User, polls: ReadonlyArray<StoredPoll>) =>
         Effect.gen(function* () {
           const ids = polls.map((poll) => poll.id);
@@ -141,7 +138,7 @@ export class Polls extends Context.Service<
           const sessionIds =
             filter.sessionId == null
               ? (yield* sessions.listEnabled()).map((session) => session.id)
-              : [(yield* withSessions(visibleSession(filter.sessionId))).id];
+              : [(yield* visibleSession(sessions, filter.sessionId)).id];
 
           const polls = yield* store.list({
             sessionIds,
@@ -157,7 +154,7 @@ export class Polls extends Context.Service<
 
           const poll = yield* findPoll(id);
 
-          yield* withSessions(visibleSession(poll.sessionId)).pipe(
+          yield* visibleSession(sessions, poll.sessionId).pipe(
             Effect.mapError(() => new PollNotFound()),
           );
 
@@ -177,14 +174,14 @@ export class Polls extends Context.Service<
           return voted ?? (yield* Effect.die("the voted poll was not read back"));
         }),
         listForTeacher: Effect.fn("Polls.listForTeacher")(function* (sessionId) {
-          yield* withSessions(existingSession(sessionId));
+          yield* existingSession(sessions, sessionId);
 
           return yield* forTeacher(
             yield* store.list({ sessionIds: [sessionId], statuses: ["draft", "active", "closed"] }),
           );
         }),
         create: Effect.fn("Polls.create")(function* (draft) {
-          yield* withSessions(existingSession(draft.sessionId));
+          yield* existingSession(sessions, draft.sessionId);
 
           if (!fitsType(draft)) {
             return yield* new InvalidPollContent();

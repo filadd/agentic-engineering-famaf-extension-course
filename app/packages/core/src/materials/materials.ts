@@ -62,11 +62,9 @@ export class Materials extends Context.Service<
       const crypto = yield* Crypto.Crypto;
 
       const sessionFor = (viewer: User, sessionId: Ulid) =>
-        Effect.provideService(
-          viewer.role === "teacher" ? existingSession(sessionId) : visibleSession(sessionId),
-          SessionsStore,
-          sessions,
-        );
+        viewer.role === "teacher"
+          ? existingSession(sessions, sessionId)
+          : visibleSession(sessions, sessionId);
 
       const findMaterial = (id: Ulid) =>
         Effect.flatMap(store.get(id), (material) =>
@@ -100,7 +98,7 @@ export class Materials extends Context.Service<
           );
         }),
         upload: Effect.fn("Materials.upload")(function* (upload) {
-          yield* Effect.provideService(existingSession(upload.sessionId), SessionsStore, sessions);
+          yield* existingSession(sessions, upload.sessionId);
 
           const id = yield* crypto.randomULID.pipe(Effect.orDie);
 

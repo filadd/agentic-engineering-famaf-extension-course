@@ -72,9 +72,6 @@ export class Questions extends Context.Service<
       const classroom = yield* Classroom;
       const crypto = yield* Crypto.Crypto;
 
-      const withSessions = <A, E>(effect: Effect.Effect<A, E, SessionsStore>) =>
-        Effect.provideService(effect, SessionsStore, sessions);
-
       const findQuestion = (viewer: User, id: Ulid) =>
         Effect.flatMap(store.get(id, viewer.id), (question) =>
           Effect.fromOption(question).pipe(Effect.mapError(() => new QuestionNotFound())),
@@ -89,7 +86,7 @@ export class Questions extends Context.Service<
             return yield* new QuestionNotFound();
           }
 
-          yield* withSessions(visibleSession(question.sessionId)).pipe(
+          yield* visibleSession(sessions, question.sessionId).pipe(
             Effect.mapError(() => new QuestionNotFound()),
           );
 
@@ -98,14 +95,14 @@ export class Questions extends Context.Service<
 
       return Questions.of({
         listForStudent: Effect.fn("Questions.listForStudent")(function* (viewer, sessionId) {
-          yield* withSessions(visibleSession(sessionId));
+          yield* visibleSession(sessions, sessionId);
 
           const questions = yield* store.list(sessionId, viewer.id);
 
           return questions.filter((question) => !question.answered).map(toQuestion);
         }),
         ask: Effect.fn("Questions.ask")(function* (viewer, sessionId, body) {
-          yield* withSessions(visibleSession(sessionId));
+          yield* visibleSession(sessions, sessionId);
 
           const id = yield* crypto.randomULID.pipe(Effect.orDie);
 
@@ -138,7 +135,7 @@ export class Questions extends Context.Service<
           return yield* classroom.notify(question.sessionId, "questions");
         }),
         listForTeacher: Effect.fn("Questions.listForTeacher")(function* (viewer, sessionId) {
-          yield* withSessions(existingSession(sessionId));
+          yield* existingSession(sessions, sessionId);
 
           const questions = yield* store.list(sessionId, viewer.id);
 

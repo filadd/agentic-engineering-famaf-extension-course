@@ -5,7 +5,7 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 
-import { Database, now } from "./database.ts";
+import { Database, firstRow, now } from "./database.ts";
 import { polls } from "./schema.ts";
 
 const { results: _results, ...storedPollFields } = AdminPoll.fields;
@@ -24,11 +24,7 @@ const toPoll = (row: typeof polls.$inferSelect): Effect.Effect<StoredPoll> =>
     scaleMaxLabel: row.scaleMaxLabel ?? undefined,
   }).pipe(Effect.orDie);
 
-const firstPoll = (rows: ReadonlyArray<typeof polls.$inferSelect>) => {
-  const row = rows[0];
-
-  return row == null ? Effect.succeedNone : Effect.asSome(toPoll(row));
-};
+const firstPoll = firstRow(toPoll);
 
 const notDeleted = isNull(polls.deletedAt);
 
@@ -66,11 +62,7 @@ export const D1Polls = Layer.effect(
         db
           .insert(polls)
           .values({
-            id: poll.id,
-            sessionId: poll.sessionId,
-            type: poll.type,
-            status: poll.status,
-            prompt: poll.prompt,
+            ...poll,
             options: poll.options ?? null,
             scaleMinLabel: poll.scaleMinLabel ?? null,
             scaleMaxLabel: poll.scaleMaxLabel ?? null,

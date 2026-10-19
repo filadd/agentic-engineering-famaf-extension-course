@@ -72,9 +72,6 @@ export class Sessions extends Context.Service<
       const classroom = yield* Classroom;
       const crypto = yield* Crypto.Crypto;
 
-      const withStore = <A, E>(effect: Effect.Effect<A, E, SessionsStore>) =>
-        Effect.provideService(effect, SessionsStore, store);
-
       const listVisible = () => store.listEnabled();
 
       const featured = () =>
@@ -82,11 +79,11 @@ export class Sessions extends Context.Service<
 
       return Sessions.of({
         listVisible,
-        getVisible: (id) => withStore(visibleSession(id)).pipe(Effect.map(toStudentSession)),
+        getVisible: (id) => visibleSession(store, id).pipe(Effect.map(toStudentSession)),
         featured,
         classroomOf: Effect.fn("Sessions.classroomOf")(function* (viewer, id) {
           if (viewer.role === "teacher") {
-            return yield* withStore(existingSession(id)).pipe(Effect.asVoid);
+            return yield* existingSession(store, id).pipe(Effect.asVoid);
           }
 
           const session = Option.filter(yield* featured(), (found) => found.id === id);
@@ -97,7 +94,7 @@ export class Sessions extends Context.Service<
           );
         }),
         listAll: () => Effect.map(store.listAll(), (sessions) => sessions.map(toSummary)),
-        get: (id) => withStore(existingSession(id)),
+        get: (id) => existingSession(store, id),
         create: Effect.fn("Sessions.create")(function* (input) {
           const id = yield* crypto.randomULID.pipe(Effect.orDie);
 
@@ -115,7 +112,7 @@ export class Sessions extends Context.Service<
           return session;
         }),
         remove: Effect.fn("Sessions.remove")(function* (id) {
-          const session = yield* withStore(existingSession(id));
+          const session = yield* existingSession(store, id);
 
           if (session.enabled) {
             return yield* new SessionEnabled();

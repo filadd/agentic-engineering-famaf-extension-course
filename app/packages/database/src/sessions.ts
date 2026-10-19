@@ -6,7 +6,7 @@ import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 
-import { batch, Database, now } from "./database.ts";
+import { batch, Database, firstRow, now } from "./database.ts";
 import { sessions } from "./schema.ts";
 
 const StoredSessionSchema = Schema.Struct({
@@ -30,11 +30,7 @@ const toStored = (row: typeof sessions.$inferSelect): Effect.Effect<StoredSessio
     currentStep: row.currentStep,
   }).pipe(Effect.orDie);
 
-const firstStored = (rows: ReadonlyArray<typeof sessions.$inferSelect>) => {
-  const row = rows[0];
-
-  return row == null ? Effect.succeedNone : Effect.asSome(toStored(row));
-};
+const firstStored = firstRow(toStored);
 
 const notDeleted = isNull(sessions.deletedAt);
 
@@ -42,6 +38,14 @@ export const D1Sessions = Layer.effect(
   SessionsStore,
   Effect.gen(function* () {
     const { db, client } = yield* Database;
+
+    const get = (id: string) =>
+      db
+        .select()
+        .from(sessions)
+        .where(and(eq(sessions.id, id), notDeleted))
+        .limit(1)
+        .pipe(Effect.orDie, Effect.flatMap(firstStored));
 
     // Positions are unique among the sessions not deleted, so `reorder` first
     // moves every session to a negative position and then to its new one.
@@ -68,13 +72,7 @@ export const D1Sessions = Layer.effect(
           .where(notDeleted)
           .orderBy(asc(sessions.position))
           .pipe(Effect.orDie, Effect.flatMap(Effect.forEach(toStored))),
-      get: (id) =>
-        db
-          .select()
-          .from(sessions)
-          .where(and(eq(sessions.id, id), notDeleted))
-          .limit(1)
-          .pipe(Effect.orDie, Effect.flatMap(firstStored)),
+      get,
       create: (session) =>
         db
           .insert(sessions)
@@ -97,12 +95,7 @@ export const D1Sessions = Layer.effect(
           ),
       update: (id, change) =>
         Object.keys(change).length === 0
-          ? db
-              .select()
-              .from(sessions)
-              .where(and(eq(sessions.id, id), notDeleted))
-              .limit(1)
-              .pipe(Effect.orDie, Effect.flatMap(firstStored))
+          ? get(id)
           : db
               .update(sessions)
               .set(change)

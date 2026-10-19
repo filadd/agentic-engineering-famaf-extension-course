@@ -38,9 +38,6 @@ export class Hands extends Context.Service<
       const sessions = yield* SessionsStore;
       const classroom = yield* Classroom;
 
-      const withSessions = <A, E>(effect: Effect.Effect<A, E, SessionsStore>) =>
-        Effect.provideService(effect, SessionsStore, sessions);
-
       const lower = (sessionId: Ulid, userId: Ulid) =>
         Effect.gen(function* () {
           yield* store.lower(sessionId, userId);
@@ -49,7 +46,7 @@ export class Hands extends Context.Service<
 
       return Hands.of({
         listForStudent: Effect.fn("Hands.listForStudent")(function* (sessionId) {
-          yield* withSessions(visibleSession(sessionId));
+          yield* visibleSession(sessions, sessionId);
 
           const hands = yield* store.list(sessionId);
 
@@ -60,7 +57,7 @@ export class Hands extends Context.Service<
             return yield* new NotStudent();
           }
 
-          yield* withSessions(visibleSession(sessionId));
+          yield* visibleSession(sessions, sessionId);
 
           const hand = yield* store.raise(sessionId, viewer.id);
 
@@ -69,16 +66,16 @@ export class Hands extends Context.Service<
           return hand;
         }),
         lowerOwn: Effect.fn("Hands.lowerOwn")(function* (viewer, sessionId) {
-          yield* withSessions(visibleSession(sessionId));
+          yield* visibleSession(sessions, sessionId);
           yield* lower(sessionId, viewer.id);
         }),
         listForTeacher: Effect.fn("Hands.listForTeacher")(function* (sessionId) {
-          yield* withSessions(existingSession(sessionId));
+          yield* existingSession(sessions, sessionId);
 
           return yield* store.list(sessionId);
         }),
         lower: Effect.fn("Hands.lower")(function* (sessionId, userId) {
-          yield* withSessions(existingSession(sessionId));
+          yield* existingSession(sessions, sessionId);
           yield* lower(sessionId, userId);
         }),
       });

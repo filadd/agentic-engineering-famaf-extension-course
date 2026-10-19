@@ -6,18 +6,14 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 
-import { batch, Database } from "./database.ts";
+import { batch, Database, firstRow } from "./database.ts";
 import { codes, users } from "./schema.ts";
 
 const decodeUser = Schema.decodeUnknownEffect(User);
 
 const toUser = (row: typeof users.$inferSelect) => decodeUser(row).pipe(Effect.orDie);
 
-const firstUser = (rows: ReadonlyArray<typeof users.$inferSelect>) => {
-  const row = rows[0];
-
-  return row == null ? Effect.succeedNone : Effect.asSome(toUser(row));
-};
+const firstUser = firstRow(toUser);
 
 const newStudent = (id: string, email: string) => ({
   id,

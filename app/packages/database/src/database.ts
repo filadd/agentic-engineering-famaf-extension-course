@@ -51,4 +51,12 @@ export const batch = (client: D1Client.D1Client, queries: ReadonlyArray<ToSql>) 
     )
     .pipe(Effect.orDie, Effect.asVoid);
 
+export const firstRow =
+  <Row, A>(decode: (row: Row) => Effect.Effect<A>) =>
+  (rows: ReadonlyArray<Row>) => {
+    const row = rows[0];
+
+    return row == null ? Effect.succeedNone : Effect.asSome(decode(row));
+  };
+
 export const now = sql<Date>`(cast(unixepoch('subsec') * 1000 as integer))`;

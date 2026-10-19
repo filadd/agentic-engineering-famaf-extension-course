@@ -6,7 +6,7 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 
-import { batch, Database } from "./database.ts";
+import { batch, Database, firstRow } from "./database.ts";
 import { questions, questionVotes } from "./schema.ts";
 
 const decodeQuestion = Schema.decodeUnknownEffect(
@@ -25,12 +25,7 @@ interface QuestionRow {
 
 const toQuestion = (viewerId: string, row: QuestionRow): Effect.Effect<StoredQuestion> =>
   decodeQuestion({
-    id: row.id,
-    sessionId: row.sessionId,
-    authorId: row.authorId,
-    body: row.body,
-    answered: row.answered,
-    votes: row.votes,
+    ...row,
     myVote: row.myVote === 1,
     mine: row.authorId === viewerId,
   }).pipe(Effect.orDie);
@@ -67,11 +62,7 @@ export const D1Questions = Layer.effect(
           .limit(1)
           .pipe(
             Effect.orDie,
-            Effect.flatMap((rows) => {
-              const row = rows[0];
-
-              return row == null ? Effect.succeedNone : Effect.asSome(toQuestion(viewerId, row));
-            }),
+            Effect.flatMap(firstRow((row: QuestionRow) => toQuestion(viewerId, row))),
           ),
       create: (question) => db.insert(questions).values(question).pipe(Effect.orDie, Effect.asVoid),
       setVote: (questionId, userId, vote) =>
