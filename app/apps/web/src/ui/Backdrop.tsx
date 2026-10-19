@@ -8,11 +8,13 @@ interface Props {
   children: ReactNode;
 }
 
+const risesOnPhone = "bg-coal/45 max-[600px]:items-end max-[600px]:p-0";
+
 // Sheets and alerts rise from the bottom edge on a phone; the projected view
 // stays centred and darker, for the classroom screen.
 const layers = {
-  sheet: "z-40 bg-coal/45 max-[600px]:items-end max-[600px]:p-0",
-  alert: "z-50 bg-coal/45 max-[600px]:items-end max-[600px]:p-0",
+  sheet: `z-40 ${risesOnPhone}`,
+  alert: `z-50 ${risesOnPhone}`,
   projection: "z-40 bg-coal/70",
 };
 
