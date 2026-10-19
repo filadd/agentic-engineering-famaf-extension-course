@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { Backdrop } from "./Backdrop.tsx";
 import { Icon } from "./Icon.tsx";
 
 interface Props {
@@ -19,10 +20,7 @@ const widths = {
 // Centred on a desktop; on a phone it rises from the bottom edge, full width.
 export const Sheet = ({ open, onClose, title, children, width = "wide" }: Props) =>
   open ? (
-    <div
-      className="fixed inset-0 z-40 grid place-items-center bg-coal/45 p-8 max-[600px]:items-end max-[600px]:p-0"
-      onClick={(event) => (event.target === event.currentTarget ? onClose() : undefined)}
-    >
+    <Backdrop layer="sheet" onClose={onClose}>
       <div
         role="dialog"
         aria-modal="true"
@@ -44,5 +42,5 @@ export const Sheet = ({ open, onClose, title, children, width = "wide" }: Props)
         </div>
         <div className="overflow-auto px-6 pt-1.5 pb-[22px] max-[600px]:px-[18px]">{children}</div>
       </div>
-    </div>
+    </Backdrop>
   ) : null;

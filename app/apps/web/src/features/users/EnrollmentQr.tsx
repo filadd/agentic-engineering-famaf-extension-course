@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { Backdrop } from "../../ui/Backdrop.tsx";
 import { ConfirmDialog } from "../../ui/ConfirmDialog.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 import { QrCode } from "./QrCode.tsx";
@@ -19,10 +20,7 @@ export const EnrollmentQr = ({ onClose }: Props) => {
   const [confirming, setConfirming] = useState(false);
 
   return (
-    <div
-      className="fixed inset-0 z-40 grid place-items-center bg-coal/70 p-8"
-      onClick={(event) => (event.target === event.currentTarget ? onClose() : undefined)}
-    >
+    <Backdrop layer="projection" onClose={onClose}>
       <div
         role="dialog"
         aria-modal="true"
@@ -74,6 +72,6 @@ export const EnrollmentQr = ({ onClose }: Props) => {
         onConfirm={() => regenerate.mutate()}
         onCancel={() => setConfirming(false)}
       />
-    </div>
+    </Backdrop>
   );
 };

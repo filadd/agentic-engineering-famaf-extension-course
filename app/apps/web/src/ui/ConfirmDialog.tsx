@@ -1,3 +1,4 @@
+import { Backdrop } from "./Backdrop.tsx";
 import { Icon } from "./Icon.tsx";
 
 interface Props {
@@ -11,10 +12,7 @@ interface Props {
 
 export const ConfirmDialog = ({ open, title, text, confirmLabel, onConfirm, onCancel }: Props) =>
   open ? (
-    <div
-      className="fixed inset-0 z-50 grid place-items-center bg-coal/45 p-8 max-[600px]:items-end max-[600px]:p-0"
-      onClick={(event) => (event.target === event.currentTarget ? onCancel() : undefined)}
-    >
+    <Backdrop layer="alert" onClose={onCancel}>
       <div
         role="alertdialog"
         aria-modal="true"
@@ -33,5 +31,5 @@ export const ConfirmDialog = ({ open, title, text, confirmLabel, onConfirm, onCa
           </button>
         </div>
       </div>
-    </div>
+    </Backdrop>
   ) : null;
