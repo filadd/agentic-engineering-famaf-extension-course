@@ -20,3 +20,24 @@ export const moduleSource = (node: ModuleSourceNode): string | null => {
 /** Reports whether a path, absolute or relative, lies inside the given app folder. */
 export const isInside = (path: string, folder: string): boolean =>
   path.replaceAll("\\", "/").includes(`/${folder}/`);
+
+export const matchesPackage = (source: string, name: string): boolean =>
+  source === name || source.startsWith(`${name}/`);
+
+/** Calls `check` with the literal specifier of every import, re-export and dynamic import. */
+export const importVisitors = (check: (node: ModuleSourceNode, source: string) => void) => {
+  const visit = (node: ModuleSourceNode) => {
+    const source = moduleSource(node);
+
+    if (source != null) {
+      check(node, source);
+    }
+  };
+
+  return {
+    ImportDeclaration: visit,
+    ExportNamedDeclaration: visit,
+    ExportAllDeclaration: visit,
+    ImportExpression: visit,
+  };
+};

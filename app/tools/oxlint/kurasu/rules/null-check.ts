@@ -2,12 +2,11 @@ import { defineRule } from "@oxlint/plugins";
 
 import type { ESTree } from "@oxlint/plugins";
 
-const isNullish = (node: ESTree.Node): boolean =>
-  (node.type === "Literal" && node.raw === "null") ||
-  (node.type === "Identifier" && node.name === "undefined");
-
 const isUndefined = (node: ESTree.Node): boolean =>
   node.type === "Identifier" && node.name === "undefined";
+
+const isNullish = (node: ESTree.Node): boolean =>
+  (node.type === "Literal" && node.raw === "null") || isUndefined(node);
 
 /** Nullish checks use the loose `== null`, which covers both null and undefined. */
 export const nullCheckRule = defineRule({

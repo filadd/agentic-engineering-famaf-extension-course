@@ -1,11 +1,11 @@
 import { defineRule } from "@oxlint/plugins";
 
-import { isInside, moduleSource, type ModuleSourceNode } from "../../shared/module-sources.ts";
+import { importVisitors, isInside, matchesPackage } from "../../shared/module-sources.ts";
 
 const allowedPackages = ["@kurasu/contract", "@kurasu/slides"];
 
 const isAllowed = (source: string): boolean =>
-  allowedPackages.some((name) => source === name || source.startsWith(`${name}/`));
+  allowedPackages.some((name) => matchesPackage(source, name));
 
 const reachesServerCode = (source: string): boolean =>
   (source.startsWith("@kurasu/") && !isAllowed(source)) ||
@@ -25,19 +25,10 @@ export const webImportsRule = defineRule({
     },
   },
   createOnce(context) {
-    const check = (node: ModuleSourceNode) => {
-      const source = moduleSource(node);
-
-      if (source != null && reachesServerCode(source)) {
+    return importVisitors((node, source) => {
+      if (reachesServerCode(source)) {
         context.report({ node, messageId: "serverImport", data: { source } });
       }
-    };
-
-    return {
-      ImportDeclaration: check,
-      ExportNamedDeclaration: check,
-      ExportAllDeclaration: check,
-      ImportExpression: check,
-    };
+    });
   },
 });

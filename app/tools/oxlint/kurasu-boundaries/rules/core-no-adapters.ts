@@ -1,6 +1,6 @@
 import { defineRule } from "@oxlint/plugins";
 
-import { moduleSource, type ModuleSourceNode } from "../../shared/module-sources.ts";
+import { importVisitors, matchesPackage } from "../../shared/module-sources.ts";
 
 const adapterSources = [
   "cloudflare:",
@@ -12,10 +12,10 @@ const adapterSources = [
 ];
 
 const isAdapterSource = (source: string): boolean =>
-  adapterSources.some(
-    (prefix) =>
-      source === prefix ||
-      source.startsWith(prefix.endsWith(":") || prefix.endsWith("/") ? prefix : `${prefix}/`),
+  adapterSources.some((prefix) =>
+    prefix.endsWith(":") || prefix.endsWith("/")
+      ? source.startsWith(prefix)
+      : matchesPackage(source, prefix),
   );
 
 /** Keeps packages/core free of platform code: core declares ports, adapters live elsewhere. */
@@ -31,19 +31,10 @@ export const coreNoAdaptersRule = defineRule({
     },
   },
   createOnce(context) {
-    const check = (node: ModuleSourceNode) => {
-      const source = moduleSource(node);
-
-      if (source != null && isAdapterSource(source)) {
+    return importVisitors((node, source) => {
+      if (isAdapterSource(source)) {
         context.report({ node, messageId: "adapterImport", data: { source } });
       }
-    };
-
-    return {
-      ImportDeclaration: check,
-      ExportNamedDeclaration: check,
-      ExportAllDeclaration: check,
-      ImportExpression: check,
-    };
+    });
   },
 });
