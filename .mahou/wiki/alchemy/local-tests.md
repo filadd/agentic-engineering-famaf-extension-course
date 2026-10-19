@@ -1,8 +1,8 @@
 # Testing against Alchemy's local stack
 
-verified: 2026-10-18
+verified: 2026-10-19
 
-Answers how integration tests run against a local Alchemy 2 stack: how much state a test file gets, how to start from a clean database with fixtures, how to read and fail the mail a Worker sends, and what cannot be made to fail. The facts come from the alchemy source at 2.0.0-beta.83 (commit 9e3c058) and its issues. Nobody has checked them against a real stack yet.
+Answers how integration tests run against a local Alchemy 2 stack: how much state a test file gets, how to start from a clean database with fixtures, how to read and fail the mail a Worker sends, and what cannot be made to fail. The facts come from the alchemy source at 2.0.0-beta.83 (commit 9e3c058) and its issues. kurasu's API suite applies them: it deploys one stage per file, loads the fixtures through `importFiles`, reads the mail from `text/*.txt`, makes sends fail with `allowedDestinationAddresses`, and sets `sequence.hooks: "list"`.
 
 ## Knowledge
 
@@ -14,9 +14,11 @@ Answers how integration tests run against a local Alchemy 2 stack: how much stat
 - The local `send_email` binding writes each message to `.alchemy/local/email/` and logs the path. The builder form (`.send({ from, to, subject, text, html })`) writes `text/<uuid>.txt` and `html/<uuid>.html`, and no `.eml`. Only `sendRaw` with a MIME message writes `<uuid>.eml`. A test reads the files with `fs`. The folder is shared by every file and run, so a test looks for a value unique to that test.
 - To make a send fail without mocks, declare `allowedDestinationAddresses` (or `allowedSenderAddresses`) on `Cloudflare.Email.SendEmail` for the test stage. A send to an address outside the list throws `email to <addr> not allowed`, which reaches the Worker as `SendEmailError`. The list is fixed at deploy time.
 - The harness has no way to make a Durable Object call fail: no fault injection, no eviction and no abort switch.
+- Each run of a suite that deploys a stage per file leaves the stages' state, bundles and local data behind. In kurasu's API suite, each run adds about 130 MB to `apps/api/.alchemy`, and nothing removes it.
 - Under Vitest's default `sequence.hooks: "stack"`, `afterAll(destroy(Stack))` hangs with `dev: true` (issue #2118). Set `sequence.hooks: "list"`, or use `Test.make({ sidecar: false })`, or drop the `afterAll` destroy.
 
 ## Sources
 
 - alchemy at 9e3c058: `packages/alchemy/src/Test/Vitest.ts`, `Test/Core.ts`, `Cloudflare/D1/Database.ts`, `Cloudflare/R2/Bucket.ts`, `packages/cloudflare-runtime/src/core/bindings/send-email/SendEmailBinding.worker.ts`, `packages/alchemy/test/Cloudflare/Email/SendEmail.local.test.ts`: https://github.com/alchemy-run/alchemy/tree/9e3c058
 - Issue #2118: https://github.com/alchemy-run/alchemy/issues/2118
+- kurasu: `app/apps/api/test/helpers/api-test.ts`, `app/apps/api/vitest.config.ts`, `.scratch/aula-virtual/implement/report-refactor.md`.
