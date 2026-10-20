@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.turbo/
+.alchemy/
+.env.local
+.env.*.local
+.tanstack/
+*.tsbuildinfo

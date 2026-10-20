@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Kurasu · Prototipo · Marca del cuervo</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐦‍⬛</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9e6e3; font-family: 'Atkinson Hyperlegible', sans-serif; color: #1F1B18; }
+  h1, h2, h3 { font-family: 'Rubik', sans-serif; margin: 0; }
+  .intro, .alt { max-width: 1520px; margin: 24px auto; padding: 0 20px; }
+  .intro h1 { font-size: 28px; }
+  .intro p { margin: 6px 0 0; color: #6b625c; max-width: 1100px; }
+  .alt { border-top: 2px solid #d6cfc9; padding-top: 22px; }
+  .alt h2 { font-size: 22px; }
+
+  .strip { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; font-size: 14px; }
+  .strip button { font: inherit; border: 1px solid #cfc8c2; background: #fff; border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+  .strip button.on { background: #1F1B18; color: #fff; border-color: #1F1B18; }
+  .strip .sep { width: 1px; height: 20px; background: #cfc8c2; margin: 0 4px; }
+
+  .i { display: inline-grid; place-items: center; flex: none; }
+  .i svg { width: 100%; height: 100%; }
+
+  /* Browser tab sketch with the favicon. */
+  .tabs { margin-top: 18px; width: 420px; background: #dcd6d1; border-radius: 12px 12px 0 0; padding: 8px 10px 0; display: flex; gap: 6px; align-items: flex-end; }
+  .tab { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; border-radius: 10px 10px 0 0; font-size: 13px; color: #1F1B18; }
+  .tab.on { background: #f1ece8; width: 210px; }
+  .tab.off { color: #6b625c; width: 150px; }
+  .tab .fav { font-size: 16px; line-height: 1; width: 16px; text-align: center; }
+  .tab .x { margin-left: auto; color: #8A7E75; }
+  .tab .dot { width: 16px; height: 16px; border-radius: 4px; background: #b9b1aa; }
+  .urlbar { width: 420px; background: #f1ece8; padding: 8px 10px 10px; border-radius: 0 0 12px 12px; }
+  .urlbar div { background: #fff; border-radius: 999px; padding: 5px 14px; font-size: 13px; color: #6b625c; }
+
+  .stage { display: flex; gap: 28px; align-items: flex-start; overflow-x: auto; padding-bottom: 12px; }
+  .shot { flex: none; }
+  .flabel { font-size: 13px; color: #6b625c; margin-bottom: 6px; }
+
+  /* The phone frame's inside is exactly 390 × 844, so the container queries below see a real phone width. */
+  .phone { width: 410px; height: 864px; border: 10px solid #1F1B18; border-radius: 44px; overflow: hidden; flex: none; background: #1F1B18; }
+  .desk { width: 1060px; height: 700px; border-radius: 12px; overflow: hidden; flex: none; box-shadow: 0 0 0 1px #d6cfc9; }
+  .stage.all { flex-wrap: wrap; overflow-x: visible; }
+  .all .desk { zoom: 0.6; }
+
+  /* ---------- The app ---------- */
+
+  .app {
+    --window: #FBF3EE; --ink: #1F1B18; --muted: #8A7E75; --line: #EADFD8; --side: #F3E8E1; --field: #FFFFFF;
+    --active: #1F1B18; --active-ink: #FFFFFF; --tag: #FFFFFF;
+    --c0: #F2B8C0; --c1: #F8D0A0; --c2: #CCC4F0; --c3: #B4E8CC; --locked: #EFE6E0;
+    container: app / inline-size;
+    position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--window); color: var(--ink);
+  }
+
+  .scroll { height: 100%; overflow: auto; scrollbar-width: thin; scrollbar-color: #D9C9BF transparent; }
+
+  /* Auth card, from registro-responsive.html. */
+  .reg { min-height: 100%; display: grid; place-items: center; padding: 40px; }
+  .auth { width: min(440px, 100%); text-align: center; }
+  .auth h1 { font-size: 32px; }
+  .auth p { color: var(--muted); margin: 10px 0 0; line-height: 1.5; }
+  .field { display: block; margin-top: 26px; font-size: 14px; font-weight: 700; text-align: left; }
+  .field input { display: block; width: 100%; margin-top: 6px; font: inherit; font-weight: 400; font-size: 16px; border: 1.5px solid var(--line); border-radius: 14px; padding: 11px 14px; background: var(--field); color: var(--ink); }
+  .field input.code { font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 26px; letter-spacing: 0.3em; text-align: center; text-transform: uppercase; padding: 12px 14px 12px calc(14px + 0.3em); }
+  .go { display: flex; justify-content: center; margin-top: 26px; }
+  .go .gobtn { display: inline-flex; align-items: center; gap: 8px; background: var(--active); color: var(--active-ink); border: 1.5px solid var(--active); border-radius: 999px; font-family: 'Rubik', sans-serif; font-weight: 500; font-size: 15px; padding: 11px 20px; cursor: pointer; }
+  .go .gobtn:disabled { opacity: 0.35; cursor: default; }
+
+  /* Brand marks. The emoji carries the mark; the line-height keeps its box from adding space. */
+  .crow { line-height: 1; font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif; }
+  .mark-solo { font-size: 64px; margin: 0 auto 18px; }
+  .head-crow { font-size: 28px; flex: none; }
+
+  /* Home header and content, from inicio-responsive.html and admin-sesiones.html. */
+  .window { padding: 32px 48px 40px; }
+  .top { display: flex; align-items: center; gap: 12px; }
+  .hello { flex: 1; min-width: 0; font-family: 'Rubik', sans-serif; font-size: 30px; font-weight: 700; }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--c2); display: grid; place-items: center; font-size: 22px; border: 0; cursor: pointer; padding: 0; flex: none; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-family: 'Rubik', sans-serif; font-weight: 500; border: 0; border-radius: 999px; padding: 10px 20px; cursor: pointer; background: #1F1B18; color: #fff; }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); padding: 9px 16px; }
+
+  .card { border-radius: 22px; padding: 20px 22px; color: var(--ink); }
+  .card.closed { padding: 12px 18px; }
+  .card.closed h3 { font-size: 17px; }
+  .card p { margin: 12px 0 0; line-height: 1.45; }
+  .card .head { display: flex; align-items: center; gap: 10px; }
+  .card .head h3 { flex: 1; }
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .tag { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; background: var(--tag); color: #1F1B18; border-radius: 999px; padding: 4px 12px; }
+  .foot { display: flex; justify-content: flex-end; margin-top: 16px; }
+  .hero { margin-top: 24px; padding: 26px; }
+  .hero h3 { font-size: 30px; }
+  .kicker { font-size: 14px; opacity: 0.75; display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .state { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 3px 10px; font-size: 12px; background: var(--tag); color: #1F1B18; white-space: nowrap; }
+  .state .dot { width: 8px; height: 8px; border-radius: 50%; background: #3F9E6E; }
+  .state.off .dot { background: #B9ADA5; }
+  .locked { background: var(--locked); color: var(--muted); }
+  .section-title { font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 18px; margin: 28px 0 0; }
+  .path { display: grid; grid-template-columns: 56px 1fr; column-gap: 16px; margin-top: 12px; }
+  .rail { display: flex; flex-direction: column; align-items: center; }
+  .node { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-family: 'Rubik', sans-serif; font-weight: 700; flex: none; }
+  .node.done { background: var(--active); color: var(--active-ink); }
+  .node.live { background: #E8505B; color: #fff; box-shadow: 0 0 0 6px color-mix(in srgb, #E8505B 25%, transparent); }
+  .node.lock { background: var(--locked); color: var(--muted); }
+  .link { width: 4px; flex: 1; min-height: 14px; background: var(--line); border-radius: 2px; }
+  .step { padding-bottom: 12px; min-width: 0; }
+
+  /* ---------- Phone width ---------- */
+
+  @container app (max-width: 600px) {
+    .reg { padding: 28px 20px; }
+    .auth h1 { font-size: 28px; }
+    .go .gobtn { width: 100%; justify-content: center; padding: 13px 20px; }
+
+    .window { padding: 20px 16px 32px; }
+    .hello { font-size: 24px; }
+    .avatar { width: 40px; height: 40px; font-size: 20px; }
+    .top { gap: 10px; }
+    .top .btn.ghost .label { display: none; }
+    .top .btn.ghost { width: 40px; height: 40px; padding: 0; }
+    .head-crow { font-size: 24px; }
+
+    .hero { margin-top: 18px; padding: 18px; }
+    .hero h3 { font-size: 24px; }
+    .card { padding: 16px; }
+    .card.closed { padding: 11px 14px; }
+    .card.closed h3 { font-size: 16px; }
+    .foot .btn { width: 100%; padding: 12px 20px; }
+    .path { grid-template-columns: 34px 1fr; column-gap: 10px; }
+    .node { width: 32px; height: 32px; font-size: 14px; }
+    .node.live { box-shadow: 0 0 0 4px color-mix(in srgb, #E8505B 25%, transparent); }
+  }
+</style>
+</head>
+<body>
+<div class="intro">
+  <h1>kurasu · la marca del cuervo</h1>
+  <p>La app se llama kurasu y su marca es el emoji del cuervo 🐦‍⬛, que reemplaza a "AV" en la card de login y registro, se suma al header de los inicios y es el favicon. En la card el cuervo va solo, grande y sin fondo, sobre el título; en el header va solo y chico, a la izquierda del saludo. El resto de las pantallas queda como en los prototipos ya cerrados. La tira elige pantalla y ancho, y "Mostrar todos" pone las cuatro pantallas lado a lado.</p>
+  <div class="tabs">
+    <div class="tab on"><span class="fav crow">🐦‍⬛</span><span>Kurasu</span><span class="x">✕</span></div>
+    <div class="tab off"><span class="dot"></span><span>Nueva pestaña</span></div>
+  </div>
+  <div class="urlbar"><div>kurasu.famaf.dev</div></div>
+</div>
+<section class="alt" id="marca">
+  <div class="strip"></div>
+  <div class="stage"></div>
+</section>
+
+<script>
+const ICONS = {"arrow-right":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4.5 12h15m-5.625 6l5.625-6l-5.625-6\"/></svg>","mail":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m2.357 7.714l6.98 4.654c.963.641 1.444.962 1.964 1.087c.46.11.939.11 1.398 0c.52-.125 1.001-.446 1.964-1.087l6.98-4.654M7.157 19.5h9.686c1.68 0 2.52 0 3.162-.327a3 3 0 0 0 1.31-1.311c.328-.642.328-1.482.328-3.162V9.3c0-1.68 0-2.52-.327-3.162a3 3 0 0 0-1.311-1.311c-.642-.327-1.482-.327-3.162-.327H7.157c-1.68 0-2.52 0-3.162.327a3 3 0 0 0-1.31 1.311c-.328.642-.328 1.482-.328 3.162v5.4c0 1.68 0 2.52.327 3.162a3 3 0 0 0 1.311 1.311c.642.327 1.482.327 3.162.327\"/></svg>","download":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4 16.004V17a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1M12 4.5v11m3.5-3.5L12 15.5L8.5 12\"/></svg>","chat-messages":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M5 12a5 5 0 0 1 7 7m-7-7a5 5 0 0 0-2 4a5 5 0 0 0 .224 1.483c.272.88.076 1.86-.099 2.784a.468.468 0 0 0 .592.539c.848-.232 1.691-.43 2.557-.112A5 5 0 0 0 8 21a4.99 4.99 0 0 0 4-2m-7-7c0-4.685 2.875-9 8-9a8 8 0 0 1 7.532 10.7c-.476 1.326.037 3.102.337 4.568a.451.451 0 0 1-.584.526c-1.312-.41-2.852-.986-4.085-.466c-1.334.562-2.736.672-4.2.672\"/></svg>","check":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m6 13.626l1.606 1.722c.886.95 1.329 1.424 1.825 1.574c.436.131.9.096 1.315-.1c.473-.224.852-.761 1.612-1.836L18 7\"/></svg>","users":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 19.75c0-2.09-1.67-5.068-4-5.727m-2 5.727c0-2.651-2.686-6-6-6s-6 3.349-6 6m9-12.5a3 3 0 1 1-6 0a3 3 0 0 1 6 0m3 3a3 3 0 1 0 0-6\"/></svg>","plus":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 12h-6m0 0H6m6 0V6m0 6v6\"/></svg>"};
+const ic = (n, s = 20) => `<span class="i" style="width:${s}px;height:${s}px">${ICONS[n]}</span>`;
+
+const CROW = '🐦‍⬛';
+const USER = { name: 'Ana', avatar: '🦊' };
+
+const SESSIONS = [
+  { title: 'La experiencia vibe coding', summary: 'Armamos una app entera pidiéndosela al agente y miramos qué salió bien y qué no.', enabled: true },
+  { title: 'Planificación y revisión', summary: 'Antes de escribir código: explorar, planificar y revisar lo que el agente produce.', enabled: true },
+  { title: 'Tooling y skills', summary: 'Herramientas, skills y cómo se arma un flujo de trabajo propio.', enabled: false },
+  { title: 'Context engineering', summary: 'Qué entra en el contexto del agente, cuánto cuesta y dónde se rompe.', enabled: false },
+];
+
+const MARK = {
+  auth: () => `<div class="mark-solo crow">${CROW}</div>`,
+  header: (top) => top.replace('<div class="hello">', `<span class="head-crow crow">${CROW}</span><div class="hello">`),
+};
+
+const SCREENS = { login: 'Login', enroll: 'Registro', student: 'Inicio estudiante', teacher: 'Inicio profe' };
+const VIEWPORTS = { desk: 'Escritorio', phone: 'Celular · 390 px' };
+
+const color = (n) => `var(--c${(n - 1) % 4})`;
+
+/* ---------- Screens ---------- */
+
+const login = () => `
+  <div class="reg"><div class="auth">${MARK.auth()}<h1>Entrar al aula</h1>
+    <label class="field">Tu email<input type="email" placeholder="nombre@mail.com"></label>
+    <div class="go"><button class="gobtn" disabled>${ic('mail', 18)} Mandame el link</button></div>
+  </div></div>`;
+
+const enroll = () => `
+  <div class="reg"><div class="auth">${MARK.auth()}<h1>Sumate al aula</h1><p>Escribí el código que muestra el profe en clase.</p>
+    <label class="field">Código del aula<input class="code" maxlength="5" placeholder="·····"></label>
+    <div class="go"><button class="gobtn" disabled>Seguir ${ic('arrow-right', 18)}</button></div>
+  </div></div>`;
+
+const student = () => `
+  <div class="window">
+    ${MARK.header(`<div class="top"><div class="hello">Hola, ${USER.name}</div><button class="avatar" title="Tu cuenta">${USER.avatar}</button></div>`)}
+    <div class="card hero" style="background:${color(2)}">
+      <h3>${SESSIONS[1].title}</h3>
+      <div class="tags"><span class="tag">${ic('download', 15)} Material (5)</span><span class="tag">${ic('chat-messages', 15)} 4 preguntas</span></div>
+      <p>${SESSIONS[1].summary}</p>
+      <div class="foot"><button class="btn">Entrar al aula ${ic('arrow-right', 18)}</button></div>
+    </div>
+    <div class="section-title">Todas las sesiones</div>
+    <div class="path">${SESSIONS.slice(0, 2).map((s, i) => `
+      <div class="rail"><div class="node ${i === 1 ? 'live' : 'done'}">${i === 1 ? 2 : ic('check', 20)}</div>${i === 0 ? '<div class="link"></div>' : ''}</div>
+      <div class="step"><div class="card closed" style="background:${color(i + 1)}"><h3>${s.title}</h3></div></div>`).join('')}</div>
+  </div>`;
+
+const stateTag = (s) => `<span class="state ${s.enabled ? '' : 'off'}"><span class="dot"></span>${s.enabled ? 'Habilitada' : 'Deshabilitada'}</span>`;
+
+const teacher = () => `
+  <div class="window">
+    ${MARK.header(`<div class="top"><div class="hello">Hola, ${USER.name}</div><button class="btn ghost" title="Usuarios">${ic('users', 18)}<span class="label">Usuarios</span></button><button class="avatar" title="Tu cuenta">${USER.avatar}</button></div>`)}
+    <div class="card hero" style="background:${color(2)}">
+      <div class="kicker">Sesión 2 de ${SESSIONS.length} ${stateTag(SESSIONS[1])}</div>
+      <h3>${SESSIONS[1].title}</h3>
+      <p>${SESSIONS[1].summary}</p>
+      <div class="foot"><button class="btn">Abrir ${ic('arrow-right', 18)}</button></div>
+    </div>
+    <div class="section-title">Todas las sesiones</div>
+    <div class="path">${SESSIONS.map((s, i) => `
+      <div class="rail"><div class="node ${s.enabled ? (i === 1 ? 'live' : 'done') : 'lock'}">${s.enabled && i === 0 ? '✓' : i + 1}</div>${i < SESSIONS.length - 1 ? '<div class="link"></div>' : ''}</div>
+      <div class="step"><div class="card closed ${s.enabled ? '' : 'locked'}" style="${s.enabled ? `background:${color(i + 1)}` : ''}"><div class="head"><h3>${s.title}</h3>${stateTag(s)}</div></div></div>`).join('')}</div>
+  </div>`;
+
+const RENDER = { login, enroll, student, teacher };
+
+const app = (screen) => `<div class="app"><div class="scroll">${RENDER[screen]()}</div></div>`;
+
+/* ---------- Page chrome ---------- */
+
+const view = { screen: 'login', vp: 'desk', all: false };
+
+const shot = (screen, vp, label) => `
+  <div class="shot">
+    <div class="flabel">${label}</div>
+    <div class="${vp}">${app(screen)}</div>
+  </div>`;
+
+const root = document.getElementById('marca');
+
+const render = () => {
+  root.querySelector('.strip').innerHTML = `
+    ${Object.entries(SCREENS).map(([s, label]) => `<button data-screen="${s}" class="${!view.all && view.screen === s ? 'on' : ''}">${label}</button>`).join('')}
+    <span class="sep"></span>
+    ${Object.entries(VIEWPORTS).map(([p, label]) => `<button data-vp="${p}" class="${view.vp === p ? 'on' : ''}">${label}</button>`).join('')}
+    <span class="sep"></span>
+    <button data-all class="${view.all ? 'on' : ''}">Mostrar todos</button>`;
+
+  const stage = root.querySelector('.stage');
+
+  stage.classList.toggle('all', view.all);
+  stage.innerHTML = view.all
+    ? Object.entries(SCREENS).map(([s, label]) => shot(s, view.vp, `${label} · ${VIEWPORTS[view.vp]}`)).join('')
+    : shot(view.screen, view.vp, `${SCREENS[view.screen]} · ${VIEWPORTS[view.vp]}`);
+};
+
+root.querySelector('.strip').addEventListener('click', (e) => {
+  const t = e.target.closest('button');
+
+  if (t == null) {
+    return;
+  }
+
+  if (t.dataset.screen != null) {
+    Object.assign(view, { screen: t.dataset.screen, all: false });
+  } else if (t.dataset.vp != null) {
+    view.vp = t.dataset.vp;
+  } else if (t.hasAttribute('data-all')) {
+    view.all = !view.all;
+  }
+
+  render();
+});
+
+render();
+</script>
+</body>
+</html>

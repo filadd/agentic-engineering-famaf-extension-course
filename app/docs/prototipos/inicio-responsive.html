@@ -1,0 +1,759 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Prototipo · Inicio del estudiante en celular</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9e6e3; font-family: 'Atkinson Hyperlegible', sans-serif; color: #1F1B18; }
+  h1, h2, h3, h4 { font-family: 'Rubik', sans-serif; margin: 0; }
+  .intro, .alt { max-width: 1520px; margin: 24px auto; padding: 0 20px; }
+  .intro h1 { font-size: 28px; }
+  .intro p, .tradeoff { margin: 6px 0 0; color: #6b625c; max-width: 1100px; }
+  .alt { border-top: 2px solid #d6cfc9; padding-top: 22px; }
+  .alt h2 { font-size: 22px; }
+  .tradeoff { margin-bottom: 12px; }
+
+  .strip { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; font-size: 14px; }
+  .strip button { font: inherit; border: 1px solid #cfc8c2; background: #fff; border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+  .strip button.on { background: #1F1B18; color: #fff; border-color: #1F1B18; }
+  .strip button:disabled { opacity: 0.4; cursor: default; }
+  .strip .sep { width: 1px; height: 20px; background: #cfc8c2; margin: 0 4px; }
+
+  .pair { margin-bottom: 28px; }
+  .state-label { font-size: 14px; color: #6b625c; margin-bottom: 6px; font-weight: 700; }
+  .frames { display: flex; gap: 28px; align-items: flex-start; }
+  .flabel { font-size: 13px; color: #6b625c; margin-bottom: 6px; }
+
+  /* The phone frame's inside is exactly 390 × 844, so the container queries below see a real phone width. */
+  .phone { width: 410px; height: 864px; border: 10px solid #1F1B18; border-radius: 44px; overflow: hidden; flex: none; background: #1F1B18; }
+  .desk { width: 1060px; height: 844px; border-radius: 12px; overflow: hidden; flex: none; box-shadow: 0 0 0 1px #d6cfc9; }
+
+  .i { display: inline-grid; place-items: center; flex: none; }
+  .i svg { width: 100%; height: 100%; }
+
+  /* ---------- The app ---------- */
+
+  .app {
+    --window: #FBF3EE; --ink: #1F1B18; --muted: #8A7E75; --line: #EADFD8; --side: #F3E8E1; --field: #FFFFFF;
+    --active: #1F1B18; --active-ink: #FFFFFF; --tag: #FFFFFF;
+    --c0: #F2B8C0; --c1: #F8D0A0; --c2: #CCC4F0; --c3: #B4E8CC;
+    container: app / inline-size;
+    position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--window); color: var(--ink);
+  }
+
+  .app.dark {
+    --window: #161413; --ink: #F2EDE9; --muted: #9C918A; --line: #34302D; --side: #1F1C1A; --field: #24211F;
+    --active: #F2EDE9; --active-ink: #161413; --card-ink: #1F1B18;
+  }
+
+  .scroll { height: 100%; overflow: auto; scrollbar-width: thin; scrollbar-color: #D9C9BF transparent; }
+  .dark .scroll { scrollbar-color: #4A423D transparent; }
+  .window { padding: 32px 48px 40px; }
+
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .hello { font-family: 'Rubik', sans-serif; font-size: 30px; font-weight: 700; }
+  .me { position: relative; }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--c2); display: grid; place-items: center; font-size: 22px; border: 0; cursor: pointer; padding: 0; }
+  .menu { position: absolute; right: 0; top: 58px; width: 290px; background: var(--window); border: 1.5px solid var(--line); border-radius: 18px; padding: 14px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18); z-index: 3; }
+  .menu .who { font-family: 'Rubik', sans-serif; font-weight: 700; }
+  .menu .mail { color: var(--muted); font-size: 14px; margin-top: 2px; word-break: break-all; }
+  .menu hr { border: 0; border-top: 1.5px solid var(--line); margin: 12px 0; }
+  .mhead { display: flex; align-items: center; gap: 10px; }
+  .mhead .face { width: 40px; height: 40px; border-radius: 50%; background: var(--c2); display: grid; place-items: center; font-size: 22px; flex: none; }
+  .mitem { display: flex; align-items: center; gap: 10px; width: 100%; font: inherit; color: var(--ink); background: none; border: 0; padding: 8px 6px; border-radius: 10px; cursor: pointer; text-align: left; }
+  .mitem:hover { background: var(--line); }
+  .switch { display: flex; justify-content: space-between; align-items: center; width: 100%; font: inherit; color: var(--ink); background: none; border: 0; padding: 8px 6px; cursor: pointer; }
+  .switch span:first-child { display: inline-flex; align-items: center; gap: 10px; }
+  .knob { width: 40px; height: 22px; border-radius: 999px; background: var(--line); position: relative; flex: none; }
+  .knob::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--ink); transition: left 0.15s; }
+  .knob.on { background: var(--active); }
+  .knob.on::after { left: 21px; background: var(--active-ink); }
+
+  .card { border-radius: 22px; padding: 20px 22px; color: var(--card-ink, var(--ink)); }
+  .card .head { cursor: pointer; }
+  .card.closed { padding: 12px 18px; }
+  .card.closed h3 { font-size: 17px; }
+  .card h3 { font-size: 20px; }
+  .card p { margin: 12px 0 0; line-height: 1.45; }
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .tag { display: inline-flex; align-items: center; gap: 6px; border: 0; font: inherit; font-size: 13px; background: var(--tag); color: #1F1B18; border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+  .tag:hover { outline: 2px solid #1F1B18; }
+  .foot { display: flex; justify-content: flex-end; margin-top: 16px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-family: 'Rubik', sans-serif; font-weight: 500; border: 0; border-radius: 999px; padding: 10px 20px; cursor: pointer; background: #1F1B18; color: #fff; }
+  .btn.small { padding: 6px 14px; font-size: 14px; }
+  .hero { margin-top: 24px; padding: 26px; }
+  .hero h3 { font-size: 30px; }
+  .section-title { font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 18px; margin: 28px 0 0; }
+  .empty-note { margin-top: 18px; color: var(--muted); }
+
+  .path { display: grid; grid-template-columns: 56px 1fr; column-gap: 16px; margin-top: 12px; }
+  .rail { display: flex; flex-direction: column; align-items: center; }
+  .node { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-family: 'Rubik', sans-serif; font-weight: 700; flex: none; }
+  .node.done { background: var(--active); color: var(--active-ink); }
+  .node.live { background: #E8505B; color: #fff; box-shadow: 0 0 0 6px color-mix(in srgb, #E8505B 25%, transparent); }
+  .link { width: 4px; flex: 1; min-height: 14px; background: var(--line); border-radius: 2px; }
+  .step { padding-bottom: 12px; min-width: 0; }
+
+  /* Poll panels inside the highlighted card (encuesta.html, option B). */
+  .polls { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
+  .panel { background: #fff; border-radius: 18px; padding: 16px 18px; color: #1F1B18; }
+  .q { font-family: 'Rubik', sans-serif; font-weight: 500; display: flex; gap: 8px; align-items: flex-start; }
+  .q .i { margin-top: 2px; }
+  .meta { font-size: 13px; opacity: 0.7; margin-top: 2px; }
+  .rows { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .row { position: relative; overflow: hidden; display: flex; justify-content: space-between; gap: 10px; border: 2px solid #EADFD8; border-radius: 12px; padding: 9px 14px; cursor: pointer; background: #fff; font: inherit; text-align: left; color: #1F1B18; }
+  .row .fill { position: absolute; inset: 0 auto 0 0; background: #F8D0A0; opacity: 0.6; }
+  .row span { position: relative; }
+  .row.mine { border-color: #1F1B18; }
+  div.row { cursor: default; }
+  .cloud { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; justify-content: center; padding: 10px 6px; }
+  .cloud span { font-family: 'Rubik', sans-serif; font-weight: 700; line-height: 1.1; }
+  .word-in { display: flex; gap: 8px; margin-top: 10px; }
+  .word-in input { flex: 1; min-width: 0; font: inherit; border: 2px solid #1F1B18; border-radius: 999px; padding: 7px 14px; background: #fff; color: #1F1B18; }
+  .scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 10px; align-items: end; }
+  .scale button { font: inherit; border: 2px solid #1F1B18; background: #fff; border-radius: 14px; padding: 8px 0; cursor: pointer; font-size: 20px; color: #1F1B18; }
+  .bar { background: #CCC4F0; border-radius: 8px 8px 0 0; display: flex; align-items: flex-end; justify-content: center; font-size: 12px; padding-bottom: 2px; }
+  .bar.mine { background: #1F1B18; color: #fff; }
+  .ends { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; opacity: 0.7; margin-top: 4px; }
+  .edit { display: flex; justify-content: flex-end; margin-top: 10px; }
+  .textlink { font: inherit; font-size: 14px; background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; color: #1F1B18; }
+
+  /* Overlays: the modals of the links and of "Tu perfil" (links.html, menu-usuario.html B). */
+  .scrim { position: absolute; inset: 0; background: rgba(31, 27, 24, 0.45); display: grid; place-items: center; padding: 30px; z-index: 5; }
+  .modal { display: flex; flex-direction: column; background: var(--window); color: var(--ink); border-radius: 22px; width: min(640px, 100%); max-height: 100%; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); overflow: hidden; }
+  .modal.profile { width: min(520px, 100%); }
+  .modal-head { display: flex; align-items: center; gap: 8px; padding: 18px 18px 6px 24px; }
+  .modal-head h4 { flex: 1; font-size: 20px; }
+  .modal-body { overflow: auto; padding: 6px 24px 22px; scrollbar-width: thin; scrollbar-color: #D9C9BF transparent; }
+  .dark .modal-body { scrollbar-color: #4A423D transparent; }
+  .handle { display: none; }
+  .iconbtn { width: 34px; height: 34px; border-radius: 50%; border: 0; background: transparent; color: var(--ink); cursor: pointer; display: grid; place-items: center; flex: none; padding: 0; }
+  .iconbtn:hover { background: var(--line); }
+
+  .files { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+  .file { display: flex; align-items: center; gap: 8px; background: #fff; color: #1F1B18; border: 1.5px solid #EADFD8; border-radius: 12px; padding: 10px 8px 10px 14px; }
+  .file .grow { flex: 1; min-width: 0; }
+  .file small { display: block; color: #8A7E75; font-size: 13px; }
+  .file .iconbtn { color: #1F1B18; }
+  .file .iconbtn:hover { background: #F2EDE9; }
+  .acc { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; font: inherit; text-align: left; background: none; border: 0; padding: 0; cursor: pointer; color: #1F1B18; }
+  .closed-polls { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+  .closed-polls .panel { padding: 12px 14px; border: 1.5px solid #EADFD8; }
+  .ask { display: flex; gap: 6px; margin: 6px 0 10px; }
+  .ask input { flex: 1; min-width: 0; font: inherit; font-size: 14px; border: 1.5px solid var(--line); background: var(--field); color: var(--ink); border-radius: 999px; padding: 8px 14px; }
+  .question { display: flex; gap: 10px; align-items: flex-start; background: #fff; color: #1F1B18; border: 1.5px solid #EADFD8; border-radius: 14px; padding: 10px 12px; margin-bottom: 8px; font-size: 14px; line-height: 1.35; }
+  .vote { display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 36px; font: inherit; font-size: 12px; border: 1.5px solid #EADFD8; background: #fff; color: #1F1B18; border-radius: 10px; padding: 3px 0; cursor: pointer; }
+  .vote.on { background: #1F1B18; color: #fff; border-color: #1F1B18; }
+  .vote:disabled { opacity: 0.5; cursor: default; }
+  .qtext { flex: 1; min-width: 0; }
+  .question .del { width: 28px; height: 28px; color: #8A7E75; }
+  .question .del:hover { color: #B5485A; background: #F2EDE9; }
+  .yours { margin-left: 6px; font-size: 11px; background: #CCC4F0; border-radius: 999px; padding: 0 6px; white-space: nowrap; }
+  .empty { color: var(--muted); font-size: 14px; padding: 6px 0; }
+
+  .field { display: block; font-size: 14px; font-weight: 700; margin-top: 10px; }
+  .field input { display: block; width: 100%; margin-top: 6px; font: inherit; font-weight: 400; font-size: 15px; border: 1.5px solid var(--line); border-radius: 12px; padding: 9px 12px; background: var(--field); color: var(--ink); }
+  .search { display: flex; align-items: center; gap: 8px; margin-top: 8px; border: 1.5px solid var(--line); border-radius: 999px; padding: 6px 12px; background: var(--field); color: var(--muted); }
+  .search input { flex: 1; min-width: 0; border: 0; background: none; font: inherit; font-size: 14px; color: var(--ink); outline: none; }
+  .agrid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin-top: 8px; max-height: 260px; overflow: auto; padding: 3px; scrollbar-width: thin; scrollbar-color: #D9C9BF transparent; }
+  .pick { aspect-ratio: 1; border-radius: 50%; border: 0; background: var(--side); font-size: 24px; cursor: pointer; display: grid; place-items: center; padding: 0; }
+  .pick.on { background: #CCC4F0; box-shadow: 0 0 0 3px var(--ink); }
+  .none { grid-column: 1 / -1; color: var(--muted); font-size: 14px; padding: 8px 0; }
+  .mailrow { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); word-break: break-all; }
+  .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+  .pbtn { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 14px; border: 1.5px solid var(--line); background: transparent; color: var(--ink); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  .pbtn.dark { background: var(--active); color: var(--active-ink); border-color: var(--active); }
+  .pbtn:disabled { opacity: 0.35; cursor: default; }
+  .pbtn.danger { background: #B5485A; color: #fff; border-color: #B5485A; }
+  .confirm-scrim { z-index: 6; }
+  .modal.confirm { width: min(420px, 100%); }
+  .confirm-text { margin: 0; color: var(--muted); line-height: 1.45; }
+
+  .out { display: grid; place-items: center; min-height: 100%; text-align: center; padding: 24px; }
+  .out .box { width: min(420px, 100%); }
+  .out label { display: block; text-align: left; margin-top: 22px; font-weight: 700; font-size: 14px; }
+  .out input { display: block; width: 100%; margin-top: 6px; font: inherit; font-weight: 400; border: 1.5px solid var(--line); border-radius: 14px; padding: 10px 14px; background: var(--field); color: var(--ink); }
+  .out .pbtn { margin-top: 16px; }
+
+  /* ---------- Phone width ---------- */
+
+  @container app (max-width: 600px) {
+    .window { padding: 20px 16px 32px; }
+    .hello { font-size: 24px; }
+    .avatar { width: 40px; height: 40px; font-size: 20px; }
+    .menu { top: 52px; width: 290px; }
+
+    .hero { margin-top: 18px; padding: 18px; }
+    .hero h3 { font-size: 24px; }
+    .card { padding: 16px; }
+    .card.closed { padding: 11px 14px; }
+    .card.closed h3, .card h3 { font-size: 16px; }
+    .hero.card h3 { font-size: 24px; }
+    .foot .btn { width: 100%; padding: 12px 20px; }
+    .section-title { margin-top: 24px; font-size: 17px; }
+
+    .path { grid-template-columns: 34px 1fr; column-gap: 10px; }
+    .node { width: 32px; height: 32px; font-size: 14px; }
+    .node.live { box-shadow: 0 0 0 4px color-mix(in srgb, #E8505B 25%, transparent); }
+    .node.done .i { width: 16px !important; height: 16px !important; }
+
+    .panel { padding: 14px; border-radius: 16px; }
+    .row { padding: 10px 12px; }
+    .scale button { padding: 10px 0; }
+
+    .modal-head { padding: 14px 12px 4px 18px; }
+    .modal-body { padding: 6px 18px 20px; }
+    .agrid { grid-template-columns: repeat(7, 1fr); max-height: none; }
+    .pick { font-size: 22px; }
+
+
+    /* B: a sheet anchored to the bottom edge. */
+    .ov-B .scrim { padding: 0; align-items: end; }
+    .ov-B .modal, .ov-B .modal.profile { width: 100%; max-height: 88%; border-radius: 22px 22px 0 0; }
+    .ov-B .handle { display: block; width: 40px; height: 5px; border-radius: 999px; background: var(--line); margin: 8px auto 0; }
+
+  }
+</style>
+</head>
+<body>
+<div class="intro">
+  <h1>Inicio del estudiante · celular y escritorio</h1>
+  <p>Cada estado se ve en un celular de 390 × 844 y en escritorio, con la misma data; lo que hacés en uno se refleja en el otro. En celular la card destacada ocupa el ancho, "Entrar al aula" va a lo ancho al pie de la card, el camino de "Sesiones anteriores" achica los nodos y el menú del avatar sigue siendo un desplegable. En el celular, todos los modales (Material, Encuestas, Preguntas y "Tu perfil") suben como una hoja desde abajo; en escritorio son el modal centrado ya decidido. Las sesiones no habilitadas no aparecen. Borrar una pregunta tuya pide confirmación. Votá, cambiá el voto, mandá palabras separadas por coma, abrí los links de la card o el menú del avatar.</p>
+</div>
+<div id="alts"></div>
+
+<script>
+const ICONS = {"chart-bar":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 21H9.4c-2.24 0-3.36 0-4.216-.436a4 4 0 0 1-1.748-1.748C3 17.96 3 16.84 3 14.6V3m4 13.5h5M7 12h10M7 7.5h7\"/></svg>","download":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4 16.004V17a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1M12 4.5v11m3.5-3.5L12 15.5L8.5 12\"/></svg>","chat-messages":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M5 12a5 5 0 0 1 7 7m-7-7a5 5 0 0 0-2 4a5 5 0 0 0 .224 1.483c.272.88.076 1.86-.099 2.784a.468.468 0 0 0 .592.539c.848-.232 1.691-.43 2.557-.112A5 5 0 0 0 8 21a4.99 4.99 0 0 0 4-2m-7-7c0-4.685 2.875-9 8-9a8 8 0 0 1 7.532 10.7c-.476 1.326.037 3.102.337 4.568a.451.451 0 0 1-.584.526c-1.312-.41-2.852-.986-4.085-.466c-1.334.562-2.736.672-4.2.672\"/></svg>","arrow-right":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4.5 12h15m-5.625 6l5.625-6l-5.625-6\"/></svg>","pencil":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18.774 10.221L8.801 20.2a2.73 2.73 0 0 1-1.933.8H3v-3.844c0-.724.288-1.419.8-1.931m5 4.974l-5-4.974m0 0l9.983-9.995m0 0l1.426-1.428a2.733 2.733 0 0 1 3.867-.001l1.126 1.127a2.733 2.733 0 0 1 0 3.865l-1.428 1.428M13.783 5.23l4.991 4.991\"/></svg>","moon":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 12.808c-.5 5.347-5.849 9.14-11.107 7.983C-.078 18.6 1.15 3.909 11.11 3C6.395 9.296 14.619 17.462 21 12.808\"/></svg>","logout":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M13.496 21H6.5c-1.105 0-2-1.151-2-2.571V5.57c0-1.419.895-2.57 2-2.57h7M16 15.5l3.5-3.5L16 8.5m-6.5 3.496h10\"/></svg>","check":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m6 13.626l1.606 1.722c.886.95 1.329 1.424 1.825 1.574c.436.131.9.096 1.315-.1c.473-.224.852-.761 1.612-1.836L18 7\"/></svg>","chevron-up":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m18 15l-6-6l-6 6\"/></svg>","chevron-down":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m6 9l6 6l6-6\"/></svg>","send":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m14 10l-3 3m9.288-9.969a.535.535 0 0 1 .68.681l-5.924 16.93a.535.535 0 0 1-.994.04l-3.219-7.242a.54.54 0 0 0-.271-.271l-7.242-3.22a.535.535 0 0 1 .04-.993z\"/></svg>","arrow-up":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M12 19.5v-15m6 5.625L12 4.5l-6 5.625\"/></svg>","trash":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m18 9l-.84 8.398c-.127 1.273-.19 1.909-.48 2.39a2.5 2.5 0 0 1-1.075.973C15.098 21 14.46 21 13.18 21h-2.36c-1.279 0-1.918 0-2.425-.24a2.5 2.5 0 0 1-1.076-.973c-.288-.48-.352-1.116-.48-2.389L6 9m7.5 6.5v-5m-3 5v-5m-6-4h4.615m0 0l.386-2.672c.112-.486.516-.828.98-.828h3.038c.464 0 .867.342.98.828l.386 2.672m-5.77 0h5.77m0 0H19.5\"/></svg>","x":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 6L6 18M6 6l12 12\"/></svg>","lock":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M8 10V8c0-2.761 1.239-5 4-5s4 2.239 4 5v2M3.5 17.8v-4.6c0-1.12 0-1.68.218-2.107a2 2 0 0 1 .874-.875c.428-.217.988-.217 2.108-.217h10.6c1.12 0 1.68 0 2.108.217a2 2 0 0 1 .874.874c.218.428.218.988.218 2.108v4.6c0 1.12 0 1.68-.218 2.108a2 2 0 0 1-.874.874C18.98 21 18.42 21 17.3 21H6.7c-1.12 0-1.68 0-2.108-.218a2 2 0 0 1-.874-.874C3.5 19.481 3.5 18.921 3.5 17.8\"/></svg>","search":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M19 11.5a7.5 7.5 0 1 1-15 0a7.5 7.5 0 0 1 15 0m-2.107 5.42l3.08 3.08\"/></svg>","mail":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m2.357 7.714l6.98 4.654c.963.641 1.444.962 1.964 1.087c.46.11.939.11 1.398 0c.52-.125 1.001-.446 1.964-1.087l6.98-4.654M7.157 19.5h9.686c1.68 0 2.52 0 3.162-.327a3 3 0 0 0 1.31-1.311c.328-.642.328-1.482.328-3.162V9.3c0-1.68 0-2.52-.327-3.162a3 3 0 0 0-1.311-1.311c-.642-.327-1.482-.327-3.162-.327H7.157c-1.68 0-2.52 0-3.162.327a3 3 0 0 0-1.31 1.311c-.328.642-.328 1.482-.328 3.162v5.4c0 1.68 0 2.52.327 3.162a3 3 0 0 0 1.311 1.311c.642.327 1.482.327 3.162.327\"/></svg>"};
+const ic = (n, s = 20) => `<span class="i" style="width:${s}px;height:${s}px">${ICONS[n]}</span>`;
+
+const SESSIONS = [
+  { n: 1, title: 'La experiencia vibe coding', summary: 'Armamos una app entera pidiéndosela al agente y miramos qué salió bien y qué no.', material: 3, closed: 2 },
+  { n: 2, title: 'Planificación y revisión', summary: 'Antes de escribir código: explorar, planificar y revisar lo que el agente produce.', material: 5, closed: 3 },
+  { n: 3, title: 'Tooling y skills', summary: 'Herramientas, skills y cómo se arma un flujo de trabajo propio.', material: 4, closed: 1 },
+  { n: 4, title: 'Context engineering', summary: 'Qué entra en el contexto del agente, cuánto cuesta y dónde se rompe.', material: 2, closed: 0 },
+  { n: 5, title: 'Coding harness por dentro', summary: 'Desarmamos un harness para ver qué hace cada pieza.', material: 1, closed: 1 },
+  { n: 6, title: 'Modelos open source y CCAD', summary: 'Correr modelos propios en el cluster de la facultad.', material: 2, closed: 0 },
+];
+
+const MATERIAL = [
+  ['Slides de la sesión', 'HTML · 3,2 MB'],
+  ['Guía de planificación', 'PDF · 480 KB'],
+  ['Ejercicio', 'ZIP · 1,1 MB'],
+  ['Lectura: "Plan, then code"', 'PDF · 260 KB'],
+  ['Grabación de la clase', 'MP4 · 620 MB'],
+];
+
+// Session 2's polls; what each scenario activated decides where they show.
+const POLLS = {
+  choice: { type: 'choice', question: '¿Cuánto código de tu último proyecto escribió un agente?', options: [['Nada', 4], ['Algo', 9], ['La mitad', 6], ['Casi todo', 3]] },
+  cloud: { type: 'cloud', question: 'Una palabra para trabajar con agentes', words: [['rápido', 9], ['caos', 6], ['magia', 5], ['revisar', 7], ['contexto', 4], ['miedo', 2], ['divertido', 3], ['tokens', 3], ['loop', 2], ['confianza', 2]] },
+  scale: { type: 'scale', question: '¿Qué tan cómodo te sentís revisando código generado?', counts: [2, 5, 8, 5, 2], ends: ['Nada cómodo', 'Muy cómodo'] },
+};
+
+const CLOSED_MINE = { choice: 'Algo', cloud: ['contexto'], scale: 2 };
+
+// Closed polls of the other sessions.
+const CLOSED_POOL = [
+  { type: 'choice', question: '¿Usaste un agente para planificar antes de esta clase?', mine: 'No', options: [['Sí', 8], ['No', 13]] },
+  { type: 'cloud', question: 'Una palabra para el plan ideal', mine: ['corto'], words: [['corto', 8], ['claro', 6], ['verificable', 5], ['por pasos', 4], ['con tests', 3], ['flexible', 2]] },
+  { type: 'scale', question: '¿Qué tan útil te resultó revisar el plan antes de codear?', mine: 3, counts: [1, 2, 6, 8, 4], ends: ['Nada útil', 'Muy útil'] },
+];
+
+// Answered questions are already gone: students never see them.
+const QUESTIONS = {
+  1: [['¿El agente se acuerda de lo que le pedí ayer?', 12], ['¿Por qué rompió cosas que andaban?', 8], ['¿Conviene pedirle todo de una?', 5]],
+  2: [['¿Cuánto detalle tiene que tener un plan antes de pasárselo al agente?', 9], ['¿Conviene revisar el diff o correr los tests primero?', 6], ['¿Qué pasa si el plan está mal y el agente lo sigue igual?', 4, true], ['¿Hay plantillas de plan que recomiendes?', 2]],
+  3: [['¿Las skills sirven con cualquier agente?', 6], ['¿Dónde se guardan las skills del proyecto?', 3]],
+  4: [['¿Cómo sé cuánto contexto me queda?', 7]],
+  5: [],
+  6: [],
+};
+
+const ANIMALS = [
+  ['🦊', 'zorro'], ['🐼', 'panda'], ['🐸', 'rana sapo'], ['🐨', 'koala'], ['🦁', 'león'], ['🐯', 'tigre'], ['🐻', 'oso'], ['🐻‍❄️', 'oso polar'],
+  ['🐰', 'conejo'], ['🐶', 'perro'], ['🐱', 'gato'], ['🐵', 'mono'], ['🦍', 'gorila'], ['🦧', 'orangután'], ['🐭', 'ratón'], ['🐹', 'hámster'],
+  ['🐺', 'lobo'], ['🦝', 'mapache'], ['🦨', 'zorrino mofeta'], ['🦡', 'tejón'], ['🦦', 'nutria'], ['🦥', 'perezoso'], ['🦘', 'canguro'], ['🦔', 'erizo'],
+  ['🐮', 'vaca'], ['🐷', 'chancho cerdo'], ['🐗', 'jabalí'], ['🐴', 'caballo'], ['🦄', 'unicornio'], ['🦓', 'cebra'], ['🦒', 'jirafa'], ['🐘', 'elefante'],
+  ['🦏', 'rinoceronte'], ['🦛', 'hipopótamo'], ['🐪', 'camello'], ['🦙', 'llama'], ['🦌', 'ciervo'], ['🦬', 'bisonte'], ['🐐', 'cabra'], ['🐑', 'oveja'],
+  ['🦇', 'murciélago'], ['🦫', 'castor'], ['🐿️', 'ardilla'], ['🦉', 'búho lechuza'], ['🦅', 'águila'], ['🦆', 'pato'], ['🦢', 'cisne'], ['🦩', 'flamenco'],
+  ['🦚', 'pavo real'], ['🦜', 'loro'], ['🐧', 'pingüino'], ['🐔', 'gallina'], ['🐤', 'pollito'], ['🦃', 'pavo'], ['🕊️', 'paloma'], ['🦤', 'dodo'],
+  ['🐙', 'pulpo'], ['🦑', 'calamar'], ['🦀', 'cangrejo'], ['🦞', 'langosta'], ['🦐', 'camarón'], ['🐠', 'pez tropical'], ['🐡', 'pez globo'], ['🐟', 'pez'],
+  ['🐬', 'delfín'], ['🐳', 'ballena'], ['🦈', 'tiburón'], ['🦭', 'foca'], ['🐢', 'tortuga'], ['🐊', 'cocodrilo yacaré'], ['🦎', 'lagartija'], ['🐍', 'serpiente víbora'],
+  ['🦕', 'dinosaurio'], ['🦖', 'tiranosaurio'], ['🐲', 'dragón'], ['🐝', 'abeja'], ['🐞', 'vaquita de san antonio mariquita'], ['🦋', 'mariposa'], ['🐌', 'caracol'], ['🐛', 'oruga'],
+  ['🐜', 'hormiga'], ['🕷️', 'araña'], ['🦂', 'escorpión'], ['🪲', 'escarabajo'],
+];
+
+// `enabled` is how many sessions the teacher has enabled; the last one is the highlighted one.
+const STATES = {
+  several: { label: 'Dos encuestas activas, una cerrada', enabled: 2, polls: { choice: 'active', cloud: 'active', scale: 'closed' } },
+  one: { label: 'Una activa, dos cerradas', enabled: 2, polls: { choice: 'active', cloud: 'closed', scale: 'closed' } },
+  closed: { label: 'Todas cerradas', enabled: 2, polls: { choice: 'closed', cloud: 'closed', scale: 'closed' } },
+  none: { label: 'Ninguna activada', enabled: 2, polls: { choice: 'draft', cloud: 'draft', scale: 'draft' } },
+  last: { label: 'Curso terminado', enabled: 6, polls: null },
+  empty: { label: 'Ninguna habilitada', enabled: 0, polls: null },
+};
+
+const ALTS = {
+  B: { name: 'Hoja desde abajo', tradeoff: 'En el celular, el contenido sube desde el borde de abajo, a lo ancho y hasta casi toda la altura; los controles quedan cerca del pulgar y arriba se ve una franja de la página, oscurecida.' },
+};
+
+const freshVotes = () => Object.fromEntries(Object.keys(POLLS).map((k) => [k, { mine: null, previous: null, editing: false, word: '' }]));
+
+const freshQuestions = () => Object.fromEntries(Object.entries(QUESTIONS).map(([n, qs]) => [n, qs.map(([text, votes, mine], i) => ({ id: `${n}-${i}`, text, votes, mine: mine === true }))]));
+
+const fresh = () => ({
+  state: 'several', all: false, dark: false, open: {}, menu: false, modal: null, openPoll: null, out: false, confirm: null,
+  votes: freshVotes(), questions: freshQuestions(), upvoted: [], draft: '',
+  profile: { name: 'Lucía', mail: 'lucia.fernandez@mi.unc.edu.ar', avatar: '🦊' }, editing: null, query: '',
+});
+
+const view = Object.fromEntries(Object.keys(ALTS).map((k) => [k, fresh()]));
+
+const color = (n) => `var(--c${(n - 1) % 4})`;
+const pct = (n, of) => (of === 0 ? 0 : Math.round((n / of) * 100));
+const plain = (text) => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+const enabledIn = (state) => SESSIONS.slice(0, STATES[state].enabled);
+const highlightedIn = (state) => enabledIn(state).at(-1) ?? null;
+
+const activeKeys = (state, n) => (n === 2 && STATES[state].polls != null ? Object.keys(POLLS).filter((k) => STATES[state].polls[k] === 'active') : []);
+
+const closedPolls = (v, state, n) => {
+  if (n !== 2) {
+    return CLOSED_POOL.slice(0, SESSIONS[n - 1].closed);
+  }
+
+  const keys = STATES[state].polls == null ? Object.keys(POLLS) : Object.keys(POLLS).filter((k) => STATES[state].polls[k] === 'closed');
+
+  return keys.map((k) => ({ ...POLLS[k], mine: v.votes[k].mine ?? CLOSED_MINE[k] }));
+};
+
+/* ---------- Polls ---------- */
+
+const withVote = (poll, mine) => {
+  if (mine == null) {
+    return poll;
+  }
+
+  if (poll.type === 'choice') {
+    return { ...poll, options: poll.options.map(([o, n]) => [o, o === mine ? n + 1 : n]) };
+  }
+
+  if (poll.type === 'scale') {
+    return { ...poll, counts: poll.counts.map((n, i) => (i === mine ? n + 1 : n)) };
+  }
+
+  const known = poll.words.map(([w, n]) => [w, mine.includes(w) ? n + 1 : n]);
+
+  return { ...poll, words: [...known, ...mine.filter((w) => !poll.words.some(([k]) => k === w)).map((w) => [w, 1])] };
+};
+
+const answers = (poll) => poll.type === 'choice'
+  ? poll.options.reduce((a, [, n]) => a + n, 0)
+  : poll.type === 'scale' ? poll.counts.reduce((a, b) => a + b, 0) : poll.words.reduce((a, [, n]) => a + n, 0);
+
+const resultsOf = (counted, mine) => {
+  if (counted.type === 'choice') {
+    const of = answers(counted);
+
+    return `<div class="rows">${counted.options.map(([o, n]) => `
+      <div class="row ${o === mine ? 'mine' : ''}"><i class="fill" style="width:${pct(n, of)}%"></i><span>${o === mine ? '✓ ' : ''}${o}</span><span>${pct(n, of)}%</span></div>`).join('')}</div>`;
+  }
+
+  if (counted.type === 'scale') {
+    const max = Math.max(...counted.counts);
+
+    return `<div class="scale">${counted.counts.map((n, i) => `<div><div class="bar ${i === mine ? 'mine' : ''}" style="height:${10 + (n / max) * 60}px">${n}</div><div style="text-align:center;font-size:13px">${i + 1}</div></div>`).join('')}</div>
+      <div class="ends"><span>${counted.ends[0]}</span><span>${counted.ends[1]}</span></div>`;
+  }
+
+  const max = Math.max(...counted.words.map(([, n]) => n));
+
+  return `<div class="cloud">${counted.words.map(([w, n]) => `<span style="font-size:${14 + (n / max) * 24}px; opacity:${0.55 + (n / max) * 0.45}; ${(mine ?? []).includes(w) ? 'text-decoration: underline;' : ''}">${w}</span>`).join('')}</div>`;
+};
+
+const voting = (key, poll, pv) => {
+  if (poll.type === 'choice') {
+    return `<div class="rows">${poll.options.map(([o]) => `<button class="row" data-poll="${key}" data-vote="${o}"><span>${o}</span></button>`).join('')}</div>`;
+  }
+
+  if (poll.type === 'scale') {
+    return `<div class="scale">${[1, 2, 3, 4, 5].map((n) => `<button data-poll="${key}" data-vote="${n - 1}">${n}</button>`).join('')}</div>
+      <div class="ends"><span>${poll.ends[0]}</span><span>${poll.ends[1]}</span></div>`;
+  }
+
+  return `<div class="word-in"><input data-poll="${key}" data-word placeholder="${pv.mine == null ? 'Tus palabras, separadas por coma' : 'Más palabras, separadas por coma'}" value="${pv.word}"><button class="btn small" data-poll="${key}" data-send>Enviar</button></div>
+    ${pv.mine == null ? '' : `<div class="meta" style="margin-top:8px">Tus palabras: ${pv.mine.join(', ')}</div>`}`;
+};
+
+const activePanel = (v, key) => {
+  const poll = POLLS[key];
+  const pv = v.votes[key];
+  const meta = pv.editing
+    ? (poll.type === 'cloud' ? 'Sumá más palabras, separadas por coma' : `Tu voto anterior se retiró · ${answers(poll)} respuestas`)
+    : `${pv.mine == null ? 'Abierta' : 'Votaste'} · ${answers(withVote(poll, pv.mine))} respuestas`;
+  const edit = pv.mine == null && !pv.editing
+    ? ''
+    : `<div class="edit"><button class="textlink" data-poll="${key}" data-edit>${pv.editing ? 'Cancelar' : poll.type === 'cloud' ? 'Sumar más palabras' : 'Cambiar mi voto'}</button></div>`;
+  const body = pv.mine != null && !pv.editing
+    ? `${poll.type === 'cloud' ? `<div class="meta" style="margin-top:8px">Tus palabras: ${pv.mine.join(', ')}</div>` : ''}${resultsOf(withVote(poll, pv.mine), pv.mine)}`
+    : voting(key, poll, pv);
+
+  return `<div class="panel"><div class="q">${ic('chart-bar', 18)}<span>${poll.question}</span></div><div class="meta">${meta}</div>${body}${edit}</div>`;
+};
+
+/* ---------- Page ---------- */
+
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+
+const tags = (v, state, s) => {
+  const closed = closedPolls(v, state, s.n).length;
+
+  return `<div class="tags">
+    <button class="tag" data-open="material" data-n="${s.n}">${ic('download', 15)} Material (${s.material})</button>
+    ${closed === 0 ? '' : `<button class="tag" data-open="polls" data-n="${s.n}">${ic('chart-bar', 15)} Encuestas (${closed})</button>`}
+    <button class="tag" data-open="questions" data-n="${s.n}">${ic('chat-messages', 15)} ${plural(v.questions[s.n].length, 'pregunta', 'preguntas')}</button>
+  </div>`;
+};
+
+const hero = (v, state, s) => {
+  const active = activeKeys(state, s.n);
+
+  return `
+    <div class="card hero" style="background:${color(s.n)}">
+      <h3>${s.title}</h3>
+      ${tags(v, state, s)}
+      <p>${s.summary}</p>
+      ${active.length === 0 ? '' : `<div class="polls">${active.map((k) => activePanel(v, k)).join('')}</div>`}
+      <div class="foot"><button class="btn">Entrar al aula ${ic('arrow-right', 18)}</button></div>
+    </div>`;
+};
+
+// Earlier sessions open one at a time and never get the button to the aula.
+const pathCard = (v, state, s, current) => (v.open[state] === s.n
+  ? `<div class="card" style="background:${color(s.n)}">
+      <div class="head" data-toggle="${s.n}"><h3>${s.title}</h3></div>
+      ${tags(v, state, s)}
+      <p>${s.summary}</p>
+      ${s.n === current.n ? `<div class="foot"><button class="btn">Entrar al aula ${ic('arrow-right', 18)}</button></div>` : ''}
+    </div>`
+  : `<div class="card closed" style="background:${color(s.n)}"><div class="head" data-toggle="${s.n}"><h3>${s.title}</h3></div></div>`);
+
+const menu = (v) => (v.menu ? `
+  <div class="menu">
+    <div class="mhead"><span class="face">${v.profile.avatar}</span><div><div class="who">${v.profile.name}</div><div class="mail">${v.profile.mail}</div></div></div>
+    <hr>
+    <button class="mitem" data-edit-profile>${ic('pencil', 18)} Editar perfil</button>
+    <button class="switch" data-darkmode><span>${ic('moon', 18)} Modo oscuro</span><span class="knob ${v.dark ? 'on' : ''}"></span></button>
+    <hr>
+    <button class="mitem" data-logout>${ic('logout', 18)} Cerrar sesión</button>
+  </div>` : '');
+
+const page = (v, state) => {
+  const all = enabledIn(state);
+  const current = highlightedIn(state);
+
+  return `
+    <div class="window">
+      <div class="top">
+        <div class="hello">Hola, ${v.profile.name}</div>
+        <div class="me"><button class="avatar" data-menu title="Tu cuenta">${v.profile.avatar}</button>${menu(v)}</div>
+      </div>
+      ${current == null
+        ? '<div class="empty-note">Todavía no hay sesiones habilitadas. Cuando el profe habilite la primera, aparece acá arriba.</div>'
+        : `${hero(v, state, current)}
+          <div class="section-title">Sesiones anteriores</div>
+          <div class="path">${all.map((s, i) => `
+            <div class="rail"><div class="node ${s.n === current.n ? 'live' : 'done'}">${s.n === current.n ? s.n : ic('check', 20)}</div>${i < all.length - 1 ? '<div class="link"></div>' : ''}</div>
+            <div class="step">${pathCard(v, state, s, current)}</div>`).join('')}</div>`}
+    </div>`;
+};
+
+/* ---------- Modals ---------- */
+
+const material = (s) => `<div class="files">${MATERIAL.slice(0, s.material).map(([name, detail]) => `
+  <div class="file"><div class="grow"><b>${name}</b><small>${detail}</small></div><button class="iconbtn" title="Descargar">${ic('download', 18)}</button></div>`).join('')}</div>`;
+
+// An accordion: one closed poll open at a time, all folded when the modal opens.
+const closedList = (v, state, s) => `<div class="closed-polls">${closedPolls(v, state, s.n).map((p, i) => `
+  <div class="panel">
+    <button class="acc" data-acc="${i}"><span><span class="q">${p.question}</span><span class="meta" style="display:block">Cerrada · ${answers(p)} respuestas</span></span>${v.openPoll === i ? ic('chevron-up', 18) : ic('chevron-down', 18)}</button>
+    ${v.openPoll === i ? resultsOf(p, p.mine) : ''}
+  </div>`).join('')}</div>`;
+
+// Only the highlighted session takes new questions and votes; earlier ones are read-only.
+const questions = (v, s, live) => {
+  const list = [...v.questions[s.n]].sort((a, b) => b.votes - a.votes);
+
+  return `
+    ${live ? `<div class="ask"><input data-draft placeholder="Hacé una pregunta" value="${v.draft}"><button class="iconbtn" data-ask title="Enviar">${ic('send', 18)}</button></div>` : ''}
+    ${list.length === 0 ? '<div class="empty">Todavía no hay preguntas.</div>' : list.map((q) => `
+      <div class="question">
+        <button class="vote ${v.upvoted.includes(q.id) ? 'on' : ''}" data-up="${q.id}" ${q.mine || !live ? 'disabled' : ''}>${ic('arrow-up', 14)}<span>${q.votes}</span></button>
+        <div class="qtext">${q.text}${q.mine ? '<span class="yours">Tuya</span>' : ''}</div>
+        ${q.mine && live ? `<button class="iconbtn del" data-del="${q.id}" title="Borrar tu pregunta">${ic('trash', 16)}</button>` : ''}
+      </div>`).join('')}`;
+};
+
+const TITLES = { material: 'Material', polls: 'Encuestas cerradas', questions: 'Preguntas' };
+
+const shell = (title, body, extra = '') => `
+  <div class="scrim" data-close>
+    <div class="modal ${extra}" data-stay>
+      <div class="handle"></div>
+      <div class="modal-head">
+        <h4>${title}</h4>
+        <button class="iconbtn m-close" data-close title="Cerrar">${ic('x', 18)}</button>
+      </div>
+      <div class="modal-body">${body}</div>
+    </div>
+  </div>`;
+
+const avatarGrid = (v) => {
+  const term = plain(v.query.trim());
+  const found = term === '' ? ANIMALS : ANIMALS.filter(([, words]) => plain(words).includes(term));
+
+  return found.map(([a, w]) => `<button class="pick ${v.editing.avatar === a ? 'on' : ''}" data-avatar="${a}" title="${w}">${a}</button>`).join('') || '<div class="none">No hay animales con ese nombre.</div>';
+};
+
+const profileModal = (v) => shell('Tu perfil', `
+  <div class="mailrow">${ic('lock', 14)} ${v.profile.mail}</div>
+  <label class="field">Nombre<input data-name value="${v.editing.name}"></label>
+  <div class="field">Avatar</div>
+  <label class="search">${ic('search', 16)}<input data-q placeholder="Buscar un animal" value="${v.query}"></label>
+  <div class="agrid">${avatarGrid(v)}</div>
+  <div class="actions"><button class="pbtn" data-close>Cancelar</button><button class="pbtn dark" data-save ${v.editing.name.trim() === '' ? 'disabled' : ''}>${ic('check', 16)} Guardar</button></div>`, 'profile');
+
+const confirmDelete = () => `
+  <div class="scrim confirm-scrim" data-keep>
+    <div class="modal confirm" data-stay>
+      <div class="handle"></div>
+      <div class="modal-head"><h4>¿Borrar tu pregunta?</h4></div>
+      <div class="modal-body">
+        <p class="confirm-text">Se borra para todos, con sus votos.</p>
+        <div class="actions"><button class="pbtn" data-keep>Cancelar</button><button class="pbtn danger" data-confirm-del>${ic('trash', 16)} Borrar</button></div>
+      </div>
+    </div>
+  </div>`;
+
+const overlay = (v, state) => {
+  if (v.editing != null) {
+    return profileModal(v);
+  }
+
+  if (v.modal == null) {
+    return '';
+  }
+
+  const s = SESSIONS[v.modal.n - 1];
+  const live = s.n === highlightedIn(state)?.n;
+  const body = v.modal.kind === 'material' ? material(s) : v.modal.kind === 'polls' ? closedList(v, state, s) : questions(v, s, live);
+
+  return `${shell(TITLES[v.modal.kind], body)}${v.confirm == null ? '' : confirmDelete()}`;
+};
+
+const login = () => `
+  <div class="out"><div class="box">
+    <h2>Entrar al aula</h2>
+    <label>Tu email<input placeholder="nombre@mail.com"></label>
+    <button class="pbtn dark" data-back>${ic('mail', 18)} Mandame el link</button>
+  </div></div>`;
+
+const app = (alt, v, state) => `
+  <div class="app ov-${alt} ${v.dark ? 'dark' : ''}">
+    <div class="scroll">${v.out ? login() : page(v, state)}</div>
+    ${v.out ? '' : overlay(v, state)}
+  </div>`;
+
+/* ---------- Page chrome ---------- */
+
+const strip = (v) => {
+  const current = highlightedIn(v.state);
+  const closed = current == null ? 0 : closedPolls(v, v.state, current.n).length;
+  const isOpen = (kind) => v.modal?.kind === kind && v.modal.n === current?.n;
+
+  return `
+    ${Object.entries(STATES).map(([k, s]) => `<button data-state="${k}" class="${!v.all && v.state === k ? 'on' : ''}">${s.label}</button>`).join('')}
+    <span class="sep"></span>
+    <button data-all class="${v.all ? 'on' : ''}">Mostrar todos los estados</button>
+    <span class="sep"></span>
+    <button data-strip-open="material" class="${isOpen('material') ? 'on' : ''}" ${current == null ? 'disabled' : ''}>Abrir Material</button>
+    <button data-strip-open="polls" class="${isOpen('polls') ? 'on' : ''}" ${closed === 0 ? 'disabled' : ''}>Abrir Encuestas</button>
+    <button data-strip-open="questions" class="${isOpen('questions') ? 'on' : ''}" ${current == null ? 'disabled' : ''}>Abrir Preguntas</button>
+    <button data-strip-menu class="${v.menu ? 'on' : ''}">Menú abierto</button>
+    <button data-strip-profile class="${v.editing != null ? 'on' : ''}">Editando el perfil</button>
+    <span class="sep"></span>
+    <button data-dark class="${v.dark ? 'on' : ''}">Dark</button>
+    <button data-reset>Reiniciar</button>`;
+};
+
+const render = (alt) => {
+  const v = view[alt];
+  const root = document.getElementById(`alt-${alt}`);
+  const scrolls = [...root.querySelectorAll('.scroll, .modal-body')].map((el) => [el.className, el.scrollTop]);
+  const states = v.all ? Object.keys(STATES) : [v.state];
+
+  root.querySelector('.strip').innerHTML = strip(v);
+  root.querySelector('.pairs').innerHTML = states.map((k) => `
+    <div class="pair" data-in="${k}">
+      ${v.all ? `<div class="state-label">${STATES[k].label}</div>` : ''}
+      <div class="frames">
+        <div><div class="flabel">Celular · 390 × 844</div><div class="phone">${app(alt, v, k)}</div></div>
+        <div><div class="flabel">Escritorio</div><div class="desk">${app(alt, v, k)}</div></div>
+      </div>
+    </div>`).join('');
+
+  // Re-rendering would jump every frame back to the top; keep where each one was.
+  [...root.querySelectorAll('.scroll, .modal-body')].forEach((el, i) => {
+    if (scrolls[i] != null && scrolls[i][0] === el.className) {
+      el.scrollTop = scrolls[i][1];
+    }
+  });
+};
+
+const closeAll = (v) => Object.assign(v, { menu: false, modal: null, openPoll: null, editing: null, query: '', confirm: null });
+
+document.getElementById('alts').innerHTML = Object.entries(ALTS).map(([k, a]) => `
+  <section class="alt" id="alt-${k}">
+    <h2>${k} · ${a.name}</h2>
+    <p class="tradeoff">${a.tradeoff}</p>
+    <div class="strip"></div>
+    <div class="pairs"></div>
+  </section>`).join('');
+
+Object.keys(ALTS).forEach((alt) => {
+  const root = document.getElementById(`alt-${alt}`);
+
+  root.addEventListener('input', (e) => {
+    const v = view[alt];
+    const t = e.target;
+
+    if (t.matches('[data-word]')) {
+      v.votes[t.dataset.poll].word = t.value;
+    } else if (t.matches('[data-draft]')) {
+      v.draft = t.value;
+    } else if (t.matches('[data-name]')) {
+      v.editing.name = t.value;
+      root.querySelectorAll('[data-name]').forEach((i) => { i.value = t.value; });
+      root.querySelectorAll('[data-save]').forEach((b) => { b.disabled = v.editing.name.trim() === ''; });
+    } else if (t.matches('[data-q]')) {
+      v.query = t.value;
+      root.querySelectorAll('[data-q]').forEach((i) => { i.value = t.value; });
+      root.querySelectorAll('.agrid').forEach((g) => { g.innerHTML = avatarGrid(v); });
+    }
+  });
+
+  root.addEventListener('click', (e) => {
+    const v = view[alt];
+    const t = e.target.closest('button, [data-toggle], [data-close], [data-keep], [data-stay]');
+
+    if (t == null || t.disabled || (t.hasAttribute('data-stay') && !t.matches('button'))) {
+      return;
+    }
+
+    const d = t.dataset;
+    const state = t.closest('[data-in]')?.dataset.in ?? v.state;
+    const pv = v.votes[d.poll];
+    const poll = POLLS[d.poll];
+
+    if (d.state != null) {
+      Object.assign(v, { state: d.state, all: false, votes: freshVotes(), out: false });
+      closeAll(v);
+    } else if (t.hasAttribute('data-all')) {
+      v.all = !v.all;
+      closeAll(v);
+    } else if (d.stripOpen != null) {
+      closeAll(v);
+      v.modal = { kind: d.stripOpen, n: highlightedIn(v.state).n };
+    } else if (t.hasAttribute('data-strip-menu')) {
+      const on = v.menu;
+
+      closeAll(v);
+      Object.assign(v, { menu: !on, out: false });
+    } else if (t.hasAttribute('data-strip-profile') || t.hasAttribute('data-edit-profile')) {
+      closeAll(v);
+      Object.assign(v, { editing: { name: v.profile.name, avatar: v.profile.avatar }, out: false });
+    } else if (t.hasAttribute('data-dark') || t.hasAttribute('data-darkmode')) {
+      v.dark = !v.dark;
+    } else if (t.hasAttribute('data-reset')) {
+      view[alt] = fresh();
+    } else if (d.toggle != null) {
+      const n = Number(d.toggle);
+
+      v.open[state] = v.open[state] === n ? null : n;
+    } else if (t.hasAttribute('data-menu')) {
+      v.menu = !v.menu;
+    } else if (t.hasAttribute('data-logout')) {
+      closeAll(v);
+      v.out = true;
+    } else if (t.hasAttribute('data-back')) {
+      v.out = false;
+    } else if (d.open != null) {
+      closeAll(v);
+      v.modal = { kind: d.open, n: Number(d.n) };
+    } else if (t.hasAttribute('data-close')) {
+      closeAll(v);
+    } else if (d.acc != null) {
+      v.openPoll = v.openPoll === Number(d.acc) ? null : Number(d.acc);
+    } else if (d.avatar != null) {
+      v.editing.avatar = d.avatar;
+    } else if (t.hasAttribute('data-save')) {
+      v.profile = { ...v.profile, name: v.editing.name.trim(), avatar: v.editing.avatar };
+      closeAll(v);
+    } else if (d.up != null) {
+      const q = Object.values(v.questions).flat().find((x) => x.id === d.up);
+      const on = v.upvoted.includes(q.id);
+
+      q.votes += on ? -1 : 1;
+      v.upvoted = on ? v.upvoted.filter((id) => id !== q.id) : [...v.upvoted, q.id];
+    } else if (d.del != null) {
+      v.confirm = d.del;
+    } else if (t.hasAttribute('data-keep')) {
+      v.confirm = null;
+    } else if (t.hasAttribute('data-confirm-del')) {
+      const n = v.confirm.split('-')[0];
+
+      v.questions[n] = v.questions[n].filter((q) => q.id !== v.confirm);
+      v.confirm = null;
+    } else if (t.hasAttribute('data-ask')) {
+      const n = v.modal.n;
+
+      if (v.draft.trim() === '') {
+        return;
+      }
+
+      v.questions[n] = [...v.questions[n], { id: `${n}-${Date.now()}`, text: v.draft.trim(), votes: 0, mine: true }];
+      v.draft = '';
+    } else if (t.hasAttribute('data-edit')) {
+      // Going back to vote withdraws the previous vote (not the words of a word cloud); "Cancelar" puts it back.
+      if (poll.type === 'cloud') {
+        pv.editing = !pv.editing;
+      } else if (pv.editing) {
+        Object.assign(pv, { editing: false, mine: pv.previous, previous: null });
+      } else {
+        Object.assign(pv, { editing: true, previous: pv.mine, mine: null });
+      }
+    } else if (t.hasAttribute('data-send')) {
+      const words = pv.word.split(',').map((w) => w.trim().toLowerCase()).filter((w) => w !== '');
+
+      if (words.length === 0) {
+        return;
+      }
+
+      Object.assign(pv, { mine: [...new Set([...(pv.mine ?? []), ...words])], word: '', editing: false });
+    } else if (d.vote != null) {
+      Object.assign(pv, { mine: poll.type === 'scale' ? Number(d.vote) : d.vote, editing: false, previous: null });
+    } else {
+      return;
+    }
+
+    render(alt);
+  });
+
+  render(alt);
+});
+</script>
+</body>
+</html>

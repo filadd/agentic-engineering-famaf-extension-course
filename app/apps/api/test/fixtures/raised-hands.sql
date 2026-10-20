@@ -1,0 +1,19 @@
+INSERT INTO users (id, email, name, avatar, role, has_access) VALUES
+  ('01HTCH00000000000000000000', 'profe@manos.kurasu.test', 'Profe', 'owl', 'teacher', 1),
+  ('01HSTA00000000000000000000', 'ana@manos.kurasu.test', 'Ana', 'fox', 'student', 1),
+  ('01HSTB00000000000000000000', 'beto@manos.kurasu.test', 'Beto', 'panda', 'student', 1);
+
+INSERT INTO sessions (id, position, title, summary, enabled) VALUES
+  ('01HSA000000000000000000000', 1, 'Para levantar', 'Resumen', 1),
+  ('01HSB000000000000000000000', 2, 'Deshabilitada', 'Resumen', 0),
+  ('01HSC000000000000000000000', 3, 'Dos manos', 'Resumen', 1),
+  ('01HSD000000000000000000000', 4, 'Para bajar la propia', 'Resumen', 1),
+  ('01HSE000000000000000000000', 5, 'Para que la baje el profe', 'Resumen', 1);
+
+INSERT INTO raised_hands (session_id, user_id) VALUES
+  ('01HSA000000000000000000000', '01HSTB00000000000000000000'),
+  ('01HSC000000000000000000000', '01HSTA00000000000000000000'),
+  ('01HSC000000000000000000000', '01HSTB00000000000000000000'),
+  ('01HSD000000000000000000000', '01HSTA00000000000000000000'),
+  ('01HSD000000000000000000000', '01HSTB00000000000000000000'),
+  ('01HSE000000000000000000000', '01HSTA00000000000000000000');

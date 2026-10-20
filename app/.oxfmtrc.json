@@ -1,0 +1,10 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": [
+    "docs/**",
+    "tools/oxlint/anti-slop/**",
+    "**/routeTree.gen.ts",
+    "**/migrations/**",
+    "pnpm-lock.yaml"
+  ]
+}

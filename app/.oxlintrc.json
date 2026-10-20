@@ -1,0 +1,108 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["eslint", "typescript", "unicorn", "oxc", "import", "react", "vitest"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error"
+  },
+  "options": {
+    "typeAware": true,
+    "denyWarnings": true
+  },
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/.alchemy/**",
+    "**/.turbo/**",
+    "**/routeTree.gen.ts",
+    "docs/**",
+    "tools/oxlint/anti-slop/**"
+  ],
+  "jsPlugins": [
+    { "name": "kurasu-boundaries", "specifier": "./tools/oxlint/kurasu-boundaries/index.ts" },
+    { "name": "kurasu", "specifier": "./tools/oxlint/kurasu/index.ts" },
+    { "name": "anti-slop", "specifier": "./tools/oxlint/anti-slop/index.ts" },
+    { "name": "anti-slop-effect", "specifier": "./tools/oxlint/anti-slop/effect/index.ts" }
+  ],
+  "rules": {
+    "eqeqeq": ["error", "always", { "null": "ignore" }],
+    "import/no-default-export": "error",
+    "kurasu/null-check": "error",
+    "kurasu/no-enum": "error",
+    "kurasu/test-location": "error",
+    "oxc/no-accumulating-spread": "error",
+    "anti-slop/no-array-filter-map": "error",
+    "anti-slop/no-reduce-accumulator-copy": "error",
+    "anti-slop/no-chained-type-assertions": "error",
+    "anti-slop/no-conditional-empty-object-spread": "error",
+    "anti-slop/no-known-value-widening": "error",
+    "anti-slop/no-module-mocking": "error",
+    "anti-slop/no-object-parameters": "error",
+    "anti-slop/no-reflect-apply": "error",
+    "anti-slop/no-reflect-get": "error",
+    "anti-slop/no-runtime-typeof": "error",
+    "anti-slop/no-shape-in-symbol-names": "error",
+    "anti-slop/no-unknown-parameters": "error",
+    "anti-slop/no-unknown-returns": "error",
+    "anti-slop/no-unknown-type-aliases": "error",
+    "anti-slop/no-unsafe-dictionary-type": "error",
+    "anti-slop/no-widen-then-assert": "error",
+    "anti-slop/require-readable-spacing": "error",
+    "anti-slop/require-safety-comment-for-type-assertion": "error",
+    "anti-slop-effect/no-manual-effect-error-tag": "error",
+    "anti-slop-effect/no-manual-tag-comparison": "error",
+    "anti-slop-effect/no-manual-tagged-construction": "error",
+    "anti-slop-effect/no-service-constructor-imports": "error",
+    "anti-slop-effect/prefer-effect-match": "error"
+  },
+  "overrides": [
+    {
+      "files": ["apps/web/**"],
+      "rules": {
+        "kurasu-boundaries/web-imports": "error",
+        "kurasu/arrow-components": "error",
+        "kurasu/props-name": "error",
+        "kurasu/react-named-imports": "error",
+        "kurasu/ternary-render": "error",
+        "kurasu/no-destructured-query": [
+          "error",
+          { "sources": ["/features/"], "allow": ["useClassroom", "useLocalUi"] }
+        ],
+        "no-nested-ternary": "error",
+        "react/react-in-jsx-scope": "off",
+        "react/no-multi-comp": "error"
+      }
+    },
+    {
+      "files": ["apps/api/test/**"],
+      "rules": {
+        "vitest/no-standalone-expect": "off"
+      }
+    },
+    {
+      "files": ["packages/core/**"],
+      "rules": {
+        "kurasu-boundaries/core-no-adapters": "error"
+      }
+    },
+    {
+      "files": ["packages/**"],
+      "rules": {
+        "kurasu-boundaries/packages-no-apps": "error"
+      }
+    },
+    {
+      "files": [
+        "*.config.ts",
+        "**/*.config.ts",
+        "**/alchemy.run.ts",
+        "tools/oxlint/**",
+        "apps/api/src/worker.ts",
+        "apps/api/src/classroom/aula.ts"
+      ],
+      "rules": {
+        "import/no-default-export": "off"
+      }
+    }
+  ]
+}

@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Kurasu · Prototipo · Revisión de las slides</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐦‍⬛</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  :root { --window: #FBF3EE; --ink: #1F1B18; --muted: #8A7E75; --line: #EADFD8; --side: #F3E8E1; --danger: #B5485A; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9e6e3; font-family: 'Atkinson Hyperlegible', sans-serif; color: #1F1B18; }
+  h1, h2, h3, h4 { font-family: 'Rubik', sans-serif; margin: 0; }
+  .intro, .alt { max-width: 1240px; margin: 24px auto; padding: 0 20px; }
+  .intro h1 { font-size: 28px; }
+  .intro p { margin: 6px 0 0; color: #6b625c; max-width: 1100px; line-height: 1.45; }
+
+  .strip { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; font-size: 14px; }
+  .strip button { font: inherit; border: 1px solid #cfc8c2; background: #fff; border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+  .strip button.on { background: #1F1B18; color: #fff; border-color: #1F1B18; }
+  .strip .sep { width: 1px; height: 20px; background: #cfc8c2; margin: 0 4px; }
+  .strip .lbl { color: #6b625c; }
+
+  .i { display: inline-grid; place-items: center; flex: none; }
+  .i svg { width: 100%; height: 100%; }
+
+  /* ---------- The app, from admin-sesion.html ---------- */
+
+  .app { background: var(--window); color: var(--ink); border-radius: 12px; height: 760px; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+  .top { display: flex; align-items: center; gap: 14px; padding: 26px 32px 4px; }
+  .back { width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; color: var(--ink); cursor: pointer; display: grid; place-items: center; }
+  .top h1 { font-size: 30px; flex: 1; }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; background: #CCC4F0; display: grid; place-items: center; font-size: 22px; border: 0; cursor: pointer; }
+  .maintabs { display: flex; gap: 8px; padding: 10px 32px 0 86px; }
+  .pt { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 14px; border: 1.5px solid var(--line); background: transparent; color: var(--ink); border-radius: 999px; padding: 7px 16px; cursor: pointer; }
+  .pt.on { background: var(--ink); color: var(--window); border-color: var(--ink); }
+  .page { flex: 1; overflow: auto; padding: 18px 32px 28px 86px; }
+  .stack { display: flex; flex-direction: column; gap: 18px; max-width: 760px; }
+
+  .box { background: var(--side); border-radius: 22px; padding: 18px; }
+  .box-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .box-head h3 { font-size: 17px; display: flex; gap: 8px; align-items: center; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 14px; border: 1.5px solid var(--line); background: transparent; color: var(--ink); border-radius: 999px; padding: 7px 12px; cursor: pointer; white-space: nowrap; }
+  .btn.dark { background: #1F1B18; color: #fff; border-color: #1F1B18; }
+  .btn:disabled { opacity: 0.35; cursor: default; }
+  .btn.busy:disabled { opacity: 1; cursor: progress; }
+  .file { display: flex; align-items: center; gap: 10px; background: #fff; color: #1F1B18; border-radius: 12px; padding: 9px 8px 9px 12px; margin-bottom: 6px; font-size: 14px; }
+  .file .grow { flex: 1; min-width: 0; }
+  .file small { display: block; color: #8A7E75; font-size: 12px; }
+  .file .btn { font-size: 13px; padding: 5px 11px; }
+  .chip { font-size: 11px; border-radius: 999px; padding: 1px 8px; background: #CCC4F0; color: #1F1B18; white-space: nowrap; }
+  .iconbtn { width: 34px; height: 34px; border-radius: 50%; border: 0; background: transparent; color: inherit; cursor: pointer; display: grid; place-items: center; flex: none; padding: 0; }
+  .iconbtn:hover:not(:disabled) { background: rgba(0, 0, 0, 0.06); }
+
+  .switch { display: flex; justify-content: space-between; align-items: center; width: 100%; font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  .switch:disabled { cursor: progress; }
+  .knob { width: 40px; height: 22px; border-radius: 999px; background: var(--line); position: relative; flex: none; }
+  .knob::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--ink); transition: left 0.15s; }
+  .knob.on { background: #9DCBC2; }
+  .knob.on::after { left: 21px; background: #1F1B18; }
+
+  .scrim { position: absolute; inset: 0; background: rgba(31, 27, 24, 0.45); display: grid; place-items: center; z-index: 10; }
+  .modal { background: var(--window); color: var(--ink); border-radius: 22px; width: 480px; padding: 22px 24px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .field { display: block; margin-top: 14px; font-size: 13px; }
+  .field input { display: block; width: 100%; margin-top: 4px; font: inherit; font-size: 15px; border: 1.5px solid var(--line); border-radius: 12px; padding: 9px 12px; background: #fff; color: #1F1B18; }
+  .check { margin-top: 14px; font-size: 14px; }
+  .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+
+  /* ---------- New pieces ---------- */
+
+  .drop { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; font: inherit; font-size: 14px; color: var(--muted); background: transparent; border: 2px dashed #D9C9BF; border-radius: 16px; padding: 26px 18px; cursor: pointer; }
+  .drop:hover { border-color: var(--muted); color: var(--ink); }
+  .picked { display: flex; align-items: center; gap: 10px; background: #fff; color: #1F1B18; border: 1.5px solid var(--line); border-radius: 16px; padding: 8px 6px 8px 14px; font-size: 15px; }
+  .picked .grow { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: spin 0.8s linear infinite; flex: none; }
+  .spin.sm { width: 14px; height: 14px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .msg { margin-top: 12px; font-size: 14px; line-height: 1.4; }
+  .msg.checking { display: flex; align-items: center; gap: 8px; color: var(--muted); padding: 10px 2px; }
+  .msg.alert { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 12px; }
+  .msg.ok { background: #D7F1E3; color: #26603F; }
+  .msg.error { background: #F9DDE1; color: #8A2E3D; }
+  .msg.alert > .i { margin-top: 1px; }
+  .box .msg { margin-top: 10px; }
+
+  /* ---------- Mostrar todos ---------- */
+
+  .grid { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+  .grid h2 { width: 100%; font-size: 18px; margin-top: 8px; }
+  .flabel { font-size: 13px; color: #6b625c; margin-bottom: 6px; }
+  .mini { background: rgba(31, 27, 24, 0.45); border-radius: 12px; padding: 16px; }
+  .mini .modal { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); }
+  .mini.list { background: var(--window); width: 620px; padding: 18px; }
+  .grid > div { zoom: 0.72; }
+  .grid { gap: 18px; }
+</style>
+</head>
+<body>
+<div class="intro">
+  <h1>kurasu · revisión de las slides</h1>
+  <p>Cuando un HTML se marca como slides del aula, el servidor revisa que respete la API de las slides. Este prototipo muestra esa revisión en los dos lugares donde se marca: el switch del modal "Subir archivo" y el botón "Usar como slides del aula" de cada HTML en el material. La revisión tarda al menos un segundo y termina en éxito o en error según "resultado". En el modal el éxito queda hasta cerrar el modal o apagar el switch; en la lista se va a los 10 segundos y la fila queda con el chip de slides. Los botones de estado saltan a un estado y lo dejan quieto; tocar el switch o el botón corre la revisión completa. "Mostrar todos" pone todos los estados lado a lado.</p>
+</div>
+
+<section class="alt" id="proto">
+  <div class="strip"></div>
+  <div class="stagewrap"></div>
+</section>
+
+<script>
+const ICONS = {"trash":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m18 9l-.84 8.398c-.127 1.273-.19 1.909-.48 2.39a2.5 2.5 0 0 1-1.075.973C15.098 21 14.46 21 13.18 21h-2.36c-1.279 0-1.918 0-2.425-.24a2.5 2.5 0 0 1-1.076-.973c-.288-.48-.352-1.116-.48-2.389L6 9m7.5 6.5v-5m-3 5v-5m-6-4h4.615m0 0l.386-2.672c.112-.486.516-.828.98-.828h3.038c.464 0 .867.342.98.828l.386 2.672m-5.77 0h5.77m0 0H19.5\"/></svg>","download":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4 16.004V17a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1M12 4.5v11m3.5-3.5L12 15.5L8.5 12\"/></svg>","upload":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4 16.004V17a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1m-8-.5v-11M15.5 8L12 4.5L8.5 8\"/></svg>","code":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m17.09 7.974l.23.23c1.789 1.79 2.684 2.684 2.684 3.796s-.895 2.006-2.684 3.796l-.23.23M13.876 5l-3.751 14M6.91 7.974l-.23.23C4.892 9.994 3.997 10.888 3.997 12s.895 2.006 2.685 3.796l.23.23\"/></svg>","file-text":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M9.478 3H7.25A2.25 2.25 0 0 0 5 5.25v13.5A2.25 2.25 0 0 0 7.25 21h9a2.25 2.25 0 0 0 2.25-2.25V12M9.478 3c1.243 0 2.272 1.007 2.272 2.25V7.5A2.25 2.25 0 0 0 14 9.75h2.25A2.25 2.25 0 0 1 18.5 12M9.478 3c3.69 0 9.022 5.36 9.022 9M9 16.5h6m-6-3h4\"/></svg>","x":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 6L6 18M6 6l12 12\"/></svg>","chart-bar":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 21H9.4c-2.24 0-3.36 0-4.216-.436a4 4 0 0 1-1.748-1.748C3 17.96 3 16.84 3 14.6V3m4 13.5h5M7 12h10M7 7.5h7\"/></svg>","danger-circle":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 12a9 9 0 1 1-18 0a9 9 0 0 1 18 0m-9-4.373v5.5m0 3.246v-.5\"/></svg>","check-circle":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 12a9 9 0 1 1-18 0a9 9 0 0 1 18 0m-12.5.5l2.5 2.5l4.5-5\"/></svg>","arrow-left":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M19.5 12h-15m5.625 6L4.5 12l5.625-6\"/></svg>","presentation":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M3 4h18m-1.9 0v9.778c0 .471-.19.923-.527 1.257c-.338.333-.796.52-1.273.52H6.7c-.477 0-.935-.187-1.273-.52a1.77 1.77 0 0 1-.527-1.257V4m2.6 16l4.5-4.444L16.5 20\"/></svg>"};
+const ic = (n, s = 20) => `<span class="i" style="width:${s}px;height:${s}px">${ICONS[n]}</span>`;
+
+const PICKED_FILE = 'clase-2.html';
+const CHECK_MS = 1200;
+const LIST_OK_MS = 10000;
+
+const MESSAGES = {
+  checking: 'Revisando que el HTML respete la API de las slides…',
+  ok: 'El HTML respeta la API de las slides',
+  error: 'Este HTML no respeta la API de las slides, así que no se puede usar como slides del aula. Podés subirlo como material.',
+};
+
+const MODAL_STATES = { empty: 'Sin archivo', picked: 'Archivo elegido', checking: 'Revisando', ok: 'Éxito', error: 'Error' };
+const LIST_STATES = { picked: 'Sin marcar', checking: 'Revisando', ok: 'Éxito', error: 'Error' };
+
+const FILES = [
+  { name: 'Slides de la sesión', type: 'HTML', size: '84 KB' },
+  { name: 'Clase 2', type: 'HTML', size: '62 KB' },
+  { name: 'Guía de planificación', type: 'PDF', size: '480 KB' },
+  { name: 'Ejercicio', type: 'ZIP', size: '1,1 MB' },
+];
+
+const CLASS_ROW = 1;
+
+const v = { place: 'modal', pass: true, all: false, timer: null };
+
+// `check` is null, 'checking', 'ok' or 'error'; the list keeps which row holds the slides and which row is being checked.
+const modal = { file: null, name: '', on: false, check: null };
+const list = { slides: 0, target: null, check: null };
+
+/* ---------- Messages ---------- */
+
+const message = (check) => {
+  if (check === 'checking') {
+    return `<div class="msg checking" role="status"><span class="spin sm"></span>${MESSAGES.checking}</div>`;
+  }
+
+  if (check === 'ok') {
+    return `<div class="msg alert ok" role="status">${ic('check-circle', 18)}<span>${MESSAGES.ok}</span></div>`;
+  }
+
+  if (check === 'error') {
+    return `<div class="msg alert error" role="alert">${ic('danger-circle', 18)}<span>${MESSAGES.error}</span></div>`;
+  }
+
+  return '';
+};
+
+/* ---------- Upload modal ---------- */
+
+const uploadModal = (m) => {
+  const busy = m.check === 'checking';
+
+  return `
+  <div class="modal" data-stay>
+    <div class="modal-head"><h3>Subir archivo</h3><button class="iconbtn" data-shut title="Cerrar">${ic('x', 18)}</button></div>
+    ${m.file == null
+      ? `<button class="drop" data-pickfile>${ic('upload', 28)}<span>Arrastrá un archivo o elegí uno</span></button>`
+      : `<div class="picked">${ic('code', 20)}<span class="grow">${m.file}</span><button class="iconbtn" data-unpick title="Quitar archivo" ${busy ? 'disabled' : ''}>${ic('trash', 18)}</button></div>`}
+    ${m.file == null ? '' : `
+      <label class="field">Nombre<input data-fname value="${m.name}"></label>
+      <button class="switch check" data-asslides ${busy ? 'disabled' : ''}><span>Usar como slides del aula</span><span class="knob ${m.on ? 'on' : ''}"></span></button>`}
+    ${message(m.check)}
+    <div class="actions"><button class="btn" data-shut>Cancelar</button><button class="btn dark" data-doupload ${m.file == null || busy ? 'disabled' : ''}>Subir</button></div>
+  </div>`;
+};
+
+/* ---------- Material list ---------- */
+
+const slidesButton = (i, l) => l.check === 'checking' && l.target === i
+  ? `<button class="btn busy" disabled aria-busy="true"><span class="spin sm"></span>Usar como slides del aula</button>`
+  : `<button class="btn" data-mark="${i}" ${l.check === 'checking' ? 'disabled' : ''}>${ic('presentation', 15)}Usar como slides del aula</button>`;
+
+const materialBox = (l, withUpload = true) => `
+  <div class="box">
+    <div class="box-head"><h3>${ic('download', 18)} Material</h3>${withUpload ? `<button class="btn" data-upload>${ic('upload', 16)} Subir archivo</button>` : ''}</div>
+    ${FILES.map((f, i) => `
+      <div class="file">${f.type === 'HTML' ? ic('code', 20) : ic('file-text', 20)}<div class="grow"><b>${f.name}</b><small>${f.type} · ${f.size}</small></div>
+        ${l.slides === i ? '<span class="chip">Slides del aula</span>' : f.type === 'HTML' ? slidesButton(i, l) : ''}
+        <button class="iconbtn" title="Borrar">${ic('trash', 16)}</button></div>`).join('')}
+    ${message(l.check)}
+  </div>`;
+
+/* ---------- App ---------- */
+
+const app = () => `
+  <div class="app">
+    <div class="top">
+      <button class="back" title="Volver a las sesiones">${ic('arrow-left', 22)}</button>
+      <h1>Planificación y revisión</h1>
+      <button class="avatar" title="Tu cuenta">🦉</button>
+    </div>
+    <div class="maintabs">
+      <button class="pt on">${ic('file-text', 16)} Contenido</button>
+      <button class="pt">${ic('chart-bar', 16)} Encuestas</button>
+      <button class="pt">${ic('presentation', 16)} Aula</button>
+    </div>
+    <div class="page"><div class="stack">${materialBox(list)}</div></div>
+    ${v.place === 'modal' ? `<div class="scrim" data-shut>${uploadModal(modal)}</div>` : ''}
+  </div>`;
+
+/* ---------- State jumps ---------- */
+
+const modalAt = (state) => ({
+  file: state === 'empty' ? null : PICKED_FILE,
+  name: 'clase-2',
+  on: ['checking', 'ok'].includes(state),
+  check: ['checking', 'ok', 'error'].includes(state) ? state : null,
+});
+
+const listAt = (state) => ({
+  slides: state === 'ok' ? CLASS_ROW : 0,
+  target: CLASS_ROW,
+  check: ['checking', 'ok', 'error'].includes(state) ? state : null,
+});
+
+const currentState = () => {
+  if (v.place === 'modal') {
+    return modal.file == null ? 'empty' : modal.check ?? 'picked';
+  }
+
+  return list.check ?? 'picked';
+};
+
+const jump = (state) => {
+  clearTimeout(v.timer);
+  Object.assign(v.place === 'modal' ? modal : list, v.place === 'modal' ? modalAt(state) : listAt(state));
+};
+
+/* ---------- Simulated checks ---------- */
+
+const runModalCheck = () => {
+  clearTimeout(v.timer);
+  modal.check = 'checking';
+  v.timer = setTimeout(() => {
+    // A failed check turns the switch back off: the file can still go up as plain material.
+    Object.assign(modal, v.pass ? { check: 'ok' } : { check: 'error', on: false });
+    render();
+  }, CHECK_MS);
+};
+
+const runListCheck = (i) => {
+  clearTimeout(v.timer);
+  Object.assign(list, { target: i, check: 'checking' });
+  v.timer = setTimeout(() => {
+    if (!v.pass) {
+      list.check = 'error';
+      render();
+
+      return;
+    }
+
+    Object.assign(list, { check: 'ok', slides: i });
+    render();
+    v.timer = setTimeout(() => {
+      list.check = null;
+      render();
+    }, LIST_OK_MS);
+  }, CHECK_MS);
+};
+
+/* ---------- Render ---------- */
+
+const strip = (groups) => groups.map((g) => g.map(([attr, value, label, on]) => attr === 'lbl'
+  ? `<span class="lbl">${label}</span>`
+  : `<button data-${attr}="${value}" class="${on ? 'on' : ''}">${label}</button>`).join('')).join('<span class="sep"></span>');
+
+const allStates = () => `
+  <div class="grid">
+    <h2>Modal "Subir archivo"</h2>
+    ${Object.entries(MODAL_STATES).map(([k, l]) => `<div><div class="flabel">${l}</div><div class="mini">${uploadModal(modalAt(k))}</div></div>`).join('')}
+    <h2>Material, pestaña Contenido</h2>
+    ${Object.entries(LIST_STATES).map(([k, l]) => `<div><div class="flabel">${l}</div><div class="mini list">${materialBox(listAt(k), false)}</div></div>`).join('')}
+  </div>`;
+
+const render = () => {
+  const root = document.getElementById('proto');
+  const states = v.place === 'modal' ? MODAL_STATES : LIST_STATES;
+  const now = currentState();
+
+  root.querySelector('.strip').innerHTML = strip([
+    [['lbl', '', 'Lugar'], ['place', 'modal', 'Modal', !v.all && v.place === 'modal'], ['place', 'list', 'Lista', !v.all && v.place === 'list']],
+    [['lbl', '', 'Resultado'], ['pass', '1', 'Pasa', v.pass], ['pass', '0', 'No pasa', !v.pass]],
+    [['lbl', '', 'Estado'], ...Object.entries(states).map(([k, l]) => ['state', k, l, !v.all && now === k])],
+    [['all', '1', 'Mostrar todos', v.all]],
+  ]);
+  root.querySelector('.stagewrap').innerHTML = v.all ? allStates() : app();
+};
+
+/* ---------- Wiring ---------- */
+
+document.querySelector('#proto .strip').addEventListener('click', (e) => {
+  const t = e.target.closest('button');
+
+  if (t == null) {
+    return;
+  }
+
+  const d = t.dataset;
+
+  if (d.place != null) {
+    clearTimeout(v.timer);
+    Object.assign(v, { place: d.place, all: false });
+  } else if (d.pass != null) {
+    v.pass = d.pass === '1';
+  } else if (d.state != null) {
+    v.all = false;
+    jump(d.state);
+  } else if (d.all != null) {
+    v.all = !v.all;
+  }
+
+  render();
+});
+
+document.querySelector('#proto .stagewrap').addEventListener('click', (e) => {
+  const t = e.target.closest('button, [data-shut]');
+
+  if (t == null || t.disabled || v.all) {
+    return;
+  }
+
+  // Clicks inside the dialog that hit no button must not reach the scrim behind it.
+  if (!t.matches('button') && e.target.closest('[data-stay]') != null) {
+    return;
+  }
+
+  const d = t.dataset;
+
+  if (t.hasAttribute('data-pickfile')) {
+    Object.assign(modal, modalAt('picked'));
+  } else if (t.hasAttribute('data-unpick')) {
+    clearTimeout(v.timer);
+    Object.assign(modal, modalAt('empty'));
+  } else if (t.hasAttribute('data-asslides')) {
+    modal.on = !modal.on;
+
+    if (modal.on) {
+      runModalCheck();
+    } else {
+      clearTimeout(v.timer);
+      modal.check = null;
+    }
+  } else if (t.hasAttribute('data-shut') || t.hasAttribute('data-doupload')) {
+    // Closing the modal drops the success message; the prototype reopens it empty so the flow can be repeated.
+    clearTimeout(v.timer);
+    Object.assign(modal, modalAt('empty'));
+    v.place = 'list';
+  } else if (t.hasAttribute('data-upload')) {
+    clearTimeout(v.timer);
+    Object.assign(modal, modalAt('empty'));
+    v.place = 'modal';
+  } else if (d.mark != null) {
+    runListCheck(Number(d.mark));
+  } else {
+    return;
+  }
+
+  render();
+});
+
+document.querySelector('#proto .stagewrap').addEventListener('input', (e) => {
+  if (e.target.matches('[data-fname]')) {
+    modal.name = e.target.value;
+  }
+});
+
+render();
+</script>
+</body>
+</html>

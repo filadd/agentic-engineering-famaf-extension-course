@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Replay</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=DM+Sans:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b1026;
+    --panel: #151c3d;
+    --ink: #f4f1ea;
+    --muted: #8a93b8;
+    --accent: #ffd23f;
+    --pink: #ff5d8f;
+    --mint: #3ee0a7;
+    --term: #0d0f17;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  /* Canvas scaled from a 1280x720 reference, but stretched along whichever axis has room left,
+     so it fills the window above the controls instead of letterboxing. */
+  #stage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+    color: var(--ink);
+    font-family: "DM Sans", sans-serif;
+    display: grid;
+    overflow: hidden;
+  }
+
+  .body {
+    display: grid;
+    grid-template-columns: minmax(480px, 40%) 1fr;
+    gap: 24px;
+    padding: 24px;
+    min-height: 0;
+  }
+
+  .terminal {
+    display: grid;
+    grid-template-rows: 32px 1fr;
+    min-height: 0;
+    background: var(--term);
+    border: 3px solid #000;
+    border-radius: 12px;
+    box-shadow: 6px 6px 0 #000;
+    overflow: hidden;
+  }
+
+  .titlebar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px;
+    background: #1b1f2e;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .titlebar i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #3a3f55;
+  }
+
+  .titlebar span {
+    flex: 1;
+    text-align: center;
+    margin-right: 40px;
+  }
+
+  #term {
+    padding: 14px 16px;
+    overflow: hidden;
+    scroll-behavior: smooth;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+
+  .line {
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    margin-bottom: 6px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .line::before { content: "●"; }
+
+  .line.user {
+    background: #1d2235;
+    border-radius: 6px;
+    padding: 6px 8px;
+    margin: 10px 0 10px;
+    color: #fff;
+  }
+
+  .line.user::before {
+    content: "❯";
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .line.assistant { color: #e8e6e1; }
+  .line.assistant::before { color: #e8e6e1; }
+
+  .line.tool { color: var(--muted); }
+  .line.tool::before { color: var(--mint); }
+
+  .line.note { color: var(--pink); }
+  .line.note::before { content: "⎿"; }
+
+  .line.waiting span::after {
+    content: " ⏎";
+    color: var(--accent);
+    animation: blink 0.8s steps(1) infinite;
+  }
+
+  .caret::after {
+    content: "▍";
+    color: var(--accent);
+    animation: blink 0.8s steps(1) infinite;
+  }
+
+  @keyframes blink { 50% { opacity: 0; } }
+
+  #view {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    min-height: 0;
+  }
+
+  /* As wide as the column allows without the 16:10 capture overflowing the height. */
+  .browser {
+    width: min(100%, calc((var(--stage-height) - 140px) * 1.6));
+    border: 3px solid #000;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 8px 8px 0 #000;
+    background: var(--bg);
+  }
+
+  .browser .bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #1d2550;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .browser .bar i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #3a4480;
+  }
+
+  .browser .bar span {
+    margin-left: 10px;
+    flex: 1;
+    background: #0b1026;
+    border-radius: 6px;
+    padding: 3px 10px;
+  }
+
+  .screen {
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+    aspect-ratio: 1280 / 800;
+  }
+
+  .screen img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform-origin: 0 0;
+    transition: opacity 0.45s, transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .screen img.visible { opacity: 1; }
+
+  .typed {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    padding-left: 1.2%;
+    font-family: "DM Sans", sans-serif;
+    font-size: 9px;
+    color: #111;
+    background: #fff;
+    border-radius: 6px;
+    pointer-events: none;
+  }
+
+  #cursor {
+    position: absolute;
+    width: 22px;
+    left: 70%;
+    top: 80%;
+    opacity: 0;
+    transition: left 0.7s cubic-bezier(0.4, 0, 0.2, 1), top 0.7s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+    filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.6));
+    z-index: 2;
+  }
+
+  .ripple {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border-radius: 50%;
+    border: 3px solid var(--accent);
+    animation: ripple 0.5s ease-out forwards;
+    z-index: 1;
+  }
+
+  @keyframes ripple {
+    from { transform: scale(0.3); opacity: 1; }
+    to { transform: scale(1.4); opacity: 0; }
+  }
+
+  .caption {
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: 700;
+    border: 3px solid #000;
+    border-radius: 8px;
+    padding: 4px 12px;
+    font-size: 14px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .caption.visible { opacity: 1; }
+
+  #controls {
+    position: fixed;
+    bottom: 16px;
+    left: 24px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 16px;
+    background: rgba(11, 16, 38, 0.92);
+    border: 2px solid #000;
+    border-radius: 12px;
+    font-family: "JetBrains Mono", monospace;
+  }
+
+  #speed {
+    background: var(--panel);
+    color: var(--ink);
+    border: 2px solid #000;
+    border-radius: 8px;
+    padding: 6px 8px;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  #controls button {
+    display: inline-flex;
+    align-items: center;
+    background: var(--panel);
+    color: var(--ink);
+    border: 2px solid #000;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  #controls button.active { background: var(--accent); color: var(--bg); }
+
+  #controls .buttons {
+    display: flex;
+    gap: 8px;
+  }
+
+  /* One dot per user prompt: passed ones filled, the current one bigger. Clicking one jumps there.
+     Each step is a dot and the dotted line to the next one. The lines grow to spread the dots over the
+     whole row, and only when they reach their minimum width does the row scroll sideways. */
+  .seek {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #2a3366 transparent;
+  }
+
+  .seek-step {
+    display: flex;
+    flex: 1 0 auto;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .seek-step:last-child {
+    flex-grow: 0;
+  }
+
+  .seek-step:not(:last-child)::after {
+    content: "";
+    flex: 1;
+    min-width: 10px;
+    margin-right: 2px;
+    border-top: 2px dotted #2a3366;
+  }
+
+  #controls .seek-dot {
+    position: relative;
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    padding: 0;
+    border-radius: 50%;
+    background: #2a3366;
+    border: 2px solid #000;
+    transition: transform 0.2s, background 0.2s;
+  }
+
+  #controls .seek-dot.passed {
+    background: var(--accent);
+  }
+
+  #controls .seek-dot.current {
+    background: var(--pink);
+    transform: scale(1.4);
+  }
+
+  #controls .seek-dot:hover {
+    transform: scale(1.5);
+  }
+
+  /* One shared tooltip, fixed to the page, because the scrolling row would clip a tooltip inside it. */
+  #seek-tip {
+    position: fixed;
+    z-index: 10;
+    transform: translate(-50%, -100%);
+    width: max-content;
+    max-width: 320px;
+    padding: 6px 10px;
+    background: var(--panel);
+    color: var(--ink);
+    border: 2px solid #000;
+    border-radius: 8px;
+    font-family: "DM Sans", sans-serif;
+    font-size: 12px;
+    text-align: left;
+    white-space: normal;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  #seek-tip.visible {
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="body">
+    <div class="terminal">
+      <div class="titlebar"><i></i><i></i><i></i><span>terminal</span></div>
+      <div id="term"></div>
+    </div>
+    <div id="view">
+      <div class="caption" id="caption"></div>
+      <div class="browser">
+        <div class="bar"><i></i><i></i><i></i><span id="url">about:blank</span></div>
+        <div class="screen" id="screen">
+          <svg id="cursor" viewBox="0 0 24 24"><path d="M4 2l16 10-7 1.5L9.5 21z" fill="#fff" stroke="#000" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="controls">
+  <div class="seek" id="seek"></div>
+  <div id="seek-tip"></div>
+  <div class="buttons">
+  <button id="prev" title="Prompt anterior"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><rect x="4" y="5" width="3" height="14"/><path d="M20 5v14L8 12z"/></svg></button>
+  <button id="play" title="Pausa"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg></button>
+  <button id="next" title="Prompt siguiente"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><rect x="17" y="5" width="3" height="14"/><path d="M4 5v14l12-7z"/></svg></button>
+  <select id="speed" title="Velocidad">
+    <option value="0.5">0.5×</option>
+    <option value="1" selected>1×</option>
+    <option value="2">2×</option>
+    <option value="4">4×</option>
+  </select>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+  const rec = window.RECORDING;
+
+  const $ = (id) => document.getElementById(id);
+
+  const ICONS = { play: `<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 5v14l12-7z"/></svg>`, pause: `<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>` };
+  const stage = $("stage");
+  const term = $("term");
+  const screen = $("screen");
+  const cursor = $("cursor");
+
+  // The controls bar is always visible, so the canvas scales into the space above it.
+  const fit = () => {
+    const available = innerHeight - $("controls").offsetHeight - 32;
+    const scale = Math.min(innerWidth / 1280, available / 720);
+    const width = innerWidth / scale;
+    const height = available / scale;
+
+    Object.assign(stage.style, { width: `${width}px`, height: `${height}px`, transform: `scale(${scale})` });
+    stage.style.setProperty("--stage-height", `${height}px`);
+  };
+
+  addEventListener("resize", fit);
+  fit();
+
+
+
+  // Pause after each beat, in ms at 1x. Typed text and actions add their own time on top.
+  const PAUSES = { user: 700, assistant: 500, tool: 220, note: 900, screenshot: 2200 };
+
+  let speed = 1;
+  let index = 0;
+  let playing = true;
+  let running = false;
+  let generation = 0;
+  let typingUser = false;
+  let skipTyping = false;
+  let advance = null;
+
+  // Pending waits, so a seek can cut them short instead of sitting through an animation.
+  const sleepers = new Set();
+
+  const sleep = (ms) =>
+    new Promise((resolve) => {
+      const wake = () => {
+        clearTimeout(timer);
+        sleepers.delete(wake);
+        resolve();
+      };
+      const timer = setTimeout(wake, ms / speed);
+
+      sleepers.add(wake);
+    });
+
+  const follow = (behavior = "smooth") => {
+    term.scrollTo({ top: term.scrollHeight, behavior });
+  };
+
+  const typeInto = async (el, text, msPerChar, onTick) => {
+    el.classList.add("caret");
+
+    for (let i = 1; i <= text.length && !skipTyping; i += 2) {
+      el.textContent = text.slice(0, i);
+      onTick?.();
+      await sleep(msPerChar * 2);
+    }
+
+    el.textContent = text;
+    el.classList.remove("caret");
+    skipTyping = false;
+    onTick?.();
+  };
+
+  const addLine = (kind, text = "") => {
+    const line = document.createElement("div");
+    line.className = `line ${kind}`;
+    line.append(document.createElement("span"));
+    line.lastChild.textContent = text;
+    term.append(line);
+    follow();
+
+    return line.lastChild;
+  };
+
+  const moveCursorTo = (action) => {
+    cursor.style.opacity = 1;
+    cursor.style.left = `${(action.x + action.w / 2) * 100}%`;
+    cursor.style.top = `${(action.y + action.h / 2) * 100}%`;
+  };
+
+  // Scales the capture so the zoom region fills the screen, centered on it but never past the capture's edges.
+  const zoomTransform = (zoom) => {
+    if (zoom == null) {
+      return "none";
+    }
+
+    const scale = 1 / Math.max(zoom.w, zoom.h);
+    const shift = (start, size) => Math.min(0, Math.max(1 - scale, 0.5 - (start + size / 2) * scale)) * 100;
+
+    return `translate(${shift(zoom.x, zoom.w)}%, ${shift(zoom.y, zoom.h)}%) scale(${scale})`;
+  };
+
+  const showScreenshot = async (beat) => {
+    $("url").textContent = beat.url ?? "";
+
+    const caption = $("caption");
+    caption.classList.remove("visible");
+
+    screen.querySelectorAll(".typed").forEach((el) => el.remove());
+
+    // A beat on the capture already on screen moves the zoom over it instead of fading in a copy.
+    const shown = [...screen.querySelectorAll("img")].at(-1);
+
+    if (shown?.getAttribute("src") === beat.src) {
+      shown.style.transform = zoomTransform(beat.zoom);
+    } else {
+      const img = new Image();
+      img.src = beat.src;
+      await img.decode().catch(() => {});
+      screen.append(img);
+      requestAnimationFrame(() => img.classList.add("visible"));
+
+      const previous = [...screen.querySelectorAll("img")].slice(0, -1);
+      setTimeout(() => previous.forEach((el) => el.remove()), 500);
+
+      if (beat.zoom != null) {
+        await sleep(700);
+        img.style.transform = zoomTransform(beat.zoom);
+      }
+    }
+
+    if (beat.caption != null) {
+      caption.textContent = beat.caption;
+      caption.classList.add("visible");
+    }
+
+    if (beat.action == null) {
+      cursor.style.opacity = 0;
+      return;
+    }
+
+    await sleep(500);
+    moveCursorTo(beat.action);
+    await sleep(800);
+
+    if (beat.action.kind === "click") {
+      const ripple = document.createElement("div");
+      ripple.className = "ripple";
+      ripple.style.left = cursor.style.left;
+      ripple.style.top = cursor.style.top;
+      screen.append(ripple);
+      setTimeout(() => ripple.remove(), 600);
+      await sleep(500);
+    }
+
+    if (beat.action.kind === "type") {
+      const field = document.createElement("div");
+      const { x, y, w, h } = beat.action;
+      field.className = "typed";
+      Object.assign(field.style, { left: `${x * 100}%`, top: `${y * 100}%`, width: `${w * 100}%`, height: `${h * 100}%` });
+      screen.append(field);
+      await typeInto(field, beat.action.text ?? "", 35);
+      await sleep(400);
+    }
+  };
+
+  let shownPrompt = null;
+
+  const updateProgress = () => {
+    const current = promptIndexes.filter((p) => p <= index).at(-1);
+
+    document.querySelectorAll(".seek-dot").forEach((dot) => {
+      const at = Number(dot.dataset.index);
+
+      dot.classList.toggle("passed", at < index && at !== current);
+      dot.classList.toggle("current", at === current);
+
+      if (at === current && current !== shownPrompt) {
+        dot.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+      }
+    });
+
+    shownPrompt = current;
+  };
+
+  const playBeat = async (beat) => {
+    updateProgress();
+
+    if (beat.kind === "user") {
+      // Visual-novel style: space finishes the typing, then waits for space again to move on.
+      const line = addLine("user");
+
+      typingUser = true;
+      await typeInto(line, beat.text, 10, follow);
+      typingUser = false;
+
+      line.parentElement.classList.add("waiting");
+      await new Promise((resolve) => {
+        advance = resolve;
+      });
+      advance = null;
+      line.parentElement.classList.remove("waiting");
+    } else if (beat.kind === "assistant") {
+      await typeInto(addLine("assistant"), beat.text, 2, follow);
+    } else if (beat.kind === "screenshot") {
+      await showScreenshot(beat);
+    } else {
+      addLine(beat.kind, beat.text);
+    }
+
+    await sleep(beat.hold ?? PAUSES[beat.kind] ?? 0);
+  };
+
+  const run = async () => {
+    if (running) {
+      return;
+    }
+
+    running = true;
+    const mine = generation;
+
+    while (playing && mine === generation && index < rec.beats.length) {
+      await playBeat(rec.beats[index]);
+
+      if (mine === generation) {
+        index += 1;
+      }
+    }
+
+    running = false;
+  };
+
+  // Draws a beat in its final state, without typing or animations, for seeking.
+  const renderInstant = (beat) => {
+    if (beat.kind === "screenshot") {
+      const img = new Image();
+      img.src = beat.src;
+      img.className = "visible";
+      img.style.transform = zoomTransform(beat.zoom);
+      screen.querySelectorAll("img").forEach((el) => el.remove());
+      screen.append(img);
+      $("url").textContent = beat.url ?? "";
+      $("caption").textContent = beat.caption ?? "";
+      $("caption").classList.toggle("visible", beat.caption != null);
+      return;
+    }
+
+    addLine(beat.kind, beat.text);
+  };
+
+  const seekTo = async (target) => {
+    // Moving to the prompt right before or after the current one scrolls the terminal; a longer jump lands directly.
+    const step = Math.abs(promptIndexes.indexOf(target) - promptIndexes.indexOf(currentPrompt()));
+
+    generation += 1;
+    playing = false;
+    const mine = generation;
+
+    // A prompt being typed finishes and then starts waiting, so keep releasing it until the loop exits.
+    while (running) {
+      skipTyping = true;
+      advance?.();
+      sleepers.forEach((wake) => wake());
+      await new Promise((r) => setTimeout(r, 30));
+    }
+
+    // Two quick skips start two seeks that wait together. If the older one went on, its run() would take
+    // the newer generation and the newer seek would keep waking it, racing through every beat to the end.
+    if (mine !== generation) {
+      return;
+    }
+
+    term.replaceChildren();
+    screen.querySelectorAll("img, .typed, .ripple").forEach((el) => el.remove());
+    cursor.style.opacity = 0;
+    $("caption").classList.remove("visible");
+    $("url").textContent = "about:blank";
+
+    rec.beats.slice(0, target).forEach(renderInstant);
+    follow(step === 1 ? "smooth" : "instant");
+    index = target;
+    updateProgress();
+
+    index = target;
+    skipTyping = false;
+    playing = true;
+    $("play").innerHTML = ICONS.pause;
+    run();
+  };
+
+
+  const promptIndexes = rec.beats.flatMap((beat, i) => (beat.kind === "user" ? [i] : []));
+
+  promptIndexes.forEach((i) => {
+    const dot = document.createElement("button");
+    dot.className = "seek-dot";
+    dot.dataset.index = i;
+    dot.onclick = () => seekTo(i);
+
+    dot.onmouseenter = () => {
+      const box = dot.getBoundingClientRect();
+      const tip = $("seek-tip");
+
+      tip.textContent = rec.beats[i].text;
+      tip.style.left = `${Math.min(Math.max(box.left + box.width / 2, 170), innerWidth - 170)}px`;
+      tip.style.top = `${box.top - 8}px`;
+      tip.classList.add("visible");
+    };
+
+    dot.onmouseleave = () => $("seek-tip").classList.remove("visible");
+
+    const step = document.createElement("span");
+    step.className = "seek-step";
+    step.append(dot);
+    $("seek").append(step);
+  });
+
+  // A mouse wheel only scrolls vertically; turn it into sideways scrolling over the dots.
+  $("seek").addEventListener("wheel", (event) => {
+    if (event.deltaY === 0) return;
+
+    event.preventDefault();
+    $("seek").scrollLeft += event.deltaY;
+  }, { passive: false });
+
+  updateProgress();
+
+  // While a prompt is on screen, "previous" means the one before it, not the same one again.
+  const currentPrompt = () => promptIndexes.filter((i) => i <= index).at(-1) ?? 0;
+
+  $("prev").onclick = () => seekTo(promptIndexes.filter((i) => i < currentPrompt()).at(-1) ?? 0);
+
+  $("next").onclick = () => {
+    const following = promptIndexes.find((i) => i > index);
+
+    if (following != null) {
+      seekTo(following);
+    }
+  };
+
+  $("play").onclick = (e) => {
+    playing = !playing;
+    $("play").innerHTML = playing ? ICONS.pause : ICONS.play;
+
+    if (playing) {
+      run();
+    }
+  };
+
+  $("speed").onchange = (e) => {
+    speed = Number(e.target.value);
+    e.target.blur();
+  };
+
+  const next = () => {
+    if (typingUser) {
+      skipTyping = true;
+    } else if (advance != null) {
+      advance();
+    } else if (index < rec.beats.length) {
+      // During the agent's turn: draw the rest of it at once and land on the next prompt. At the end
+      // there is nothing left to draw, and re-seeking would redraw the whole video from the top.
+      seekTo(promptIndexes.find((i) => i > index) ?? rec.beats.length);
+    }
+  };
+
+  addEventListener("keydown", (e) => {
+    if (e.code === "Space") {
+      e.preventDefault();
+      next();
+    }
+
+    if (e.code === "ArrowLeft") {
+      $("prev").click();
+    }
+
+    if (e.code === "ArrowRight") {
+      $("next").click();
+    }
+  });
+
+  stage.addEventListener("click", next);
+
+  run();
+</script>
+</body>
+</html>

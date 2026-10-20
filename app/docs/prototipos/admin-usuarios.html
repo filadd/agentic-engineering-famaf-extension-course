@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Prototipo · Usuarios (admin)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  :root { --window: #FBF3EE; --ink: #1F1B18; --muted: #8A7E75; --line: #EADFD8; --side: #F3E8E1; --field: #FFFFFF; }
+  .dark { --window: #161413; --ink: #F2EDE9; --muted: #9C918A; --line: #34302D; --side: #1F1C1A; --field: #24211F; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9e6e3; font-family: 'Atkinson Hyperlegible', sans-serif; color: #1F1B18; }
+  h1, h2, h3 { font-family: 'Rubik', sans-serif; margin: 0; }
+  .intro, .alt { max-width: 1240px; margin: 24px auto; padding: 0 20px; }
+  .intro p { margin: 6px 0 0; color: #6b625c; }
+  .strip { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; font-size: 14px; }
+  .strip button { font: inherit; border: 1px solid #cfc8c2; background: #fff; border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+  .strip button.on { background: #1F1B18; color: #fff; border-color: #1F1B18; }
+  .i { display: inline-grid; place-items: center; flex: none; }
+  .i svg { width: 100%; height: 100%; }
+
+  .app { background: var(--window); color: var(--ink); border-radius: 12px; min-height: 700px; position: relative; padding-bottom: 30px; }
+  .top { display: flex; align-items: center; gap: 14px; padding: 26px 32px 4px; }
+  .back { width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; color: var(--ink); cursor: pointer; display: grid; place-items: center; }
+  .back:hover { background: var(--line); }
+  .top h1 { font-size: 30px; flex: 1; }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; background: #CCC4F0; display: grid; place-items: center; font-size: 22px; }
+  .page { padding: 18px 32px 0 86px; max-width: 900px; }
+  .bar { display: flex; gap: 10px; align-items: center; }
+  .search { flex: 1; display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--line); border-radius: 999px; padding: 0 14px; background: var(--field); color: var(--muted); }
+  .search input { flex: 1; font: inherit; border: 0; background: transparent; color: var(--ink); padding: 10px 0; outline: none; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 14px; border: 1.5px solid var(--line); background: transparent; color: var(--ink); border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+  .btn.dark { background: #1F1B18; color: #fff; border-color: #1F1B18; }
+  .btn.danger.solid { background: #B5485A; color: #fff; border-color: #B5485A; }
+  .btn:disabled { opacity: 0.35; cursor: default; }
+  .filters { display: flex; gap: 6px; margin-top: 14px; }
+  .pt { position: relative; display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 13px; border: 1.5px solid var(--line); background: transparent; color: var(--ink); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+  .pt.on { background: var(--ink); color: var(--window); border-color: var(--ink); }
+  .list { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .user { display: flex; align-items: center; gap: 12px; background: var(--side); border-radius: 16px; padding: 10px 12px 10px 14px; }
+  .user .face { width: 38px; height: 38px; border-radius: 50%; background: #CCC4F0; display: grid; place-items: center; font-size: 20px; flex: none; }
+  .user .face.none { background: transparent; border: 2px dashed var(--muted); color: var(--muted); font-family: 'Rubik', sans-serif; font-size: 17px; font-weight: 500; }
+  .user .placeholder { color: var(--muted); font-weight: 700; }
+  .user .grow { flex: 1; min-width: 0; }
+  .user small { display: block; color: var(--muted); font-size: 13px; }
+  .role { font-size: 11px; color: var(--muted); background: var(--window); border-radius: 999px; padding: 1px 8px; margin-left: 6px; }
+  .switch { display: flex; align-items: center; gap: 8px; font: inherit; font-size: 13px; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  .knob { width: 40px; height: 22px; border-radius: 999px; background: var(--line); position: relative; flex: none; }
+  .knob::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--ink); transition: left 0.15s; }
+  .knob.on { background: #9DCBC2; }
+  .knob.on::after { left: 21px; background: #1F1B18; }
+  .iconbtn { width: 34px; height: 34px; border-radius: 50%; border: 0; background: transparent; color: inherit; cursor: pointer; display: grid; place-items: center; }
+  .iconbtn:hover { background: rgba(0, 0, 0, 0.06); }
+  .empty { color: var(--muted); padding: 20px 4px; }
+  .scrim { position: absolute; inset: 0; background: rgba(31, 27, 24, 0.45); display: grid; place-items: center; border-radius: 12px; }
+  .modal { background: var(--window); color: var(--ink); border-radius: 22px; width: 440px; padding: 22px 24px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); }
+  .field { display: block; margin-top: 14px; font-size: 14px; font-weight: 700; }
+  .field input { display: block; width: 100%; margin-top: 6px; font: inherit; font-weight: 400; border: 1.5px solid var(--line); border-radius: 14px; padding: 10px 14px; background: var(--field); color: var(--ink); }
+  .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+  .qr-scrim { background: rgba(31, 27, 24, 0.7); }
+  .qr-view { position: relative; background: var(--window); color: var(--ink); border-radius: 28px; width: min(900px, 100%); padding: 36px 40px; text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35); }
+  .qr-view h3 { font-size: 40px; }
+  .qr-view p { margin: 8px 0 4px; color: var(--muted); font-size: 18px; }
+  .qr-view p b { color: var(--ink); font-family: 'Rubik', sans-serif; }
+  .qr-pair { display: flex; align-items: center; justify-content: center; gap: 36px; margin: 22px 0 10px; }
+  .qr { width: 340px; height: 340px; border-radius: 18px; overflow: hidden; flex: none; }
+  .qr-code { width: 340px; height: 340px; border-radius: 18px; background: var(--side); display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 24px; flex: none; }
+  .qr-code small { font-size: 18px; color: var(--muted); }
+  .qr-code b { font-family: 'Rubik', sans-serif; font-size: 72px; letter-spacing: 0.12em; }
+  .qr svg { width: 100%; height: 100%; display: block; }
+  .qr-code .btn { align-self: center; margin-top: 6px; }
+  .modal p { margin: 10px 0 0; color: var(--muted); }
+  .qr-close { position: absolute; top: 14px; right: 14px; }
+</style>
+</head>
+<body>
+<div class="intro">
+  <h1>Usuarios · admin</h1>
+  <p>Se llega desde la lista de sesiones del profe. Lista a todos los usuarios con su avatar, nombre y email; el switch de cada uno da o saca el acceso al aula (sacarlo pide confirmación), y quien no tiene acceso ve el mensaje del login. Los usuarios no se borran. "Agregar por email" deja entrar a alguien que todavía no se registró; hasta que haga el setup se ve con placeholders en gris: un círculo punteado con "?" en lugar del avatar y "Sin nombre" en lugar del nombre, con el email abajo. "QR de registro" abre el QR y, al lado, el código del aula, para proyectar en clase; el código se regenera desde ahí, con confirmación, y el anterior deja de servir. Los estudiantes que se registran por el QR aparecen con acceso.</p>
+</div>
+<section class="alt" id="users">
+  <div class="strip"></div>
+  <div class="stagewrap"></div>
+</section>
+
+<script>
+const ICONS = {"x":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 6L6 18M6 6l12 12\"/></svg>","refresh":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\"><path d=\"M20.5 8c-1.392-3.179-4.823-5-8.522-5C7.299 3 3.453 6.552 3 11.1\"/><path d=\"M16.489 8.4h3.97A.54.54 0 0 0 21 7.86V3.9M3.5 16c1.392 3.179 4.823 5 8.522 5c4.679 0 8.525-3.552 8.978-8.1\"/><path d=\"M7.511 15.6h-3.97a.54.54 0 0 0-.541.54v3.96\"/></g></svg>","arrow-left":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M19.5 12h-15m5.625 6L4.5 12l5.625-6\"/></svg>","search":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M19 11.5a7.5 7.5 0 1 1-15 0a7.5 7.5 0 0 1 15 0m-2.107 5.42l3.08 3.08\"/></svg>","scan":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M3.114 7.5c.144-1.463.47-2.447 1.204-3.182C5.636 3 7.758 3 12 3s6.364 0 7.682 1.318c.735.735 1.06 1.72 1.204 3.182m0 9c-.144 1.463-.47 2.447-1.204 3.182C18.364 21 16.242 21 12 21s-6.364 0-7.682-1.318c-.735-.735-1.06-1.72-1.204-3.182M3 12h.5m8.25 0h.5m-5 0h.5m8.5 0h.5m3.75 0h.5\"/></svg>","plus":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 12h-6m0 0H6m6 0V6m0 6v6\"/></svg>"};
+const ic = (n, s = 20) => `<span class="i" style="width:${s}px;height:${s}px">${ICONS[n]}</span>`;
+
+// A placeholder pattern with the three finder squares of a QR; the real code would encode REGISTER_URL plus the code.
+const REGISTER_URL = 'aula.famaf.dev/registro';
+const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const newCode = () => Array.from({ length: 5 }, () => CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]).join('');
+
+const fakeQr = (size = 29) => {
+  const finder = (x, y) => {
+    const fx = [[0, 0], [size - 7, 0], [0, size - 7]].find(([a, b]) => x >= a && x < a + 7 && y >= b && y < b + 7);
+
+    if (fx == null) {
+      return null;
+    }
+
+    const dx = x - fx[0];
+    const dy = y - fx[1];
+
+    return dx === 0 || dx === 6 || dy === 0 || dy === 6 || (dx >= 2 && dx <= 4 && dy >= 2 && dy <= 4);
+  };
+
+  let seed = 7;
+  const rand = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  const cells = [];
+
+  for (let y = 0; y < size; y += 1) {
+    for (let x = 0; x < size; x += 1) {
+      const f = finder(x, y);
+
+      if (f ?? rand() > 0.52) {
+        cells.push(`<rect x="${x}" y="${y}" width="1" height="1"/>`);
+      }
+    }
+  }
+
+  return `<svg viewBox="-2 -2 ${size + 4} ${size + 4}" shape-rendering="crispEdges"><rect x="-2" y="-2" width="${size + 4}" height="${size + 4}" fill="#fff"/><g fill="#1F1B18">${cells.join('')}</g></svg>`;
+};
+
+const qrModal = () => v.qr ? `
+  <div class="scrim qr-scrim" data-qrclose>
+    <div class="qr-view" data-stay>
+      <button class="iconbtn qr-close" data-qrclose title="Cerrar">${ic('x', 24)}</button>
+      <h3>Sumate al aula</h3>
+      <p>Escaneá el QR con el celular, o entrá a <b>${REGISTER_URL}</b> y escribí el código</p>
+      <div class="qr-pair">
+        <div class="qr">${fakeQr()}</div>
+        <div class="qr-code"><small>Código del aula</small><b>${v.code}</b><button class="btn" data-regen>${ic('refresh', 16)} Regenerar código</button></div>
+      </div>
+    </div>
+  </div>` : '';
+
+const fresh = () => ({
+  dark: false, qr: false, filter: 'all', query: '', adding: false, newEmail: '', confirm: null, code: 'K7F2Q',
+  users: [
+    { email: 'agustin@famaf.unc.edu.ar', name: 'Agustín', avatar: '🦉', access: true, admin: true },
+    { email: 'lucia@mi.unc.edu.ar', name: 'Lucía', avatar: '🦊', access: true },
+    { email: 'mateo.r@gmail.com', name: 'Mateo', avatar: '🐼', access: true },
+    { email: 'sofia@mi.unc.edu.ar', name: 'Sofía', avatar: '🐸', access: true },
+    { email: 'tomas.p@gmail.com', name: 'Tomás', avatar: '🐨', access: false },
+    { email: 'valen@mi.unc.edu.ar', name: 'Valentina', avatar: '🦁', access: true },
+    { email: 'joaquin@outlook.com', name: null, avatar: null, access: true },
+  ],
+});
+
+let v = fresh();
+
+const shown = () => v.users
+  .filter((u) => v.filter === 'all' || (v.filter === 'on' ? u.access : !u.access))
+  .filter((u) => `${u.name ?? ''} ${u.email}`.toLowerCase().includes(v.query.trim().toLowerCase()));
+
+const row = (u) => `
+  <div class="user">
+    <span class="face ${u.avatar ? '' : 'none'}">${u.avatar ?? '?'}</span>
+    <div class="grow">${u.name == null ? '<b class="placeholder">Sin nombre</b>' : `<b>${u.name}</b>`}${u.admin ? '<span class="role">Profe</span>' : ''}<small>${u.email}</small></div>
+    ${u.admin ? '' : `<button class="switch" data-access="${u.email}">${u.access ? 'Con acceso' : 'Sin acceso'} <span class="knob ${u.access ? 'on' : ''}"></span></button>`}
+  </div>`;
+
+const modal = () => v.adding ? `
+  <div class="scrim" data-shut>
+    <div class="modal" data-stay>
+      <h3>Agregar por email</h3>
+      <label class="field">Email<input data-newemail placeholder="nombre@mail.com" value="${v.newEmail}"></label>
+      <div class="actions"><button class="btn" data-shut>Cancelar</button><button class="btn dark" data-add ${v.newEmail.includes('@') ? '' : 'disabled'}>Agregar</button></div>
+    </div>
+  </div>` : v.confirm === 'regen' ? `
+  <div class="scrim" data-noconfirm>
+    <div class="modal" data-stay>
+      <h3>¿Regenerar el código de registro?</h3>
+      <p>El código ${v.code} y su QR dejan de servir.</p>
+      <div class="actions"><button class="btn" data-noconfirm>Cancelar</button><button class="btn danger solid" data-yes>Regenerar</button></div>
+    </div>
+  </div>` : v.confirm ? `
+  <div class="scrim" data-noconfirm>
+    <div class="modal" data-stay>
+      <h3>¿Sacarle el acceso a ${v.users.find((u) => u.email === v.confirm)?.name ?? v.confirm}?</h3>
+      <p>No va a poder entrar al aula hasta que le vuelvas a dar acceso.</p>
+      <div class="actions"><button class="btn" data-noconfirm>Cancelar</button><button class="btn danger solid" data-yes>Sacar acceso</button></div>
+    </div>
+  </div>` : '';
+
+const app = () => {
+  const counts = { all: v.users.length, on: v.users.filter((u) => u.access).length, off: v.users.filter((u) => !u.access).length };
+
+  return `
+  <div class="app ${v.dark ? 'dark' : ''}">
+    <div class="top"><button class="back" title="Volver a las sesiones">${ic('arrow-left', 22)}</button><h1>Usuarios</h1><span class="avatar">🦉</span></div>
+    <div class="page">
+      <div class="bar">
+        <div class="search">${ic('search', 18)}<input data-query placeholder="Buscar por nombre o email" value="${v.query}"></div>
+        <button class="btn" data-qr>${ic('scan', 16)} QR de registro</button>
+        <button class="btn dark" data-adding>${ic('plus', 16)} Agregar por email</button>
+      </div>
+      <div class="filters">${[['all', 'Todos'], ['on', 'Con acceso'], ['off', 'Sin acceso']].map(([k, l]) => `<button class="pt ${v.filter === k ? 'on' : ''}" data-filter="${k}">${l} (${counts[k]})</button>`).join('')}</div>
+      <div class="list">${shown().map(row).join('') || '<div class="empty">Nadie coincide con la búsqueda.</div>'}</div>
+    </div>
+    ${qrModal()}
+    ${modal()}
+  </div>`;
+};
+
+const render = () => {
+  const root = document.getElementById('users');
+
+  root.querySelector('.strip').innerHTML = `<button data-dark class="${v.dark ? 'on' : ''}">Dark</button><button data-reset>Reiniciar</button>`;
+  root.querySelector('.stagewrap').innerHTML = app();
+};
+
+const root = document.getElementById('users');
+
+root.addEventListener('input', (e) => {
+  if (e.target.matches('[data-query]')) {
+    v.query = e.target.value;
+    root.querySelector('.list').innerHTML = shown().map(row).join('') || '<div class="empty">Nadie coincide con la búsqueda.</div>';
+  } else if (e.target.matches('[data-newemail]')) {
+    v.newEmail = e.target.value.trim();
+    root.querySelector('[data-add]').disabled = !v.newEmail.includes('@');
+  }
+});
+
+root.addEventListener('click', (e) => {
+  const t = e.target.closest('button, [data-shut], [data-noconfirm], [data-qrclose], [data-stay]');
+
+  if (t == null || t.disabled || (t.hasAttribute('data-stay') && !t.matches('button'))) {
+    return;
+  }
+
+  const d = t.dataset;
+  const user = (email) => v.users.find((u) => u.email === email);
+
+  if (t.hasAttribute('data-qr')) {
+    v.qr = true;
+  } else if (t.hasAttribute('data-qrclose')) {
+    v.qr = false;
+  } else if (d.access) {
+    if (user(d.access).access) {
+      v.confirm = d.access;
+    } else {
+      user(d.access).access = true;
+    }
+  } else if (t.hasAttribute('data-regen')) {
+    v.confirm = 'regen';
+  } else if (t.hasAttribute('data-yes')) {
+    if (v.confirm === 'regen') {
+      v.code = newCode();
+    } else {
+      user(v.confirm).access = false;
+    }
+
+    v.confirm = null;
+  } else if (t.hasAttribute('data-noconfirm')) {
+    v.confirm = null;
+  } else if (d.filter) {
+    v.filter = d.filter;
+  } else if (t.hasAttribute('data-adding')) {
+    Object.assign(v, { adding: true, newEmail: '' });
+  } else if (t.hasAttribute('data-shut')) {
+    v.adding = false;
+  } else if (t.hasAttribute('data-add')) {
+    v.users = [...v.users, { email: v.newEmail, name: null, avatar: null, access: true }];
+    v.adding = false;
+  } else if (t.hasAttribute('data-dark')) {
+    v.dark = !v.dark;
+  } else if (t.hasAttribute('data-reset')) {
+    v = fresh();
+  } else {
+    return;
+  }
+
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
