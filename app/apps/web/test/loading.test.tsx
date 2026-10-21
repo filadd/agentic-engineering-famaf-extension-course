@@ -11,6 +11,7 @@ import { heldResponse } from "./helpers/held-response.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
 import { realClassroom, studentClassroom } from "./helpers/student-classroom.ts";
+import { tabNames } from "./helpers/tab-names.ts";
 import { teacherSession } from "./helpers/teacher-session.ts";
 
 const skeletons = () => [...document.querySelectorAll<HTMLElement>('[aria-busy="true"]')];
@@ -18,11 +19,6 @@ const skeletons = () => [...document.querySelectorAll<HTMLElement>('[aria-busy="
 // Two retries a second and two seconds apart, then the failure reaches the
 // screen.
 const retriesRunOut = () => vi.advanceTimersByTimeAsync(4000);
-
-const tabNames = (container: HTMLElement) =>
-  within(container)
-    .getAllByRole("tab")
-    .map((tab) => tab.textContent);
 
 const filterNames = () => tabNames(screen.getByRole("tablist", { name: "Filtrar por acceso" }));
 

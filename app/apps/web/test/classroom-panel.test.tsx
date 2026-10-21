@@ -7,6 +7,7 @@ import { classroomSocket } from "./helpers/classroom-socket.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
 import { realClassroom, studentClassroom } from "./helpers/student-classroom.ts";
+import { tabNames } from "./helpers/tab-names.ts";
 import { desktopViewport, phoneViewport } from "./helpers/viewport.ts";
 
 const storedUi = () => JSON.parse(localStorage.getItem("kurasu:classroom") ?? "null");
@@ -72,13 +73,12 @@ describe("/aula panel", () => {
 
     await enter();
 
-    const tabs = screen.getByRole("tablist", { name: "Pestañas del panel" });
-
-    expect(
-      within(tabs)
-        .getAllByRole("tab")
-        .map((tab) => tab.textContent),
-    ).toEqual(["Encuestas", "Preguntas", "Material", "Presentes"]);
+    expect(tabNames(screen.getByRole("tablist", { name: "Pestañas del panel" }))).toEqual([
+      "Encuestas",
+      "Preguntas",
+      "Material",
+      "Presentes",
+    ]);
     expect(screen.queryByRole("button", { name: "Ocultar el panel" })).toBeNull();
     expect(screen.queryByRole("button", { name: /Presentes \(/ })).toBeNull();
     expect((await screen.findByRole("button", { name: "Levantar la mano" })).textContent).toBe("");

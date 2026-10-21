@@ -5,7 +5,7 @@ import { Route as rootRoute } from "../src/routes/__root.tsx";
 import { planning, sessionDetail } from "./fixtures/content.ts";
 import { student } from "./fixtures/people.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
-import { studentClassroom } from "./helpers/student-classroom.ts";
+import { realClassroom, studentClassroom } from "./helpers/student-classroom.ts";
 import { server } from "./helpers/server.ts";
 import { teacherSession } from "./helpers/teacher-session.ts";
 
@@ -38,7 +38,7 @@ describe("the brand", () => {
 
     const { router, user } = await renderRoute("/aula");
 
-    await screen.findByRole("heading", { level: 1, name: planning.title });
+    await realClassroom(planning);
     await user.click(await screen.findByRole("link", { name: "Ir al inicio" }));
 
     await waitFor(() => expect(router.state.location.pathname).toBe("/"));
