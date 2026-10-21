@@ -2,6 +2,7 @@ import type { Material } from "@kurasu/contract/materials";
 import type { Poll } from "@kurasu/contract/polls";
 import type { RaisedHandSummary } from "@kurasu/contract/raised-hands";
 import type { Session } from "@kurasu/contract/sessions";
+import { screen } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 
 import { material } from "../fixtures/content.ts";
@@ -51,3 +52,8 @@ export const studentClassroom = ({
     getJson("/raised-hands", hands),
   ];
 };
+
+// The panel already shows while the classroom is in skeleton, so a test that
+// works the panel waits for the session's title, which only the real one has.
+export const realClassroom = (session: Pick<Session, "title">) =>
+  screen.findByRole("heading", { level: 1, name: session.title });

@@ -19,7 +19,7 @@ import { failingRoute } from "./helpers/failing-route.ts";
 import { heldResponse } from "./helpers/held-response.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
-import { studentClassroom } from "./helpers/student-classroom.ts";
+import { realClassroom, studentClassroom } from "./helpers/student-classroom.ts";
 import { voteHandler } from "./helpers/vote-handlers.ts";
 
 const choice = choicePoll(planning.id);
@@ -38,7 +38,10 @@ const enter = async (activePolls: ReadonlyArray<Poll>, closedPolls: ReadonlyArra
   );
 
   const { user } = await renderRoute("/aula");
-  const panel = await screen.findByRole("tabpanel");
+
+  await realClassroom(planning);
+
+  const panel = screen.getByRole("tabpanel");
 
   return { user, panel };
 };

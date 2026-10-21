@@ -6,7 +6,7 @@ import { student, teacher } from "./fixtures/people.ts";
 import { classroomSocket } from "./helpers/classroom-socket.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
-import { studentClassroom } from "./helpers/student-classroom.ts";
+import { realClassroom, studentClassroom } from "./helpers/student-classroom.ts";
 import { desktopViewport, phoneViewport } from "./helpers/viewport.ts";
 
 const storedUi = () => JSON.parse(localStorage.getItem("kurasu:classroom") ?? "null");
@@ -19,7 +19,7 @@ const enter = async (options: Partial<Parameters<typeof studentClassroom>[0]> = 
 
   const rendered = await renderRoute("/aula");
 
-  await screen.findByRole("complementary", { name: "Panel del aula" });
+  await realClassroom(planning);
 
   return rendered;
 };

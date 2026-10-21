@@ -129,7 +129,7 @@
     visibility: hidden;
   }
 
-  .skeleton :is(.skeleton-block, .main-button, .pill-button, .icon-button, [role="tab"]) {
+  .skeleton :is(.skeleton-block, .main-button, .pill-button, .icon-button) {
     @apply animate-pulse;
     visibility: visible;
     color: transparent !important;

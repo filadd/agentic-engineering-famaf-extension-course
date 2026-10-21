@@ -5,6 +5,7 @@ import { afterEach, describe, expect, test, vi } from "vitest";
 import { planning, sessionDetail, tooling, vibeCoding } from "./fixtures/content.ts";
 import { student, teacher } from "./fixtures/people.ts";
 import { getJson, url } from "./helpers/api.ts";
+import { classroomSocket } from "./helpers/classroom-socket.ts";
 import { failingRoute } from "./helpers/failing-route.ts";
 import { heldResponse } from "./helpers/held-response.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
@@ -17,6 +18,27 @@ const skeletons = () => [...document.querySelectorAll<HTMLElement>('[aria-busy="
 // Two retries a second and two seconds apart, then the failure reaches the
 // screen.
 const retriesRunOut = () => vi.advanceTimersByTimeAsync(4000);
+
+const panelTabs = (panel: HTMLElement) =>
+  within(panel)
+    .getAllByRole("tab")
+    .map((tab) => tab.textContent);
+
+// The buttons right of the slide's position, read from the slide's skeleton,
+// which hides them from the roles.
+const slideControls = () => {
+  const stage =
+    skeletons().find(
+      (skeleton) =>
+        within(skeleton).queryByRole("button", { name: "Siguiente", hidden: true }) != null,
+    ) ?? document.body;
+
+  const buttons = within(stage).getAllByRole("button", { hidden: true });
+
+  return buttons
+    .slice(buttons.findIndex((button) => button.getAttribute("aria-label") === "Siguiente") + 1)
+    .map((button) => button.getAttribute("aria-label") ?? button.textContent);
+};
 
 const errorScreen = () => screen.findByRole("heading", { name: "No se pudo cargar la página" });
 
@@ -78,7 +100,7 @@ describe("loading a screen", () => {
     users.release(HttpResponse.json([]));
   });
 
-  test("the classroom shows in skeleton while the list of sessions has not answered, then the real one", async () => {
+  test("the classroom shows in skeleton while the list of sessions has not answered, with the panel's tabs fixed, then the real one", async () => {
     const session = sessionDetail(planning);
     const sessions = heldResponse("get", "/sessions");
 
@@ -90,12 +112,13 @@ describe("loading a screen", () => {
 
     expect(screen.getByRole("link", { name: "Volver a las sesiones" })).toBeTruthy();
     expect(title.querySelector('[aria-busy="true"]')).not.toBeNull();
-    expect(screen.queryByRole("complementary", { name: "Panel del aula" })).toBeNull();
     expect(screen.queryByTitle("Slides")).toBeNull();
+    expect(slideControls()).toEqual(["Siguiendo al profe", "Levantar la mano"]);
 
-    const skeletonRoots = skeletons().map((skeleton) => skeleton.firstElementChild?.tagName);
+    const panel = screen.getByRole("complementary", { name: "Panel del aula" });
 
-    expect(skeletonRoots).toEqual(expect.arrayContaining(["SPAN", "DIV", "ASIDE"]));
+    expect(panelTabs(panel)).toEqual(["Encuestas", "Preguntas", "Material"]);
+    expect(within(panel).getByRole("tabpanel").querySelector('[aria-busy="true"]')).not.toBeNull();
 
     const { currentSlide: _slide, currentStep: _step, ...summary } = session;
 
@@ -104,6 +127,27 @@ describe("loading a screen", () => {
     expect(await screen.findByRole("heading", { level: 1, name: planning.title })).toBeTruthy();
     expect(await screen.findByTitle("Slides")).toBeTruthy();
     expect(screen.getByRole("complementary", { name: "Panel del aula" })).toBeTruthy();
+  });
+
+  test("while the session loads, the slide's skeleton has the controls of the real one: following the teacher only when the teacher is in", async () => {
+    const session = sessionDetail(planning);
+    const detail = heldResponse("get", `/sessions/${session.id}`);
+    const socket = classroomSocket({ people: [{ ...teacher, role: "teacher" }] });
+
+    server.use(detail.handler, socket.handler, ...studentClassroom({ session }));
+
+    await renderRoute("/aula");
+
+    await waitFor(() =>
+      expect(slideControls()).toEqual(["Siguiendo al profe", "Levantar la mano"]),
+    );
+
+    socket.send({ type: "presence", people: [{ ...student, role: "student" }] });
+
+    await waitFor(() => expect(slideControls()).toEqual(["Levantar la mano"]));
+    expect(screen.queryByRole("heading", { level: 1, name: planning.title })).toBeNull();
+
+    detail.release(HttpResponse.json(session));
   });
 
   test("the cards replace the skeleton once the data arrives", async () => {

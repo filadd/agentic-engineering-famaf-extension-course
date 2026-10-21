@@ -11,7 +11,7 @@ import { heldResponse } from "./helpers/held-response.ts";
 import { questionStore } from "./helpers/question-store.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
-import { studentClassroom } from "./helpers/student-classroom.ts";
+import { realClassroom, studentClassroom } from "./helpers/student-classroom.ts";
 
 const enter = async (tab: string, ...handlers: Array<RequestHandler | WebSocketHandler>) => {
   const socket = classroomSocket({ people: [teacher, student] });
@@ -24,6 +24,7 @@ const enter = async (tab: string, ...handlers: Array<RequestHandler | WebSocketH
 
   const { user } = await renderRoute("/aula");
 
+  await realClassroom(planning);
   await user.click(await screen.findByRole("tab", { name: tab }));
 
   return { user, socket, panel: screen.getByRole("tabpanel") };
