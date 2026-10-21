@@ -19,8 +19,8 @@ import { sessionExamples } from "../sessions/session-examples.ts";
 import { useSession } from "../sessions/useSession.ts";
 import { ClassroomLayout } from "./ClassroomLayout.tsx";
 import { ClassroomPanel } from "./ClassroomPanel.tsx";
-import { FollowTeacherToggle } from "./FollowTeacherToggle.tsx";
 import { SlideStageSkeleton } from "./SlideStageSkeleton.tsx";
+import { StudentSlideControls } from "./StudentSlideControls.tsx";
 import { StudentSlides } from "./StudentSlides.tsx";
 import { useClassroom } from "./useClassroom.ts";
 
@@ -77,14 +77,12 @@ export const StudentClassroom = ({ sessionId }: Props) => {
         session.data == null ? (
           <SlideStageSkeleton
             controls={
-              <>
-                {classroom.teacherPresent ? (
-                  <FollowTeacherToggle following onToggle={() => undefined} />
-                ) : (
-                  <span className="ml-auto" />
-                )}
-                <HandButton sessionId={sessionId} />
-              </>
+              <StudentSlideControls
+                teacherPresent={classroom.teacherPresent}
+                following
+                onToggle={() => undefined}
+                hand={<HandButton sessionId={sessionId} />}
+              />
             }
           />
         ) : (

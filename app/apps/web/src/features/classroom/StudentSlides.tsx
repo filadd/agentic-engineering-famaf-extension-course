@@ -6,9 +6,9 @@ import { useState } from "react";
 import { HandButton } from "../hands/HandButton.tsx";
 import { useMaterials } from "../materials/useMaterials.ts";
 import { useSlidesMaterial } from "../materials/useSlidesMaterial.ts";
-import { FollowTeacherToggle } from "./FollowTeacherToggle.tsx";
 import { SlideStage } from "./SlideStage.tsx";
 import { SlideStageSkeleton } from "./SlideStageSkeleton.tsx";
+import { StudentSlideControls } from "./StudentSlideControls.tsx";
 
 interface Props {
   session: Session;
@@ -35,20 +35,15 @@ export const StudentSlides = ({ session, teacherPresent }: Props) => {
   const position = teacherPresent && following ? teacherPosition : ownPosition;
 
   const controls = (
-    <>
-      {teacherPresent ? (
-        <FollowTeacherToggle
-          following={following}
-          onToggle={() => {
-            setOwn({ slidesId: slides?.id ?? "", position });
-            setFollowing(!following);
-          }}
-        />
-      ) : (
-        <span className="ml-auto" />
-      )}
-      <HandButton sessionId={session.id} />
-    </>
+    <StudentSlideControls
+      teacherPresent={teacherPresent}
+      following={following}
+      onToggle={() => {
+        setOwn({ slidesId: slides?.id ?? "", position });
+        setFollowing(!following);
+      }}
+      hand={<HandButton sessionId={session.id} />}
+    />
   );
 
   return materials.data == null || (slides != null && slides.html == null) ? (

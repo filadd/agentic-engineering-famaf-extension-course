@@ -16,8 +16,8 @@ import { VoteCount } from "../questions/VoteCount.tsx";
 import { sessionExamples } from "../sessions/session-examples.ts";
 import { ClassroomLayout } from "./ClassroomLayout.tsx";
 import { ClassroomPanel } from "./ClassroomPanel.tsx";
-import { FollowTeacherToggle } from "./FollowTeacherToggle.tsx";
 import { SlideStageSkeleton } from "./SlideStageSkeleton.tsx";
+import { StudentSlideControls } from "./StudentSlideControls.tsx";
 
 // The student's classroom while the web does not know the session yet. Its
 // parts take no session, so it asks the API for nothing. The panel's tabs are
@@ -37,13 +37,17 @@ export const StudentClassroomSkeleton = () => (
     stage={
       <SlideStageSkeleton
         controls={
-          <>
-            <FollowTeacherToggle following onToggle={() => undefined} />
-            <Button variant="pill">
-              <Icon name="hand" size={18} />
-              <span className="max-[600px]:hidden">Levantar la mano</span>
-            </Button>
-          </>
+          <StudentSlideControls
+            teacherPresent
+            following
+            onToggle={() => undefined}
+            hand={
+              <Button variant="pill">
+                <Icon name="hand" size={18} />
+                <span className="max-[600px]:hidden">Levantar la mano</span>
+              </Button>
+            }
+          />
         }
       />
     }
