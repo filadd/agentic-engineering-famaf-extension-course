@@ -5,7 +5,7 @@ import { AppHeader } from "../../../features/me/AppHeader.tsx";
 import { BackButton } from "../../../features/me/BackButton.tsx";
 import { plainText } from "../../../features/me/plain-text.ts";
 import { AccessFilter } from "../../../features/users/AccessFilter.tsx";
-import { passesFilter } from "../../../features/users/access-filter.ts";
+import { accessCounts, passesFilter } from "../../../features/users/access-filter.ts";
 import type { AccessFilterId } from "../../../features/users/access-filter.ts";
 import { AddUserForm } from "../../../features/users/AddUserForm.tsx";
 import { EnrollmentQr } from "../../../features/users/EnrollmentQr.tsx";
@@ -56,7 +56,11 @@ const UsersRoute = () => {
             Agregar por email
           </Button>
         </div>
-        <AccessFilter users={users.data} value={filter} onChange={setFilter} />
+        <AccessFilter
+          counts={users.data == null ? undefined : accessCounts(users.data)}
+          value={filter}
+          onChange={setFilter}
+        />
         {users.data != null && shown.length === 0 ? <UserSearchEmpty /> : null}
         {users.data == null ? (
           <SkeletonOf>

@@ -1,28 +1,25 @@
-import type { User } from "@kurasu/contract/user";
-
 import { Tabs } from "../../ui/Tabs.tsx";
-import { accessFilters, passesFilter } from "./access-filter.ts";
+import { accessFilters } from "./access-filter.ts";
 import type { AccessFilterId } from "./access-filter.ts";
 
 interface Props {
-  users: ReadonlyArray<User> | undefined;
+  counts: Record<AccessFilterId, number> | undefined;
   value: AccessFilterId;
   onChange: (filter: AccessFilterId) => void;
 }
 
 const ids: ReadonlyArray<AccessFilterId> = ["all", "on", "off"];
 
-export const AccessFilter = ({ users, value, onChange }: Props) => (
+// Until the users arrive there are no counts, so the tabs never claim zero.
+export const AccessFilter = ({ counts, value, onChange }: Props) => (
   <Tabs
     label="Filtrar por acceso"
     value={value}
     onChange={onChange}
     className="mt-3.5"
-    tabs={ids.map((id) => {
-      // Until the users arrive the tabs show no count, so they never claim zero.
-      const count = users?.filter((user) => passesFilter(user, id)).length;
-
-      return { id, label: count == null ? accessFilters[id] : `${accessFilters[id]} (${count})` };
-    })}
+    tabs={ids.map((id) => ({
+      id,
+      label: counts == null ? accessFilters[id] : `${accessFilters[id]} (${counts[id]})`,
+    }))}
   />
 );
