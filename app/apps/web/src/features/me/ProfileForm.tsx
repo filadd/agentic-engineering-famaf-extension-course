@@ -1,10 +1,10 @@
+import type { ProfileInput } from "@kurasu/contract/me";
 import type { Animal, Me } from "@kurasu/contract/user";
 import { useState } from "react";
 import type { ReactNode } from "react";
 
 import { InlineError } from "../../ui/InlineError.tsx";
 import { AvatarPicker } from "./AvatarPicker.tsx";
-import type { useUpdateProfile } from "./useUpdateProfile.ts";
 
 export interface ProfileDraft {
   name: string;
@@ -15,13 +15,23 @@ export interface ProfileDraft {
 
 interface Props {
   me: Me;
-  save: ReturnType<typeof useUpdateProfile>;
+  onSave: (profile: ProfileInput) => void;
+  isSaving: boolean;
+  isError: boolean;
   nameLabel: string;
   namePlaceholder?: string;
   renderActions: (draft: ProfileDraft) => ReactNode;
 }
 
-export const ProfileForm = ({ me, save, nameLabel, namePlaceholder, renderActions }: Props) => {
+export const ProfileForm = ({
+  me,
+  onSave,
+  isSaving,
+  isError,
+  nameLabel,
+  namePlaceholder,
+  renderActions,
+}: Props) => {
   const [name, setName] = useState(me.name ?? "");
   const [avatar, setAvatar] = useState(me.avatar);
 
@@ -33,7 +43,7 @@ export const ProfileForm = ({ me, save, nameLabel, namePlaceholder, renderAction
         event.preventDefault();
 
         if (canSave) {
-          save.mutate({ name: name.trim(), avatar });
+          onSave({ name: name.trim(), avatar });
         }
       }}
     >
@@ -49,10 +59,10 @@ export const ProfileForm = ({ me, save, nameLabel, namePlaceholder, renderAction
       </label>
       <div className="mt-5 text-sm font-bold">Tu avatar</div>
       <AvatarPicker value={avatar} onChange={setAvatar} />
-      {save.isError ? (
+      {isError ? (
         <InlineError className="mt-4">No se pudo guardar tu perfil. Probá de nuevo.</InlineError>
       ) : null}
-      {renderActions({ name, avatar, canSave, saving: save.isPending })}
+      {renderActions({ name, avatar, canSave, saving: isSaving })}
     </form>
   );
 };

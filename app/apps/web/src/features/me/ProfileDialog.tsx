@@ -24,7 +24,9 @@ export const ProfileDialog = ({ me, open, onClose }: Props) => {
       <ProfileForm
         me={me}
         nameLabel="Nombre"
-        save={save}
+        onSave={(profile) => save.mutate(profile)}
+        isSaving={save.isPending}
+        isError={save.isError}
         renderActions={(draft) => (
           <div className="mt-3.5 flex justify-end gap-2">
             <Button variant="pill" disabled={draft.saving} onClick={onClose}>

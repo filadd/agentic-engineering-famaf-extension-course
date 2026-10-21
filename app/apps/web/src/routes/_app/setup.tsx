@@ -15,7 +15,7 @@ const SetupRoute = () => {
   const navigate = useNavigate();
   const save = useUpdateProfile({ onSuccess: () => navigate({ to: "/" }) });
 
-  const profile = (shown: Me) => (
+  const renderProfile = (shown: Me) => (
     <>
       <span className="mt-2.5 inline-flex max-w-full items-center gap-2 rounded-full bg-side px-3 py-1 text-sm text-muted">
         <Icon name="mail" size={16} />
@@ -25,7 +25,9 @@ const SetupRoute = () => {
         me={shown}
         nameLabel="Tu nombre"
         namePlaceholder="Cómo querés que te vean en el aula"
-        save={save}
+        onSave={(profile) => save.mutate(profile)}
+        isSaving={save.isPending}
+        isError={save.isError}
         renderActions={(draft) => (
           <div>
             <ProfilePreview name={draft.name} avatar={draft.avatar} />
@@ -54,10 +56,10 @@ const SetupRoute = () => {
         <h1 className="text-[30px] font-bold max-[600px]:text-[26px]">Completá tu perfil</h1>
         {me.data == null ? (
           <SkeletonOf>
-            <div className="skeleton-block">{profile(meExample)}</div>
+            <div className="skeleton-block">{renderProfile(meExample)}</div>
           </SkeletonOf>
         ) : (
-          profile(me.data)
+          renderProfile(me.data)
         )}
       </div>
     </main>
