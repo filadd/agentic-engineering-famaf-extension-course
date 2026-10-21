@@ -56,7 +56,7 @@ const UsersRoute = () => {
             Agregar por email
           </Button>
         </div>
-        <AccessFilter users={all} value={filter} onChange={setFilter} />
+        <AccessFilter users={users.data} value={filter} onChange={setFilter} />
         {users.data != null && shown.length === 0 ? <UserSearchEmpty /> : null}
         {users.data == null ? (
           <SkeletonOf>

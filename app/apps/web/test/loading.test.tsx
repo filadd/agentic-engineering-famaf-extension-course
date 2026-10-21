@@ -19,6 +19,11 @@ const skeletons = () => [...document.querySelectorAll<HTMLElement>('[aria-busy="
 // screen.
 const retriesRunOut = () => vi.advanceTimersByTimeAsync(4000);
 
+const filterNames = () =>
+  within(screen.getByRole("tablist", { name: "Filtrar por acceso" }))
+    .getAllByRole("tab")
+    .map((tab) => tab.textContent);
+
 const panelTabs = (panel: HTMLElement) =>
   within(panel)
     .getAllByRole("tab")
@@ -79,7 +84,7 @@ describe("loading a screen", () => {
     sessions.release(HttpResponse.json([vibeCoding, planning, tooling]));
   });
 
-  test("the users page draws the search and its buttons at once and the list as skeleton rows", async () => {
+  test("the users page draws the search, its buttons and the filters without counts at once and the list as skeleton rows", async () => {
     const users = heldResponse("get", "/admin/users");
 
     server.use(users.handler, getJson("/me", teacher));
@@ -96,8 +101,13 @@ describe("loading a screen", () => {
 
     expect(list.hasAttribute("inert")).toBe(true);
     expect(within(list).getAllByRole("listitem", { hidden: true })).toHaveLength(4);
+    expect(filterNames()).toEqual(["Todos", "Con acceso", "Sin acceso"]);
 
     users.release(HttpResponse.json([]));
+
+    await waitFor(() =>
+      expect(filterNames()).toEqual(["Todos (0)", "Con acceso (0)", "Sin acceso (0)"]),
+    );
   });
 
   test("the classroom shows in skeleton while the list of sessions has not answered, with the panel's tabs fixed, then the real one", async () => {
