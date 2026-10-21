@@ -8,7 +8,7 @@ created: "2026-10-18"
 
 ## 🔭 Resumen
 
-Todo corre en Cloudflare. La web corre en el navegador. Las vistas del estudiante son responsive y las del admin son de escritorio; las dos comparten el header y el menú. La API es un Worker que atiende todos los pedidos de la web y revisa el acceso en cada uno. Cada sesión tiene un aula, un Durable Object que avisa al instante los cambios a quienes están conectados. Los datos viven en D1, los archivos del material en R2, y los magic links salen por Email Sending.
+Todo corre en Cloudflare. La web corre en el navegador. Las vistas del estudiante son responsive y las del admin son de escritorio; las dos comparten el header y el menú. La API es un Worker que atiende todos los pedidos de la web y revisa el acceso en cada uno. Cada sesión tiene un aula, un Durable Object que avisa al instante los cambios a quienes están conectados. Los datos viven en D1, los archivos del material en R2, y los magic links y los anuncios de novedades salen por Email Sending.
 
 ## 🏗️ Cómo se conectan las piezas
 
@@ -37,7 +37,7 @@ flowchart LR
     Api -->|"avisa cambios"| Aula
     Api --> DB
     Api -->|"sube y baja material"| Files
-    Api -->|"magic link"| Mail
+    Api -->|"magic link y anuncio"| Mail
 
     classDef grey fill:#f3f4f6,stroke:#4b5563,color:#1f2937
     classDef blue fill:#dbeafe,stroke:#2563eb,color:#1f2937
@@ -67,7 +67,7 @@ Cada pantalla se dibuja con sus partes fijas mientras cargan sus datos, y cada a
 
 ### ⚙️ API
 
-La API es un Worker que atiende todos los pedidos de la web. Cada pedido lleva la cookie con el login, que dura una semana desde que se entra. En cada pedido, la API revisa que el usuario tenga acceso. Si no lo tiene, devuelve un error propio y la web manda al usuario al login (ver [login y acceso](login-y-acceso.md)). Guarda los datos en D1 con el [modelo de datos](modelo-de-datos.md), sube y baja los archivos del material en R2, y manda los magic links con Email Sending.
+La API es un Worker que atiende todos los pedidos de la web. Cada pedido lleva la cookie con el login, que dura una semana desde que se entra. En cada pedido, la API revisa que el usuario tenga acceso. Si no lo tiene, devuelve un error propio y la web manda al usuario al login (ver [login y acceso](login-y-acceso.md)). Guarda los datos en D1 con el [modelo de datos](modelo-de-datos.md), sube y baja los archivos del material en R2, y manda los magic links y los anuncios con Email Sending. Un servicio de novedades dentro de la API registra las novedades pendientes de cada sesión después de guardar los cambios que las crean o las sacan, y la API manda el anuncio que el profe arma con ellas (ver [novedades por mail](novedades-por-mail.md)).
 
 ### 🏫 Aula
 
@@ -75,10 +75,10 @@ El aula de cada sesión es un Durable Object. Mientras el usuario está en el au
 
 ### ✉️ Email Sending
 
-Email Sending manda el mail con el magic link del registro y del login, desde `no-reply@kurasu.asermax.com`. Un usuario solo entra a la app con el link de ese mail.
+Email Sending manda el mail con el magic link del registro y del login, desde `no-reply@kurasu.asermax.com`. Un usuario solo entra a la app con el link de ese mail. Desde la misma dirección manda también el anuncio de novedades que el profe envía desde el admin de una sesión, en tandas de hasta 50 direcciones por mail (ver [novedades por mail](novedades-por-mail.md)).
 
 > [!WARNING] Email Sending tiene requisitos propios
-> Email Sending está en beta, necesita el plan pago de Workers y que el dominio esté en el DNS de Cloudflare. Sin eso no sale ningún mail, y nadie puede registrarse ni entrar.
+> Email Sending está en beta, necesita el plan pago de Workers y que el dominio esté en el DNS de Cloudflare. Sin eso no sale ningún mail: nadie puede registrarse ni entrar, y el profe no puede mandar anuncios.
 
 ## 🐦‍⬛ Marca del cuervo
 
@@ -94,4 +94,4 @@ El estado queda en el navegador: quien entra después en la misma computadora lo
 
 ---
 
-Related: [modelo de datos](modelo-de-datos.md), [login y acceso](login-y-acceso.md), [tiempo real del aula](tiempo-real-del-aula.md), [API de las slides](api-de-las-slides.md), [carga y acciones de la web](carga-y-acciones-de-la-web.md)
+Related: [modelo de datos](modelo-de-datos.md), [login y acceso](login-y-acceso.md), [tiempo real del aula](tiempo-real-del-aula.md), [API de las slides](api-de-las-slides.md), [carga y acciones de la web](carga-y-acciones-de-la-web.md), [novedades por mail](novedades-por-mail.md)

@@ -45,6 +45,10 @@
 
   .page { flex: 1; overflow: auto; padding: 18px 32px 28px 86px; }
   .stack { display: flex; flex-direction: column; gap: 18px; max-width: 760px; }
+  /* Contenido is two columns: the session and its material on the left, the pending news on the right. */
+  .cols { display: flex; gap: 24px; align-items: flex-start; }
+  .cols > .stack { flex: 0 1 760px; min-width: 0; }
+  .right { display: flex; flex-direction: column; gap: 18px; flex: 1; min-width: 300px; }
   .card { background: #F8D0A0; color: #1F1B18; border-radius: 22px; padding: 22px; }
   .kicker { font-size: 14px; opacity: 0.75; }
   .field { display: block; margin-top: 12px; font-size: 13px; }
@@ -66,6 +70,32 @@
   .iconbtn { width: 34px; height: 34px; border-radius: 50%; border: 0; background: transparent; color: inherit; cursor: pointer; display: grid; place-items: center; position: relative; flex: none; }
   .iconbtn:hover { background: rgba(0, 0, 0, 0.06); }
   .note { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .btn:disabled, .iconbtn:disabled { opacity: 0.35; cursor: default; }
+  .btn.busy:disabled { opacity: 1; cursor: progress; }
+  .spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: spin 0.8s linear infinite; flex: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Pending news: one row per news item, with its checkbox and its trash button. */
+  .news { align-items: flex-start; }
+  .news .grow { min-width: 0; }
+  .news .nhead { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+  .news .nhead small { display: inline; }
+  .news b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cb { width: 18px; height: 18px; margin: 2px 0 0; accent-color: #1F1B18; cursor: pointer; flex: none; }
+  .sub { font-family: 'Rubik', sans-serif; font-weight: 500; font-size: 13px; color: var(--muted); margin: 16px 0 8px; }
+  .actions .note { margin: 0 auto 0 0; }
+  .right .btn, .modal .btn { white-space: nowrap; }
+  .modal .field textarea { border: 1.5px solid var(--line); }
+  .modal .field textarea:disabled { opacity: 0.6; }
+  .modal .file { border: 1.5px solid var(--line); padding: 8px 12px; }
+
+  .toasts { position: absolute; bottom: 24px; right: 24px; z-index: 11; display: flex; flex-direction: column; gap: 10px; width: 420px; }
+  .toast { display: flex; align-items: flex-start; gap: 10px; background: #fff; color: #1F1B18; border-radius: 18px; padding: 12px 8px 12px 14px; font-size: 15px; line-height: 1.4; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18); }
+  .toast > .i { color: #2F7D5B; margin-top: 1px; }
+  .toast .text { flex: 1; padding-top: 1px; }
+  .toast .iconbtn { margin: -6px 0; }
+  .toast.enter { animation: rise 0.28s ease-out; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
 
   /* Polls: every card folds; active ones start open. */
   .poll { background: #fff; color: #1F1B18; border-radius: 16px; margin-bottom: 10px; }
@@ -148,7 +178,7 @@
 <body>
 <div class="intro">
   <h1>Admin de la sesión · profe</h1>
-  <p>Tres pestañas: Contenido, Encuestas y Aula. El switch de habilitar está en la card de la sesión. Subir un archivo abre un modal; si el archivo es HTML se puede marcar como slides del aula. Cada encuesta se expande con un click y las activas arrancan abiertas. La pestaña Aula es la slide grande con el panel del estudiante, que para el profe no se oculta, y las slides se abren en otra pestaña para presentar. Desde el panel del aula también se activan, cierran y borran encuestas; una encuesta se borra en cualquier estado, y borrar una encuesta o un material pide confirmación. El profe baja una mano tocándola y marca una pregunta como respondida. Fuera de la pestaña Aula, esa pestaña muestra los badges de preguntas nuevas y de manos levantadas. Si el HTML marcado como slides no respeta la API de las slides, el modal de subida muestra un error y el archivo no queda como slides. La barra simula a un estudiante que levanta la mano o hace una pregunta.</p>
+  <p>Tres pestañas: Contenido, Encuestas y Aula. El switch de habilitar está en la card de la sesión. Subir un archivo abre un modal; si el archivo es HTML se puede marcar como slides del aula. Cada encuesta se expande con un click y las activas arrancan abiertas. La pestaña Aula es la slide grande con el panel del estudiante, que para el profe no se oculta, y las slides se abren en otra pestaña para presentar. Desde el panel del aula también se activan, cierran y borran encuestas; una encuesta se borra en cualquier estado, y borrar una encuesta o un material pide confirmación. El profe baja una mano tocándola y marca una pregunta como respondida. Fuera de la pestaña Aula, esa pestaña muestra los badges de preguntas nuevas y de manos levantadas. Si el HTML marcado como slides no respeta la API de las slides, el modal de subida muestra un error y el archivo no queda como slides. En Contenido, la columna de la derecha lista las novedades pendientes de la sesión, de la más vieja a la más nueva: cada una se elige con su checkbox para el anuncio o se descarta con su tacho, que pide confirmación. "Redactar anuncio" abre el modal del anuncio, que arranca vacío; enviar necesita un mensaje o al menos una novedad elegida, y al salir el modal se cierra, las novedades incluidas salen de la lista y aparece un toast de éxito. Si el envío falla, el error aparece en el modal, que queda abierto. Con la sesión deshabilitada no se puede redactar el anuncio. Habilitar la sesión, subir o borrar material, y activar, cerrar o borrar una encuesta agregan o sacan su novedad. La barra simula a un estudiante que levanta la mano o hace una pregunta, y un envío que falla.</p>
 </div>
 <section class="alt" id="admin">
   <div class="strip"></div>
@@ -157,6 +187,11 @@
 
 <script>
 const ICONS = {"trash":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m18 9l-.84 8.398c-.127 1.273-.19 1.909-.48 2.39a2.5 2.5 0 0 1-1.075.973C15.098 21 14.46 21 13.18 21h-2.36c-1.279 0-1.918 0-2.425-.24a2.5 2.5 0 0 1-1.076-.973c-.288-.48-.352-1.116-.48-2.389L6 9m7.5 6.5v-5m-3 5v-5m-6-4h4.615m0 0l.386-2.672c.112-.486.516-.828.98-.828h3.038c.464 0 .867.342.98.828l.386 2.672m-5.77 0h5.77m0 0H19.5\"/></svg>","download":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4 16.004V17a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1M12 4.5v11m3.5-3.5L12 15.5L8.5 12\"/></svg>","upload":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4 16.004V17a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1m-8-.5v-11M15.5 8L12 4.5L8.5 8\"/></svg>","code":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m17.09 7.974l.23.23c1.789 1.79 2.684 2.684 2.684 3.796s-.895 2.006-2.684 3.796l-.23.23M13.876 5l-3.751 14M6.91 7.974l-.23.23C4.892 9.994 3.997 10.888 3.997 12s.895 2.006 2.685 3.796l.23.23\"/></svg>","file-text":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M9.478 3H7.25A2.25 2.25 0 0 0 5 5.25v13.5A2.25 2.25 0 0 0 7.25 21h9a2.25 2.25 0 0 0 2.25-2.25V12M9.478 3c1.243 0 2.272 1.007 2.272 2.25V7.5A2.25 2.25 0 0 0 14 9.75h2.25A2.25 2.25 0 0 1 18.5 12M9.478 3c3.69 0 9.022 5.36 9.022 9M9 16.5h6m-6-3h4\"/></svg>","x":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 6L6 18M6 6l12 12\"/></svg>","plus":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 12h-6m0 0H6m6 0V6m0 6v6\"/></svg>","chart-bar":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 21H9.4c-2.24 0-3.36 0-4.216-.436a4 4 0 0 1-1.748-1.748C3 17.96 3 16.84 3 14.6V3m4 13.5h5M7 12h10M7 7.5h7\"/></svg>","chevron-down":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m6 9l6 6l6-6\"/></svg>","hand":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\"><path d=\"M17.428 11.212v-4.5c0-2.213-3.572-2.35-3.572 0\"/><path d=\"M13.857 10V4.712c0-2.213-3.572-2.35-3.572 0v1.8m-.001 4.25v-4.05c0-2.213-3.747-2.35-3.747 0V13\"/><path d=\"M17.428 9.312c0-2.35 3.572-2.213 3.572 0v4.4c0 6.843-9.799 9.578-14.278 5.094l-3.215-3.24C2.018 13.904 4.044 10.5 6.537 13l1 1\"/></g></svg>","arrow-up":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M12 19.5v-15m6 5.625L12 4.5l-6 5.625\"/></svg>","check":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m6 13.626l1.606 1.722c.886.95 1.329 1.424 1.825 1.574c.436.131.9.096 1.315-.1c.473-.224.852-.761 1.612-1.836L18 7\"/></svg>","chat-messages":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M5 12a5 5 0 0 1 7 7m-7-7a5 5 0 0 0-2 4a5 5 0 0 0 .224 1.483c.272.88.076 1.86-.099 2.784a.468.468 0 0 0 .592.539c.848-.232 1.691-.43 2.557-.112A5 5 0 0 0 8 21a4.99 4.99 0 0 0 4-2m-7-7c0-4.685 2.875-9 8-9a8 8 0 0 1 7.532 10.7c-.476 1.326.037 3.102.337 4.568a.451.451 0 0 1-.584.526c-1.312-.41-2.852-.986-4.085-.466c-1.334.562-2.736.672-4.2.672\"/></svg>","users":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 19.75c0-2.09-1.67-5.068-4-5.727m-2 5.727c0-2.651-2.686-6-6-6s-6 3.349-6 6m9-12.5a3 3 0 1 1-6 0a3 3 0 0 1 6 0m3 3a3 3 0 1 0 0-6\"/></svg>","chevron-left":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m15 6l-6 6l6 6\"/></svg>","chevron-right":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m9 18l6-6l-6-6\"/></svg>","external-link":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 9.75V3h-6.75M21 3l-8.25 8.25M9.4 3c-2.24 0-3.36 0-4.216.436a4 4 0 0 0-1.748 1.748C3 6.04 3 7.16 3 9.4v5.2c0 2.24 0 3.36.436 4.216a4 4 0 0 0 1.748 1.748C6.04 21 7.16 21 9.4 21h5.2c2.24 0 3.36 0 4.216-.436a4 4 0 0 0 1.748-1.748C21 17.96 21 16.84 21 14.6v-1.1\"/></svg>","danger-circle":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 12a9 9 0 1 1-18 0a9 9 0 0 1 18 0m-9-4.373v5.5m0 3.246v-.5\"/></svg>","arrow-left":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M19.5 12h-15m5.625 6L4.5 12l5.625-6\"/></svg>","presentation":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M3 4h18m-1.9 0v9.778c0 .471-.19.923-.527 1.257c-.338.333-.796.52-1.273.52H6.7c-.477 0-.935-.187-1.273-.52a1.77 1.77 0 0 1-.527-1.257V4m2.6 16l4.5-4.444L16.5 20\"/></svg>"};
+Object.assign(ICONS, {
+  "mail": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m3.5 7l7.4 5.2c.66.46 1.54.46 2.2 0L20.5 7M6 19h12a3 3 0 0 0 3-3V8a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3\"/></svg>",
+  "send": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M20.5 3.5L10 14m10.5-10.5l-6.6 17.2c-.2.5-.9.5-1.1 0L10 14m10.5-10.5L3.3 10.1c-.5.2-.5.9 0 1.1L10 14\"/></svg>",
+  "bell": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M9.5 19.5a2.5 2.5 0 0 0 5 0M6 10a6 6 0 1 1 12 0v3.5l1.5 3H4.5l1.5-3z\"/></svg>",
+});
 const ic = (n, s = 20) => `<span class="i" style="width:${s}px;height:${s}px">${ICONS[n]}</span>`;
 
 const SLIDES = [
@@ -192,6 +227,13 @@ const fresh = () => ({
   ],
   open: ['p1'],
   slide: 1, side: true, sideTab: 'polls', peopleOpen: true, hands: [], questions: [['¿Cuánto detalle tiene que tener un plan antes de pasárselo al agente?', 9], ['¿Conviene revisar el diff o correr los tests primero?', 6]], closedOpen: false, unseenQ: 0,
+  // Pending news, oldest first; `entity` is what a later change uses to take its news item out.
+  news: [
+    { id: 1, kind: 'session', entity: 'session', name: 'Planificación y revisión', date: '14/10' },
+    { id: 2, kind: 'material', entity: 'Guía de planificación', name: 'Guía de planificación', date: '15/10' },
+    { id: 3, kind: 'material', entity: 'Lectura: Plan, then code', name: 'Lectura: Plan, then code', date: '16/10' },
+  ],
+  nextNews: 4, sel: [], msg: '', compose: false, sending: false, sendError: false, failNext: false, discarding: false, toast: null,
 });
 
 let v = fresh();
@@ -205,7 +247,49 @@ const userMenu = () => `
     ${v.menu ? `<div class="menu"><div class="who">Agustín</div><div class="mail">agustin@famaf.unc.edu.ar</div><hr><button class="switch" data-darkmode>Modo oscuro <span class="knob ${v.dark ? 'on' : ''}"></span></button></div>` : ''}
   </div>`;
 
+const KIND = {
+  session: { label: 'Sesión habilitada', color: '#B4E8CC', text: (n) => `Se habilitó la sesión "${n}".` },
+  material: { label: 'Material nuevo', color: '#CCC4F0', text: (n) => `Se agregó el material "${n}".` },
+  poll: { label: 'Encuesta abierta', color: '#F8D0A0', text: (n) => `Se abrió la encuesta "${n}".` },
+};
+
+const newsItem = (id) => v.news.find((n) => n.id === id);
+
+// The news service: a change that creates news adds a row, a change that undoes it takes the row out.
+const addNews = (kind, entity, name) => {
+  v.news = [...v.news, { id: v.nextNews, kind, entity, name, date: '21/10' }];
+  v.nextNews += 1;
+};
+
+const dropNews = (kind, entity) => {
+  const gone = v.news.filter((n) => n.kind === kind && n.entity === entity).map((n) => n.id);
+
+  v.news = v.news.filter((n) => !gone.includes(n.id));
+  v.sel = v.sel.filter((id) => !gone.includes(id));
+};
+
+const canSend = () => v.msg.trim() !== '' || v.sel.length > 0;
+
+const kindChip = (n) => `<span class="chip" style="background:${KIND[n.kind].color}">${KIND[n.kind].label}</span>`;
+
+const newsRow = (n) => `
+  <div class="file news">
+    <input type="checkbox" class="cb" data-sel="${n.id}" ${v.sel.includes(n.id) ? 'checked' : ''}>
+    <div class="grow"><div class="nhead">${kindChip(n)}<small>${n.date}</small></div><b>${n.name}</b><small>${KIND[n.kind].text(n.name)}</small></div>
+    <button class="iconbtn" data-discard="${n.id}" title="Descartar">${ic('trash', 16)}</button>
+  </div>`;
+
+const newsColumn = () => `
+  <div class="right">
+    <div class="box">
+      <div class="box-head"><h3>${ic('bell', 18)} Novedades pendientes</h3></div>
+      ${v.news.length === 0 ? '<div class="drop">No hay novedades pendientes.</div>' : v.news.map(newsRow).join('')}
+      <div class="actions">${v.enabled ? '' : '<span class="note">Habilitá la sesión para mandar un anuncio.</span>'}<button class="btn dark" data-compose ${v.enabled ? '' : 'disabled'}>${ic('mail', 16)} Redactar anuncio</button></div>
+    </div>
+  </div>`;
+
 const content = () => `
+  <div class="cols">
   <div class="stack">
     <div class="card">
       <div class="kicker">Sesión 2 de 6</div>
@@ -219,6 +303,8 @@ const content = () => `
       ${v.files.map((f, i) => `
         <div class="file">${f.type === 'HTML' ? ic('code', 20) : ic('file-text', 20)}<div class="grow"><b>${f.name}</b><small>${f.type} · ${f.size}</small></div>${f.slides ? '<span class="chip">Slides del aula</span>' : ''}<button class="iconbtn" data-delfile="${i}" title="Borrar">${ic('trash', 16)}</button></div>`).join('')}
     </div>
+  </div>
+  ${newsColumn()}
   </div>`;
 
 const delPoll = (p) => `<button class="btn" data-delpoll="${p.id}">${ic('trash', 16)} Borrar</button>`;
@@ -312,7 +398,13 @@ const CONFIRM = {
   session: () => ['¿Borrar "Planificación y revisión"?', 'Se borran su material, sus encuestas y sus preguntas.'],
   file: (i) => [`¿Borrar "${v.files[i].name}"?`, v.files[i].slides ? 'El aula se queda sin slides hasta que subas otras.' : 'Los estudiantes dejan de verlo en el material.'],
   poll: (id) => [`¿Borrar "${v.polls.find((p) => p.id === id).question || 'Nueva encuesta'}"?`, v.polls.find((p) => p.id === id).state === 'draft' ? 'Se pierde lo que cargaste.' : 'Se borran sus respuestas y los estudiantes dejan de verla.'],
+  news: (id) => [`¿Descartar "${newsItem(id).name}"?`, 'No va a aparecer en ningún anuncio.'],
 };
+
+// Discarding a news item waits for the server: its button spins and the dialog does not close meanwhile.
+const discardActions = () => v.discarding
+  ? '<button class="btn" disabled>Cancelar</button><button class="btn danger solid busy" disabled aria-busy="true"><span class="spin"></span>Descartando…</button>'
+  : '<button class="btn" data-nodel>Cancelar</button><button class="btn danger solid" data-yesdel>Descartar</button>';
 
 const confirmDelete = () => {
   if (v.confirm == null) {
@@ -322,11 +414,11 @@ const confirmDelete = () => {
   const [title, text] = CONFIRM[v.confirm.kind](v.confirm.id);
 
   return `
-  <div class="scrim" data-nodel>
+  <div class="scrim" ${v.discarding ? 'data-stay' : 'data-nodel'}>
     <div class="modal" data-stay>
       <h3>${title}</h3>
       <p style="margin:10px 0 0">${text}</p>
-      <div class="actions"><button class="btn" data-nodel>Cancelar</button><button class="btn danger solid" data-yesdel>Borrar</button></div>
+      <div class="actions">${v.confirm.kind === 'news' ? discardActions() : '<button class="btn" data-nodel>Cancelar</button><button class="btn danger solid" data-yesdel>Borrar</button>'}</div>
     </div>
   </div>`;
 };
@@ -344,6 +436,27 @@ const modal = () => v.modal ? `
       <div class="actions"><button class="btn" data-shut>Cancelar</button><button class="btn dark" data-doupload ${v.pick == null ? 'disabled' : ''}>Subir</button></div>
     </div>
   </div>` : '';
+
+const sendBtn = () => v.sending
+  ? '<button class="btn dark busy" disabled aria-busy="true"><span class="spin"></span>Enviando…</button>'
+  : `<button class="btn dark" data-send ${canSend() ? '' : 'disabled'}>${ic('send', 16)} Enviar anuncio</button>`;
+
+const composeModal = () => !v.compose ? '' : `
+  <div class="scrim" ${v.sending ? 'data-stay' : 'data-uncompose'}>
+    <div class="modal" data-stay style="width: 540px">
+      <div class="modal-head"><h3>Anuncio</h3><button class="iconbtn" data-uncompose ${v.sending ? 'disabled' : ''}>${ic('x', 18)}</button></div>
+      <label class="field">Mensaje<textarea data-msg placeholder="Escribí el anuncio" ${v.sending ? 'disabled' : ''}>${v.msg}</textarea></label>
+      <div class="sub">Novedades incluidas</div>
+      ${v.sel.length === 0
+        ? '<div class="note">Ninguna novedad elegida.</div>'
+        : v.news.filter((n) => v.sel.includes(n.id)).map((n) => `<div class="file">${kindChip(n)}<div class="grow"><b>${n.name}</b><small>${KIND[n.kind].text(n.name)}</small></div></div>`).join('')}
+      ${v.sendError ? `<div class="error">${ic('danger-circle', 18)}<span>No se pudo enviar el anuncio. Probá de nuevo.</span></div>` : ''}
+      <div class="actions"><button class="btn" data-uncompose ${v.sending ? 'disabled' : ''}>Cancelar</button>${sendBtn()}</div>
+    </div>
+  </div>`;
+
+const toastLayer = () => v.toast == null ? '' : `
+  <div class="toasts"><div class="toast ${v.toast.fresh ? 'enter' : ''}">${ic('check', 20)}<span class="text">Anuncio enviado.</span><button class="iconbtn" data-closetoast title="Cerrar">${ic('x', 18)}</button></div></div>`;
 
 // Away from the Aula tab, new questions and raised hands show on the tab itself, each next to its icon.
 const aulaMarks = () => {
@@ -366,7 +479,9 @@ const app = () => `
     </div>
     ${v.tab === 'aula' ? aula() : `<div class="page">${v.tab === 'content' ? content() : pollsTab()}</div>`}
     ${modal()}
+    ${composeModal()}
     ${confirmDelete()}
+    ${toastLayer()}
     ${v.deleted ? '<div class="scrim"><div class="modal"><h3>Sesión borrada</h3><div class="actions"><a class="btn dark" href="admin-sesiones.html" style="text-decoration:none">Volver a las sesiones</a></div></div></div>' : ''}
   </div>`;
 
@@ -376,8 +491,33 @@ const render = () => {
   root.querySelector('.strip').innerHTML = `
     <button data-simhand class="${v.hands.includes('Tomás') ? 'on' : ''}">Tomás levanta la mano</button>
     <button data-simq>Llega una pregunta</button>
+    <button data-failnext class="${v.failNext ? 'on' : ''}">El próximo envío falla</button>
     <button data-reset>Reiniciar</button>`;
   root.querySelector('.stagewrap').innerHTML = app();
+
+  if (v.toast != null) {
+    v.toast.fresh = false;
+  }
+};
+
+// The send waits a moment, as a slow server would; then it either goes out or fails inside the modal.
+const send = () => {
+  Object.assign(v, { sending: true, sendError: false });
+
+  setTimeout(() => {
+    if (v.failNext) {
+      Object.assign(v, { sending: false, sendError: true });
+    } else {
+      v.news = v.news.filter((n) => !v.sel.includes(n.id));
+      Object.assign(v, { sending: false, compose: false, sel: [], msg: '', toast: { fresh: true } });
+      setTimeout(() => {
+        v.toast = null;
+        render();
+      }, 5000);
+    }
+
+    render();
+  }, 1800);
 };
 
 const presentWindow = () => {
@@ -394,7 +534,7 @@ const presentWindow = () => {
 };
 
 document.getElementById('admin').addEventListener('click', (e) => {
-  const t = e.target.closest('button, [data-shut], [data-nodel], [data-stay]');
+  const t = e.target.closest('button, [data-sel], [data-shut], [data-uncompose], [data-nodel], [data-stay]');
 
   if (t == null || t.disabled || (t.hasAttribute('data-stay') && !t.matches('button'))) {
     return;
@@ -421,17 +561,54 @@ document.getElementById('admin').addEventListener('click', (e) => {
   } else if (t.hasAttribute('data-yesdel')) {
     const { kind, id } = v.confirm;
 
+    if (kind === 'news') {
+      v.discarding = true;
+      setTimeout(() => {
+        v.news = v.news.filter((n) => n.id !== id);
+        v.sel = v.sel.filter((x) => x !== id);
+        Object.assign(v, { confirm: null, discarding: false });
+        render();
+      }, 1200);
+      render();
+
+      return;
+    }
+
     if (kind === 'session') {
       v.deleted = true;
     } else if (kind === 'file') {
+      dropNews('material', v.files[id].name);
       v.files = v.files.filter((_, i) => i !== id);
     } else {
+      dropNews('poll', id);
       v.polls = v.polls.filter((p) => p.id !== id);
     }
 
     v.confirm = null;
   } else if (t.hasAttribute('data-enable')) {
     v.enabled = !v.enabled;
+
+    if (v.enabled) {
+      addNews('session', 'session', 'Planificación y revisión');
+    } else {
+      dropNews('session', 'session');
+    }
+  } else if (d.sel != null) {
+    const id = Number(d.sel);
+
+    v.sel = v.sel.includes(id) ? v.sel.filter((x) => x !== id) : [...v.sel, id];
+  } else if (d.discard != null) {
+    v.confirm = { kind: 'news', id: Number(d.discard) };
+  } else if (t.hasAttribute('data-compose')) {
+    Object.assign(v, { compose: true, msg: '', sendError: false, toast: null });
+  } else if (t.hasAttribute('data-uncompose')) {
+    v.compose = false;
+  } else if (t.hasAttribute('data-send')) {
+    send();
+  } else if (t.hasAttribute('data-closetoast')) {
+    v.toast = null;
+  } else if (t.hasAttribute('data-failnext')) {
+    v.failNext = !v.failNext;
   } else if (t.hasAttribute('data-upload')) {
     Object.assign(v, { modal: true, pick: null, asSlides: false, slidesError: false });
   } else if (t.hasAttribute('data-shut')) {
@@ -452,6 +629,7 @@ document.getElementById('admin').addEventListener('click', (e) => {
     }
 
     v.files = [...v.files.map((x) => (v.asSlides ? { ...x, slides: false } : x)), { ...f, name: v.fname || f.name, slides: v.asSlides }];
+    addNews('material', v.fname || f.name, v.fname || f.name);
     v.modal = false;
   } else if (d.delfile != null) {
     v.confirm = { kind: 'file', id: Number(d.delfile) };
@@ -475,9 +653,11 @@ document.getElementById('admin').addEventListener('click', (e) => {
     poll(id).options.splice(Number(i), 1);
   } else if (d.activate) {
     Object.assign(poll(d.activate), { state: 'active', total: 0, results: (poll(d.activate).options ?? []).map(() => 0) });
+    addNews('poll', d.activate, poll(d.activate).question || 'Nueva encuesta');
     v.open = [...new Set([...v.open, d.activate])];
   } else if (d.close) {
     poll(d.close).state = 'closed';
+    dropNews('poll', d.close);
     v.open = v.open.filter((x) => x !== d.close);
   } else if (t.hasAttribute('data-newmenu')) {
     v.newMenu = !v.newMenu;
@@ -526,6 +706,12 @@ document.getElementById('admin').addEventListener('click', (e) => {
 document.getElementById('admin').addEventListener('input', (e) => {
   if (e.target.matches('[data-fname]')) {
     v.fname = e.target.value;
+  }
+
+  // The message is typed without re-rendering, so only the send button follows it.
+  if (e.target.matches('[data-msg]')) {
+    v.msg = e.target.value;
+    document.querySelector('#admin [data-send]')?.toggleAttribute('disabled', !canSend());
   }
 });
 

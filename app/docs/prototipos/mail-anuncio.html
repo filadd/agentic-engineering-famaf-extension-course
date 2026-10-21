@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Prototipo · Mail del anuncio · estudiante</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9e6e3; font-family: 'Atkinson Hyperlegible', system-ui, sans-serif; color: #1F1B18; }
+  h1, h2, h3 { font-family: 'Rubik', system-ui, sans-serif; margin: 0; }
+  .intro, .alt { max-width: 1360px; margin: 24px auto; padding: 0 20px; }
+  .intro p { margin: 6px 0 0; color: #6b625c; line-height: 1.45; }
+  .intro ul { margin: 8px 0 0; padding-left: 20px; color: #6b625c; line-height: 1.5; }
+  .strip { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; font-size: 14px; }
+  .strip button { font: inherit; border: 1px solid #cfc8c2; background: #fff; border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+  .strip button.on { background: #1F1B18; color: #fff; border-color: #1F1B18; }
+  .strip .sep { width: 1px; height: 22px; background: #cfc8c2; margin: 0 4px; }
+
+  /* Mail client sketch: neutral, so only the message body carries the brand. */
+  .client { width: 760px; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px #d6cfc9; font-family: system-ui, sans-serif; color: #202124; }
+  .client .subject { font-size: 20px; font-weight: 500; padding: 20px 24px 10px; }
+  .client .meta { padding: 0 24px 14px; border-bottom: 1px solid #e3e3e3; font-size: 13px; display: grid; grid-template-columns: 56px 1fr; row-gap: 3px; }
+  .client .meta dt { color: #6b6b6b; }
+  .client .meta dd { margin: 0; }
+  .client .body { padding: 20px 24px 28px; min-height: 260px; }
+  .client pre { margin: 0; font-family: ui-monospace, 'DejaVu Sans Mono', monospace; font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
+  .partlabel { font-size: 12px; color: #6b6b6b; margin-bottom: 10px; font-family: system-ui, sans-serif; }
+
+  .allgrid { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+  .shot-label { font-size: 14px; color: #6b625c; margin-bottom: 6px; }
+  .shot-body { zoom: 0.56; }
+
+  /* Branded card. */
+  .mailcard { background: #FBF3EE; border-radius: 16px; padding: 24px; font-family: 'Atkinson Hyperlegible', system-ui, sans-serif; color: #1F1B18; font-size: 15px; line-height: 1.5; }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: 'Rubik', system-ui, sans-serif; font-weight: 700; font-size: 20px; }
+  .crow { line-height: 1; font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif; }
+  .mailcard .brand .crow { font-size: 30px; }
+  .mailcard .brand { padding-bottom: 16px; border-bottom: 1.5px solid #EADFD8; margin-bottom: 18px; }
+  .mailcard p.msg { margin: 0 0 18px; }
+  .mailcard .newsbox { background: #F3E8E1; border-radius: 16px; padding: 14px 18px; margin-bottom: 20px; }
+  .mailcard .newsbox h3 { font-size: 15px; margin-bottom: 6px; }
+  .mailcard ul { margin: 0; padding-left: 20px; }
+  .mailcard li { margin: 3px 0; }
+  .mbtn { display: inline-block; background: #1F1B18; color: #fff; text-decoration: none; border-radius: 999px; padding: 10px 20px; font-family: 'Rubik', system-ui, sans-serif; font-weight: 500; font-size: 15px; }
+
+</style>
+</head>
+<body>
+<div class="intro">
+  <h1>Mail del anuncio · lo que ve el estudiante</h1>
+  <p>Así le llega al estudiante el anuncio que el profe manda desde la pestaña Contenido de una sesión:</p>
+  <ul>
+    <li>El mail sale de la dirección no-reply de la app (kurasu &lt;no-reply@kurasu.asermax.com&gt;).</li>
+    <li>El destinatario visible es el profe que lo manda; los estudiantes van en copia oculta, así que en "Para" ven la dirección del profe y no la suya.</li>
+    <li>El asunto es Novedades de la sesión "&lt;título de la sesión&gt;", sin número de sesión en ningún lado.</li>
+    <li>El cuerpo lleva, en este orden: el mensaje del profe tal cual lo escribió (opcional); las novedades incluidas de la más vieja a la más nueva, una línea cada una con un texto fijo por tipo (opcional, pero mensaje y novedades nunca faltan los dos); y un link a la sesión, que es el único link del mail. Las novedades no tienen link propio.</li>
+    <li>El mail no dice qué profe lo mandó, no saluda al estudiante por su nombre y no tiene pie, link para desuscribirse ni texto legal.</li>
+    <li>El mail es una card con la marca: el cuervo y "kurasu" arriba, el mensaje como párrafo, las novedades en un bloque con el título "Novedades" y el botón "Ir a la sesión" alineado a la derecha.</li>
+    <li>Sale con una parte HTML y una parte de texto plano con el mismo contenido.</li>
+  </ul>
+  <p>La tira elige el contenido del mail, "Ver todos los estados" pone los tres lado a lado y "Texto plano" muestra la parte de texto del mismo mail. La URL de la sesión es de ejemplo.</p>
+</div>
+
+<section class="alt" id="mail">
+  <div class="strip"></div>
+  <div class="stagewrap"></div>
+</section>
+
+
+<script>
+const CROW = '🐦‍⬛';
+const SESSION = 'Context engineering';
+const SESSION_URL = 'https://kurasu.asermax.com/sesiones/7f3c2a';
+const FROM = 'kurasu <no-reply@kurasu.asermax.com>';
+const TO = 'Agustín <profe@ejemplo.com>';
+const MSG = '¡Hola! El jueves arrancamos con la sesión de contexto. Traigan la notebook con el agente instalado.';
+
+const KIND_TEXT = {
+  session: (name) => `Se habilitó la sesión "${name}".`,
+  material: (name) => `Se agregó el material "${name}".`,
+  poll: (name) => `Se abrió la encuesta "${name}".`,
+};
+
+// Ordered from oldest to newest, as the mail lists them.
+const NEWS = [
+  { kind: 'session', name: 'Context engineering', date: '14/10' },
+  { kind: 'material', name: 'slides-sesion-3.html', date: '15/10' },
+  { kind: 'material', name: 'ejercicio-contexto.md', date: '15/10' },
+  { kind: 'poll', name: '¿Qué agente usás en el día a día?', date: '16/10' },
+];
+
+const PRESETS = {
+  both: { label: 'Mensaje y novedades', msg: MSG, news: NEWS },
+  msg: { label: 'Solo mensaje', msg: MSG, news: [] },
+  news: { label: 'Solo novedades', msg: '', news: [NEWS[3]] },
+};
+
+const esc = (text) => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+
+const subject = () => `Novedades de la sesión "${SESSION}"`;
+const lines = (m) => m.news.map((n) => KIND_TEXT[n.kind](n.name));
+
+/* ---------- HTML part ---------- */
+
+const html = (m) => `
+  <div class="mailcard">
+    <div class="brand"><span class="crow">${CROW}</span>kurasu</div>
+    ${m.msg === '' ? '' : `<p class="msg">${esc(m.msg)}</p>`}
+    ${lines(m).length === 0 ? '' : `<div class="newsbox"><h3>Novedades</h3><ul>${lines(m).map((l) => `<li>${esc(l)}</li>`).join('')}</ul></div>`}
+    <div style="text-align: right"><a class="mbtn" href="${SESSION_URL}">Ir a la sesión</a></div>
+  </div>`;
+
+/* ---------- Text part ---------- */
+
+const block = (parts) => parts.filter((p) => p !== '').join('\n\n') + '\n';
+
+const text = (m) => block([
+  m.msg,
+  lines(m).length === 0 ? '' : `Novedades\n\n${lines(m).map((l) => `- ${l}`).join('\n')}`,
+  `Ir a la sesión:\n${SESSION_URL}`,
+]);
+
+/* ---------- Mail client ---------- */
+
+const client = (m, plain) => `
+  <div class="client">
+    <div class="subject">${esc(subject())}</div>
+    <dl class="meta">
+      <dt>De</dt><dd>${esc(FROM)}</dd>
+      <dt>Para</dt><dd>${esc(TO)}</dd>
+      <dt>Asunto</dt><dd>${esc(subject())}</dd>
+    </dl>
+    <div class="body">
+      ${plain ? `<div class="partlabel">Parte de texto plano</div><pre>${esc(text(m))}</pre>` : html(m)}
+    </div>
+  </div>`;
+
+/* ---------- Page chrome ---------- */
+
+const v = { preset: 'both', all: false, plain: false };
+
+const render = () => {
+  const root = document.getElementById('mail');
+
+  root.querySelector('.strip').innerHTML = `
+    ${Object.entries(PRESETS).map(([k, p]) => `<button data-preset="${k}" class="${!v.all && v.preset === k ? 'on' : ''}">${p.label}</button>`).join('')}
+    <span class="sep"></span>
+    <button data-all class="${v.all ? 'on' : ''}">${v.all ? 'Volver a la vista interactiva' : 'Ver todos los estados'}</button>
+    <span class="sep"></span>
+    <button data-plain class="${v.plain ? 'on' : ''}">Texto plano</button>`;
+
+  root.querySelector('.stagewrap').innerHTML = v.all
+    ? `<div class="allgrid">${Object.values(PRESETS).map((p) => `
+        <div><div class="shot-label">${p.label}</div><div class="shot-body">${client(p, v.plain)}</div></div>`).join('')}</div>`
+    : client(PRESETS[v.preset], v.plain);
+};
+
+const root = document.getElementById('mail');
+
+root.querySelector('.strip').addEventListener('click', (e) => {
+  const t = e.target.closest('button');
+
+  if (t == null) {
+    return;
+  }
+
+  if (t.dataset.preset != null) {
+    Object.assign(v, { preset: t.dataset.preset, all: false });
+  } else if (t.hasAttribute('data-all')) {
+    v.all = !v.all;
+  } else if (t.hasAttribute('data-plain')) {
+    v.plain = !v.plain;
+  }
+
+  render();
+});
+
+root.addEventListener('click', (e) => {
+  if (e.target.closest('.client a') != null) {
+    e.preventDefault();
+  }
+});
+
+render();
+</script>
+</body>
+</html>

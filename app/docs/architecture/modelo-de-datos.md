@@ -1,6 +1,6 @@
 ---
 title: "Modelo de datos"
-summary: "Las entidades que kurasu guarda en D1: usuarios, sesiones con su material, encuestas, preguntas y manos levantadas, y los códigos de registro y de los links del mail."
+summary: "Las entidades que kurasu guarda en D1: usuarios, sesiones con su material, encuestas, preguntas, manos levantadas y novedades pendientes, y los códigos de registro y de los links del mail."
 created: "2026-10-18"
 ---
 
@@ -8,7 +8,7 @@ created: "2026-10-18"
 
 ## 🔭 Resumen
 
-La app guarda usuarios, sesiones y lo que cuelga de cada sesión: su material, sus encuestas con sus respuestas, sus preguntas con sus votos, las manos levantadas y la slide en la que está el profe. Todo vive en D1, salvo los archivos del material, que viven en R2 (ver [componentes](componentes.md)). Solo las sesiones y las encuestas quedan guardadas al borrarse: cada una guarda en `deleted_at` la fecha en que se borró, conserva lo que cuelga de ella y nadie la ve. Un material o una pregunta propia se borran definitivamente, el código de un link se borra al usarse y una mano se baja. Los códigos de registro y los de los links del mail son filas de la misma entidad, `Code`. Todos los ids son ULID.
+La app guarda usuarios, sesiones y lo que cuelga de cada sesión: su material, sus encuestas con sus respuestas, sus preguntas con sus votos, las manos levantadas, la slide en la que está el profe y las novedades que el profe todavía no anunció. Todo vive en D1, salvo los archivos del material, que viven en R2 (ver [componentes](componentes.md)). Solo las sesiones y las encuestas quedan guardadas al borrarse: cada una guarda en `deleted_at` la fecha en que se borró, conserva lo que cuelga de ella y nadie la ve. Un material, una pregunta propia o una novedad se borran definitivamente, el código de un link se borra al usarse y una mano se baja. Los códigos de registro y los de los links del mail son filas de la misma entidad, `Code`. Todos los ids son ULID.
 
 ## 💽 Entidades y relaciones
 
@@ -18,6 +18,7 @@ erDiagram
     SESSION ||--o{ POLL : has
     SESSION ||--o{ QUESTION : has
     SESSION ||--o{ RAISED_HAND : has
+    SESSION ||--o{ NOVEDAD : has
     POLL ||--o{ RESPONSE : receives
     QUESTION ||--o{ QUESTION_VOTE : receives
     USER ||--o{ RESPONSE : gives
@@ -82,6 +83,14 @@ erDiagram
         ulid session_id PK, FK
         ulid user_id PK, FK
     }
+    NOVEDAD {
+        ulid id PK
+        ulid session_id FK
+        enum type "session enabled, new material or open poll"
+        ulid entity_id "not a FK"
+        string name
+        datetime changed_at
+    }
     CODE {
         ulid id PK
         enum type "user or enrollment"
@@ -124,6 +133,15 @@ La entidad `Question` guarda su texto en `body`, a su autor en `author_id` y si 
 
 La entidad `RaisedHand` une a un estudiante con una sesión. Existe hasta que alguien baja la mano, el estudiante o el profe, así que sigue levantada si el estudiante sale del aula y vuelve (ver [tiempo real del aula](tiempo-real-del-aula.md)).
 
+### 🔔 Novedad
+
+La entidad `Novedad` es algo nuevo de una sesión que el profe todavía no anunció por mail. Pertenece a una sesión, en `session_id`, y guarda su `type`: sesión habilitada, material nuevo o encuesta abierta. Guarda también el id de la entidad que la originó en `entity_id`, su nombre en `name` y la fecha del cambio que la registró en `changed_at`. El nombre es el título de la sesión, el nombre del material o la consigna de la encuesta. Ningún campo queda vacío. La novedad no guarda texto ni link. La web y el mail arman el texto con su tipo y su nombre.
+
+> [!NOTE] Por qué `entity_id` no es una clave foránea
+> Según el tipo, apunta a una sesión, a un material o a una encuesta, así que no puede ser una clave foránea a una sola tabla.
+
+La lista de novedades no es un historial: una novedad existe solo mientras está pendiente, y se borra definitivamente cuando el profe la anuncia o la descarta, o cuando un cambio la saca. Borrar la sesión no borra sus novedades, que quedan guardadas con ella. Qué cambios crean y sacan una novedad, y cómo se anuncia, está en [novedades por mail](novedades-por-mail.md).
+
 ### 🔑 Código
 
 La entidad `Code` guarda los dos tipos de código que usa la app, y el campo `type` los distingue: `enrollment` para el código de registro y `user` para el código de un usuario.
@@ -137,4 +155,4 @@ El código del magic link es una fila de `Code` de tipo `user`, con el `user_id`
 
 ---
 
-Related: [componentes](componentes.md), [login y acceso](login-y-acceso.md), [tiempo real del aula](tiempo-real-del-aula.md), [API de las slides](api-de-las-slides.md), [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)
+Related: [componentes](componentes.md), [login y acceso](login-y-acceso.md), [tiempo real del aula](tiempo-real-del-aula.md), [API de las slides](api-de-las-slides.md), [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md), [novedades por mail](novedades-por-mail.md)

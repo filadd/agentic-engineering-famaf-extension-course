@@ -112,6 +112,7 @@
   .toasts { position: absolute; bottom: 24px; z-index: 4; display: flex; flex-direction: column; gap: 10px; width: 420px; right: 24px; }
   .toast { display: flex; align-items: flex-start; gap: 10px; background: #fff; color: #1F1B18; border-radius: 18px; padding: 12px 8px 12px 14px; font-size: 15px; line-height: 1.4; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18); }
   .toast > .i { color: var(--danger); margin-top: 1px; }
+  .toast.ok > .i { color: #2F7D5B; }
   .toast .text { flex: 1; padding-top: 1px; }
   .toast .iconbtn { margin: -6px 0 -6px 0; }
   .toast.enter { animation: rise 0.28s ease-out; }
@@ -157,8 +158,8 @@
 </section>
 
 <section class="alt" id="toast">
-  <h2>2 · Aviso de acción fallida</h2>
-  <p class="tradeoff">Card abajo a la derecha con ícono, texto y X. Los avisos se apilan con el más nuevo abajo, empujando hacia arriba a los anteriores, y cada uno se cierra solo a los 5 segundos o con la X. En el celular la card ocupa todo el ancho menos los márgenes laterales.</p>  <div class="strip"></div>
+  <h2>2 · Aviso de acción fallida o exitosa</h2>
+  <p class="tradeoff">Card abajo a la derecha con ícono, texto y X. Los avisos se apilan con el más nuevo abajo, empujando hacia arriba a los anteriores, y cada uno se cierra solo a los 5 segundos o con la X. En el celular la card ocupa todo el ancho menos los márgenes laterales. El aviso de éxito es la misma card con un check verde en lugar del ícono de alerta.</p>  <div class="strip"></div>
   <div class="stage"></div>
 </section>
 
@@ -171,6 +172,7 @@
 
 <script>
 const ICONS = {"trash": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m18 9l-.84 8.398c-.127 1.273-.19 1.909-.48 2.39a2.5 2.5 0 0 1-1.075.973C15.098 21 14.46 21 13.18 21h-2.36c-1.279 0-1.918 0-2.425-.24a2.5 2.5 0 0 1-1.076-.973c-.288-.48-.352-1.116-.48-2.389L6 9m7.5 6.5v-5m-3 5v-5m-6-4h4.615m0 0l.386-2.672c.112-.486.516-.828.98-.828h3.038c.464 0 .867.342.98.828l.386 2.672m-5.77 0h5.77m0 0H19.5\"/></svg>", "x": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 6L6 18M6 6l12 12\"/></svg>", "plus": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 12h-6m0 0H6m6 0V6m0 6v6\"/></svg>", "users": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 19.75c0-2.09-1.67-5.068-4-5.727m-2 5.727c0-2.651-2.686-6-6-6s-6 3.349-6 6m9-12.5a3 3 0 1 1-6 0a3 3 0 0 1 6 0m3 3a3 3 0 1 0 0-6\"/></svg>", "danger-circle": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 12a9 9 0 1 1-18 0a9 9 0 0 1 18 0m-9-4.373v5.5m0 3.246v-.5\"/></svg>", "arrow-right": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4.5 12h15m-5.625 6l5.625-6l-5.625-6\"/></svg>", "arrow-left": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M19.5 12h-15m5.625 6L4.5 12l5.625-6\"/></svg>"};
+ICONS.check = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m6 13.626l1.606 1.722c.886.95 1.329 1.424 1.825 1.574c.436.131.9.096 1.315-.1c.473-.224.852-.761 1.612-1.836L18 7\"/></svg>";
 const ic = (n, s = 20) => `<span class="i" style="width:${s}px;height:${s}px">${ICONS[n]}</span>`;
 
 const CROW = '🐦‍⬛';
@@ -181,7 +183,10 @@ const SESSIONS = [
   { title: 'Sesión 2 · Planning & Review', summary: 'Antes de escribir código: explorar, planificar y revisar lo que el agente produce.', enabled: false },
 ];
 
-const TOASTS = ['No se pudo habilitar la sesión. Probá de nuevo.', 'No se pudo mover la sesión. Probá de nuevo.'];
+const TOASTS = {
+  error: ['No se pudo habilitar la sesión. Probá de nuevo.', 'No se pudo mover la sesión. Probá de nuevo.'],
+  ok: ['Anuncio enviado.', 'Anuncio enviado.'],
+};
 
 const VIEWPORTS = { desk: 'Escritorio', phone: 'Celular · 390 px' };
 
@@ -309,19 +314,21 @@ document.querySelector('#pending .stage').addEventListener('click', (e) => {
 /* ---------- 2 · Toast ---------- */
 
 const TOAST_COUNTS = { 1: 'Un aviso', 2: 'Dos avisos seguidos' };
+const TOAST_KINDS = { error: 'Error', ok: 'Éxito' };
 const TOAST_LIFE = 5000;
 
-const toast = { vp: 'desk', count: 1, all: false, list: [], timers: [], nextId: 1 };
+const toast = { vp: 'desk', count: 1, kind: 'error', all: false, list: [], timers: [], nextId: 1 };
 
 const toastLayer = () => toast.list.length === 0 ? '' : `
   <div class="toasts">${toast.list.map((t) => `
-    <div class="toast ${t.fresh ? 'enter' : ''}">${ic('danger-circle', 20)}<span class="text">${t.text}</span><button class="iconbtn" data-close="${t.id}" title="Cerrar">${ic('x', 18)}</button></div>`).join('')}</div>`;
+    <div class="toast ${t.kind} ${t.fresh ? 'enter' : ''}">${ic(t.kind === 'ok' ? 'check' : 'danger-circle', 20)}<span class="text">${t.text}</span><button class="iconbtn" data-close="${t.id}" title="Cerrar">${ic('x', 18)}</button></div>`).join('')}</div>`;
 
 const renderToast = () => {
   const root = document.getElementById('toast');
 
   root.querySelector('.strip').innerHTML = strip([
     Object.entries(VIEWPORTS).map(([k, l]) => ['vp', k, l, !toast.all && toast.vp === k]),
+    Object.entries(TOAST_KINDS).map(([k, l]) => ['kind', k, l, toast.kind === k]),
     Object.entries(TOAST_COUNTS).map(([k, l]) => ['count', k, l, toast.count === Number(k)]),
     [['replay', '1', 'Repetir entrada', false]],
     [['all', '1', 'Mostrar todos', toast.all]],
@@ -331,7 +338,7 @@ const renderToast = () => {
   const vps = toast.all ? Object.keys(VIEWPORTS) : [toast.vp];
 
   stage.classList.toggle('all', toast.all);
-  stage.innerHTML = vps.map((vp) => shot(vp, `${VIEWPORTS[vp]} · ${TOAST_COUNTS[toast.count]}`, app(teacher(), toastLayer()))).join('');
+  stage.innerHTML = vps.map((vp) => shot(vp, `${VIEWPORTS[vp]} · ${TOAST_KINDS[toast.kind]} · ${TOAST_COUNTS[toast.count]}`, app(teacher(), toastLayer()))).join('');
 
   toast.list.forEach((t) => {
     t.fresh = false;
@@ -343,10 +350,10 @@ const closeToast = (id) => {
   renderToast();
 };
 
-const fire = (text) => {
+const fire = (text, kind) => {
   const id = toast.nextId++;
 
-  toast.list.push({ id, text, fresh: true });
+  toast.list.push({ id, text, kind, fresh: true });
   renderToast();
   toast.timers.push(setTimeout(() => closeToast(id), TOAST_LIFE));
 };
@@ -356,14 +363,16 @@ const replayToast = () => {
   Object.assign(toast, { list: [], timers: [] });
   renderToast();
 
-  TOASTS.slice(0, toast.count).forEach((text, i) => {
-    toast.timers.push(setTimeout(() => fire(text), 250 + i * 1200));
+  TOASTS[toast.kind].slice(0, toast.count).forEach((text, i) => {
+    toast.timers.push(setTimeout(() => fire(text, toast.kind), 250 + i * 1200));
   });
 };
 
 stripClick('toast', (d) => {
   if (d.vp != null) {
     Object.assign(toast, { vp: d.vp, all: false });
+  } else if (d.kind != null) {
+    toast.kind = d.kind;
   } else if (d.count != null) {
     toast.count = Number(d.count);
   } else if (d.all != null) {
