@@ -21,6 +21,7 @@ One row per note, kept by hand: adding a note here is part of writing it.
 | [Estados de encuestas y sesiones, y sus pantallas](estados-de-encuestas-y-sesiones.md) | Los ciclos de vida de las encuestas, las sesiones y las preguntas, qué ve el estudiante en su inicio, cómo maneja el profe las sesiones desde el admin y qué acciones piden confirmación. |
 | [Carga y acciones de la web](carga-y-acciones-de-la-web.md) | Cómo la web dibuja una pantalla mientras cargan sus datos, qué muestra cuando la carga falla y cómo responde a cada acción del usuario, al instante o en espera. |
 | [Novedades por mail](novedades-por-mail.md) | Cómo kurasu registra lo nuevo de cada sesión como novedades pendientes, cómo el profe elige cuáles anunciar desde el admin de la sesión y cómo la API manda el anuncio por mail a los usuarios con acceso. |
+| [Invariantes](invariantes.md) | Las reglas que respeta todo cambio en kurasu, sobre cómo se comporta el producto y cómo está armado el sistema. |
 
 ## What has no note yet
 
