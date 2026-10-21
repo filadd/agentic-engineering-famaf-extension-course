@@ -8,10 +8,14 @@ export const accessFilters = {
 
 export type AccessFilterId = keyof typeof accessFilters;
 
+export type AccessCounts = Record<AccessFilterId, number>;
+
+export const accessFilterIds: ReadonlyArray<AccessFilterId> = ["all", "on", "off"];
+
 export const passesFilter = (user: User, filter: AccessFilterId) =>
   filter === "all" || (filter === "on" ? user.hasAccess : !user.hasAccess);
 
-export const accessCounts = (users: ReadonlyArray<User>): Record<AccessFilterId, number> => ({
+export const accessCounts = (users: ReadonlyArray<User>): AccessCounts => ({
   all: users.filter((user) => passesFilter(user, "all")).length,
   on: users.filter((user) => passesFilter(user, "on")).length,
   off: users.filter((user) => passesFilter(user, "off")).length,
