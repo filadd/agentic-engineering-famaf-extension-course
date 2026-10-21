@@ -10,7 +10,7 @@ import { failingRoute } from "./helpers/failing-route.ts";
 import { heldResponse } from "./helpers/held-response.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
-import { studentClassroom } from "./helpers/student-classroom.ts";
+import { realClassroom, studentClassroom } from "./helpers/student-classroom.ts";
 import { teacherSession } from "./helpers/teacher-session.ts";
 
 const skeletons = () => [...document.querySelectorAll<HTMLElement>('[aria-busy="true"]')];
@@ -19,15 +19,12 @@ const skeletons = () => [...document.querySelectorAll<HTMLElement>('[aria-busy="
 // screen.
 const retriesRunOut = () => vi.advanceTimersByTimeAsync(4000);
 
-const filterNames = () =>
-  within(screen.getByRole("tablist", { name: "Filtrar por acceso" }))
+const tabNames = (container: HTMLElement) =>
+  within(container)
     .getAllByRole("tab")
     .map((tab) => tab.textContent);
 
-const panelTabs = (panel: HTMLElement) =>
-  within(panel)
-    .getAllByRole("tab")
-    .map((tab) => tab.textContent);
+const filterNames = () => tabNames(screen.getByRole("tablist", { name: "Filtrar por acceso" }));
 
 // The buttons right of the slide's position, read from the slide's skeleton,
 // which hides them from the roles.
@@ -127,14 +124,14 @@ describe("loading a screen", () => {
 
     const panel = screen.getByRole("complementary", { name: "Panel del aula" });
 
-    expect(panelTabs(panel)).toEqual(["Encuestas", "Preguntas", "Material"]);
+    expect(tabNames(panel)).toEqual(["Encuestas", "Preguntas", "Material"]);
     expect(within(panel).getByRole("tabpanel").querySelector('[aria-busy="true"]')).not.toBeNull();
 
     const { currentSlide: _slide, currentStep: _step, ...summary } = session;
 
     sessions.release(HttpResponse.json([summary]));
 
-    expect(await screen.findByRole("heading", { level: 1, name: planning.title })).toBeTruthy();
+    expect(await realClassroom(planning)).toBeTruthy();
     expect(await screen.findByTitle("Slides")).toBeTruthy();
     expect(screen.getByRole("complementary", { name: "Panel del aula" })).toBeTruthy();
   });

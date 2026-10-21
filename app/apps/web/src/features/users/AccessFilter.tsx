@@ -12,20 +12,17 @@ interface Props {
 
 const ids: ReadonlyArray<AccessFilterId> = ["all", "on", "off"];
 
-// Until the users arrive the tabs show no count, so they never claim zero.
-
 export const AccessFilter = ({ users, value, onChange }: Props) => (
   <Tabs
     label="Filtrar por acceso"
     value={value}
     onChange={onChange}
     className="mt-3.5"
-    tabs={ids.map((id) => ({
-      id,
-      label:
-        users == null
-          ? accessFilters[id]
-          : `${accessFilters[id]} (${users.filter((user) => passesFilter(user, id)).length})`,
-    }))}
+    tabs={ids.map((id) => {
+      // Until the users arrive the tabs show no count, so they never claim zero.
+      const count = users?.filter((user) => passesFilter(user, id)).length;
+
+      return { id, label: count == null ? accessFilters[id] : `${accessFilters[id]} (${count})` };
+    })}
   />
 );
