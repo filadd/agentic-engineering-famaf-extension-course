@@ -72,6 +72,12 @@ export class QuestionNotFound extends Schema.TaggedError<QuestionNotFound>()(
   { httpApiStatus: 404 },
 ) {}
 
+export class ChangelogEntryNotFound extends Schema.TaggedError<ChangelogEntryNotFound>()(
+  "ChangelogEntryNotFound",
+  {},
+  { httpApiStatus: 404 },
+) {}
+
 export class EmailTaken extends Schema.TaggedError<EmailTaken>()(
   "EmailTaken",
   {},

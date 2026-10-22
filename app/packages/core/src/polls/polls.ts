@@ -25,6 +25,7 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 
+import { Changelog } from "../changelog/changelog.ts";
 import { Classroom } from "../classroom.ts";
 import { SessionsStore } from "../sessions/sessions-store.ts";
 import { existingSession, visibleSession } from "../sessions/visible-session.ts";
@@ -94,6 +95,7 @@ export class Polls extends Context.Service<
       const responses = yield* ResponsesStore;
       const sessions = yield* SessionsStore;
       const classroom = yield* Classroom;
+      const changelog = yield* Changelog;
       const crypto = yield* Crypto.Crypto;
 
       const forStudent = (viewer: User, polls: ReadonlyArray<StoredPoll>) =>
@@ -177,6 +179,7 @@ export class Polls extends Context.Service<
             value: response,
           });
           yield* notifyPolls(poll);
+          yield* changelog.drop({ type: "poll-opened", entityId: poll.id });
 
           const [voted] = yield* forStudent(viewer, [poll]);
 
@@ -235,6 +238,19 @@ export class Polls extends Context.Service<
             yield* notifyPolls(updated);
           }
 
+          if (next === "active") {
+            yield* changelog.record({
+              sessionId: updated.sessionId,
+              type: "poll-opened",
+              entityId: id,
+              name: updated.prompt,
+            });
+          }
+
+          if (next === "closed") {
+            yield* changelog.drop({ type: "poll-opened", entityId: id });
+          }
+
           const [withResults] = yield* forTeacher([updated]);
 
           return withResults ?? (yield* Effect.die("the updated poll was not read back"));
@@ -244,6 +260,7 @@ export class Polls extends Context.Service<
 
           yield* store.remove(id);
           yield* notifyPolls(poll);
+          yield* changelog.drop({ type: "poll-opened", entityId: id });
         }),
       });
     }),

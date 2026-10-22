@@ -13,6 +13,7 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import type * as Stream from "effect/Stream";
 
+import { Changelog } from "../changelog/changelog.ts";
 import { Classroom } from "../classroom.ts";
 import { SessionsStore } from "../sessions/sessions-store.ts";
 import { existingSession, visibleSession } from "../sessions/visible-session.ts";
@@ -59,6 +60,7 @@ export class Materials extends Context.Service<
       const files = yield* Files;
       const sessions = yield* SessionsStore;
       const classroom = yield* Classroom;
+      const changelog = yield* Changelog;
       const crypto = yield* Crypto.Crypto;
 
       const sessionFor = (viewer: User, sessionId: Ulid) =>
@@ -122,6 +124,13 @@ export class Materials extends Context.Service<
 
           yield* notifyChange(upload.sessionId, upload.isSlides);
 
+          yield* changelog.record({
+            sessionId: upload.sessionId,
+            type: "material-added",
+            entityId: id,
+            name: material.name,
+          });
+
           return material;
         }),
         setSlides: Effect.fn("Materials.setSlides")(function* (id, isSlides) {
@@ -144,6 +153,7 @@ export class Materials extends Context.Service<
 
           yield* files.remove(id);
           yield* notifyChange(removed.sessionId, removed.isSlides);
+          yield* changelog.drop({ type: "material-added", entityId: id });
         }),
       });
     }),

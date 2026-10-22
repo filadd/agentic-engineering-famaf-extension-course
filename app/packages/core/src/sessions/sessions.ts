@@ -14,6 +14,7 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 
+import { Changelog } from "../changelog/changelog.ts";
 import { Classroom } from "../classroom.ts";
 import { SessionsStore, type StoredSession } from "./sessions-store.ts";
 import { existingSession, visibleSession } from "./visible-session.ts";
@@ -70,6 +71,7 @@ export class Sessions extends Context.Service<
     Effect.gen(function* () {
       const store = yield* SessionsStore;
       const classroom = yield* Classroom;
+      const changelog = yield* Changelog;
       const crypto = yield* Crypto.Crypto;
 
       const listVisible = () => store.listEnabled();
@@ -103,6 +105,8 @@ export class Sessions extends Context.Service<
           return yield* store.create({ id, ...input });
         }),
         update: Effect.fn("Sessions.update")(function* (id, change) {
+          const previous = yield* existingSession(store, id);
+
           const session = yield* Effect.fromOption(yield* store.update(id, change)).pipe(
             Effect.mapError(() => new SessionNotFound()),
           );
@@ -110,6 +114,19 @@ export class Sessions extends Context.Service<
           yield* Effect.forEach(changedTopics(change), (topic) => classroom.notify(id, topic), {
             discard: true,
           });
+
+          if (!previous.enabled && session.enabled) {
+            yield* changelog.record({
+              sessionId: id,
+              type: "session-enabled",
+              entityId: id,
+              name: session.title,
+            });
+          }
+
+          if (previous.enabled && !session.enabled) {
+            yield* changelog.drop({ type: "session-enabled", entityId: id });
+          }
 
           return session;
         }),
