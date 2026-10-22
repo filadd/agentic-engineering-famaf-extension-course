@@ -19,7 +19,7 @@ export type UserChange = Partial<Pick<User, "name" | "avatar" | "hasAccess">>;
 // `register` also stores their first link code, in the same batch.
 export class Users extends Context.Service<
   Users,
-  Pick<Repository<User, NewUser, UserChange>, "get" | "list" | "update"> & {
+  Pick<Repository<User, NewUser, UserChange>, "get" | "find" | "list" | "update"> & {
     readonly create: (user: NewUser) => Effect.Effect<User, EmailTaken>;
     readonly register: (user: NewUser, code: NewCode) => Effect.Effect<User, EmailTaken>;
   }

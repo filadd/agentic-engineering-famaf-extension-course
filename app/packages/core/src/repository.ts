@@ -37,6 +37,7 @@ export const maxPage = 100;
 export interface Repository<A, New, Change> {
   readonly get: (id: Ulid) => Effect.Effect<Option.Option<A>>;
   readonly getMany: (ids: ReadonlyArray<Ulid>) => Effect.Effect<ReadonlyArray<A>>;
+  readonly find: (where: Where<A>) => Effect.Effect<Option.Option<A>>;
   readonly list: (options?: ListOptions<A>) => Effect.Effect<ReadonlyArray<A>>;
   readonly count: (where?: Where<A>) => Effect.Effect<number>;
   readonly create: (row: New) => Effect.Effect<A>;

@@ -156,6 +156,18 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
     return {
       get,
       getMany,
+      find: (where: Where<A>): ReturnType<Shared["find"]> =>
+        Effect.gen(function* () {
+          const rows = yield* db
+            .select()
+            .from(table)
+            .where(yield* conditionOf(where))
+            .orderBy(asc(table.id))
+            .limit(1)
+            .pipe(Effect.orDie);
+
+          return yield* firstRow(decode)(rows);
+        }),
       list: (options: ListOptions<A> = {}): ReturnType<Shared["list"]> =>
         Effect.gen(function* () {
           const orders: ReadonlyArray<Order<A>> = [
