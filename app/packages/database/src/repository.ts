@@ -59,7 +59,6 @@ const decodeAll = <T extends Table, A>(
   decode: RepositoryOptions<T, A>["decode"],
 ) => Effect.forEach(rows, decode);
 
-// A write of a table, built and not run yet.
 type Write<R> = Statement & Effect.Effect<R, EffectDrizzleQueryError>;
 
 const rowsGuardOf =
@@ -162,13 +161,15 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
     // cannot.
     const areRows = rowsGuardOf<T>();
 
+    const namesColumns = (keys: ReadonlyArray<string>) => keys.every((key) => columns[key] != null);
+
     const isChange = <R extends object>(change: R): change is R & Change<T> =>
-      Object.keys(change).every((key) => columns[key] != null);
+      namesColumns(Object.keys(change));
 
     const isConflictSet = <R extends object>(
       change: R,
     ): change is R & SQLiteUpdateSetSource<Assume<T, SQLiteTable>> =>
-      Object.keys(change).every((key) => columns[key] != null);
+      namesColumns(Object.keys(change));
 
     const deletion = (column: SQLiteColumn) => {
       const mark = { [propertyOf(column)]: now };
@@ -178,17 +179,7 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
         : Effect.die(`${column.name} is not a column of the table`);
     };
 
-    // Deletes the matching rows, or marks them as deleted, and gives back their
-    // ids.
-    const removing = (condition: SQL | undefined): Effect.Effect<Write<ReadonlyArray<object>>> =>
-      deletedAt == null
-        ? Effect.succeed(db.delete(table).where(condition).returning({ id: table.id }))
-        : Effect.map(deletion(deletedAt), (mark) =>
-            db.update(table).set(mark).where(condition).returning({ id: table.id }),
-          );
-
-    // The same, giving back the whole rows.
-    const removingRows = (condition: SQL | undefined): Effect.Effect<Write<unknown>> =>
+    const removing = (condition: SQL | undefined): Effect.Effect<Write<unknown>> =>
       deletedAt == null
         ? Effect.succeed(db.delete(table).where(condition).returning())
         : Effect.map(deletion(deletedAt), (mark) =>
@@ -197,15 +188,15 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
 
     const removeReturning = (condition: SQL | undefined) =>
       Effect.gen(function* () {
-        const rows = yield* (yield* removingRows(condition)).pipe(Effect.orDie);
+        const rows = yield* (yield* removing(condition)).pipe(Effect.orDie);
 
         return areRows(rows)
           ? yield* decodeAll(rows, decode)
           : yield* Effect.die("the removed rows did not come back");
       });
 
-    // Each write as a statement that is not run yet and reads nothing after it.
-    // The operations below run them; `batch` runs several in one D1 batch.
+    // A statement reads nothing after its write, so several can go in one D1
+    // batch.
     const statements = {
       create: (row: New<T>) => db.insert(table).values(row),
       update: (id: Ulid, change: Change<T>) =>
@@ -237,14 +228,16 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
       where: Where<A>,
       options?: RemoveOptions,
     ): Effect.Effect<number | ReadonlyArray<A>> {
-      return Effect.gen(function* () {
-        if (options?.returning === true) {
-          return yield* removeReturning(yield* conditionOf(where));
-        }
+      if (options?.returning === true) {
+        return Effect.flatMap(conditionOf(where), removeReturning);
+      }
 
+      return Effect.gen(function* () {
         const rows = yield* (yield* statements.removeWhere(where)).pipe(Effect.orDie);
 
-        return rows.length;
+        return areRows(rows)
+          ? rows.length
+          : yield* Effect.die("the removed rows did not come back");
       });
     }
 
