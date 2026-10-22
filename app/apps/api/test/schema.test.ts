@@ -12,17 +12,22 @@ import { cookieFor } from "./helpers/login.ts";
 const { test, stack } = apiTest({ name: "schema", allowedEmails: [] });
 
 // The schema goes into a database of its own, so the inserts leave the stage's
-// database untouched.
-const rejectsRowWithoutId = (sql: ReadonlyArray<string>, table: string) => {
+// database untouched. Returns the tables that took a row without an id.
+const tablesTakingRowWithoutId = (sql: ReadonlyArray<string>, tables: ReadonlyArray<string>) => {
   const database = new DatabaseSync(":memory:");
 
   try {
     database.exec(sql.join(";\n"));
-    database.exec(`INSERT INTO "${table}" (id) VALUES (NULL)`);
 
-    return false;
-  } catch (error) {
-    return String(error).includes(`NOT NULL constraint failed: ${table}.id`);
+    return tables.filter((table) => {
+      try {
+        database.exec(`INSERT INTO "${table}" (id) VALUES (NULL)`);
+
+        return true;
+      } catch (error) {
+        return !String(error).includes(`NOT NULL constraint failed: ${table}.id`);
+      }
+    });
   } finally {
     database.close();
   }
@@ -58,6 +63,6 @@ test(
       "sessions",
       "users",
     ]);
-    expect(tables.filter((table) => !rejectsRowWithoutId(sql, table))).toEqual([]);
+    expect(tablesTakingRowWithoutId(sql, tables)).toEqual([]);
   }),
 );
