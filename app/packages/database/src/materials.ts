@@ -45,15 +45,15 @@ export const D1Materials = Layer.effect(
       ...repository,
       create: (material) =>
         repository
-          .batch(
-            material.isSlides
+          .batch([
+            ...(material.isSlides
               ? [
                   unmarkOtherSlides(material.sessionId, material.id),
                   resetPosition(material.sessionId),
-                  repository.statements.create(material),
                 ]
-              : [repository.statements.create(material)],
-          )
+              : []),
+            repository.statements.create(material),
+          ])
           .pipe(Effect.as(material)),
       setSlides: (id, isSlides) =>
         Effect.gen(function* () {
@@ -65,18 +65,11 @@ export const D1Materials = Layer.effect(
 
           const material = current.value;
 
-          yield* repository.batch(
-            isSlides
-              ? [
-                  unmarkOtherSlides(material.sessionId, id),
-                  repository.statements.update(id, { isSlides: true }),
-                  resetPosition(material.sessionId),
-                ]
-              : [
-                  repository.statements.update(id, { isSlides: false }),
-                  resetPosition(material.sessionId),
-                ],
-          );
+          yield* repository.batch([
+            ...(isSlides ? [unmarkOtherSlides(material.sessionId, id)] : []),
+            repository.statements.update(id, { isSlides }),
+            resetPosition(material.sessionId),
+          ]);
 
           return Option.some({ ...material, isSlides });
         }),
