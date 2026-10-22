@@ -31,14 +31,13 @@ export const D1Codes = Layer.effect(
       decode: (row) => decodeCode(row).pipe(Effect.orDie),
     });
 
-    const current = () =>
-      Effect.map(
-        repository.find(currentEnrollment),
-        Option.map((code) => code.code),
-      );
+    const current = Effect.map(
+      repository.find(currentEnrollment),
+      Option.map((code) => code.code),
+    );
 
     return Codes.of({
-      currentEnrollment: current,
+      currentEnrollment: () => current,
       // The current enrollment code is unique through a partial index, which an
       // upsert cannot name as its conflict target.
       ensureEnrollment: (candidate) =>
@@ -49,7 +48,7 @@ export const D1Codes = Layer.effect(
             .onConflictDoNothing()
             .pipe(Effect.orDie);
 
-          return Option.getOrElse(yield* current(), () => candidate.code);
+          return Option.getOrElse(yield* current, () => candidate.code);
         }),
       regenerateEnrollment: (next) =>
         Effect.gen(function* () {
