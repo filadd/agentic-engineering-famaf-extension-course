@@ -5,7 +5,7 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 
 import { announcementMail } from "./announcement-mail.ts";
-import { linkMail } from "./link-mail.ts";
+import { magicLinkMail } from "./magic-link-mail.ts";
 
 export const EmailSendingMailer = (email: Cloudflare.Email.SendClient, from: string) =>
   Layer.effect(
@@ -21,7 +21,7 @@ export const EmailSendingMailer = (email: Cloudflare.Email.SendClient, from: str
         );
 
       return Mailer.of({
-        sendLink: (to, url) => send({ from, to, ...linkMail(to, url) }),
+        sendLink: (to, url) => send({ from, to, ...magicLinkMail(to, url) }),
         sendAnnouncement: (mail) =>
           send({ from, to: mail.to, bcc: [...mail.bcc], ...announcementMail(mail) }),
       });

@@ -1,6 +1,6 @@
 import { escapeHtml } from "./escape-html.ts";
 
-export const linkMail = (to: string, url: string) => ({
+export const magicLinkMail = (to: string, url: string) => ({
   subject: "Tu link para entrar a kurasu",
   text: `Hola,
 
