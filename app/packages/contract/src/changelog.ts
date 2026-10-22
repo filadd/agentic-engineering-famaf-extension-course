@@ -15,7 +15,7 @@ export const ChangelogEntryType = Schema.Literals(Object.values(changelogEntryTy
 
 export type ChangelogEntryType = typeof ChangelogEntryType.Type;
 
-export const maxChangelogEntries = 100;
+export const maxChangelogEntries = 50;
 
 // Something new in a session that the teacher has not announced yet. `name`
 // keeps the session title, material name or poll prompt as it was when the

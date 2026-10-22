@@ -348,12 +348,12 @@ test(
 );
 
 test(
-  "a session with 105 entries lists the 100 newest, from the oldest to the newest",
+  "a session with 105 entries lists the 50 newest, from the oldest to the newest",
   Effect.gen(function* () {
     const entries = yield* entriesOf(session(23));
 
-    expect(entries).toHaveLength(100);
-    expect(entries[0]?.name).toBe("Apunte 006");
+    expect(entries).toHaveLength(50);
+    expect(entries[0]?.name).toBe("Apunte 056");
     expect(entries.at(-1)?.name).toBe("Apunte 105");
   }),
 );

@@ -113,6 +113,28 @@ test(
 );
 
 test(
+  "an announcement with more than 50 entries is rejected and sends nothing",
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+
+    const response = yield* announce(url, teacher, {
+      sessionId: session(11),
+      message: "Muchas novedades",
+      entryIds: [
+        "01AE1100000000000000000000",
+        ...Array.from({ length: 50 }, (_, n) =>
+          `01AX${String(n).padStart(2, "0")}`.padEnd(26, "0"),
+        ),
+      ],
+    });
+
+    expect(response.status).toBe(400);
+    expect(yield* noMailWithSubject(stage, subjectOf("Demasiadas novedades"))).toBe(true);
+    expect(yield* pendingIds(url, teacher, session(11))).toEqual(["01AE1100000000000000000000"]);
+  }),
+);
+
+test(
   "chosen ids that are no longer pending in the session are left out without an error",
   Effect.gen(function* () {
     const { url } = yield* stack;
