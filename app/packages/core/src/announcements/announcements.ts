@@ -1,3 +1,4 @@
+import { maxUsers } from "@kurasu/contract/admin-users";
 import type { AnnouncementInput } from "@kurasu/contract/announcements";
 import {
   EmptyAnnouncement,
@@ -79,7 +80,7 @@ export class Announcements extends Context.Service<
                         where: { id: input.entryIds, sessionId: session.id },
                         orderBy: { field: "createdAt", direction: "asc" },
                       }),
-                users: users.list({ where: { hasAccess: true } }),
+                users: users.list({ where: { hasAccess: true }, limit: maxUsers }),
                 url: sessionUrl(session.id),
               },
               { concurrency: "unbounded" },

@@ -1,3 +1,4 @@
+import { maxUsers } from "@kurasu/contract/admin-users";
 import { OwnAccess, UserNotFound } from "@kurasu/contract/errors";
 import { CurrentUser } from "@kurasu/contract/middleware";
 import { Codes } from "@kurasu/core/access/codes";
@@ -29,6 +30,7 @@ export const AdminUsersHandlers = (webOrigin: string) => {
               { field: "name", direction: "asc", nulls: "last" },
               { field: "email", direction: "asc" },
             ],
+            limit: maxUsers,
           });
         }),
       )
