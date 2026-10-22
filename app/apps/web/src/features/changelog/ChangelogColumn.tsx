@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "../../ui/Button.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
+import { AnnouncementDialog } from "./AnnouncementDialog.tsx";
 import { changelogExamples } from "./changelog-examples.ts";
 import { ChangelogEntries } from "./ChangelogEntries.tsx";
 import { useChangelog } from "./useChangelog.ts";
@@ -20,6 +21,7 @@ export const ChangelogColumn = ({ sessionId, enabled }: Props) => {
   const changelog = useChangelog(sessionId);
 
   const [chosen, setChosen] = useState<ReadonlySet<string>>(new Set());
+  const [composing, setComposing] = useState(false);
 
   const toggle = (id: string) =>
     setChosen((current) => {
@@ -51,11 +53,22 @@ export const ChangelogColumn = ({ sessionId, enabled }: Props) => {
             Habilitá la sesión para mandar un anuncio.
           </span>
         ) : null}
-        <Button variant="pill-dark" disabled={enabled !== true}>
+        <Button variant="pill-dark" disabled={enabled !== true} onClick={() => setComposing(true)}>
           <Icon name="mail" size={16} />
           Redactar anuncio
         </Button>
       </div>
+      {composing ? (
+        <AnnouncementDialog
+          sessionId={sessionId}
+          entries={(changelog.data ?? []).filter((entry) => chosen.has(entry.id))}
+          onClose={() => setComposing(false)}
+          onSent={(ids) => {
+            setChosen((current) => new Set([...current].filter((id) => !ids.includes(id))));
+            setComposing(false);
+          }}
+        />
+      ) : null}
     </section>
   );
 };

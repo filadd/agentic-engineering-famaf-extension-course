@@ -331,3 +331,119 @@ describe("session page: the changelog list after other actions", () => {
     expect(await runPollAction("Borrar", true)).toBe(1);
   });
 });
+
+const composeWith = async (chosenNames: ReadonlyArray<string>) => {
+  const opened = await openSession({ changelog: [enabledEntry, slidesEntry, pollEntry] });
+
+  await rows();
+
+  for (const name of chosenNames) {
+    await opened.user.click(screen.getByRole("checkbox", { name: `Incluir ${name}` }));
+  }
+
+  await opened.user.click(screen.getByRole("button", { name: "Redactar anuncio" }));
+
+  return { ...opened, dialog: screen.getByRole("dialog", { name: "Anuncio" }) };
+};
+
+describe("session page: writing and sending the announcement", () => {
+  test("sending a message with two of three entries waits, closes, shows the toast and keeps the third entry", async () => {
+    const { user, dialog, changelog } = await composeWith([slidesEntry.name, enabledEntry.name]);
+    const held = heldResponse("post", "/admin/announcements");
+
+    server.use(held.handler);
+
+    expect(
+      within(dialog)
+        .getAllByRole("listitem")
+        .map((row) => row.textContent),
+    ).toEqual([
+      expect.stringContaining(enabledEntry.name),
+      expect.stringContaining(slidesEntry.name),
+    ]);
+
+    await user.type(within(dialog).getByLabelText("Mensaje"), "¡Nos vemos el jueves!");
+    await user.click(within(dialog).getByRole("button", { name: "Enviar anuncio" }));
+
+    expect(within(dialog).getByRole("button", { name: "Enviando…" })).toBeTruthy();
+    expect(within(dialog).getByRole("button", { name: "Cancelar" }).hasAttribute("disabled")).toBe(
+      true,
+    );
+    expect(within(dialog).getByRole("button", { name: "Cerrar" }).hasAttribute("disabled")).toBe(
+      true,
+    );
+
+    held.release();
+
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Anuncio" })).toBeNull());
+    expect(await screen.findByText("Anuncio enviado.")).toBeTruthy();
+    expect(changelog.announcements).toEqual([
+      {
+        sessionId: planning.id,
+        message: "¡Nos vemos el jueves!",
+        entryIds: [enabledEntry.id, slidesEntry.id],
+      },
+    ]);
+    await waitFor(async () =>
+      expect((await rows()).map((row) => row.textContent)).toEqual([
+        expect.stringContaining(pollEntry.name),
+      ]),
+    );
+  });
+
+  test("sending only a message says no entry was chosen and sends no entry ids", async () => {
+    const { user, dialog, changelog } = await composeWith([]);
+
+    expect(within(dialog).getByText("Ninguna novedad elegida.")).toBeTruthy();
+
+    await user.type(within(dialog).getByLabelText("Mensaje"), "Solo un aviso");
+    await user.click(within(dialog).getByRole("button", { name: "Enviar anuncio" }));
+
+    await waitFor(() =>
+      expect(changelog.announcements).toEqual([
+        { sessionId: planning.id, message: "Solo un aviso", entryIds: [] },
+      ]),
+    );
+  });
+
+  test("chosen entries alone are enough to send, with an empty message", async () => {
+    const { user, dialog, changelog } = await composeWith([pollEntry.name]);
+    const send = within(dialog).getByRole("button", { name: "Enviar anuncio" });
+
+    expect(send.hasAttribute("disabled")).toBe(false);
+
+    await user.click(send);
+
+    await waitFor(() =>
+      expect(changelog.announcements).toEqual([
+        { sessionId: planning.id, message: "", entryIds: [pollEntry.id] },
+      ]),
+    );
+  });
+
+  test("without a message or chosen entries the announcement cannot be sent", async () => {
+    const { dialog } = await composeWith([]);
+
+    expect(
+      within(dialog).getByRole("button", { name: "Enviar anuncio" }).hasAttribute("disabled"),
+    ).toBe(true);
+  });
+
+  test("a failed send keeps the dialog open with its message, its entries and the error, without a toast", async () => {
+    const { user, dialog } = await composeWith([slidesEntry.name]);
+
+    server.use(failingRoute("post", "/admin/announcements"));
+
+    await user.type(within(dialog).getByLabelText("Mensaje"), "No sale");
+    await user.click(within(dialog).getByRole("button", { name: "Enviar anuncio" }));
+
+    expect(
+      await within(dialog).findByText("No se pudo enviar el anuncio. Probá de nuevo."),
+    ).toBeTruthy();
+    expect(screen.getByRole("dialog", { name: "Anuncio" })).toBe(dialog);
+    expect(within(dialog).getByLabelText<HTMLTextAreaElement>("Mensaje").value).toBe("No sale");
+    expect(within(dialog).getByText(slidesEntry.name)).toBeTruthy();
+    expect(screen.getAllByText("No se pudo enviar el anuncio. Probá de nuevo.")).toHaveLength(1);
+    expect(screen.queryByText("Anuncio enviado.")).toBeNull();
+  });
+});
