@@ -39,7 +39,6 @@ export const D1Hands = Layer.effect(
     });
 
     return HandsStore.of({
-      list: repository.list,
       upsert: repository.upsert,
       removeWhere: repository.removeWhere,
       raisedIn: (sessionId) =>

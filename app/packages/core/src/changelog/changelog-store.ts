@@ -11,6 +11,6 @@ export class ChangelogStore extends Context.Service<
   ChangelogStore,
   Pick<
     Repository<ChangelogEntry, NewChangelogEntry, never>,
-    "upsert" | "list" | "getMany" | "remove" | "removeWhere"
+    "upsert" | "list" | "remove" | "removeWhere"
   >
 >()("kurasu/ChangelogStore") {}

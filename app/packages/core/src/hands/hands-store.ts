@@ -18,7 +18,7 @@ export type NewHand = StoredHand;
 // query.
 export class HandsStore extends Context.Service<
   HandsStore,
-  Pick<Repository<StoredHand, NewHand, never>, "list" | "upsert" | "removeWhere"> & {
+  Pick<Repository<StoredHand, NewHand, never>, "upsert" | "removeWhere"> & {
     readonly raisedIn: (sessionId: Ulid) => Effect.Effect<ReadonlyArray<RaisedHand>>;
   }
 >()("kurasu/HandsStore") {}
