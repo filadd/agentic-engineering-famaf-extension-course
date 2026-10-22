@@ -24,7 +24,12 @@ export const AdminUsersHandlers = (webOrigin: string) => {
         Effect.gen(function* () {
           const users = yield* Users;
 
-          return yield* users.list({ orderBy: { field: "email", direction: "asc" } });
+          return yield* users.list({
+            orderBy: [
+              { field: "name", direction: "asc", nulls: "last" },
+              { field: "email", direction: "asc" },
+            ],
+          });
         }),
       )
       .handle("add", ({ payload }) =>

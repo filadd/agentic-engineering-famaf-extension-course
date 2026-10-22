@@ -20,9 +20,11 @@ import {
   getTableColumns,
   gt,
   inArray,
+  isNotNull,
   isNull,
   lt,
   or,
+  sql,
   type SQL,
 } from "drizzle-orm";
 import type {
@@ -69,6 +71,9 @@ const rowsGuardOf =
 const ordersOf = <A>(orderBy: ListOptions<A>["orderBy"]): ReadonlyArray<Order<A>> =>
   orderBy == null ? [] : "field" in orderBy ? [orderBy] : orderBy;
 
+const nullsOf = <A>(order: Order<A>) =>
+  order.nulls ?? (order.direction === "asc" ? "first" : "last");
+
 /**
  * The shared operations of a D1 store over one table, as the core's
  * `Repository` declares them. Every row read goes through `decode`. With
@@ -111,6 +116,30 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
 
     // The rows after `after` in the given order: those past it on the first
     // field, or tied on it and past it on the next, and so on.
+    interface Key {
+      readonly column: SQLiteColumn;
+      readonly value: unknown;
+      readonly direction: Order<A>["direction"];
+      readonly nulls: "first" | "last";
+    }
+
+    const tiedWith = (key: Key) =>
+      key.value == null ? isNull(key.column) : eq(key.column, key.value);
+
+    // The rows that sort after the key's value. A comparison with null is never
+    // true, so the nulls join the following rows only when they go last, and a
+    // null value is followed by every non-null when the nulls go first.
+    const followingOf = (key: Key) => {
+      if (key.value == null) {
+        return key.nulls === "first" ? isNotNull(key.column) : sql`0`;
+      }
+
+      const beyond =
+        key.direction === "asc" ? gt(key.column, key.value) : lt(key.column, key.value);
+
+      return key.nulls === "last" ? or(beyond, isNull(key.column)) : beyond;
+    };
+
     const afterOf = (orders: ReadonlyArray<Order<A>>, after: A) =>
       Effect.map(
         Effect.forEach(orders, (order) =>
@@ -118,15 +147,13 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
             column,
             value: toColumnValue(after[order.field]),
             direction: order.direction,
+            nulls: nullsOf(order),
           })),
         ),
         (keys) =>
           or(
             ...keys.map((key, index) =>
-              and(
-                ...keys.slice(0, index).map((tied) => eq(tied.column, tied.value)),
-                key.direction === "asc" ? gt(key.column, key.value) : lt(key.column, key.value),
-              ),
+              and(...keys.slice(0, index).map(tiedWith), followingOf(key)),
             ),
           ),
       );
@@ -268,8 +295,10 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
           ];
 
           const keys = yield* Effect.forEach(orders, (order) =>
-            Effect.map(columnOf(order.field), (column) =>
-              order.direction === "asc" ? asc(column) : desc(column),
+            Effect.map(
+              columnOf(order.field),
+              (column) =>
+                sql`${order.direction === "asc" ? asc(column) : desc(column)} nulls ${sql.raw(nullsOf(order))}`,
             ),
           );
 

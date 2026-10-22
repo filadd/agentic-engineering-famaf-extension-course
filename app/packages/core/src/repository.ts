@@ -11,9 +11,12 @@ export type Where<A> = {
 export interface Order<A> {
   readonly field: keyof A & string;
   readonly direction: "asc" | "desc";
+  readonly nulls?: "first" | "last";
 }
 
-// `orderBy` always ends with the id ascending, so the order is total. A page
+// `orderBy` always ends with the id ascending, so the order is total. Without
+// `nulls`, nulls go first when ascending and last when descending, as in
+// SQLite. A page
 // holds at most `maxPage` rows, and `after` is the last row of the previous
 // page.
 export interface ListOptions<A> {

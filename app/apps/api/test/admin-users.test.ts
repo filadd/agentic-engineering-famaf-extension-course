@@ -121,6 +121,30 @@ test(
 );
 
 test(
+  "the users are listed by name and then by email, with the users without a name last",
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+    const cookie = yield* teacherLogin(url);
+
+    yield* request(url, "POST", "/api/admin/users", {
+      cookie,
+      body: { email: "sin-nombre@usuarios.kurasu.test" },
+    });
+
+    const response = yield* request(url, "GET", "/api/admin/users", { cookie });
+    const users = yield* bodyOf(Schema.Array(User), response);
+    const firstWithoutName = users.findIndex((user) => user.name == null);
+    const named = users.slice(0, firstWithoutName);
+    const unnamed = users.slice(firstWithoutName);
+
+    expect(firstWithoutName).toBeGreaterThan(0);
+    expect(named.map((user) => user.name)).toEqual(["Ana", "Bruno", "Carla", "Diego", "Profe"]);
+    expect(unnamed.every((user) => user.name == null)).toBe(true);
+    expect(unnamed.map((user) => user.email)).toEqual(unnamed.map((user) => user.email).toSorted());
+  }),
+);
+
+test(
   "a student calling an admin endpoint is not a teacher",
   Effect.gen(function* () {
     const { url } = yield* stack;
