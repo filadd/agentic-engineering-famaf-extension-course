@@ -1,6 +1,6 @@
 import { ResponseValue } from "@kurasu/contract/polls";
 import { Ulid } from "@kurasu/contract/ulid";
-import { ResponsesStore, type ResponseCounts } from "@kurasu/core/polls/responses-store";
+import { ResponsesStore } from "@kurasu/core/polls/responses-store";
 import { sql } from "drizzle-orm";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
@@ -29,12 +29,6 @@ const decodeCountRows = Schema.decodeUnknownEffect(
 );
 
 const maxWords = 100;
-
-interface Mutable<C extends ResponseCounts> {
-  count: number;
-  values: Array<C["values"][number]>;
-  words: Array<C["words"][number]>;
-}
 
 export const D1Responses = Layer.effect(
   ResponsesStore,
@@ -82,30 +76,24 @@ export const D1Responses = Layer.effect(
           }
 
           const rows = yield* countRows(JSON.stringify(pollIds)).pipe(
-            Effect.orDie,
             Effect.flatMap(decodeCountRows),
             Effect.orDie,
           );
 
-          const counts = new Map<string, Mutable<ResponseCounts>>();
-
-          for (const row of rows) {
-            const current = counts.get(row.pollId) ?? { count: 0, values: [], words: [] };
-
-            if (row.word == null) {
-              current.count += row.count;
-
-              if (row.value != null) {
-                current.values.push({ value: row.value, count: row.count });
-              }
-            } else {
-              current.words.push({ word: row.word, count: row.count });
-            }
-
-            counts.set(row.pollId, current);
-          }
-
-          return counts;
+          return new Map(
+            [...Map.groupBy(rows, (row) => row.pollId)].map(([pollId, pollRows]) => [
+              pollId,
+              {
+                count: pollRows.reduce((sum, row) => (row.word == null ? sum + row.count : sum), 0),
+                values: pollRows.flatMap(({ value, word, count }) =>
+                  value == null || word != null ? [] : [{ value, count }],
+                ),
+                words: pollRows.flatMap(({ word, count }) =>
+                  word == null ? [] : [{ word, count }],
+                ),
+              },
+            ]),
+          );
         }),
     });
   }),
