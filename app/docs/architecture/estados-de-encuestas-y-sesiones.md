@@ -76,6 +76,8 @@ Una pregunta (`Question`) está abierta o respondida, según su campo `answered`
 
 En el inicio, el estudiante ve solo las sesiones habilitadas, en el orden de la lista del profe. Arriba está la sesión destacada, la habilitada que está más adelante en la lista. Es la única desde la que se entra al aula; las demás están en "Sesiones anteriores". Cada card muestra el resumen, las encuestas activas, donde el estudiante vota, y los links a Material, Encuestas y Preguntas, sin cantidades. Cada link abre un modal, que en celular es una hoja desde abajo y en escritorio va centrado. Cada card que se pliega muestra un caret, que apunta hacia abajo cuando está plegada y hacia arriba cuando está desplegada, como la lista de Presentes. Una sesión anterior muestra su material, sus encuestas cerradas y sus preguntas para leer, y en ella no se pregunta ni se vota.
 
+Con `?sesion=<id>` en la URL, el inicio despliega la card de esa sesión entre las anteriores y hace scroll hasta dejarla en el centro de la pantalla. Es el link que lleva el mail de un anuncio (ver [novedades por mail](novedades-por-mail.md)). Si el id es el de la destacada, el de una sesión deshabilitada o borrada, o no existe, el inicio se ve como sin el parámetro. El parámetro queda en la URL, así que al recargar la card vuelve a desplegarse.
+
 El inicio no recibe avisos: una encuesta que el profe activa o cierra aparece en el inicio cuando la web vuelve a pedir sus datos, cada cinco minutos, o cuando el estudiante vuelve a cargar la página (ver [componentes](componentes.md)).
 
 [Prototipo del inicio del estudiante, en celular y escritorio](../prototipos/inicio-responsive.html)
