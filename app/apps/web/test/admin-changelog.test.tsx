@@ -1,7 +1,7 @@
 import type { ChangelogEntry } from "@kurasu/contract/changelog";
 import type { AdminPoll } from "@kurasu/contract/polls";
 import { screen, waitFor, within } from "@testing-library/react";
-import { http, HttpResponse } from "msw";
+import { http, type HttpHandler, HttpResponse } from "msw";
 import { describe, expect, test } from "vitest";
 
 import { queryKeys } from "../src/api/query-keys.ts";
@@ -30,17 +30,17 @@ interface Options {
   tab?: string;
 }
 
-const openSession = async ({
-  enabled = true,
-  changelog = [],
-  polls = [],
-  tab = "contenido",
-}: Options = {}) => {
+// `overrides` answer before the page's own handlers.
+const openSession = async (
+  { enabled = true, changelog = [], polls = [], tab = "contenido" }: Options = {},
+  overrides: ReadonlyArray<HttpHandler> = [],
+) => {
   const materials = materialStore([material(1, planning.id, "Apunte.pdf")]);
   const pollsStore = pollStore(polls);
   const page = teacherSession({ sessions: [{ ...sessionDetail(planning), enabled }], changelog });
 
   server.use(...materials.handlers, ...pollsStore.handlers, ...page.handlers);
+  server.use(...overrides);
 
   const rendered = await renderRoute(`/admin/sesiones/${planning.id}?tab=${tab}`);
 
@@ -108,8 +108,7 @@ describe("session page: pending changelog entries", () => {
   test("the column shows a skeleton while the list loads", async () => {
     const held = heldResponse("get", changelogPath);
 
-    server.use(held.handler);
-    await openSession();
+    await openSession({}, [held.handler]);
 
     const box = await column();
 
