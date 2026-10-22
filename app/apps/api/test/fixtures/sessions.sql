@@ -18,5 +18,5 @@ INSERT INTO polls (id, session_id, type, status, prompt, options, scale_min_labe
   ('01SSPA00000000000000000000', '01SSE500000000000000000000', 'scale', 'active', '¿Cómo venimos?', NULL, 'Mal', 'Bien', NULL),
   ('01SSNA00000000000000000000', '01SSH800000000000000000000', 'words', 'draft', '¿Qué esperás?', NULL, NULL, NULL, NULL);
 
-INSERT INTO raised_hands (session_id, user_id) VALUES
-  ('01SSE500000000000000000000', '01SSSTD0000000000000000000');
+INSERT INTO raised_hands (id, session_id, user_id) VALUES
+  ('01SRHN01000000000000000000', '01SSE500000000000000000000', '01SSSTD0000000000000000000');

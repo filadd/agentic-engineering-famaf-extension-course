@@ -91,6 +91,9 @@ export const polls = sqliteTable(
 );
 
 // One response per student and poll; `value` holds the ResponseValue as JSON.
+// The `id` of `responses`, `question_votes` and `raised_hands` is NOT NULL in
+// the database, written by hand in the migration: drizzle-kit writes no NOT NULL
+// for a primary key, so a table rebuild it generates would drop it.
 export const responses = sqliteTable(
   "responses",
   {

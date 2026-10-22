@@ -13,7 +13,7 @@ ALTER TABLE `raised_hands` ADD `id` text;--> statement-breakpoint
 ALTER TABLE `responses` ADD `id` text;--> statement-breakpoint
 PRAGMA foreign_keys=OFF;--> statement-breakpoint
 CREATE TABLE `__new_question_votes` (
-	`id` text PRIMARY KEY,
+	`id` text PRIMARY KEY NOT NULL,
 	`question_id` text NOT NULL,
 	`user_id` text NOT NULL,
 	CONSTRAINT `fk_question_votes_question_id_questions_id_fk` FOREIGN KEY (`question_id`) REFERENCES `questions`(`id`),
@@ -26,7 +26,7 @@ ALTER TABLE `__new_question_votes` RENAME TO `question_votes`;--> statement-brea
 PRAGMA foreign_keys=ON;--> statement-breakpoint
 PRAGMA foreign_keys=OFF;--> statement-breakpoint
 CREATE TABLE `__new_raised_hands` (
-	`id` text PRIMARY KEY,
+	`id` text PRIMARY KEY NOT NULL,
 	`session_id` text NOT NULL,
 	`user_id` text NOT NULL,
 	CONSTRAINT `fk_raised_hands_session_id_sessions_id_fk` FOREIGN KEY (`session_id`) REFERENCES `sessions`(`id`),
@@ -39,7 +39,7 @@ ALTER TABLE `__new_raised_hands` RENAME TO `raised_hands`;--> statement-breakpoi
 PRAGMA foreign_keys=ON;--> statement-breakpoint
 PRAGMA foreign_keys=OFF;--> statement-breakpoint
 CREATE TABLE `__new_responses` (
-	`id` text PRIMARY KEY,
+	`id` text PRIMARY KEY NOT NULL,
 	`poll_id` text NOT NULL,
 	`user_id` text NOT NULL,
 	`value` text NOT NULL,
