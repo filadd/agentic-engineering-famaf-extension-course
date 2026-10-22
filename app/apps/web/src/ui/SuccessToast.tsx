@@ -5,7 +5,6 @@ interface Props {
   onClose: () => void;
 }
 
-// The same card as ErrorToast, with a check in place of the danger mark.
 export const SuccessToast = ({ text, onClose }: Props) => (
   <div
     role="status"

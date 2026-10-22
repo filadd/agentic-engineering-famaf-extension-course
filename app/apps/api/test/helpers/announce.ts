@@ -7,7 +7,6 @@ import { bodyOf } from "./body.ts";
 import { request } from "./http.ts";
 import { cookieFor } from "./login.ts";
 
-// Sends an announcement as `teacherId`, as the web does.
 export const announce = (url: string, teacherId: string, input: AnnouncementInput) =>
   Effect.gen(function* () {
     const cookie = yield* cookieFor(teacherId);
@@ -15,7 +14,6 @@ export const announce = (url: string, teacherId: string, input: AnnouncementInpu
     return yield* request(url, "POST", "/api/admin/announcements", { cookie, body: input });
   });
 
-// The ids of the entries still pending in a session.
 export const pendingIds = (url: string, teacherId: string, sessionId: string) =>
   Effect.gen(function* () {
     const cookie = yield* cookieFor(teacherId);

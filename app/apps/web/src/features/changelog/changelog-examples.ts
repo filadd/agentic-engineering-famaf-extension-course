@@ -10,8 +10,7 @@ const entry = (n: number, type: ChangelogEntry["type"], name: string): Changelog
   createdAt: DateTime.makeUnsafe(0),
 });
 
-// What a skeleton draws in place of the pending entries, with names of the
-// usual length.
+// Names of the usual length, so the skeleton takes the height of a real list.
 export const changelogExamples: ReadonlyArray<ChangelogEntry> = [
   entry(1, "session-enabled", "Planificación y revisión"),
   entry(2, "material-added", "Slides de la sesión.html"),
