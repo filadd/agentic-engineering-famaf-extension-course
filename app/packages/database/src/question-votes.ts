@@ -13,11 +13,7 @@ const decodeVote = Schema.decodeUnknownEffect(
 
 export const D1QuestionVotes = Layer.effect(
   QuestionVotesStore,
-  Effect.gen(function* () {
-    const repository = yield* repositoryOf(questionVotes, {
-      decode: (row) => decodeVote(row).pipe(Effect.orDie),
-    });
-
-    return QuestionVotesStore.of(repository);
-  }),
+  repositoryOf(questionVotes, {
+    decode: (row) => decodeVote(row).pipe(Effect.orDie),
+  }).pipe(Effect.map(QuestionVotesStore.of)),
 );

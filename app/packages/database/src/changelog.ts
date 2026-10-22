@@ -13,11 +13,7 @@ const decodeEntry = Schema.decodeUnknownEffect(
 
 export const D1Changelog = Layer.effect(
   ChangelogStore,
-  Effect.gen(function* () {
-    const repository = yield* repositoryOf(changelogEntries, {
-      decode: (row) => decodeEntry(row).pipe(Effect.orDie),
-    });
-
-    return ChangelogStore.of(repository);
-  }),
+  repositoryOf(changelogEntries, {
+    decode: (row) => decodeEntry(row).pipe(Effect.orDie),
+  }).pipe(Effect.map(ChangelogStore.of)),
 );
