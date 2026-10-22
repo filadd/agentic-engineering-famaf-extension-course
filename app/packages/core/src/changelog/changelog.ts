@@ -51,13 +51,17 @@ export class Changelog extends Context.Service<
           store.removeWhere({ type, entityId }).pipe(Effect.asVoid, logFailure("dropped")),
         // The newest entries, shown from the oldest to the newest.
         list: Effect.fn("Changelog.list")(function* (sessionId) {
-          yield* existingSession(sessions, sessionId);
-
-          const newest = yield* store.list({
-            where: { sessionId },
-            orderBy: { field: "createdAt", direction: "desc" },
-            limit: maxChangelogEntries,
-          });
+          const [, newest] = yield* Effect.all(
+            [
+              existingSession(sessions, sessionId),
+              store.list({
+                where: { sessionId },
+                orderBy: { field: "createdAt", direction: "desc" },
+                limit: maxChangelogEntries,
+              }),
+            ],
+            { concurrency: "unbounded" },
+          );
 
           return newest.toReversed();
         }),

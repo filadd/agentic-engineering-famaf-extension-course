@@ -101,8 +101,7 @@ export default class Api extends Cloudflare.Worker<Api>()(
 
     const services = Layer.mergeAll(
       Access.layer(webOrigin),
-      Announcements.layer(webOrigin),
-      Sessions.layer,
+      Announcements.layer(webOrigin).pipe(Layer.provideMerge(Sessions.layer)),
       Polls.layer,
       Materials.layer,
       Questions.layer,

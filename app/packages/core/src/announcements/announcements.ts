@@ -10,11 +10,13 @@ import * as Arr from "effect/Array";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import * as Option from "effect/Option";
 
 import { Users } from "../access/users.ts";
 import { ChangelogStore } from "../changelog/changelog-store.ts";
 import { Mailer } from "../mail/mailer.ts";
 import { SessionsStore } from "../sessions/sessions-store.ts";
+import { Sessions } from "../sessions/sessions.ts";
 import { existingSession } from "../sessions/visible-session.ts";
 
 // Email Sending takes up to 50 addresses per mail, and the sender takes one.
@@ -43,14 +45,15 @@ export class Announcements extends Context.Service<
       Announcements,
       Effect.gen(function* () {
         const sessions = yield* SessionsStore;
+        const visibleSessions = yield* Sessions;
         const changelog = yield* ChangelogStore;
         const users = yield* Users;
         const mailer = yield* Mailer;
 
         const sessionUrl = Effect.fnUntraced(function* (sessionId: string) {
-          const featured = (yield* sessions.listEnabled()).at(-1);
+          const featured = yield* visibleSessions.featured();
 
-          return featured?.id === sessionId
+          return Option.exists(featured, (session) => session.id === sessionId)
             ? `${webOrigin}/`
             : `${webOrigin}/?sesion=${encodeURIComponent(sessionId)}`;
         });
@@ -63,13 +66,24 @@ export class Announcements extends Context.Service<
               return yield* new SessionDisabled();
             }
 
-            const entries =
-              input.entryIds.length === 0
-                ? []
-                : yield* changelog.list({
-                    where: { id: input.entryIds, sessionId: session.id },
-                    orderBy: { field: "createdAt", direction: "asc" },
-                  });
+            const {
+              entries,
+              users: withAccess,
+              url,
+            } = yield* Effect.all(
+              {
+                entries:
+                  input.entryIds.length === 0
+                    ? Effect.succeed([])
+                    : changelog.list({
+                        where: { id: input.entryIds, sessionId: session.id },
+                        orderBy: { field: "createdAt", direction: "asc" },
+                      }),
+                users: users.list({ where: { hasAccess: true } }),
+                url: sessionUrl(session.id),
+              },
+              { concurrency: "unbounded" },
+            );
 
             const message = input.message.trim() === "" ? "" : input.message;
 
@@ -77,11 +91,9 @@ export class Announcements extends Context.Service<
               return yield* new EmptyAnnouncement();
             }
 
-            const recipients = (yield* users.list({ where: { hasAccess: true } }))
+            const recipients = withAccess
               .filter((user) => user.id !== sender.id)
               .map((user) => user.email);
-
-            const url = yield* sessionUrl(session.id);
 
             const sent = yield* Effect.forEach(
               Arr.chunksOf(recipients, batchSize),
