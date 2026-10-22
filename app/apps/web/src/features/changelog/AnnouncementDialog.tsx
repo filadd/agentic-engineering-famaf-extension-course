@@ -12,14 +12,14 @@ interface Props {
   sessionId: string;
   entries: ReadonlyArray<ChangelogEntry>;
   onClose: () => void;
-  onSent: (ids: ReadonlyArray<string>) => void;
+  onSent: () => void;
 }
 
 // The chosen entries are shown, not chosen here: they change in the column.
 export const AnnouncementDialog = ({ sessionId, entries, onClose, onSent }: Props) => {
   const [message, setMessage] = useState("");
 
-  const send = useSendAnnouncement({ onSuccess: (_, input) => onSent(input.entryIds) });
+  const send = useSendAnnouncement({ onSuccess: onSent });
 
   return (
     <Sheet open onClose={onClose} title="Anuncio" width="normal" pending={send.isPending}>

@@ -63,8 +63,8 @@ export const ChangelogColumn = ({ sessionId, enabled }: Props) => {
           sessionId={sessionId}
           entries={(changelog.data ?? []).filter((entry) => chosen.has(entry.id))}
           onClose={() => setComposing(false)}
-          onSent={(ids) => {
-            setChosen((current) => new Set([...current].filter((id) => !ids.includes(id))));
+          onSent={() => {
+            setChosen(new Set());
             setComposing(false);
           }}
         />
