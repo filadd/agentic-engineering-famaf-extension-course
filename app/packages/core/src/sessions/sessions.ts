@@ -79,7 +79,14 @@ export class Sessions extends Context.Service<
       const listAll = () => store.list({ orderBy: { field: "position", direction: "asc" } });
 
       const featured = () =>
-        Effect.map(listVisible(), (sessions) => Option.fromNullishOr(sessions.at(-1)));
+        Effect.map(
+          store.list({
+            where: { enabled: true },
+            orderBy: { field: "position", direction: "desc" },
+            limit: 1,
+          }),
+          (sessions) => Option.map(Option.fromNullishOr(sessions[0]), toSummary),
+        );
 
       return Sessions.of({
         listVisible,
