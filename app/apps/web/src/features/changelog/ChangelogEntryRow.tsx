@@ -11,7 +11,7 @@ interface Props {
 }
 
 export const ChangelogEntryRow = ({ entry, chosen, onToggle }: Props) => (
-  <li className="skeleton-block flex items-start gap-2 rounded-xl border-[1.5px] border-sand bg-paper py-2.5 pr-2 pl-3.5 text-coal">
+  <li className="skeleton-block row-card flex items-start gap-2 py-2.5 pr-2 pl-3.5">
     <input
       type="checkbox"
       aria-label={`Incluir ${entry.name}`}

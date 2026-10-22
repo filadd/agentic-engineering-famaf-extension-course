@@ -45,10 +45,7 @@ export const AnnouncementDialog = ({ sessionId, entries, onClose, onSent }: Prop
         ) : (
           <ul aria-label="Novedades incluidas" className="flex flex-col gap-2">
             {entries.map((entry) => (
-              <li
-                key={entry.id}
-                className="flex items-start gap-2 rounded-xl border-[1.5px] border-sand bg-paper px-3.5 py-2.5 text-coal"
-              >
+              <li key={entry.id} className="row-card flex items-start gap-2 px-3.5 py-2.5">
                 <ChangelogTypeChip type={entry.type} />
                 <div className="min-w-0 flex-1">
                   <b className="block truncate">{entry.name}</b>
