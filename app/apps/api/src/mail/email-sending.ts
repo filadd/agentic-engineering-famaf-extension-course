@@ -21,7 +21,7 @@ export const EmailSendingMailer = (email: Cloudflare.Email.SendClient, from: str
         );
 
       return Mailer.of({
-        sendLink: (to, url) => send({ from, to, ...magicLinkMail(to, url) }),
+        sendMagicLink: (to, url) => send({ from, to, ...magicLinkMail(to, url) }),
         sendAnnouncement: (mail) =>
           send({ from, to: mail.to, bcc: [...mail.bcc], ...announcementMail(mail) }),
       });

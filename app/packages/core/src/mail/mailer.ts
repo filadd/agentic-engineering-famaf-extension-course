@@ -22,7 +22,7 @@ export interface AnnouncementMail {
 export class Mailer extends Context.Service<
   Mailer,
   {
-    readonly sendLink: (email: string, url: string) => Effect.Effect<void, MailError>;
+    readonly sendMagicLink: (email: string, url: string) => Effect.Effect<void, MailError>;
     readonly sendAnnouncement: (mail: AnnouncementMail) => Effect.Effect<void, MailError>;
   }
 >()("kurasu/Mailer") {}
