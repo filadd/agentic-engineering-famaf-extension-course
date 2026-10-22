@@ -1,12 +1,5 @@
 import { sql } from "drizzle-orm";
-import {
-  index,
-  integer,
-  primaryKey,
-  sqliteTable,
-  text,
-  uniqueIndex,
-} from "drizzle-orm/sqlite-core";
+import { index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
@@ -101,6 +94,7 @@ export const polls = sqliteTable(
 export const responses = sqliteTable(
   "responses",
   {
+    id: text("id").primaryKey(),
     pollId: text("poll_id")
       .notNull()
       .references(() => polls.id),
@@ -109,7 +103,7 @@ export const responses = sqliteTable(
       .references(() => users.id),
     value: text("value", { mode: "json" }).notNull(),
   },
-  (table) => [primaryKey({ columns: [table.pollId, table.userId] })],
+  (table) => [uniqueIndex("responses_poll_id_user_id_unique").on(table.pollId, table.userId)],
 );
 
 export const questions = sqliteTable(
@@ -131,6 +125,7 @@ export const questions = sqliteTable(
 export const questionVotes = sqliteTable(
   "question_votes",
   {
+    id: text("id").primaryKey(),
     questionId: text("question_id")
       .notNull()
       .references(() => questions.id),
@@ -138,12 +133,15 @@ export const questionVotes = sqliteTable(
       .notNull()
       .references(() => users.id),
   },
-  (table) => [primaryKey({ columns: [table.questionId, table.userId] })],
+  (table) => [
+    uniqueIndex("question_votes_question_id_user_id_unique").on(table.questionId, table.userId),
+  ],
 );
 
 export const raisedHands = sqliteTable(
   "raised_hands",
   {
+    id: text("id").primaryKey(),
     sessionId: text("session_id")
       .notNull()
       .references(() => sessions.id),
@@ -151,5 +149,30 @@ export const raisedHands = sqliteTable(
       .notNull()
       .references(() => users.id),
   },
-  (table) => [primaryKey({ columns: [table.sessionId, table.userId] })],
+  (table) => [
+    uniqueIndex("raised_hands_session_id_user_id_unique").on(table.sessionId, table.userId),
+  ],
+);
+
+// What changed in a session that the teacher has not announced yet. `entity_id`
+// points to a session, a material or a poll depending on `type`, so it is not a
+// foreign key; there is at most one entry per type and entity.
+export const changelogEntries = sqliteTable(
+  "changelog_entries",
+  {
+    id: text("id").primaryKey(),
+    sessionId: text("session_id")
+      .notNull()
+      .references(() => sessions.id),
+    type: text("type", { enum: ["session-enabled", "material-added", "poll-opened"] }).notNull(),
+    entityId: text("entity_id").notNull(),
+    name: text("name").notNull(),
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(cast(unixepoch('subsec') * 1000 as integer))`),
+  },
+  (table) => [
+    uniqueIndex("changelog_entries_type_entity_id_unique").on(table.type, table.entityId),
+    index("changelog_entries_session_id_index").on(table.sessionId),
+  ],
 );
