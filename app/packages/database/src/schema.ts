@@ -1,6 +1,9 @@
 import { sql } from "drizzle-orm";
 import { index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
+// The `id` of every table is NOT NULL in the database, written by hand in the
+// migrations: drizzle-kit writes no NOT NULL for a primary key, so a table it
+// creates or rebuilds needs it added again.
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
   email: text("email").notNull().unique(),
@@ -91,9 +94,6 @@ export const polls = sqliteTable(
 );
 
 // One response per student and poll; `value` holds the ResponseValue as JSON.
-// The `id` of `responses`, `question_votes` and `raised_hands` is NOT NULL in
-// the database, written by hand in the migration: drizzle-kit writes no NOT NULL
-// for a primary key, so a table rebuild it generates would drop it.
 export const responses = sqliteTable(
   "responses",
   {
