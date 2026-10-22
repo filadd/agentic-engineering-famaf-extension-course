@@ -18,6 +18,7 @@ Cada línea es una regla. Una regla es una oración y enlaza la nota que la expl
 ## 🏗️ Sistema
 
 - El backend controla siempre las reglas de negocio, aunque la pantalla ya las haya controlado.
+- Toda entidad tiene su propio id, que nunca queda vacío (ver [modelo de datos](modelo-de-datos.md)).
 
 ---
 

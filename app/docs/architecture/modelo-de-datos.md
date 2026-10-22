@@ -8,7 +8,7 @@ created: "2026-10-18"
 
 ## 🔭 Resumen
 
-La app guarda usuarios, sesiones y lo que cuelga de cada sesión: su material, sus encuestas con sus respuestas, sus preguntas con sus votos, las manos levantadas, la slide en la que está el profe y las novedades que el profe todavía no anunció. Todo vive en D1, salvo los archivos del material, que viven en R2 (ver [componentes](componentes.md)). Solo las sesiones y las encuestas quedan guardadas al borrarse: cada una guarda en `deleted_at` la fecha en que se borró, conserva lo que cuelga de ella y nadie la ve. Un material, una pregunta propia o una novedad se borran definitivamente, el código de un link se borra al usarse y una mano se baja. Los códigos de registro y los de los links del mail son filas de la misma entidad, `Code`. Cada entidad tiene su propio id ULID, también las que unen dos entidades, como una respuesta o una mano levantada.
+La app guarda usuarios, sesiones y lo que cuelga de cada sesión: su material, sus encuestas con sus respuestas, sus preguntas con sus votos, las manos levantadas, la slide en la que está el profe y las novedades que el profe todavía no anunció. Todo vive en D1, salvo los archivos del material, que viven en R2 (ver [componentes](componentes.md)). Las sesiones y las encuestas quedan guardadas al borrarse: cada una guarda en `deleted_at` la fecha en que se borró, conserva lo que cuelga de ella y nadie la ve. Un código de registro regenerado también queda guardado, con la fecha en `deleted_at`. Un material, una pregunta propia o una novedad se borran definitivamente, el código de un link se borra al usarse y una mano se baja. Los códigos de registro y los de los links del mail son filas de la misma entidad, `Code`. Cada entidad tiene su propio id ULID, también las que unen dos entidades, como una respuesta o una mano levantada. Ese id nunca queda vacío. Cómo la API lee y escribe estas entidades está en [acceso a datos](acceso-a-datos.md).
 
 ## 💽 Entidades y relaciones
 
@@ -18,7 +18,7 @@ erDiagram
     SESSION ||--o{ POLL : has
     SESSION ||--o{ QUESTION : has
     SESSION ||--o{ RAISED_HAND : has
-    SESSION ||--o{ NOVEDAD : has
+    SESSION ||--o{ CHANGELOG_ENTRY : has
     POLL ||--o{ RESPONSE : receives
     QUESTION ||--o{ QUESTION_VOTE : receives
     USER ||--o{ RESPONSE : gives
@@ -86,10 +86,10 @@ erDiagram
         ulid session_id FK "unique with user_id"
         ulid user_id FK
     }
-    NOVEDAD {
+    CHANGELOG_ENTRY {
         ulid id PK
         ulid session_id FK
-        enum type "session enabled, new material or open poll"
+        enum type "session-enabled, material-added or poll-opened"
         ulid entity_id "not a FK, unique with type"
         string name
         datetime created_at
@@ -138,7 +138,7 @@ La entidad `RaisedHand` une a un estudiante con una sesión. Cada estudiante tie
 
 ### 🔔 Novedad
 
-La entidad `Novedad` es algo nuevo de una sesión que el profe todavía no anunció por mail. Pertenece a una sesión, en `session_id`, y guarda su `type`: sesión habilitada, material nuevo o encuesta abierta. Guarda también el id de la entidad que la originó en `entity_id`, su nombre en `name` y la fecha del cambio que la registró en `created_at`. El nombre es el título de la sesión, el nombre del material o la consigna de la encuesta. Ningún campo queda vacío. La novedad no guarda texto ni link. La web y el mail arman el texto con su tipo y su nombre. Hay a lo sumo una novedad por tipo y entidad, y la base lo garantiza con un índice único sobre `type` y `entity_id`.
+La entidad `ChangelogEntry` es una novedad: algo nuevo de una sesión que el profe todavía no anunció por mail. Pertenece a una sesión, en `session_id`, y guarda su `type`: `session-enabled` para la sesión habilitada, `material-added` para un material nuevo o `poll-opened` para una encuesta abierta. Guarda también el id de la entidad que la originó en `entity_id`, su nombre en `name` y la fecha del cambio que la registró en `created_at`. El nombre es el título de la sesión, el nombre del material o la consigna de la encuesta. Ningún campo queda vacío. La novedad no guarda texto ni link. La web y el mail arman el texto con su tipo y su nombre. Hay a lo sumo una novedad por tipo y entidad, y la base lo garantiza con un índice único sobre `type` y `entity_id`.
 
 > [!NOTE] Por qué `entity_id` no es una clave foránea
 > Según el tipo, apunta a una sesión, a un material o a una encuesta, así que no puede ser una clave foránea a una sola tabla.

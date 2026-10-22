@@ -53,7 +53,7 @@ Una sesión deshabilitada sigue acumulando novedades de sus materiales y encuest
 
 ## 📋 Novedades pendientes en el admin de la sesión
 
-La pestaña Contenido del admin de una sesión tiene dos columnas: a la izquierda la card de la sesión y el material, y a la derecha "Novedades pendientes". La columna lista las 100 novedades más nuevas de la sesión, de la más vieja a la más nueva, por la fecha del cambio. Si la sesión tiene más, las más viejas aparecen a medida que el profe anuncia o descarta. Cada fila tiene un checkbox para incluir la novedad en el anuncio, una etiqueta con su tipo, la fecha, el nombre, la misma línea que lleva el mail y un tacho para descartar la novedad. Sin novedades, la columna dice "No hay novedades pendientes.", y el profe igual puede redactar un anuncio con solo el mensaje.
+La pestaña Contenido del admin de una sesión tiene dos columnas: a la izquierda la card de la sesión y el material, y a la derecha "Novedades pendientes". La columna lista las 50 novedades más nuevas de la sesión, de la más vieja a la más nueva, por la fecha del cambio. Si la sesión tiene más, las más viejas aparecen a medida que el profe anuncia o descarta. Cada fila tiene un checkbox para incluir la novedad en el anuncio, una etiqueta con su tipo, la fecha, el nombre, la misma línea que lleva el mail y un tacho para descartar la novedad. Sin novedades, la columna dice "No hay novedades pendientes.", y el profe igual puede redactar un anuncio con solo el mensaje.
 
 El tacho pide confirmación, `¿Descartar "<nombre>"?`, porque una novedad descartada no aparece en ningún anuncio. Al confirmar, el botón Descartar queda en espera hasta que la API borra la novedad, y la novedad sale de la lista. La novedad puede ya no existir porque la sacó un cambio, salió en otro anuncio o la descartó otra pestaña. En ese caso el descarte cuenta como hecho y el diálogo se cierra igual. Si el descarte falla, el diálogo queda abierto con el error "No se pudo descartar la novedad. Probá de nuevo.".
 
@@ -81,30 +81,34 @@ sequenceDiagram
 
     P->>W: Envía el anuncio
     W->>A: Mensaje y novedades elegidas
-    A->>D: Lee la sesión y las novedades elegidas que siguen pendientes
-    alt Sesión deshabilitada, o sin mensaje ni novedades pendientes
+    A->>D: Lee la sesión
+    alt Sesión deshabilitada
         A-->>W: Rechaza sin mandar nada
-    else Cumple las reglas
-        A->>D: Lee hasta 100 usuarios con acceso
-        loop Una tanda por cada 49 usuarios, todas a la vez
-            A->>M: Mail con el profe en Para y hasta 49 en copia oculta
-        end
-        alt Salió al menos una tanda, o no había otros usuarios
-            A->>D: Borra las novedades incluidas
-            A-->>W: Éxito
-        else No salió ninguna
-            A-->>W: Error, sin borrar nada
+    else Habilitada
+        A->>D: Lee a la vez las novedades elegidas que siguen pendientes, hasta 100 usuarios con acceso y la sesión destacada
+        alt Sin mensaje ni novedades pendientes
+            A-->>W: Rechaza sin mandar nada
+        else Hay qué anunciar
+            loop Una tanda por cada 49 usuarios, todas a la vez
+                A->>M: Mail con el profe en Para y hasta 49 en copia oculta
+            end
+            alt Salió al menos una tanda, o no había otros usuarios
+                A->>D: Borra las novedades incluidas
+                A-->>W: Éxito
+            else No salió ninguna
+                A-->>W: Error, sin borrar nada
+            end
         end
     end
     W-->>P: Toast de éxito, o error en el modal
 ```
 
-El profe envía el anuncio (1) y la web le manda a la API el mensaje y las novedades elegidas (2). La API lee la sesión y las novedades elegidas, y vuelve a controlar que la sesión esté habilitada y que haya mensaje o novedades (3). Una novedad elegida puede ya no estar pendiente porque la sacó un cambio o salió en otro anuncio. Esa novedad queda afuera del mail sin error, y el control cuenta solo las que siguen pendientes. Si algo no se cumple, la API rechaza el pedido y no manda nada (4).
+El profe envía el anuncio (1) y la web le manda a la API el mensaje y las novedades elegidas (2). La API lee la sesión (3) y, si está deshabilitada, rechaza el pedido sin mandar nada (4). Si está habilitada, lee a la vez las novedades elegidas, los usuarios con acceso y cuál es la sesión destacada, que decide el link del mail (5). Después controla que haya mensaje o novedades. Una novedad elegida puede ya no estar pendiente porque la sacó un cambio o salió en otro anuncio. Esa novedad queda afuera del mail sin error, y el control cuenta solo las que siguen pendientes. Si no queda ni mensaje ni novedad, la API rechaza el pedido sin mandar nada (6). La API rechaza un anuncio con más de 50 novedades elegidas, las que entran en la columna.
 
 > [!NOTE] Por qué la API vuelve a controlar lo que la pantalla ya controló
 > El backend controla siempre las reglas de negocio. La pantalla las controla para que el profe no intente un envío que no corresponde; la que decide si el anuncio sale es la API.
 
-La API lee los usuarios con acceso, como mucho los 100 que se registraron primero (5), arma el mail y lo manda dentro del mismo pedido, así que el profe espera hasta que sale. Cada mail lleva al profe que envía en el "Para" y hasta 49 de los demás usuarios con acceso en copia oculta (6). Con más de 49 usuarios además del profe sale una tanda por cada 49, todas a la vez, y el profe recibe una copia por tanda. Nadie puede darse de baja.
+La API lee como mucho los 100 usuarios con acceso que se registraron primero, arma el mail y lo manda dentro del mismo pedido, así que el profe espera hasta que sale. Cada mail lleva al profe que envía en el "Para" y hasta 49 de los demás usuarios con acceso en copia oculta (7). Con más de 49 usuarios además del profe sale una tanda por cada 49, todas a la vez, y el profe recibe una copia por tanda. Nadie puede darse de baja.
 
 > [!NOTE] Por qué el profe que envía va en el "Para"
 > Así recibe el mismo mail que los estudiantes y puede ver que llegó bien. Los estudiantes van en copia oculta, y en el "Para" ven la dirección del profe.
@@ -115,7 +119,7 @@ La API lee los usuarios con acceso, como mucho los 100 que se registraron primer
 > [!WARNING] Más de 100 usuarios con acceso
 > La API lee como mucho 100 usuarios con acceso, contando al profe que envía: los 100 que se registraron primero. Si hay más, los que se registraron después no reciben el mail, y ni la API ni la web le avisan al profe.
 
-Las tandas son best effort: la API intenta mandar todas, y no reintenta una tanda que falla. Si salió al menos una, la API borra las novedades incluidas (7) y responde éxito (8); las que el profe no eligió quedan pendientes. Si el profe que envía es el único usuario con acceso, no hay tandas. La API no manda ningún mail, borra las novedades incluidas y responde éxito igual. Si hubo tandas y no salió ninguna, responde error y no borra nada (9). La web muestra el toast de éxito, o deja el modal abierto con el error (10).
+Las tandas son best effort: la API intenta mandar todas, y no reintenta una tanda que falla. Si salió al menos una, la API borra las novedades incluidas (8) y responde éxito (9); las que el profe no eligió quedan pendientes. Si el profe que envía es el único usuario con acceso, no hay tandas. La API no manda ningún mail, borra las novedades incluidas y responde éxito igual. Si hubo tandas y no salió ninguna, responde error y no borra nada (10). La web muestra el toast de éxito, o deja el modal abierto con el error (11).
 
 > [!WARNING] Una tanda que falla no se avisa
 > Si falla una tanda y sale otra, el profe ve "Anuncio enviado." y los usuarios de la tanda que falló no reciben el mail. Las novedades incluidas ya se borraron, así que no se pueden volver a elegir. La única señal es que el profe recibe una copia menos. Lo mismo pasa si una tanda sale pero no les llega a algunos de sus destinatarios: la API la cuenta como enviada.
