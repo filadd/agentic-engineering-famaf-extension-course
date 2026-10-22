@@ -2,6 +2,7 @@ import {
   maxPage,
   type ListOptions,
   type Order,
+  type RemoveOptions,
   type Repository,
   type UpsertOptions,
   type Where,
@@ -52,6 +53,11 @@ const decodeAll = <T extends Table, A>(
   decode: RepositoryOptions<T, A>["decode"],
 ) => Effect.forEach(rows, decode);
 
+const rowsGuardOf =
+  <T extends Table>() =>
+  <R>(rows: R): rows is R & ReadonlyArray<InferSelectModel<T>> =>
+    Array.isArray(rows);
+
 const ordersOf = <A>(orderBy: ListOptions<A>["orderBy"]): ReadonlyArray<Order<A>> =>
   orderBy == null ? [] : "field" in orderBy ? [orderBy] : orderBy;
 
@@ -77,6 +83,9 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
     };
 
     const notDeleted = deletedAt == null ? undefined : isNull(deletedAt);
+
+    const propertyOf = (column: SQLiteColumn) =>
+      Object.entries(columns).find(([, candidate]) => candidate === column)?.[0] ?? column.name;
 
     const conditionOf = (where: Where<A> | undefined) =>
       Effect.map(
@@ -145,6 +154,63 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
           sql`update ${table} set ${sql.identifier(column.name)} = ${now} where ${condition} returning ${table.id}`,
         )
         .pipe(Effect.orDie);
+
+    // drizzle maps the rows that `.returning()` gives back to the table's select
+    // model, but over a generic table it types them with a conditional it does
+    // not resolve, and it cannot type a set with a computed key. These guards
+    // give those values the types drizzle cannot.
+    const areRows = rowsGuardOf<T>();
+
+    const isChange = <R extends object>(change: R): change is R & Change<T> =>
+      Object.keys(change).every((key) => columns[key] != null);
+
+    const markReturning = (column: SQLiteColumn, condition: SQL | undefined) => {
+      const mark = { [propertyOf(column)]: now };
+
+      return isChange(mark)
+        ? db.update(table).set(mark).where(condition).returning().pipe(Effect.orDie)
+        : Effect.die(`${column.name} is not a column of the table`);
+    };
+
+    // Deletes the matching rows, or marks them as deleted, and gives them back
+    // in the same statement.
+    const removeReturning = (condition: SQL | undefined) =>
+      Effect.gen(function* () {
+        const rows =
+          deletedAt == null
+            ? yield* db.delete(table).where(condition).returning().pipe(Effect.orDie)
+            : yield* markReturning(deletedAt, condition);
+
+        return areRows(rows)
+          ? yield* decodeAll(rows, decode)
+          : yield* Effect.die("the deleted rows did not come back");
+      });
+
+    function removeWhere(where: Where<A>): Effect.Effect<number>;
+    function removeWhere(where: Where<A>, options: RemoveOptions): Effect.Effect<ReadonlyArray<A>>;
+    function removeWhere(
+      where: Where<A>,
+      options?: RemoveOptions,
+    ): Effect.Effect<number | ReadonlyArray<A>> {
+      return Effect.gen(function* () {
+        const condition = yield* conditionOf(where);
+
+        if (options?.returning === true) {
+          return yield* removeReturning(condition);
+        }
+
+        const rows =
+          deletedAt == null
+            ? yield* db
+                .delete(table)
+                .where(condition)
+                .returning({ id: table.id })
+                .pipe(Effect.orDie)
+            : yield* markDeleted(deletedAt, condition);
+
+        return rows.length;
+      });
+    }
 
     type Shared = Repository<A, New<T>, Change<T>>;
 
@@ -280,8 +346,12 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
             .where(and(...conflicting))
             .pipe(Effect.orDie);
         }),
-      remove: (id: Ulid): ReturnType<Shared["remove"]> =>
+      remove: (id: Ulid, options?: RemoveOptions): ReturnType<Shared["remove"]> =>
         Effect.gen(function* () {
+          if (options?.returning === true) {
+            return Option.fromNullishOr((yield* removeReturning(byId(id)))[0]);
+          }
+
           const current = yield* get(id);
 
           if (Option.isSome(current)) {
@@ -292,20 +362,6 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
 
           return current;
         }),
-      removeWhere: (where: Where<A>): ReturnType<Shared["removeWhere"]> =>
-        Effect.gen(function* () {
-          const condition = yield* conditionOf(where);
-
-          const rows =
-            deletedAt == null
-              ? yield* db
-                  .delete(table)
-                  .where(condition)
-                  .returning({ id: table.id })
-                  .pipe(Effect.orDie)
-              : yield* markDeleted(deletedAt, condition);
-
-          return rows.length;
-        }),
+      removeWhere,
     };
   });

@@ -28,6 +28,12 @@ export interface UpsertOptions<Field extends string, Change> {
   readonly set?: Change;
 }
 
+// With `returning`, the rows are deleted, or marked as deleted, and given back
+// by the same statement.
+export interface RemoveOptions {
+  readonly returning: true;
+}
+
 export const maxPage = 100;
 
 // The operations every D1 store shares. A store's port takes the ones it
@@ -48,6 +54,9 @@ export interface Repository<A, New, Change> {
     row: New,
     options: UpsertOptions<keyof New & string, Change>,
   ) => Effect.Effect<void>;
-  readonly remove: (id: Ulid) => Effect.Effect<Option.Option<A>>;
-  readonly removeWhere: (where: Where<A>) => Effect.Effect<number>;
+  readonly remove: (id: Ulid, options?: RemoveOptions) => Effect.Effect<Option.Option<A>>;
+  readonly removeWhere: {
+    (where: Where<A>): Effect.Effect<number>;
+    (where: Where<A>, options: RemoveOptions): Effect.Effect<ReadonlyArray<A>>;
+  };
 }

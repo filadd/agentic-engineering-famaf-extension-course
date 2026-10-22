@@ -66,7 +66,7 @@ export class Changelog extends Context.Service<
           return newest.toReversed();
         }),
         discard: Effect.fn("Changelog.discard")(function* (id) {
-          const removed = yield* store.remove(id);
+          const removed = yield* store.remove(id, { returning: true });
 
           return yield* Effect.fromOption(removed).pipe(
             Effect.mapError(() => new ChangelogEntryNotFound()),
