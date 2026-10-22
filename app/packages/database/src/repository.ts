@@ -10,6 +10,7 @@ import {
 import type { Ulid } from "@kurasu/contract/ulid";
 import {
   and,
+  type Assume,
   type InferInsertModel,
   type InferSelectModel,
   asc,
@@ -22,15 +23,20 @@ import {
   isNull,
   lt,
   or,
-  sql,
   type SQL,
 } from "drizzle-orm";
-import type { SQLiteColumn, SQLiteInsertValue, SQLiteTable } from "drizzle-orm/sqlite-core";
+import type {
+  SQLiteColumn,
+  SQLiteInsertValue,
+  SQLiteTable,
+  SQLiteUpdateSetSource,
+} from "drizzle-orm/sqlite-core";
+import type { EffectDrizzleQueryError } from "drizzle-orm/effect-core";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Option from "effect/Option";
 
-import { Database, firstRow, now } from "./database.ts";
+import { batch, Database, firstRow, now, type Statement } from "./database.ts";
 
 export type Table = SQLiteTable & { readonly id: SQLiteColumn };
 
@@ -53,6 +59,9 @@ const decodeAll = <T extends Table, A>(
   decode: RepositoryOptions<T, A>["decode"],
 ) => Effect.forEach(rows, decode);
 
+// A write of a table, built and not run yet.
+type Write<R> = Statement & Effect.Effect<R, EffectDrizzleQueryError>;
+
 const rowsGuardOf =
   <T extends Table>() =>
   <R>(rows: R): rows is R & ReadonlyArray<InferSelectModel<T>> =>
@@ -71,7 +80,7 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
   { decode, deletedAt }: RepositoryOptions<T, A>,
 ) =>
   Effect.gen(function* () {
-    const { db } = yield* Database;
+    const { db, client } = yield* Database;
     const columns: Record<string, SQLiteColumn | undefined> = getTableColumns(table);
 
     const columnOf = (field: string) => {
@@ -146,45 +155,81 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
               Effect.flatMap((rows) => decodeAll(rows, decode)),
             );
 
-    // Marks the matching rows as deleted. A SET names the bare column, so the
-    // column goes in as an identifier.
-    const markDeleted = (column: SQLiteColumn, condition: SQL | undefined) =>
-      db
-        .all<{ readonly id: Ulid }>(
-          sql`update ${table} set ${sql.identifier(column.name)} = ${now} where ${condition} returning ${table.id}`,
-        )
-        .pipe(Effect.orDie);
-
     // drizzle maps the rows that `.returning()` gives back to the table's select
     // model, but over a generic table it types them with a conditional it does
-    // not resolve, and it cannot type a set with a computed key. These guards
-    // give those values the types drizzle cannot.
+    // not resolve, and it cannot type a set with a computed key or the set of
+    // `onConflictDoUpdate`. These guards give those values the types drizzle
+    // cannot.
     const areRows = rowsGuardOf<T>();
 
     const isChange = <R extends object>(change: R): change is R & Change<T> =>
       Object.keys(change).every((key) => columns[key] != null);
 
-    const markReturning = (column: SQLiteColumn, condition: SQL | undefined) => {
+    const isConflictSet = <R extends object>(
+      change: R,
+    ): change is R & SQLiteUpdateSetSource<Assume<T, SQLiteTable>> =>
+      Object.keys(change).every((key) => columns[key] != null);
+
+    const deletion = (column: SQLiteColumn) => {
       const mark = { [propertyOf(column)]: now };
 
       return isChange(mark)
-        ? db.update(table).set(mark).where(condition).returning().pipe(Effect.orDie)
+        ? Effect.succeed(mark)
         : Effect.die(`${column.name} is not a column of the table`);
     };
 
-    // Deletes the matching rows, or marks them as deleted, and gives them back
-    // in the same statement.
+    // Deletes the matching rows, or marks them as deleted, and gives back their
+    // ids.
+    const removing = (condition: SQL | undefined): Effect.Effect<Write<ReadonlyArray<object>>> =>
+      deletedAt == null
+        ? Effect.succeed(db.delete(table).where(condition).returning({ id: table.id }))
+        : Effect.map(deletion(deletedAt), (mark) =>
+            db.update(table).set(mark).where(condition).returning({ id: table.id }),
+          );
+
+    // The same, giving back the whole rows.
+    const removingRows = (condition: SQL | undefined): Effect.Effect<Write<unknown>> =>
+      deletedAt == null
+        ? Effect.succeed(db.delete(table).where(condition).returning())
+        : Effect.map(deletion(deletedAt), (mark) =>
+            db.update(table).set(mark).where(condition).returning(),
+          );
+
     const removeReturning = (condition: SQL | undefined) =>
       Effect.gen(function* () {
-        const rows =
-          deletedAt == null
-            ? yield* db.delete(table).where(condition).returning().pipe(Effect.orDie)
-            : yield* markReturning(deletedAt, condition);
+        const rows = yield* (yield* removingRows(condition)).pipe(Effect.orDie);
 
         return areRows(rows)
           ? yield* decodeAll(rows, decode)
-          : yield* Effect.die("the deleted rows did not come back");
+          : yield* Effect.die("the removed rows did not come back");
       });
+
+    // Each write as a statement that is not run yet and reads nothing after it.
+    // The operations below run them; `batch` runs several in one D1 batch.
+    const statements = {
+      create: (row: New<T>) => db.insert(table).values(row),
+      update: (id: Ulid, change: Change<T>) =>
+        db.update(table).set(change).where(byId(id)).returning({ id: table.id }),
+      updateWhere: (where: Where<A>, change: Change<T>) =>
+        Effect.map(conditionOf(where), (condition) =>
+          db.update(table).set(change).where(condition).returning({ id: table.id }),
+        ),
+      upsert: (row: New<T>, { target, set }: UpsertOptions<keyof New<T> & string, Change<T>>) =>
+        Effect.gen(function* () {
+          const targetColumns = yield* Effect.forEach(target, columnOf);
+          const insert = db.insert(table).values(row);
+
+          if (set == null) {
+            return insert.onConflictDoNothing({ target: targetColumns });
+          }
+
+          return isConflictSet(set)
+            ? insert.onConflictDoUpdate({ target: targetColumns, set })
+            : yield* Effect.die("the set names a field that is not a column of the table");
+        }),
+      remove: (id: Ulid) => removing(byId(id)),
+      removeWhere: (where: Where<A>) => Effect.flatMap(conditionOf(where), removing),
+    };
 
     function removeWhere(where: Where<A>): Effect.Effect<number>;
     function removeWhere(where: Where<A>, options: RemoveOptions): Effect.Effect<ReadonlyArray<A>>;
@@ -193,20 +238,11 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
       options?: RemoveOptions,
     ): Effect.Effect<number | ReadonlyArray<A>> {
       return Effect.gen(function* () {
-        const condition = yield* conditionOf(where);
-
         if (options?.returning === true) {
-          return yield* removeReturning(condition);
+          return yield* removeReturning(yield* conditionOf(where));
         }
 
-        const rows =
-          deletedAt == null
-            ? yield* db
-                .delete(table)
-                .where(condition)
-                .returning({ id: table.id })
-                .pipe(Effect.orDie)
-            : yield* markDeleted(deletedAt, condition);
+        const rows = yield* (yield* statements.removeWhere(where)).pipe(Effect.orDie);
 
         return rows.length;
       });
@@ -214,12 +250,9 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
 
     type Shared = Repository<A, New<T>, Change<T>>;
 
-    // Over a generic table, drizzle types the rows that `returning()` gives
-    // back, and the `set` of `onConflictDoUpdate`, with conditionals it does not
-    // resolve. So a write returns at most the ids, and the rows are read back
-    // with a select, which it does type.
-
     return {
+      statements,
+      batch: (writes: ReadonlyArray<Statement>) => batch(client, writes),
       get,
       getMany,
       find: (where: Where<A>): ReturnType<Shared["find"]> =>
@@ -273,19 +306,16 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
           return rows[0]?.count ?? 0;
         }),
       create: (row: New<T>): ReturnType<Shared["create"]> =>
-        db
-          .insert(table)
-          .values(row)
-          .pipe(
-            Effect.orDie,
-            Effect.andThen(get(row.id)),
-            Effect.flatMap(
-              Option.match({
-                onNone: () => Effect.die("the new row was not stored"),
-                onSome: Effect.succeed,
-              }),
-            ),
+        statements.create(row).pipe(
+          Effect.orDie,
+          Effect.andThen(get(row.id)),
+          Effect.flatMap(
+            Option.match({
+              onNone: () => Effect.die("the new row was not stored"),
+              onSome: Effect.succeed,
+            }),
           ),
+        ),
       createMany: (rows: ReadonlyArray<New<T>>): ReturnType<Shared["createMany"]> =>
         rows.length === 0
           ? Effect.succeed([])
@@ -296,55 +326,22 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
       update: (id: Ulid, change: Change<T>): ReturnType<Shared["update"]> =>
         Object.keys(change).length === 0
           ? get(id)
-          : db
-              .update(table)
-              .set(change)
-              .where(byId(id))
-              .returning({ id: table.id })
-              .pipe(
-                Effect.orDie,
-                Effect.flatMap((rows) => (rows.length === 0 ? Effect.succeedNone : get(id))),
-              ),
+          : statements.update(id, change).pipe(
+              Effect.orDie,
+              Effect.flatMap((rows) => (rows.length === 0 ? Effect.succeedNone : get(id))),
+            ),
       updateWhere: (where: Where<A>, change: Change<T>): ReturnType<Shared["updateWhere"]> =>
         Effect.gen(function* () {
-          const rows = yield* db
-            .update(table)
-            .set(change)
-            .where(yield* conditionOf(where))
-            .returning({ id: table.id })
-            .pipe(Effect.orDie);
+          const rows = yield* (yield* statements.updateWhere(where, change)).pipe(Effect.orDie);
 
           return rows.length;
         }),
-      // A row that conflicts on `target` and gets a `set` is updated by a
-      // second statement, matched by the row's values on `target`.
       upsert: (
         row: New<T>,
-        { target, set }: UpsertOptions<keyof New<T> & string, Change<T>>,
+        options: UpsertOptions<keyof New<T> & string, Change<T>>,
       ): ReturnType<Shared["upsert"]> =>
         Effect.gen(function* () {
-          const targetColumns = yield* Effect.forEach(target, columnOf);
-
-          const inserted = yield* db
-            .insert(table)
-            .values(row)
-            .onConflictDoNothing({ target: targetColumns })
-            .returning({ id: table.id })
-            .pipe(Effect.orDie);
-
-          if (set == null || inserted.length > 0) {
-            return;
-          }
-
-          const conflicting = yield* Effect.forEach(target, (field) =>
-            Effect.map(columnOf(field), (column) => eq(column, row[field])),
-          );
-
-          yield* db
-            .update(table)
-            .set(set)
-            .where(and(...conflicting))
-            .pipe(Effect.orDie);
+          yield* (yield* statements.upsert(row, options)).pipe(Effect.orDie);
         }),
       remove: (id: Ulid, options?: RemoveOptions): ReturnType<Shared["remove"]> =>
         Effect.gen(function* () {
@@ -355,9 +352,7 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
           const current = yield* get(id);
 
           if (Option.isSome(current)) {
-            yield* deletedAt == null
-              ? db.delete(table).where(eq(table.id, id)).pipe(Effect.orDie)
-              : markDeleted(deletedAt, byId(id));
+            yield* (yield* statements.remove(id)).pipe(Effect.orDie);
           }
 
           return current;

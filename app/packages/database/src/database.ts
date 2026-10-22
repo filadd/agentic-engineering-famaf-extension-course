@@ -6,7 +6,7 @@ import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 
-interface ToSql {
+export interface Statement {
   readonly toSQL: () => { readonly sql: string; readonly params: ReadonlyArray<unknown> };
 }
 
@@ -40,7 +40,7 @@ export class Database extends Context.Service<
 }
 
 /** Runs Drizzle queries as one atomic D1 batch, in order. */
-export const batch = (client: D1Client.D1Client, queries: ReadonlyArray<ToSql>) =>
+export const batch = (client: D1Client.D1Client, queries: ReadonlyArray<Statement>) =>
   client
     .batch(
       queries.map((query) => {
