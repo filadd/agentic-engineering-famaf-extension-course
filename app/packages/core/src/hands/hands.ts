@@ -3,6 +3,7 @@ import type { RaisedHand, RaisedHandSummary } from "@kurasu/contract/raised-hand
 import type { Ulid } from "@kurasu/contract/ulid";
 import type { User } from "@kurasu/contract/user";
 import * as Context from "effect/Context";
+import * as Crypto from "effect/Crypto";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 
@@ -37,6 +38,7 @@ export class Hands extends Context.Service<
       const store = yield* HandsStore;
       const sessions = yield* SessionsStore;
       const classroom = yield* Classroom;
+      const crypto = yield* Crypto.Crypto;
 
       const lower = (sessionId: Ulid, userId: Ulid) =>
         Effect.gen(function* () {
@@ -59,7 +61,8 @@ export class Hands extends Context.Service<
 
           yield* visibleSession(sessions, sessionId);
 
-          const hand = yield* store.raise(sessionId, viewer.id);
+          const id = yield* crypto.randomULID.pipe(Effect.orDie);
+          const hand = yield* store.raise({ id, sessionId, userId: viewer.id });
 
           yield* classroom.notify(sessionId, "hands");
 

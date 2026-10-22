@@ -24,7 +24,7 @@ export const AdminUsersHandlers = (webOrigin: string) => {
         Effect.gen(function* () {
           const users = yield* Users;
 
-          return yield* users.list();
+          return yield* users.list({ orderBy: { field: "email", direction: "asc" } });
         }),
       )
       .handle("add", ({ payload }) =>
@@ -45,7 +45,7 @@ export const AdminUsersHandlers = (webOrigin: string) => {
           }
 
           const users = yield* Users;
-          const updated = yield* users.setAccess(params.id, payload.hasAccess);
+          const updated = yield* users.update(params.id, { hasAccess: payload.hasAccess });
 
           return yield* Effect.fromOption(updated).pipe(Effect.mapError(() => new UserNotFound()));
         }),

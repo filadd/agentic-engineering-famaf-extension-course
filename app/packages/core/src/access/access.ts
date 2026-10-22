@@ -54,7 +54,9 @@ export class Access extends Context.Service<
         // leaves it there and the next request replaces it.
         const userCodeFor = (email: string, enrollmentCode: string | undefined) =>
           Effect.gen(function* () {
-            const existing = yield* users.findByEmail(email);
+            const existing = Option.fromNullishOr(
+              (yield* users.list({ where: { email }, limit: 1 }))[0],
+            );
 
             if (Option.isSome(existing)) {
               if (!existing.value.hasAccess) {

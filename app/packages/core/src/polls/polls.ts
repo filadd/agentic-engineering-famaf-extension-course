@@ -141,8 +141,10 @@ export class Polls extends Context.Service<
               : [(yield* visibleSession(sessions, filter.sessionId)).id];
 
           const polls = yield* store.list({
-            sessionIds,
-            statuses: filter.status == null ? ["active", "closed"] : [filter.status],
+            where: {
+              sessionId: sessionIds,
+              status: filter.status == null ? ["active", "closed"] : [filter.status],
+            },
           });
 
           return yield* forStudent(viewer, polls);
@@ -166,7 +168,14 @@ export class Polls extends Context.Service<
             return yield* new InvalidResponse();
           }
 
-          yield* responses.upsert(poll.id, viewer.id, response);
+          const responseId = yield* crypto.randomULID.pipe(Effect.orDie);
+
+          yield* responses.upsert({
+            id: responseId,
+            pollId: poll.id,
+            userId: viewer.id,
+            value: response,
+          });
           yield* notifyPolls(poll);
 
           const [voted] = yield* forStudent(viewer, [poll]);
@@ -176,9 +185,7 @@ export class Polls extends Context.Service<
         listForTeacher: Effect.fn("Polls.listForTeacher")(function* (sessionId) {
           yield* existingSession(sessions, sessionId);
 
-          return yield* forTeacher(
-            yield* store.list({ sessionIds: [sessionId], statuses: ["draft", "active", "closed"] }),
-          );
+          return yield* forTeacher(yield* store.list({ where: { sessionId } }));
         }),
         create: Effect.fn("Polls.create")(function* (draft) {
           yield* existingSession(sessions, draft.sessionId);
@@ -235,7 +242,7 @@ export class Polls extends Context.Service<
         remove: Effect.fn("Polls.remove")(function* (id) {
           const poll = yield* findPoll(id);
 
-          yield* store.markDeleted(id);
+          yield* store.remove(id);
           yield* notifyPolls(poll);
         }),
       });

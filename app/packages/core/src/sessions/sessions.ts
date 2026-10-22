@@ -74,6 +74,8 @@ export class Sessions extends Context.Service<
 
       const listVisible = () => store.listEnabled();
 
+      const listAll = () => store.list({ orderBy: { field: "position", direction: "asc" } });
+
       const featured = () =>
         Effect.map(listVisible(), (sessions) => Option.fromNullishOr(sessions.at(-1)));
 
@@ -93,7 +95,7 @@ export class Sessions extends Context.Service<
             Effect.asVoid,
           );
         }),
-        listAll: () => Effect.map(store.listAll(), (sessions) => sessions.map(toSummary)),
+        listAll: () => Effect.map(listAll(), (sessions) => sessions.map(toSummary)),
         get: (id) => existingSession(store, id),
         create: Effect.fn("Sessions.create")(function* (input) {
           const id = yield* crypto.randomULID.pipe(Effect.orDie);
@@ -118,12 +120,12 @@ export class Sessions extends Context.Service<
             return yield* new SessionEnabled();
           }
 
-          yield* store.markDeleted(id);
+          yield* store.remove(id);
 
           return yield* classroom.notify(id, "session");
         }),
         reorder: Effect.fn("Sessions.reorder")(function* (ids) {
-          const current = new Set((yield* store.listAll()).map((session) => session.id));
+          const current = new Set((yield* listAll()).map((session) => session.id));
           const requested = new Set(ids);
 
           const matches =

@@ -9,6 +9,7 @@ import { Database } from "@kurasu/database/database";
 import { D1Hands } from "@kurasu/database/hands";
 import { D1Materials } from "@kurasu/database/materials";
 import { D1Polls } from "@kurasu/database/polls";
+import { D1QuestionVotes } from "@kurasu/database/question-votes";
 import { D1Questions } from "@kurasu/database/questions";
 import { KurasuDatabase } from "@kurasu/database/resource";
 import { D1Responses } from "@kurasu/database/responses";
@@ -80,6 +81,7 @@ export default class Api extends Cloudflare.Worker<Api>()(
       D1Responses,
       D1Materials,
       D1Questions,
+      D1QuestionVotes,
       D1Hands,
     ).pipe(Layer.provide(Database.layer(d1.raw)));
 

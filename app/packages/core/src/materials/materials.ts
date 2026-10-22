@@ -84,7 +84,7 @@ export class Materials extends Context.Service<
         list: Effect.fn("Materials.list")(function* (viewer, sessionId) {
           yield* sessionFor(viewer, sessionId);
 
-          return yield* store.list(sessionId);
+          return yield* store.list({ where: { sessionId } });
         }),
         file: Effect.fn("Materials.file")(function* (viewer, id) {
           const material = yield* findMaterial(id);

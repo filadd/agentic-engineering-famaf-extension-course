@@ -1,17 +1,22 @@
 import { AdminQuestion } from "@kurasu/contract/questions";
 import { Ulid } from "@kurasu/contract/ulid";
 import { QuestionsStore, type StoredQuestion } from "@kurasu/core/questions/questions-store";
-import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { asc, desc, eq, sql } from "drizzle-orm";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 
 import { batch, Database, firstRow } from "./database.ts";
+import { repositoryOf } from "./repository.ts";
 import { questions, questionVotes } from "./schema.ts";
 
 const decodeQuestion = Schema.decodeUnknownEffect(
   Schema.Struct({ ...AdminQuestion.fields, authorId: Ulid }),
 );
+
+const { votes: _votes, myVote: _myVote, mine: _mine, ...recordFields } = AdminQuestion.fields;
+
+const decodeRecord = Schema.decodeUnknownEffect(Schema.Struct({ ...recordFields, authorId: Ulid }));
 
 interface QuestionRow {
   readonly id: string;
@@ -35,6 +40,10 @@ export const D1Questions = Layer.effect(
   Effect.gen(function* () {
     const { db, client } = yield* Database;
 
+    const repository = yield* repositoryOf(questions, {
+      decode: (row) => decodeRecord(row).pipe(Effect.orDie),
+    });
+
     const votes = sql<number>`(select count(*) from ${questionVotes} where ${questionVotes.questionId} = ${questions.id})`;
 
     const select = (viewerId: string) =>
@@ -51,6 +60,7 @@ export const D1Questions = Layer.effect(
         .from(questions);
 
     return QuestionsStore.of({
+      ...repository,
       list: (sessionId, viewerId) =>
         select(viewerId)
           .where(eq(questions.sessionId, sessionId))
@@ -64,26 +74,6 @@ export const D1Questions = Layer.effect(
             Effect.orDie,
             Effect.flatMap(firstRow((row: QuestionRow) => toQuestion(viewerId, row))),
           ),
-      create: (question) => db.insert(questions).values(question).pipe(Effect.orDie, Effect.asVoid),
-      setVote: (questionId, userId, vote) =>
-        vote
-          ? db
-              .insert(questionVotes)
-              .values({ questionId, userId })
-              .onConflictDoNothing()
-              .pipe(Effect.orDie, Effect.asVoid)
-          : db
-              .delete(questionVotes)
-              .where(
-                and(eq(questionVotes.questionId, questionId), eq(questionVotes.userId, userId)),
-              )
-              .pipe(Effect.orDie, Effect.asVoid),
-      setAnswered: (id, answered) =>
-        db
-          .update(questions)
-          .set({ answered })
-          .where(eq(questions.id, id))
-          .pipe(Effect.orDie, Effect.asVoid),
       remove: (id) =>
         batch(client, [
           db.delete(questionVotes).where(eq(questionVotes.questionId, id)),

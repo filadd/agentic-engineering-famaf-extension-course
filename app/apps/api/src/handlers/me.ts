@@ -15,7 +15,7 @@ export const MeHandlers = HttpApiBuilder.group(KurasuApi, "me", (handlers) =>
       Effect.gen(function* () {
         const current = yield* CurrentUser;
         const users = yield* Users;
-        const updated = yield* users.updateProfile(current.id, payload);
+        const updated = yield* users.update(current.id, payload);
 
         return toMe(
           yield* Option.match(updated, {

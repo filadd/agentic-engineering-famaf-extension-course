@@ -45,11 +45,11 @@ export const D1Hands = Layer.effect(
           .where(eq(raisedHands.sessionId, sessionId))
           .orderBy(asc(users.name))
           .pipe(Effect.orDie, Effect.flatMap(Effect.forEach(toHand))),
-      raise: (sessionId, userId) =>
+      raise: ({ id, sessionId, userId }) =>
         Effect.gen(function* () {
           yield* db
             .insert(raisedHands)
-            .values({ sessionId, userId })
+            .values({ id, sessionId, userId })
             .onConflictDoNothing()
             .pipe(Effect.orDie);
 

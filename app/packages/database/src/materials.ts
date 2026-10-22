@@ -1,30 +1,27 @@
 import { Material } from "@kurasu/contract/materials";
 import { MaterialsStore } from "@kurasu/core/materials/materials-store";
-import { and, asc, eq, ne } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 
-import { batch, Database, firstRow } from "./database.ts";
+import { batch, Database } from "./database.ts";
+import { repositoryOf } from "./repository.ts";
 import { materials, sessions } from "./schema.ts";
 
 const decodeMaterial = Schema.decodeUnknownEffect(Material);
-
-const toMaterial = (row: typeof materials.$inferSelect) => decodeMaterial(row).pipe(Effect.orDie);
 
 export const D1Materials = Layer.effect(
   MaterialsStore,
   Effect.gen(function* () {
     const { db, client } = yield* Database;
 
-    const get = (id: string) =>
-      db
-        .select()
-        .from(materials)
-        .where(eq(materials.id, id))
-        .limit(1)
-        .pipe(Effect.orDie, Effect.flatMap(firstRow(toMaterial)));
+    const repository = yield* repositoryOf(materials, {
+      decode: (row) => decodeMaterial(row).pipe(Effect.orDie),
+    });
+
+    const { get } = repository;
 
     const unmarkOtherSlides = (sessionId: string, keepId: string) =>
       db
@@ -45,14 +42,7 @@ export const D1Materials = Layer.effect(
         .where(eq(sessions.id, sessionId));
 
     return MaterialsStore.of({
-      list: (sessionId) =>
-        db
-          .select()
-          .from(materials)
-          .where(eq(materials.sessionId, sessionId))
-          .orderBy(asc(materials.id))
-          .pipe(Effect.orDie, Effect.flatMap(Effect.forEach(toMaterial))),
-      get,
+      ...repository,
       create: (material) =>
         batch(
           client,

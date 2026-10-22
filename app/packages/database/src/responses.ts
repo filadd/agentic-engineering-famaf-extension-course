@@ -33,11 +33,14 @@ export const D1Responses = Layer.effect(
         );
 
     return ResponsesStore.of({
-      upsert: (pollId, userId, value) =>
+      upsert: (response) =>
         db
           .insert(responses)
-          .values({ pollId, userId, value })
-          .onConflictDoUpdate({ target: [responses.pollId, responses.userId], set: { value } })
+          .values(response)
+          .onConflictDoUpdate({
+            target: [responses.pollId, responses.userId],
+            set: { value: response.value },
+          })
           .pipe(Effect.orDie, Effect.asVoid),
       forUser: (userId, pollIds) =>
         pollIds.length === 0

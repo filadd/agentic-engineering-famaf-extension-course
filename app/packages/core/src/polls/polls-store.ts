@@ -1,25 +1,16 @@
-import type { AdminPoll, PollChange, PollStatus } from "@kurasu/contract/polls";
-import type { Ulid } from "@kurasu/contract/ulid";
+import type { AdminPoll, PollChange } from "@kurasu/contract/polls";
 import * as Context from "effect/Context";
-import type * as Effect from "effect/Effect";
-import type * as Option from "effect/Option";
+
+import type { Repository } from "../repository.ts";
 
 export type StoredPoll = Omit<AdminPoll, "results">;
 
-export interface PollFilter {
-  readonly sessionIds: ReadonlyArray<Ulid>;
-  readonly statuses: ReadonlyArray<PollStatus>;
-}
-
-// Polls stored in D1, in creation order. Every read leaves out deleted polls;
-// `markDeleted` keeps the row and its responses.
+// Polls stored in D1. Every read leaves out deleted polls; `remove` marks the
+// poll as deleted and keeps the row and its responses.
 export class PollsStore extends Context.Service<
   PollsStore,
-  {
-    readonly list: (filter: PollFilter) => Effect.Effect<ReadonlyArray<StoredPoll>>;
-    readonly get: (id: Ulid) => Effect.Effect<Option.Option<StoredPoll>>;
-    readonly create: (poll: StoredPoll) => Effect.Effect<StoredPoll>;
-    readonly update: (id: Ulid, change: PollChange) => Effect.Effect<Option.Option<StoredPoll>>;
-    readonly markDeleted: (id: Ulid) => Effect.Effect<void>;
-  }
+  Pick<
+    Repository<StoredPoll, StoredPoll, PollChange>,
+    "get" | "list" | "create" | "update" | "remove"
+  >
 >()("kurasu/PollsStore") {}
