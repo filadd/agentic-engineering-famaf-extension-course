@@ -38,6 +38,7 @@ export const useUploadMaterial = (
       queryKeys.allAdminMaterials(),
       queryKeys.sessions(),
       queryKeys.adminSessions(),
+      queryKeys.allAdminChangelog(),
     ],
     options,
   });

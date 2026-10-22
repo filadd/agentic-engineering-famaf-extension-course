@@ -11,6 +11,7 @@ const statusOf = {
   NotRegistered: 404,
   SessionNotFound: 404,
   PollNotFound: 404,
+  ChangelogEntryNotFound: 404,
   EmailTaken: 409,
   OrderMismatch: 409,
   PollNotActive: 409,

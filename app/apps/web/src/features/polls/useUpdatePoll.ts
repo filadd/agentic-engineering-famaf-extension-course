@@ -23,7 +23,7 @@ export const useUpdatePoll = (
   useApiMutation({
     call: (api, input) =>
       api.adminPolls.update({ params: { id: input.id }, payload: input.change }),
-    invalidates: [queryKeys.allPolls(), queryKeys.allAdminPolls()],
+    invalidates: [queryKeys.allPolls(), queryKeys.allAdminPolls(), queryKeys.allAdminChangelog()],
     optimistic: [
       optimisticPatch<ReadonlyArray<AdminPoll>, PollUpdate>({
         key: () => queryKeys.allAdminPolls(),
