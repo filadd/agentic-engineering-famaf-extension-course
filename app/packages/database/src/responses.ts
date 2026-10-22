@@ -28,8 +28,6 @@ const decodeCountRows = Schema.decodeUnknownEffect(
   ),
 );
 
-const maxWords = 100;
-
 export const D1Responses = Layer.effect(
   ResponsesStore,
   Effect.gen(function* () {
@@ -51,19 +49,13 @@ export const D1Responses = Layer.effect(
         where ${responses.pollId} in (select value from json_each(${pollIds}))
         group by 1, 2
         union all
-        select pollId, null, word, count from (
-          select ${responses.pollId} as pollId,
-            words.value as word,
-            count(distinct ${responses.userId}) as count,
-            row_number() over (
-              partition by ${responses.pollId}
-              order by count(distinct ${responses.userId}) desc, words.value
-            ) as rank
-          from ${responses}, json_each(${responses.value}, '$.words') as words
-          where ${responses.pollId} in (select value from json_each(${pollIds}))
-          group by 1, 2
-        )
-        where rank <= ${maxWords}
+        select ${responses.pollId} as pollId,
+          null,
+          words.value as word,
+          count(distinct ${responses.userId}) as count
+        from ${responses}, json_each(${responses.value}, '$.words') as words
+        where ${responses.pollId} in (select value from json_each(${pollIds}))
+        group by 1, 3
       `);
 
     return ResponsesStore.of({

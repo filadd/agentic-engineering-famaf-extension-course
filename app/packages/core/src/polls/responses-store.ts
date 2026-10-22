@@ -17,8 +17,7 @@ export type NewResponse = StoredResponse;
 export type ResponseChange = Partial<Pick<StoredResponse, "value">>;
 
 // The votes of one poll, counted without saying who voted what: every vote, the
-// votes per choice or point of the scale, and the students per word, at most
-// 100 words, the most sent first.
+// votes per choice or point of the scale, and the students per word.
 export interface ResponseCounts {
   readonly count: number;
   readonly values: ReadonlyArray<{ readonly value: ResponseValue; readonly count: number }>;

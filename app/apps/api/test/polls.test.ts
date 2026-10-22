@@ -118,14 +118,14 @@ test(
 );
 
 test(
-  "a word cloud counts each word once per student and lists the 100 most sent words",
+  "a word cloud counts each word once per student and lists every word, the most sent first",
   Effect.gen(function* () {
     const { url } = yield* stack;
     const [cloud] = yield* studentPolls(url, reader, `?sessionId=${bigCloud}&status=closed`);
     const words = cloud?.results?.words ?? [];
 
     expect(cloud?.results?.count).toBe(12);
-    expect(words).toHaveLength(100);
+    expect(words).toHaveLength(107);
     expect(words.slice(0, 2)).toEqual([
       { word: "todos", count: 12 },
       { word: "dos", count: 2 },
