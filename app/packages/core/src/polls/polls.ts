@@ -23,7 +23,6 @@ import * as Context from "effect/Context";
 import * as Crypto from "effect/Crypto";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
-import * as Option from "effect/Option";
 
 import { Changelog } from "../changelog/changelog.ts";
 import { Classroom } from "../classroom.ts";
@@ -31,7 +30,7 @@ import { SessionsStore } from "../sessions/sessions-store.ts";
 import { existingSession, visibleSession } from "../sessions/visible-session.ts";
 import { fitsType } from "./fits-type.ts";
 import { PollsStore, type StoredPoll } from "./polls-store.ts";
-import { ResponsesStore } from "./responses-store.ts";
+import { noResponses, ResponsesStore } from "./responses-store.ts";
 import { fitsPoll, tally } from "./tally.ts";
 
 export interface StudentPollFilter {
@@ -100,31 +99,33 @@ export class Polls extends Context.Service<
 
       const forStudent = (viewer: User, polls: ReadonlyArray<StoredPoll>) =>
         Effect.gen(function* () {
-          const ids = polls.map((poll) => poll.id);
-          const mine = yield* responses.forUser(viewer.id, ids);
+          const mine = new Map(
+            (yield* responses.list({
+              where: { userId: viewer.id, pollId: polls.map((poll) => poll.id) },
+            })).map((response) => [response.pollId, response.value]),
+          );
 
           const shown = polls.flatMap((poll) =>
             poll.status === "closed" || mine.has(poll.id) ? [poll.id] : [],
           );
 
-          const values = yield* responses.values(shown);
+          const counts = yield* responses.counts(shown);
 
           return polls.map((poll): Poll => ({
             ...poll,
             status: visibleStatus(poll.status),
             myResponse: mine.get(poll.id) ?? null,
-            results: Option.match(Option.fromNullishOr(values.get(poll.id)), {
-              onNone: () => null,
-              onSome: (pollValues) => tally(poll, pollValues),
-            }),
+            results: shown.includes(poll.id)
+              ? tally(poll, counts.get(poll.id) ?? noResponses)
+              : null,
           }));
         });
 
       const forTeacher = (polls: ReadonlyArray<StoredPoll>) =>
-        Effect.map(responses.values(polls.map((poll) => poll.id)), (values) =>
+        Effect.map(responses.counts(polls.map((poll) => poll.id)), (counts) =>
           polls.map((poll): AdminPoll => ({
             ...poll,
-            results: tally(poll, values.get(poll.id) ?? []),
+            results: tally(poll, counts.get(poll.id) ?? noResponses),
           })),
         );
 
@@ -172,12 +173,10 @@ export class Polls extends Context.Service<
 
           const responseId = yield* crypto.randomULID.pipe(Effect.orDie);
 
-          yield* responses.upsert({
-            id: responseId,
-            pollId: poll.id,
-            userId: viewer.id,
-            value: response,
-          });
+          yield* responses.upsert(
+            { id: responseId, pollId: poll.id, userId: viewer.id, value: response },
+            { target: ["pollId", "userId"], set: { value: response } },
+          );
           yield* notifyPolls(poll);
           yield* changelog.drop({ type: "poll-opened", entityId: poll.id });
 
@@ -200,7 +199,7 @@ export class Polls extends Context.Service<
           const id = yield* crypto.randomULID.pipe(Effect.orDie);
           const poll = yield* store.create({ ...draft, id, status: "draft" });
 
-          return { ...poll, results: tally(poll, []) };
+          return { ...poll, results: tally(poll, noResponses) };
         }),
         update: Effect.fn("Polls.update")(function* (id, change) {
           const poll = yield* findPoll(id);
