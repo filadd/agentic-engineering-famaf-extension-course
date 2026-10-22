@@ -6,7 +6,7 @@ import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 
-import { batch, Database } from "./database.ts";
+import { Database } from "./database.ts";
 import { repositoryOf } from "./repository.ts";
 import { materials, sessions } from "./schema.ts";
 
@@ -15,7 +15,7 @@ const decodeMaterial = Schema.decodeUnknownEffect(Material);
 export const D1Materials = Layer.effect(
   MaterialsStore,
   Effect.gen(function* () {
-    const { db, client } = yield* Database;
+    const { db } = yield* Database;
 
     const repository = yield* repositoryOf(materials, {
       decode: (row) => decodeMaterial(row).pipe(Effect.orDie),
@@ -44,16 +44,17 @@ export const D1Materials = Layer.effect(
     return MaterialsStore.of({
       ...repository,
       create: (material) =>
-        batch(
-          client,
-          material.isSlides
-            ? [
-                unmarkOtherSlides(material.sessionId, material.id),
-                resetPosition(material.sessionId),
-                db.insert(materials).values(material),
-              ]
-            : [db.insert(materials).values(material)],
-        ).pipe(Effect.as(material)),
+        repository
+          .batch(
+            material.isSlides
+              ? [
+                  unmarkOtherSlides(material.sessionId, material.id),
+                  resetPosition(material.sessionId),
+                  repository.statements.create(material),
+                ]
+              : [repository.statements.create(material)],
+          )
+          .pipe(Effect.as(material)),
       setSlides: (id, isSlides) =>
         Effect.gen(function* () {
           const current = yield* get(id);
@@ -64,16 +65,15 @@ export const D1Materials = Layer.effect(
 
           const material = current.value;
 
-          yield* batch(
-            client,
+          yield* repository.batch(
             isSlides
               ? [
                   unmarkOtherSlides(material.sessionId, id),
-                  db.update(materials).set({ isSlides: true }).where(eq(materials.id, id)),
+                  repository.statements.update(id, { isSlides: true }),
                   resetPosition(material.sessionId),
                 ]
               : [
-                  db.update(materials).set({ isSlides: false }).where(eq(materials.id, id)),
+                  repository.statements.update(id, { isSlides: false }),
                   resetPosition(material.sessionId),
                 ],
           );
@@ -89,15 +89,10 @@ export const D1Materials = Layer.effect(
           }
 
           const material = current.value;
+          const removal = yield* repository.statements.remove(id);
 
-          yield* batch(
-            client,
-            material.isSlides
-              ? [
-                  db.delete(materials).where(eq(materials.id, id)),
-                  resetPosition(material.sessionId),
-                ]
-              : [db.delete(materials).where(eq(materials.id, id))],
+          yield* repository.batch(
+            material.isSlides ? [removal, resetPosition(material.sessionId)] : [removal],
           );
 
           return current;
