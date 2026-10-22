@@ -6,8 +6,8 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 
+import { Mailer } from "../mail/mailer.ts";
 import { Codes } from "./codes.ts";
-import { Mailer } from "./mailer.ts";
 import { newLinkCode } from "./new-code.ts";
 import { SessionTokens } from "./session-tokens.ts";
 import { Users } from "./users.ts";

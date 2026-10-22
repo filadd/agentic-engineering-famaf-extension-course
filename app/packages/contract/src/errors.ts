@@ -96,6 +96,12 @@ export class SessionEnabled extends Schema.TaggedError<SessionEnabled>()(
   { httpApiStatus: 409 },
 ) {}
 
+export class SessionDisabled extends Schema.TaggedError<SessionDisabled>()(
+  "SessionDisabled",
+  {},
+  { httpApiStatus: 409 },
+) {}
+
 export class OrderMismatch extends Schema.TaggedError<OrderMismatch>()(
   "OrderMismatch",
   {},
@@ -134,6 +140,12 @@ export class InvalidResponse extends Schema.TaggedError<InvalidResponse>()(
 
 export class InvalidPollContent extends Schema.TaggedError<InvalidPollContent>()(
   "InvalidPollContent",
+  {},
+  { httpApiStatus: 400 },
+) {}
+
+export class EmptyAnnouncement extends Schema.TaggedError<EmptyAnnouncement>()(
+  "EmptyAnnouncement",
   {},
   { httpApiStatus: 400 },
 ) {}

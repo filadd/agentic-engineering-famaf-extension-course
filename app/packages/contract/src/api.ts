@@ -1,6 +1,7 @@
 import { HttpApi } from "effect/http-api";
 
 import { AdminUsersGroup } from "./admin-users.ts";
+import { AdminAnnouncementsGroup } from "./announcements.ts";
 import { AuthGroup } from "./auth.ts";
 import { AdminChangelogGroup } from "./changelog.ts";
 import { ClassroomGroup } from "./classroom.ts";
@@ -22,6 +23,7 @@ export class KurasuApi extends HttpApi.make("kurasu")
   .add(MaterialsGroup)
   .add(AdminMaterialsGroup)
   .add(AdminChangelogGroup)
+  .add(AdminAnnouncementsGroup)
   .add(QuestionsGroup)
   .add(AdminQuestionsGroup)
   .add(RaisedHandsGroup)

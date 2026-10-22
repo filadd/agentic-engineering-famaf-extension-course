@@ -1,4 +1,5 @@
 import { Access } from "@kurasu/core/access/access";
+import { Announcements } from "@kurasu/core/announcements/announcements";
 import { Changelog } from "@kurasu/core/changelog/changelog";
 import { Hands } from "@kurasu/core/hands/hands";
 import { Materials } from "@kurasu/core/materials/materials";
@@ -33,6 +34,7 @@ import { WebCrypto } from "./crypto.ts";
 import { MaterialsBucket } from "./files/bucket.ts";
 import { R2Files } from "./files/r2.ts";
 import { AdminUsersHandlers } from "./handlers/admin-users.ts";
+import { AdminAnnouncementsHandlers } from "./handlers/announcements.ts";
 import { AuthHandlers } from "./handlers/auth.ts";
 import { AdminChangelogHandlers } from "./handlers/changelog.ts";
 import { AdminMaterialsHandlers, MaterialsHandlers } from "./handlers/materials.ts";
@@ -99,6 +101,7 @@ export default class Api extends Cloudflare.Worker<Api>()(
 
     const services = Layer.mergeAll(
       Access.layer(webOrigin),
+      Announcements.layer(webOrigin),
       Sessions.layer,
       Polls.layer,
       Materials.layer,
@@ -122,6 +125,7 @@ export default class Api extends Cloudflare.Worker<Api>()(
         MaterialsHandlers,
         AdminMaterialsHandlers,
         AdminChangelogHandlers,
+        AdminAnnouncementsHandlers,
         QuestionsHandlers,
         AdminQuestionsHandlers,
         RaisedHandsHandlers,
