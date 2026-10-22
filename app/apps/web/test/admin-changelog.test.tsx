@@ -375,7 +375,7 @@ describe("session page: writing and sending the announcement", () => {
     held.release();
 
     await waitFor(() => expect(screen.queryByRole("dialog", { name: "Anuncio" })).toBeNull());
-    expect(await screen.findByText("Anuncio enviado.")).toBeTruthy();
+    expect((await screen.findByText("Anuncio enviado.")).closest('[role="status"]')).not.toBeNull();
     expect(changelog.announcements).toEqual([
       {
         sessionId: planning.id,
