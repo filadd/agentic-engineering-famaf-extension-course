@@ -3,19 +3,22 @@ import type { Ulid } from "@kurasu/contract/ulid";
 import * as Context from "effect/Context";
 import type * as Effect from "effect/Effect";
 
-export interface NewHand {
+import type { Repository } from "../repository.ts";
+
+export interface StoredHand {
   readonly id: Ulid;
   readonly sessionId: Ulid;
   readonly userId: Ulid;
 }
 
-// Raised hands stored in D1, one per student and session. Raising a raised
-// hand leaves the one hand there.
+export type NewHand = StoredHand;
+
+// Raised hands stored in D1, one per student and session. `raisedIn` reads the
+// hands of a session with the name and avatar of each student, by name, in one
+// query.
 export class HandsStore extends Context.Service<
   HandsStore,
-  {
-    readonly list: (sessionId: Ulid) => Effect.Effect<ReadonlyArray<RaisedHand>>;
-    readonly raise: (hand: NewHand) => Effect.Effect<RaisedHand>;
-    readonly lower: (sessionId: Ulid, userId: Ulid) => Effect.Effect<void>;
+  Pick<Repository<StoredHand, NewHand, never>, "list" | "upsert" | "removeWhere"> & {
+    readonly raisedIn: (sessionId: Ulid) => Effect.Effect<ReadonlyArray<RaisedHand>>;
   }
 >()("kurasu/HandsStore") {}
