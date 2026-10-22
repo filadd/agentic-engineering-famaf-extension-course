@@ -10,7 +10,7 @@ Cada línea es una regla. Una regla es una oración y enlaza la nota que la expl
 
 ## 🖥️ Interfaz
 
-- Toda acción destructiva pide confirmación (ver [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)).
+- Toda acción destructiva pide confirmación (ver [carga y acciones de la web](carga-y-acciones-de-la-web.md)).
 - El diálogo de confirmación queda en espera hasta que el servidor responde, y mientras espera no se cierra (ver [carga y acciones de la web](carga-y-acciones-de-la-web.md)).
 - Una acción en espera muestra su error dentro de su formulario o modal (ver [carga y acciones de la web](carga-y-acciones-de-la-web.md)).
 - Después de una acción, la web vuelve a pedir las listas que esa acción cambia.

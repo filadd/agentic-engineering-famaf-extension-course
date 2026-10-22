@@ -89,6 +89,12 @@ Cerrar sesión es directa pero queda en espera, porque no cambia nada que se pue
 
 Si el servidor rechaza una acción al instante o no responde, la pantalla vuelve a como estaba y aparece un toast de error. Si falla una acción en espera, el error aparece dentro de su formulario o modal, que quedan abiertos con lo que el usuario cargó. Cerrar sesión, que no tiene formulario ni modal, muestra el error en un toast. Cada acción define el texto de su toast. Cuando el anuncio de novedades sale, la web cierra su modal y muestra el toast de éxito "Anuncio enviado." (ver [novedades por mail](novedades-por-mail.md)). Una acción que recibe una respuesta de sin sesión o sin acceso lleva al login, igual que una carga.
 
+## 🛑 Cómo se confirma una acción destructiva
+
+Toda acción destructiva pide confirmación, y la nota de cada parte dice cuáles son las suyas. No la piden los cambios que se deshacen fácil, como marcar una pregunta como respondida o bajar una mano.
+
+La confirmación es un diálogo que se abre encima de lo que haya, también sobre un modal o una hoja. Escape cierra solo el diálogo de arriba, igual que su botón Cerrar o Cancelar: una confirmación abierta sobre una hoja se cierra y la hoja queda. El menú del usuario también se cierra con Escape o con un click fuera de él, como los modales. Mientras la acción espera al servidor, el diálogo sigue la regla de las acciones en espera.
+
 ## 🧩 Piezas compartidas
 
 ### ⌛ Botón en espera
