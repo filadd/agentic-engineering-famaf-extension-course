@@ -15,6 +15,7 @@ import * as Layer from "effect/Layer";
 import { Classroom } from "../classroom.ts";
 import { SessionsStore } from "../sessions/sessions-store.ts";
 import { existingSession, visibleSession } from "../sessions/visible-session.ts";
+import { QuestionVotesStore } from "./question-votes-store.ts";
 import { QuestionsStore, type StoredQuestion } from "./questions-store.ts";
 
 const toQuestion = (question: StoredQuestion): Question => ({
@@ -68,6 +69,7 @@ export class Questions extends Context.Service<
     Questions,
     Effect.gen(function* () {
       const store = yield* QuestionsStore;
+      const votes = yield* QuestionVotesStore;
       const sessions = yield* SessionsStore;
       const classroom = yield* Classroom;
       const crypto = yield* Crypto.Crypto;
@@ -118,7 +120,17 @@ export class Questions extends Context.Service<
             return yield* new OwnQuestion();
           }
 
-          yield* store.setVote(id, viewer.id, myVote);
+          if (myVote) {
+            const voteId = yield* crypto.randomULID.pipe(Effect.orDie);
+
+            yield* votes.upsert(
+              { id: voteId, questionId: id, userId: viewer.id },
+              { target: ["questionId", "userId"] },
+            );
+          } else {
+            yield* votes.removeWhere({ questionId: id, userId: viewer.id });
+          }
+
           yield* classroom.notify(question.sessionId, "questions");
 
           return toQuestion(yield* findQuestion(viewer, id));
@@ -147,7 +159,7 @@ export class Questions extends Context.Service<
         answer: Effect.fn("Questions.answer")(function* (viewer, id, answered) {
           const question = yield* findQuestion(viewer, id);
 
-          yield* store.setAnswered(id, answered);
+          yield* store.update(id, { answered });
           yield* classroom.notify(question.sessionId, "questions");
 
           return toAdminQuestion({ ...question, answered });

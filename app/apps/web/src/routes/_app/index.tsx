@@ -1,4 +1,5 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
+import * as Schema from "effect/Schema";
 
 import { AppHeader } from "../../features/me/AppHeader.tsx";
 import { Greeting } from "../../features/me/Greeting.tsx";
@@ -10,11 +11,14 @@ import { sessionExamples } from "../../features/sessions/session-examples.ts";
 import { useSessions } from "../../features/sessions/useSessions.ts";
 import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 
+const HomeSearch = Schema.Struct({ sesion: Schema.optional(Schema.String) });
+
 // The highlighted session is the last enabled one; the earlier ones go below,
 // the newest first. Until /api/me says who entered, the page draws the
 // student's skeleton without asking for the student's lists, which the
 // teacher cannot read.
 const HomeRoute = () => {
+  const search = Route.useSearch();
   const me = useMe();
 
   const student = me.data?.role === "student";
@@ -58,7 +62,7 @@ const HomeRoute = () => {
               <EarlierSessions sessions={sessionExamples.slice(0, 2)} />
             </SkeletonOf>
           ) : (
-            <EarlierSessions sessions={earlier} />
+            <EarlierSessions sessions={earlier} initialOpenId={search.sesion} />
           )}
         </section>
       )}
@@ -66,4 +70,7 @@ const HomeRoute = () => {
   );
 };
 
-export const Route = createFileRoute("/_app/")({ component: HomeRoute });
+export const Route = createFileRoute("/_app/")({
+  validateSearch: Schema.toStandardSchemaV1(HomeSearch),
+  component: HomeRoute,
+});

@@ -7,6 +7,6 @@ export const useDeletePoll = (
 ) =>
   useApiMutation({
     call: (api, input) => api.adminPolls.delete({ params: { id: input } }),
-    invalidates: [queryKeys.allPolls(), queryKeys.allAdminPolls()],
+    invalidates: [queryKeys.allPolls(), queryKeys.allAdminPolls(), queryKeys.allAdminChangelog()],
     options,
   });

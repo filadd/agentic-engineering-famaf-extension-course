@@ -1,6 +1,6 @@
 ---
 title: "Modelo de datos"
-summary: "Las entidades que kurasu guarda en D1: usuarios, sesiones con su material, encuestas, preguntas y manos levantadas, y los códigos de registro y de los links del mail."
+summary: "Las entidades que kurasu guarda en D1: usuarios, sesiones con su material, encuestas, preguntas, manos levantadas y novedades pendientes, y los códigos de registro y de los links del mail."
 created: "2026-10-18"
 ---
 
@@ -8,7 +8,7 @@ created: "2026-10-18"
 
 ## 🔭 Resumen
 
-La app guarda usuarios, sesiones y lo que cuelga de cada sesión: su material, sus encuestas con sus respuestas, sus preguntas con sus votos, las manos levantadas y la slide en la que está el profe. Todo vive en D1, salvo los archivos del material, que viven en R2 (ver [componentes](componentes.md)). Solo las sesiones y las encuestas quedan guardadas al borrarse: cada una guarda en `deleted_at` la fecha en que se borró, conserva lo que cuelga de ella y nadie la ve. Un material o una pregunta propia se borran definitivamente, el código de un link se borra al usarse y una mano se baja. Los códigos de registro y los de los links del mail son filas de la misma entidad, `Code`. Todos los ids son ULID.
+La app guarda usuarios, sesiones y lo que cuelga de cada sesión: su material, sus encuestas con sus respuestas, sus preguntas con sus votos, las manos levantadas, la slide en la que está el profe y las novedades que el profe todavía no anunció. Todo vive en D1, salvo los archivos del material, que viven en R2 (ver [componentes](componentes.md)). Las sesiones y las encuestas quedan guardadas al borrarse: cada una guarda en `deleted_at` la fecha en que se borró, conserva lo que cuelga de ella y nadie la ve. Un código de registro regenerado también queda guardado, con la fecha en `deleted_at`. Un material, una pregunta propia o una novedad se borran definitivamente, el código de un link se borra al usarse y una mano se baja. Los códigos de registro y los de los links del mail son filas de la misma entidad, `Code`. Cada entidad tiene su propio id ULID, también las que unen dos entidades, como una respuesta o una mano levantada. Ese id nunca queda vacío. Cómo la API lee y escribe estas entidades está en [acceso a datos](acceso-a-datos.md).
 
 ## 💽 Entidades y relaciones
 
@@ -18,6 +18,7 @@ erDiagram
     SESSION ||--o{ POLL : has
     SESSION ||--o{ QUESTION : has
     SESSION ||--o{ RAISED_HAND : has
+    SESSION ||--o{ CHANGELOG_ENTRY : has
     POLL ||--o{ RESPONSE : receives
     QUESTION ||--o{ QUESTION_VOTE : receives
     USER ||--o{ RESPONSE : gives
@@ -63,8 +64,9 @@ erDiagram
         datetime deleted_at "nullable"
     }
     RESPONSE {
-        ulid poll_id PK, FK
-        ulid user_id PK, FK
+        ulid id PK
+        ulid poll_id FK "unique with user_id"
+        ulid user_id FK
         json value "option, 1 to 5 or words"
     }
     QUESTION {
@@ -75,12 +77,22 @@ erDiagram
         bool answered
     }
     QUESTION_VOTE {
-        ulid question_id PK, FK
-        ulid user_id PK, FK
+        ulid id PK
+        ulid question_id FK "unique with user_id"
+        ulid user_id FK
     }
     RAISED_HAND {
-        ulid session_id PK, FK
-        ulid user_id PK, FK
+        ulid id PK
+        ulid session_id FK "unique with user_id"
+        ulid user_id FK
+    }
+    CHANGELOG_ENTRY {
+        ulid id PK
+        ulid session_id FK
+        enum type "session-enabled, material-added or poll-opened"
+        ulid entity_id "not a FK, unique with type"
+        string name
+        datetime created_at
     }
     CODE {
         ulid id PK
@@ -114,15 +126,24 @@ La entidad `Material` es un archivo, en `file`, con el `name` que le puso el pro
 
 La entidad `Poll` tiene `type`, `status`, `prompt` (la consigna) y `deleted_at`, la fecha en que se borró, si se borró. El tipo es `choice` (opción múltiple), `words` (word cloud) o `scale` (escala de 1 a 5), y el estado es `draft`, `active` o `closed`. Las de tipo `choice` tienen su lista de opciones en `options`, y las de tipo `scale` un texto para el 1 en `scale_min_label` y otro para el 5 en `scale_max_label`; los campos del otro tipo quedan vacíos. Borrar una encuesta la deja guardada con sus respuestas, pero nadie la ve.
 
-Cada estudiante tiene a lo sumo una `Response` por encuesta. Su `value` es la opción elegida, un valor de 1 a 5 o la lista de palabras que mandó en el word cloud. Cambiar el voto reemplaza esa respuesta, y en un word cloud sumar palabras es mandar la lista completa otra vez. Una encuesta de opción múltiple tiene de 2 a 10 opciones, y en un word cloud cada estudiante manda hasta 10 palabras de hasta 30 caracteres. Nadie ve qué votó cada uno: el profe ve porcentajes y la cantidad de respuestas.
+Cada estudiante tiene a lo sumo una `Response` por encuesta, y la base lo garantiza con un índice único sobre la encuesta y el estudiante. Su `value` es la opción elegida, un valor de 1 a 5 o la lista de palabras que mandó en el word cloud. Cambiar el voto reemplaza esa respuesta, y en un word cloud sumar palabras es mandar la lista completa otra vez. Una encuesta de opción múltiple tiene de 2 a 10 opciones, y en un word cloud cada estudiante manda hasta 10 palabras de hasta 30 caracteres. Nadie ve qué votó cada uno: el profe ve porcentajes y la cantidad de respuestas.
 
 ### ❓ Pregunta y voto
 
-La entidad `Question` guarda su texto en `body`, a su autor en `author_id` y si está respondida en `answered`. Se muestra sin autor a todos; al autor la app le marca las suyas. Cada estudiante vota una pregunta a lo sumo una vez, con una `QuestionVote`, y no vota las propias.
+La entidad `Question` guarda su texto en `body`, a su autor en `author_id` y si está respondida en `answered`. Se muestra sin autor a todos; al autor la app le marca las suyas. Cada estudiante vota una pregunta a lo sumo una vez, con una `QuestionVote`, y no vota las propias. Un índice único sobre la pregunta y el estudiante impide el segundo voto.
 
 ### ✋ Mano levantada
 
-La entidad `RaisedHand` une a un estudiante con una sesión. Existe hasta que alguien baja la mano, el estudiante o el profe, así que sigue levantada si el estudiante sale del aula y vuelve (ver [tiempo real del aula](tiempo-real-del-aula.md)).
+La entidad `RaisedHand` une a un estudiante con una sesión. Cada estudiante tiene a lo sumo una por sesión, y la base lo garantiza con un índice único sobre la sesión y el estudiante. Existe hasta que alguien baja la mano, el estudiante o el profe, así que sigue levantada si el estudiante sale del aula y vuelve (ver [tiempo real del aula](tiempo-real-del-aula.md)).
+
+### 🔔 Novedad
+
+La entidad `ChangelogEntry` es una novedad: algo nuevo de una sesión que el profe todavía no anunció por mail. Pertenece a una sesión, en `session_id`, y guarda su `type`: `session-enabled` para la sesión habilitada, `material-added` para un material nuevo o `poll-opened` para una encuesta abierta. Guarda también el id de la entidad que la originó en `entity_id`, su nombre en `name` y la fecha del cambio que la registró en `created_at`. El nombre es el título de la sesión, el nombre del material o la consigna de la encuesta. Ningún campo queda vacío. La novedad no guarda texto ni link. La web y el mail arman el texto con su tipo y su nombre. Hay a lo sumo una novedad por tipo y entidad, y la base lo garantiza con un índice único sobre `type` y `entity_id`.
+
+> [!NOTE] Por qué `entity_id` no es una clave foránea
+> Según el tipo, apunta a una sesión, a un material o a una encuesta, así que no puede ser una clave foránea a una sola tabla.
+
+La lista de novedades no es un historial: una novedad existe solo mientras está pendiente, y se borra definitivamente cuando el profe la anuncia o la descarta, o cuando un cambio la saca. Borrar la sesión no borra sus novedades, que quedan guardadas con ella. Qué cambios crean y sacan una novedad, y cómo se anuncia, está en [novedades por mail](novedades-por-mail.md).
 
 ### 🔑 Código
 
@@ -137,4 +158,4 @@ El código del magic link es una fila de `Code` de tipo `user`, con el `user_id`
 
 ---
 
-Related: [componentes](componentes.md), [login y acceso](login-y-acceso.md), [tiempo real del aula](tiempo-real-del-aula.md), [API de las slides](api-de-las-slides.md), [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)
+Related: [componentes](componentes.md), [login y acceso](login-y-acceso.md), [tiempo real del aula](tiempo-real-del-aula.md), [API de las slides](api-de-las-slides.md), [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md), [novedades por mail](novedades-por-mail.md)

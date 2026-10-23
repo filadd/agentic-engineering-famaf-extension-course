@@ -30,6 +30,10 @@ Every folder's index is called `README.md`, so that name is the one deliberate c
 
 Every note carries `title` and `summary`, plus `created`. The summary is what shows up in search, in hover previews and in the indexes, so write it as a sentence about the subject rather than about the note.
 
+## Invariants
+
+[`architecture/invariantes.md`](architecture/invariantes.md) lists the rules every change respects. The mahou skills read it before settling or proposing anything and check each decision against it. Add a rule when it holds beyond the change that surfaced it, and link the note that explains it when the reason needs more than a sentence.
+
 ## How to write a note
 
 **A note explains how one part works.** It opens with an overview a reader can stop after, then the mechanism: the shape of the data, what calls what, in what order, with a diagram when the subject is a flow, a tree or a sequence. A reader should be able to hold that part of the system in their head without opening `src/` first.

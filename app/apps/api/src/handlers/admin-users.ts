@@ -1,3 +1,4 @@
+import { maxUsers } from "@kurasu/contract/admin-users";
 import { OwnAccess, UserNotFound } from "@kurasu/contract/errors";
 import { CurrentUser } from "@kurasu/contract/middleware";
 import { Codes } from "@kurasu/core/access/codes";
@@ -24,7 +25,13 @@ export const AdminUsersHandlers = (webOrigin: string) => {
         Effect.gen(function* () {
           const users = yield* Users;
 
-          return yield* users.list();
+          return yield* users.list({
+            orderBy: [
+              { field: "name", direction: "asc", nulls: "last" },
+              { field: "email", direction: "asc" },
+            ],
+            limit: maxUsers,
+          });
         }),
       )
       .handle("add", ({ payload }) =>
@@ -45,7 +52,7 @@ export const AdminUsersHandlers = (webOrigin: string) => {
           }
 
           const users = yield* Users;
-          const updated = yield* users.setAccess(params.id, payload.hasAccess);
+          const updated = yield* users.update(params.id, { hasAccess: payload.hasAccess });
 
           return yield* Effect.fromOption(updated).pipe(Effect.mapError(() => new UserNotFound()));
         }),

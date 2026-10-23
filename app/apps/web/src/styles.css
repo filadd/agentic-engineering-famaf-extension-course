@@ -118,6 +118,10 @@
     @apply rounded-[18px] bg-paper text-coal;
   }
 
+  .row-card {
+    @apply rounded-xl border-[1.5px] border-sand bg-paper text-coal;
+  }
+
   /* The wrapper adds no box, so the real part keeps its layout, and hides
      everything in it. Only the part's cards, rows and controls show, each as
      one grey block of its own size; nothing inside them shows. A text right

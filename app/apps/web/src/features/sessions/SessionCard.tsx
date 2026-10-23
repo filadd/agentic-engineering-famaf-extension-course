@@ -1,5 +1,5 @@
 import type { SessionSummary } from "@kurasu/contract/sessions";
-import type { ReactNode } from "react";
+import type { ReactNode, Ref } from "react";
 
 import { Icon } from "../../ui/Icon.tsx";
 import { sessionColor } from "./session-color.ts";
@@ -13,6 +13,7 @@ interface Props {
   body?: ReactNode;
   actions?: ReactNode;
   painted?: boolean;
+  ref?: Ref<HTMLElement> | undefined;
 }
 
 export const SessionCard = ({
@@ -24,8 +25,10 @@ export const SessionCard = ({
   body,
   actions,
   painted = true,
+  ref,
 }: Props) => (
   <article
+    ref={ref}
     aria-label={session.title}
     className={`skeleton-block rounded-[22px] px-[18px] py-3 text-card-ink max-[600px]:px-3.5 max-[600px]:py-[11px] ${painted ? sessionColor(session.position) : "border-[1.5px] border-line text-ink"}`}
   >

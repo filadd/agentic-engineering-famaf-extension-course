@@ -80,14 +80,20 @@ Una acción al instante cambia la pantalla en cuanto el usuario actúa, antes de
 Qué forma toma cada acción depende de cómo la hace el usuario:
 
 - **Al instante**: las acciones directas, un botón, un switch o un arrastre, sin confirmación ni formulario. Por ejemplo, habilitar una sesión, dar acceso a un usuario, levantar la mano, marcar una pregunta como respondida, activar o cerrar una encuesta, reordenar las sesiones o mover la slide.
-- **En espera**: las acciones que pasan por un modal de confirmación, un formulario o un diálogo. Por ejemplo, borrar material, una encuesta o una sesión, sacar el acceso a un usuario, crear una sesión o una encuesta, subir un archivo, hacer una pregunta, votar una word cloud, que pasa por su campo de texto, o guardar el perfil.
+- **En espera**: las acciones que pasan por un modal de confirmación, un formulario o un diálogo. Por ejemplo, borrar material, una encuesta o una sesión, sacar el acceso a un usuario, crear una sesión o una encuesta, subir un archivo, hacer una pregunta, votar una word cloud, que pasa por su campo de texto, guardar el perfil o enviar un anuncio de novedades desde su modal.
 
 Cerrar sesión es directa pero queda en espera, porque no cambia nada que se pueda deshacer en pantalla: la web espera la respuesta y va al login. Votar una encuesta de opción múltiple o de escala también queda en espera, como la word cloud. La opción elegida muestra un spinner hasta que responde el servidor y las demás opciones se deshabilitan. Si el voto falla, la opción vuelve a como estaba y aparece un toast. Marcar un HTML como slides sigue la revisión de las slides (ver [API de las slides](api-de-las-slides.md)).
 
 > [!NOTE] Por qué la forma depende de cómo se hace la acción
 > La regla busca que ninguna acción deje al usuario sin respuesta: lo directo se ve enseguida, y lo que ya pasó por una confirmación o un formulario muestra que está esperando.
 
-Si el servidor rechaza una acción al instante o no responde, la pantalla vuelve a como estaba y aparece un toast de error. Si falla una acción en espera, el error aparece dentro de su formulario o modal, que quedan abiertos con lo que el usuario cargó. Cerrar sesión, que no tiene formulario ni modal, muestra el error en un toast. Cada acción define el texto de su toast. Una acción que recibe una respuesta de sin sesión o sin acceso lleva al login, igual que una carga.
+Si el servidor rechaza una acción al instante o no responde, la pantalla vuelve a como estaba y aparece un toast de error. Si falla una acción en espera, el error aparece dentro de su formulario o modal, que quedan abiertos con lo que el usuario cargó. Cerrar sesión, que no tiene formulario ni modal, muestra el error en un toast. Cada acción define el texto de su toast. Cuando el anuncio de novedades sale, la web cierra su modal y muestra el toast de éxito "Anuncio enviado." (ver [novedades por mail](novedades-por-mail.md)). Una acción que recibe una respuesta de sin sesión o sin acceso lleva al login, igual que una carga.
+
+## 🛑 Cómo se confirma una acción destructiva
+
+Toda acción destructiva pide confirmación, y la nota de cada parte dice cuáles son las suyas. No la piden los cambios que se deshacen fácil, como marcar una pregunta como respondida o bajar una mano.
+
+La confirmación es un diálogo que se abre encima de lo que haya, también sobre un modal o una hoja. Escape cierra solo el diálogo de arriba, igual que su botón Cerrar o Cancelar: una confirmación abierta sobre una hoja se cierra y la hoja queda. El menú del usuario también se cierra con Escape o con un click fuera de él, como los modales. Mientras la acción espera al servidor, el diálogo sigue la regla de las acciones en espera.
 
 ## 🧩 Piezas compartidas
 
@@ -97,14 +103,14 @@ Mientras su acción espera, el botón cambia su texto a un gerundio, como "Crean
 
 ### 🔔 Toast
 
-Un toast es una card con un ícono, el texto del error y una X para cerrarlo. Aparece abajo a la derecha; en el celular ocupa el ancho de la pantalla menos los márgenes. Si llegan varios, se apilan: el más nuevo queda abajo y empuja a los anteriores hacia arriba. Cada toast se cierra solo a los pocos segundos, o antes con su X.
+Un toast es una card con un ícono, un texto y una X para cerrarlo. El de error lleva un ícono de alerta y el texto del error; el de éxito, un ícono de check y el texto de lo que salió bien. Aparece abajo a la derecha; en el celular ocupa el ancho de la pantalla menos los márgenes. Si llegan varios, se apilan: el más nuevo queda abajo y empuja a los anteriores hacia arriba. Cada toast se cierra solo a los pocos segundos, o antes con su X.
 
 ### ⚠️ Pantalla de error
 
 La pantalla de error no tiene header. Muestra el cuervo grande centrado, "No se pudo cargar la página", "Probá de nuevo en un rato." y el botón "Volver al inicio", que lleva al inicio del estudiante o al admin del profe.
 
-[Prototipo de las piezas compartidas: el botón en espera, el toast y la pantalla de error](../prototipos/piezas.html)
+[Prototipo de las piezas compartidas: el botón en espera, el toast de error y el de éxito, y la pantalla de error](../prototipos/piezas.html)
 
 ---
 
-Related: [componentes](componentes.md), [login y acceso](login-y-acceso.md), [tiempo real del aula](tiempo-real-del-aula.md), [API de las slides](api-de-las-slides.md), [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)
+Related: [componentes](componentes.md), [login y acceso](login-y-acceso.md), [tiempo real del aula](tiempo-real-del-aula.md), [API de las slides](api-de-las-slides.md), [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md), [novedades por mail](novedades-por-mail.md)

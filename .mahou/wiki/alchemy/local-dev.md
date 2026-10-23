@@ -1,6 +1,6 @@
 # Running an Alchemy 2 stack locally with Vite
 
-verified: 2026-10-19
+verified: 2026-10-22
 
 Answers how kurasu's stack runs under `alchemy dev` with Vite in front: which ports it uses, how Vite's proxy learns the API Worker's URL, how the classroom WebSocket reaches the API Worker, when the Worker's construction runs, what a Durable Object binding is called and what shape drizzle-kit gives the migrations. The facts come from kurasu's implementation on alchemy 2.0.0 beta.
 
@@ -12,10 +12,11 @@ Answers how kurasu's stack runs under `alchemy dev` with Vite in front: which po
 - A Worker's construction (the `Effect.gen` passed to `Cloudflare.Worker`) runs at plan time as well as when the isolate starts, and the bindings exist only in the second. Anything that reads a binding, such as the layers that query D1, is built inside `fetch`.
 - A Durable Object binding takes the Durable Object's name, `Aula` in kurasu, which is also its class name. There is no separate binding name such as `AULA`.
 - drizzle-kit 1.0 generates each migration as a folder holding `migration.sql` and `snapshot.json` (`migrations/0001_users_and_codes/`), not as a loose `.sql` file. The D1 resource takes the `migrations` folder and applies them.
+- drizzle-kit writes a text primary key as `` `id` text PRIMARY KEY `` and ignores `.notNull()` on it, and SQLite lets a text primary key hold NULL. Every table's `id` in kurasu is `NOT NULL`, written by hand in the migration that creates or rebuilds the table; `drizzle-kit generate` still reports no schema changes afterwards. A migration that drizzle-kit generates and that rebuilds a table loses the `NOT NULL`, so add it back by hand. D1 always enforces foreign keys, and `PRAGMA foreign_keys=OFF` does nothing in a migration; a rebuild uses `PRAGMA defer_foreign_keys = on`, and a table that other tables reference is rebuilt by copying its rows aside, dropping it, creating it again and copying them back, because dropping it and renaming a new table leaves the child rows as violations at commit.
 - The web origin used in links differs per stage: `KURASU_WEB_ORIGIN` is computed in `.env.schema` as `http://localhost:5173` in dev and `https://<domain>` in production, so a link mailed from the local stack opens the local web.
 
 ## Sources
 
-- `app/apps/web/vite.config.ts`, `app/apps/infra/src/web.ts`, `app/apps/api/src/worker.ts`, `app/apps/api/src/classroom/aula.ts`, `app/packages/database/migrations/`, `app/.env.schema`.
+- `app/apps/web/vite.config.ts`, `app/apps/infra/src/web.ts`, `app/apps/api/src/worker.ts`, `app/apps/api/src/classroom/aula.ts`, `app/packages/database/migrations/` (`0003_changelog_and_ids`), `app/packages/database/src/schema.ts`, `app/.env.schema`.
 - `alchemy` 2.0.0-beta.83: `src/Cloudflare/Workers/Sources/Vite.ts` (`viteDev`, `getDefine`) and `src/Cloudflare/Workers/LocalWorkerProvider.ts` (the dev URL comes from the bound proxy). Vite 8.3.4 `resolveConfig`: merges the inline config before `runConfigHook`.
 - `.scratch/aula-virtual/implement/report-base.md` (T4), `.scratch/aula-virtual/tasks.md` (T20, T21, T26), `.scratch/aula-virtual/reports/validate/index.html` (F2).

@@ -1,51 +1,43 @@
 import type { PollResults, ResponseValue } from "@kurasu/contract/polls";
 
+import type { ResponseCounts } from "./responses-store.ts";
 import type { StoredPoll } from "./polls-store.ts";
 
-const countBy = (size: number, indexes: ReadonlyArray<number>) => {
+const countsOf = (size: number, votes: ReadonlyArray<readonly [number, number]>) => {
   const counts = Array.from({ length: size }, () => 0);
 
-  for (const index of indexes) {
-    counts[index] = (counts[index] ?? 0) + 1;
+  for (const [index, count] of votes) {
+    counts[index] = (counts[index] ?? 0) + count;
   }
 
   return counts;
 };
 
-// Each word counts once per student, however many times they sent it; the
-// cloud lists the most sent words first.
-const countWords = (lists: ReadonlyArray<ReadonlyArray<string>>) => {
-  const counts = new Map<string, number>();
-
-  for (const word of lists.flatMap((words) => [...new Set(words)])) {
-    counts.set(word, (counts.get(word) ?? 0) + 1);
-  }
-
-  return [...counts]
-    .map(([word, count]) => ({ word, count }))
-    .toSorted((a, b) => b.count - a.count || a.word.localeCompare(b.word));
-};
-
-// The results of a poll from its votes, without saying who voted what: a count
-// per option, per point of the scale (1 to 5) or per word.
-export const tally = (poll: StoredPoll, values: ReadonlyArray<ResponseValue>): PollResults => {
-  const count = values.length;
+// The results of a poll from its counted votes, without saying who voted what:
+// a count per option, per point of the scale (1 to 5) or per word, the most
+// sent words first.
+export const tally = (poll: StoredPoll, counts: ResponseCounts): PollResults => {
+  const { count, values } = counts;
 
   if (poll.type === "choice") {
-    const choices = values.flatMap((value) => ("choice" in value ? [value.choice] : []));
+    const votes = values.flatMap(({ value, count: sent }) =>
+      "choice" in value ? [[value.choice, sent] as const] : [],
+    );
 
-    return { count, choice: countBy(poll.options?.length ?? 0, choices) };
+    return { count, choice: countsOf(poll.options?.length ?? 0, votes) };
   }
 
   if (poll.type === "scale") {
-    const points = values.flatMap((value) => ("scale" in value ? [value.scale - 1] : []));
+    const votes = values.flatMap(({ value, count: sent }) =>
+      "scale" in value ? [[value.scale - 1, sent] as const] : [],
+    );
 
-    return { count, scale: countBy(5, points) };
+    return { count, scale: countsOf(5, votes) };
   }
 
   return {
     count,
-    words: countWords(values.flatMap((value) => ("words" in value ? [value.words] : []))),
+    words: counts.words.toSorted((a, b) => b.count - a.count || a.word.localeCompare(b.word)),
   };
 };
 

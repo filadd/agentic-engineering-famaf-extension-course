@@ -6,8 +6,8 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 
+import { Mailer } from "../mail/mailer.ts";
 import { Codes } from "./codes.ts";
-import { Mailer } from "./mailer.ts";
 import { newLinkCode } from "./new-code.ts";
 import { SessionTokens } from "./session-tokens.ts";
 import { Users } from "./users.ts";
@@ -54,7 +54,7 @@ export class Access extends Context.Service<
         // leaves it there and the next request replaces it.
         const userCodeFor = (email: string, enrollmentCode: string | undefined) =>
           Effect.gen(function* () {
-            const existing = yield* users.findByEmail(email);
+            const existing = yield* users.find({ email });
 
             if (Option.isSome(existing)) {
               if (!existing.value.hasAccess) {
@@ -86,7 +86,7 @@ export class Access extends Context.Service<
           requestLink: Effect.fn("Access.requestLink")(function* (email, enrollmentCode) {
             const code = yield* userCodeFor(email.toLowerCase(), enrollmentCode);
 
-            yield* mailer.sendLink(email, linkUrl(code)).pipe(
+            yield* mailer.sendMagicLink(email, linkUrl(code)).pipe(
               Effect.tapError((error) =>
                 Effect.logWarning("the magic link mail was not sent", error.message),
               ),

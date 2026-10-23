@@ -1,5 +1,5 @@
 import type { SessionSummary } from "@kurasu/contract/sessions";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Icon } from "../../ui/Icon.tsx";
 import { RailNode } from "./RailNode.tsx";
@@ -9,10 +9,20 @@ import { SessionRail } from "./SessionRail.tsx";
 
 interface Props {
   sessions: ReadonlyArray<SessionSummary>;
+  initialOpenId?: string | undefined;
 }
 
-export const EarlierSessions = ({ sessions }: Props) => {
-  const [openId, setOpenId] = useState<string | null>(null);
+// A link to one of the earlier sessions, such as the one of an announcement
+// mail, opens its card and brings it to the middle of the screen. An id that is
+// not among them opens nothing.
+export const EarlierSessions = ({ sessions, initialOpenId }: Props) => {
+  const [openId, setOpenId] = useState<string | null>(initialOpenId ?? null);
+
+  const linkedCard = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    linkedCard.current?.scrollIntoView({ block: "center" });
+  }, []);
 
   return (
     <SessionRail
@@ -26,6 +36,7 @@ export const EarlierSessions = ({ sessions }: Props) => {
       )}
       renderCard={(session, state) => (
         <SessionCard
+          ref={session.id === initialOpenId ? linkedCard : undefined}
           session={session}
           open={state.open}
           onToggle={state.onToggle}

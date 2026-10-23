@@ -12,6 +12,7 @@ export const useDeleteMaterial = (
       queryKeys.allAdminMaterials(),
       queryKeys.sessions(),
       queryKeys.adminSessions(),
+      queryKeys.allAdminChangelog(),
     ],
     options,
   });

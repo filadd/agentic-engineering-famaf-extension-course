@@ -3,6 +3,7 @@ import type { RaisedHand, RaisedHandSummary } from "@kurasu/contract/raised-hand
 import type { Ulid } from "@kurasu/contract/ulid";
 import type { User } from "@kurasu/contract/user";
 import * as Context from "effect/Context";
+import * as Crypto from "effect/Crypto";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 
@@ -37,10 +38,11 @@ export class Hands extends Context.Service<
       const store = yield* HandsStore;
       const sessions = yield* SessionsStore;
       const classroom = yield* Classroom;
+      const crypto = yield* Crypto.Crypto;
 
       const lower = (sessionId: Ulid, userId: Ulid) =>
         Effect.gen(function* () {
-          yield* store.lower(sessionId, userId);
+          yield* store.removeWhere({ sessionId, userId });
           yield* classroom.notify(sessionId, "hands");
         });
 
@@ -48,7 +50,7 @@ export class Hands extends Context.Service<
         listForStudent: Effect.fn("Hands.listForStudent")(function* (sessionId) {
           yield* visibleSession(sessions, sessionId);
 
-          const hands = yield* store.list(sessionId);
+          const hands = yield* store.raisedIn(sessionId);
 
           return hands.map((hand) => ({ sessionId: hand.sessionId, userId: hand.user.id }));
         }),
@@ -59,11 +61,14 @@ export class Hands extends Context.Service<
 
           yield* visibleSession(sessions, sessionId);
 
-          const hand = yield* store.raise(sessionId, viewer.id);
-
+          const id = yield* crypto.randomULID.pipe(Effect.orDie);
+          yield* store.upsert(
+            { id, sessionId, userId: viewer.id },
+            { target: ["sessionId", "userId"] },
+          );
           yield* classroom.notify(sessionId, "hands");
 
-          return hand;
+          return { sessionId, user: { id: viewer.id, name: viewer.name, avatar: viewer.avatar } };
         }),
         lowerOwn: Effect.fn("Hands.lowerOwn")(function* (viewer, sessionId) {
           yield* visibleSession(sessions, sessionId);
@@ -72,7 +77,7 @@ export class Hands extends Context.Service<
         listForTeacher: Effect.fn("Hands.listForTeacher")(function* (sessionId) {
           yield* existingSession(sessions, sessionId);
 
-          return yield* store.list(sessionId);
+          return yield* store.raisedIn(sessionId);
         }),
         lower: Effect.fn("Hands.lower")(function* (sessionId, userId) {
           yield* existingSession(sessions, sessionId);

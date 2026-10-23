@@ -1,30 +1,27 @@
 import { Material } from "@kurasu/contract/materials";
 import { MaterialsStore } from "@kurasu/core/materials/materials-store";
-import { and, asc, eq, ne } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 
-import { batch, Database, firstRow } from "./database.ts";
+import { Database } from "./database.ts";
+import { repositoryOf } from "./repository.ts";
 import { materials, sessions } from "./schema.ts";
 
 const decodeMaterial = Schema.decodeUnknownEffect(Material);
 
-const toMaterial = (row: typeof materials.$inferSelect) => decodeMaterial(row).pipe(Effect.orDie);
-
 export const D1Materials = Layer.effect(
   MaterialsStore,
   Effect.gen(function* () {
-    const { db, client } = yield* Database;
+    const { db } = yield* Database;
 
-    const get = (id: string) =>
-      db
-        .select()
-        .from(materials)
-        .where(eq(materials.id, id))
-        .limit(1)
-        .pipe(Effect.orDie, Effect.flatMap(firstRow(toMaterial)));
+    const repository = yield* repositoryOf(materials, {
+      decode: (row) => decodeMaterial(row).pipe(Effect.orDie),
+    });
+
+    const { get } = repository;
 
     const unmarkOtherSlides = (sessionId: string, keepId: string) =>
       db
@@ -45,25 +42,19 @@ export const D1Materials = Layer.effect(
         .where(eq(sessions.id, sessionId));
 
     return MaterialsStore.of({
-      list: (sessionId) =>
-        db
-          .select()
-          .from(materials)
-          .where(eq(materials.sessionId, sessionId))
-          .orderBy(asc(materials.id))
-          .pipe(Effect.orDie, Effect.flatMap(Effect.forEach(toMaterial))),
-      get,
+      ...repository,
       create: (material) =>
-        batch(
-          client,
-          material.isSlides
-            ? [
-                unmarkOtherSlides(material.sessionId, material.id),
-                resetPosition(material.sessionId),
-                db.insert(materials).values(material),
-              ]
-            : [db.insert(materials).values(material)],
-        ).pipe(Effect.as(material)),
+        repository
+          .batch([
+            ...(material.isSlides
+              ? [
+                  unmarkOtherSlides(material.sessionId, material.id),
+                  resetPosition(material.sessionId),
+                ]
+              : []),
+            repository.statements.create(material),
+          ])
+          .pipe(Effect.as(material)),
       setSlides: (id, isSlides) =>
         Effect.gen(function* () {
           const current = yield* get(id);
@@ -74,19 +65,11 @@ export const D1Materials = Layer.effect(
 
           const material = current.value;
 
-          yield* batch(
-            client,
-            isSlides
-              ? [
-                  unmarkOtherSlides(material.sessionId, id),
-                  db.update(materials).set({ isSlides: true }).where(eq(materials.id, id)),
-                  resetPosition(material.sessionId),
-                ]
-              : [
-                  db.update(materials).set({ isSlides: false }).where(eq(materials.id, id)),
-                  resetPosition(material.sessionId),
-                ],
-          );
+          yield* repository.batch([
+            ...(isSlides ? [unmarkOtherSlides(material.sessionId, id)] : []),
+            repository.statements.update(id, { isSlides }),
+            resetPosition(material.sessionId),
+          ]);
 
           return Option.some({ ...material, isSlides });
         }),
@@ -99,15 +82,10 @@ export const D1Materials = Layer.effect(
           }
 
           const material = current.value;
+          const removal = yield* repository.statements.remove(id);
 
-          yield* batch(
-            client,
-            material.isSlides
-              ? [
-                  db.delete(materials).where(eq(materials.id, id)),
-                  resetPosition(material.sessionId),
-                ]
-              : [db.delete(materials).where(eq(materials.id, id))],
+          yield* repository.batch(
+            material.isSlides ? [removal, resetPosition(material.sessionId)] : [removal],
           );
 
           return current;

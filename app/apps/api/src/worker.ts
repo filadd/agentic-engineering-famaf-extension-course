@@ -1,14 +1,18 @@
 import { Access } from "@kurasu/core/access/access";
+import { Announcements } from "@kurasu/core/announcements/announcements";
+import { Changelog } from "@kurasu/core/changelog/changelog";
 import { Hands } from "@kurasu/core/hands/hands";
 import { Materials } from "@kurasu/core/materials/materials";
 import { Polls } from "@kurasu/core/polls/polls";
 import { Questions } from "@kurasu/core/questions/questions";
 import { Sessions } from "@kurasu/core/sessions/sessions";
+import { D1Changelog } from "@kurasu/database/changelog";
 import { D1Codes } from "@kurasu/database/codes";
 import { Database } from "@kurasu/database/database";
 import { D1Hands } from "@kurasu/database/hands";
 import { D1Materials } from "@kurasu/database/materials";
 import { D1Polls } from "@kurasu/database/polls";
+import { D1QuestionVotes } from "@kurasu/database/question-votes";
 import { D1Questions } from "@kurasu/database/questions";
 import { KurasuDatabase } from "@kurasu/database/resource";
 import { D1Responses } from "@kurasu/database/responses";
@@ -30,7 +34,9 @@ import { WebCrypto } from "./crypto.ts";
 import { MaterialsBucket } from "./files/bucket.ts";
 import { R2Files } from "./files/r2.ts";
 import { AdminUsersHandlers } from "./handlers/admin-users.ts";
+import { AdminAnnouncementsHandlers } from "./handlers/announcements.ts";
 import { AuthHandlers } from "./handlers/auth.ts";
+import { AdminChangelogHandlers } from "./handlers/changelog.ts";
 import { AdminMaterialsHandlers, MaterialsHandlers } from "./handlers/materials.ts";
 import { MeHandlers } from "./handlers/me.ts";
 import { AdminPollsHandlers, PollsHandlers } from "./handlers/polls.ts";
@@ -80,7 +86,9 @@ export default class Api extends Cloudflare.Worker<Api>()(
       D1Responses,
       D1Materials,
       D1Questions,
+      D1QuestionVotes,
       D1Hands,
+      D1Changelog,
     ).pipe(Layer.provide(Database.layer(d1.raw)));
 
     const platform = Layer.mergeAll(
@@ -93,12 +101,16 @@ export default class Api extends Cloudflare.Worker<Api>()(
 
     const services = Layer.mergeAll(
       Access.layer(webOrigin),
-      Sessions.layer,
+      Announcements.layer(webOrigin).pipe(Layer.provideMerge(Sessions.layer)),
       Polls.layer,
       Materials.layer,
       Questions.layer,
       Hands.layer,
-    ).pipe(Layer.provideMerge(stores), Layer.provideMerge(platform));
+    ).pipe(
+      Layer.provideMerge(Changelog.layer),
+      Layer.provideMerge(stores),
+      Layer.provideMerge(platform),
+    );
 
     const app = HttpApiBuilder.layer(KurasuApi).pipe(
       Layer.provide([
@@ -111,6 +123,8 @@ export default class Api extends Cloudflare.Worker<Api>()(
         AdminPollsHandlers,
         MaterialsHandlers,
         AdminMaterialsHandlers,
+        AdminChangelogHandlers,
+        AdminAnnouncementsHandlers,
         QuestionsHandlers,
         AdminQuestionsHandlers,
         RaisedHandsHandlers,

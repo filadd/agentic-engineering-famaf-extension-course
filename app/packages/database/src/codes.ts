@@ -1,32 +1,45 @@
+import { Ulid } from "@kurasu/contract/ulid";
 import { Codes } from "@kurasu/core/access/codes";
-import { and, eq, isNull } from "drizzle-orm";
+import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
+import * as Schema from "effect/Schema";
 
-import { batch, Database, now } from "./database.ts";
+import { Database } from "./database.ts";
+import { repositoryOf } from "./repository.ts";
 import { codes } from "./schema.ts";
 
-const isCurrentEnrollment = and(eq(codes.type, "enrollment"), isNull(codes.deletedAt));
+const decodeCode = Schema.decodeUnknownEffect(
+  Schema.Struct({
+    id: Ulid,
+    type: Schema.Literals(["user", "enrollment"]),
+    code: Schema.String,
+    userId: Schema.NullOr(Ulid),
+    deletedAt: Schema.NullOr(Schema.DateTimeUtcFromDate),
+  }),
+);
+
+const currentEnrollment = { type: "enrollment", deletedAt: null } as const;
 
 export const D1Codes = Layer.effect(
   Codes,
   Effect.gen(function* () {
-    const { db, client } = yield* Database;
+    const { db } = yield* Database;
 
-    const currentEnrollment = () =>
-      db
-        .select({ code: codes.code })
-        .from(codes)
-        .where(isCurrentEnrollment)
-        .limit(1)
-        .pipe(
-          Effect.orDie,
-          Effect.map((rows) => Option.fromNullishOr(rows[0]?.code)),
-        );
+    const repository = yield* repositoryOf(codes, {
+      decode: (row) => decodeCode(row).pipe(Effect.orDie),
+    });
+
+    const current = Effect.map(
+      repository.find(currentEnrollment),
+      Option.map((code) => code.code),
+    );
 
     return Codes.of({
-      currentEnrollment,
+      currentEnrollment: () => current,
+      // The current enrollment code is unique through a partial index, which an
+      // upsert cannot name as its conflict target.
       ensureEnrollment: (candidate) =>
         Effect.gen(function* () {
           yield* db
@@ -35,30 +48,28 @@ export const D1Codes = Layer.effect(
             .onConflictDoNothing()
             .pipe(Effect.orDie);
 
-          const current = yield* currentEnrollment();
-
-          return Option.getOrElse(current, () => candidate.code);
+          return Option.getOrElse(yield* current, () => candidate.code);
         }),
       regenerateEnrollment: (next) =>
-        batch(client, [
-          db.update(codes).set({ deletedAt: now }).where(isCurrentEnrollment),
-          db.insert(codes).values({ id: next.id, type: "enrollment", code: next.code }),
-        ]).pipe(Effect.as(next.code)),
+        Effect.gen(function* () {
+          const deletedAt = DateTime.toDateUtc(yield* DateTime.now);
+
+          yield* repository.batch([
+            yield* repository.statements.updateWhere(currentEnrollment, { deletedAt }),
+            repository.statements.create({ id: next.id, type: "enrollment", code: next.code }),
+          ]);
+
+          return next.code;
+        }),
       issueUserCode: (userId, code) =>
-        db
-          .insert(codes)
-          .values({ id: code.id, type: "user", code: code.code, userId })
-          .onConflictDoUpdate({ target: codes.userId, set: { id: code.id, code: code.code } })
-          .pipe(Effect.orDie, Effect.asVoid),
+        repository.upsert(
+          { id: code.id, type: "user", code: code.code, userId },
+          { target: ["userId"], set: { id: code.id, code: code.code } },
+        ),
       consumeUserCode: (code) =>
-        db
-          .delete(codes)
-          .where(and(eq(codes.type, "user"), eq(codes.code, code)))
-          .returning({ userId: codes.userId })
-          .pipe(
-            Effect.orDie,
-            Effect.map((rows) => Option.fromNullishOr(rows[0]?.userId)),
-          ),
+        Effect.map(repository.removeWhere({ type: "user", code }, { returning: true }), (removed) =>
+          Option.fromNullishOr(removed[0]?.userId),
+        ),
     });
   }),
 );

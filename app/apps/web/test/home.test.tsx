@@ -156,3 +156,67 @@ describe("/ home", () => {
     await waitFor(() => expect([sessionRequests, pollRequests]).toEqual([2, 2]));
   });
 });
+
+// Opens the home with three enabled sessions, so two are earlier ones, and
+// returns whether each earlier card is open and the spy on scrollIntoView.
+const openHome = async (path: string) => {
+  const scrolls = vi.spyOn(HTMLElement.prototype, "scrollIntoView");
+
+  server.use(
+    getJson("/me", student),
+    getJson("/sessions", [vibeCoding, planning, tooling]),
+    getJson("/polls", []),
+  );
+
+  await renderRoute(path);
+  await screen.findByRole("region", { name: tooling.title });
+
+  const rail = screen.getByRole("region", { name: "Sesiones anteriores" });
+
+  const expanded = within(rail)
+    .getAllByRole("article")
+    .map((card) => [
+      card.getAttribute("aria-label"),
+      within(card)
+        .getByRole("button", { name: card.getAttribute("aria-label") ?? "" })
+        .getAttribute("aria-expanded"),
+    ]);
+
+  return { expanded, scrolls };
+};
+
+describe("/ home with ?sesion=", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  test("the id of an earlier session opens its card alone and centres it", async () => {
+    const { expanded, scrolls } = await openHome(`/?sesion=${vibeCoding.id}`);
+
+    expect(expanded).toEqual([
+      [planning.title, "false"],
+      [vibeCoding.title, "true"],
+    ]);
+    expect(scrolls).toHaveBeenCalledWith({ block: "center" });
+    expect(scrolls.mock.contexts[0]).toBe(screen.getByRole("article", { name: vibeCoding.title }));
+  });
+
+  test("the id of the highlighted session opens no earlier card", async () => {
+    const { expanded } = await openHome(`/?sesion=${tooling.id}`);
+
+    expect(expanded).toEqual([
+      [planning.title, "false"],
+      [vibeCoding.title, "false"],
+    ]);
+  });
+
+  test("an unknown id opens no earlier card and shows no error", async () => {
+    const { expanded } = await openHome("/?sesion=01KY99999999999999999999999");
+
+    expect(expanded).toEqual([
+      [planning.title, "false"],
+      [vibeCoding.title, "false"],
+    ]);
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+});

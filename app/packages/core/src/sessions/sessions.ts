@@ -14,6 +14,7 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 
+import { Changelog } from "../changelog/changelog.ts";
 import { Classroom } from "../classroom.ts";
 import { SessionsStore, type StoredSession } from "./sessions-store.ts";
 import { existingSession, visibleSession } from "./visible-session.ts";
@@ -70,12 +71,22 @@ export class Sessions extends Context.Service<
     Effect.gen(function* () {
       const store = yield* SessionsStore;
       const classroom = yield* Classroom;
+      const changelog = yield* Changelog;
       const crypto = yield* Crypto.Crypto;
 
       const listVisible = () => store.listEnabled();
 
+      const listAll = () => store.list({ orderBy: { field: "position", direction: "asc" } });
+
       const featured = () =>
-        Effect.map(listVisible(), (sessions) => Option.fromNullishOr(sessions.at(-1)));
+        Effect.map(
+          store.list({
+            where: { enabled: true },
+            orderBy: { field: "position", direction: "desc" },
+            limit: 1,
+          }),
+          (sessions) => Option.map(Option.fromNullishOr(sessions[0]), toSummary),
+        );
 
       return Sessions.of({
         listVisible,
@@ -93,7 +104,7 @@ export class Sessions extends Context.Service<
             Effect.asVoid,
           );
         }),
-        listAll: () => Effect.map(store.listAll(), (sessions) => sessions.map(toSummary)),
+        listAll: () => Effect.map(listAll(), (sessions) => sessions.map(toSummary)),
         get: (id) => existingSession(store, id),
         create: Effect.fn("Sessions.create")(function* (input) {
           const id = yield* crypto.randomULID.pipe(Effect.orDie);
@@ -101,6 +112,8 @@ export class Sessions extends Context.Service<
           return yield* store.create({ id, ...input });
         }),
         update: Effect.fn("Sessions.update")(function* (id, change) {
+          const previous = yield* existingSession(store, id);
+
           const session = yield* Effect.fromOption(yield* store.update(id, change)).pipe(
             Effect.mapError(() => new SessionNotFound()),
           );
@@ -108,6 +121,19 @@ export class Sessions extends Context.Service<
           yield* Effect.forEach(changedTopics(change), (topic) => classroom.notify(id, topic), {
             discard: true,
           });
+
+          if (!previous.enabled && session.enabled) {
+            yield* changelog.record({
+              sessionId: id,
+              type: "session-enabled",
+              entityId: id,
+              name: session.title,
+            });
+          }
+
+          if (previous.enabled && !session.enabled) {
+            yield* changelog.drop({ type: "session-enabled", entityId: id });
+          }
 
           return session;
         }),
@@ -118,12 +144,12 @@ export class Sessions extends Context.Service<
             return yield* new SessionEnabled();
           }
 
-          yield* store.markDeleted(id);
+          yield* store.remove(id);
 
           return yield* classroom.notify(id, "session");
         }),
         reorder: Effect.fn("Sessions.reorder")(function* (ids) {
-          const current = new Set((yield* store.listAll()).map((session) => session.id));
+          const current = new Set((yield* listAll()).map((session) => session.id));
           const requested = new Set(ids);
 
           const matches =

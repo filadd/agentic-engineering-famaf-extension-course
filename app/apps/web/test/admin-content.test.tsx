@@ -76,7 +76,9 @@ describe("session page: content", () => {
     server.use(failingRoute("patch", `/admin/sessions/${planning.id}`));
     await user.click(within(card).getByRole("switch", { name: "Deshabilitada" }));
 
-    expect(await screen.findByText("No se pudo habilitar la sesión.")).toBeTruthy();
+    expect(
+      (await screen.findByText("No se pudo habilitar la sesión.")).closest('[role="alert"]'),
+    ).not.toBeNull();
     expect(
       within(card).getByRole("switch", { name: "Deshabilitada" }).getAttribute("aria-checked"),
     ).toBe("false");

@@ -1,12 +1,18 @@
 import { RaisedHand } from "@kurasu/contract/raised-hands";
+import { Ulid } from "@kurasu/contract/ulid";
 import { HandsStore } from "@kurasu/core/hands/hands-store";
-import { and, asc, eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 
 import { Database } from "./database.ts";
+import { repositoryOf } from "./repository.ts";
 import { raisedHands, users } from "./schema.ts";
+
+const decodeStoredHand = Schema.decodeUnknownEffect(
+  Schema.Struct({ id: Ulid, sessionId: Ulid, userId: Ulid }),
+);
 
 const decodeHand = Schema.decodeUnknownEffect(RaisedHand);
 
@@ -28,47 +34,26 @@ export const D1Hands = Layer.effect(
   Effect.gen(function* () {
     const { db } = yield* Database;
 
-    const select = () =>
-      db
-        .select({
-          sessionId: raisedHands.sessionId,
-          userId: raisedHands.userId,
-          name: users.name,
-          avatar: users.avatar,
-        })
-        .from(raisedHands)
-        .innerJoin(users, eq(users.id, raisedHands.userId));
+    const repository = yield* repositoryOf(raisedHands, {
+      decode: (row) => decodeStoredHand(row).pipe(Effect.orDie),
+    });
 
     return HandsStore.of({
-      list: (sessionId) =>
-        select()
+      upsert: repository.upsert,
+      removeWhere: repository.removeWhere,
+      raisedIn: (sessionId) =>
+        db
+          .select({
+            sessionId: raisedHands.sessionId,
+            userId: raisedHands.userId,
+            name: users.name,
+            avatar: users.avatar,
+          })
+          .from(raisedHands)
+          .innerJoin(users, eq(users.id, raisedHands.userId))
           .where(eq(raisedHands.sessionId, sessionId))
           .orderBy(asc(users.name))
           .pipe(Effect.orDie, Effect.flatMap(Effect.forEach(toHand))),
-      raise: (sessionId, userId) =>
-        Effect.gen(function* () {
-          yield* db
-            .insert(raisedHands)
-            .values({ sessionId, userId })
-            .onConflictDoNothing()
-            .pipe(Effect.orDie);
-
-          const rows = yield* select()
-            .where(and(eq(raisedHands.sessionId, sessionId), eq(raisedHands.userId, userId)))
-            .limit(1)
-            .pipe(Effect.orDie);
-
-          const row = rows[0];
-
-          return row == null
-            ? yield* Effect.die("the raised hand was not stored")
-            : yield* toHand(row);
-        }),
-      lower: (sessionId, userId) =>
-        db
-          .delete(raisedHands)
-          .where(and(eq(raisedHands.sessionId, sessionId), eq(raisedHands.userId, userId)))
-          .pipe(Effect.orDie, Effect.asVoid),
     });
   }),
 );

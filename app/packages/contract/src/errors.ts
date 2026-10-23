@@ -72,6 +72,12 @@ export class QuestionNotFound extends Schema.TaggedError<QuestionNotFound>()(
   { httpApiStatus: 404 },
 ) {}
 
+export class ChangelogEntryNotFound extends Schema.TaggedError<ChangelogEntryNotFound>()(
+  "ChangelogEntryNotFound",
+  {},
+  { httpApiStatus: 404 },
+) {}
+
 export class EmailTaken extends Schema.TaggedError<EmailTaken>()(
   "EmailTaken",
   {},
@@ -86,6 +92,12 @@ export class OwnAccess extends Schema.TaggedError<OwnAccess>()(
 
 export class SessionEnabled extends Schema.TaggedError<SessionEnabled>()(
   "SessionEnabled",
+  {},
+  { httpApiStatus: 409 },
+) {}
+
+export class SessionDisabled extends Schema.TaggedError<SessionDisabled>()(
+  "SessionDisabled",
   {},
   { httpApiStatus: 409 },
 ) {}
@@ -128,6 +140,12 @@ export class InvalidResponse extends Schema.TaggedError<InvalidResponse>()(
 
 export class InvalidPollContent extends Schema.TaggedError<InvalidPollContent>()(
   "InvalidPollContent",
+  {},
+  { httpApiStatus: 400 },
+) {}
+
+export class EmptyAnnouncement extends Schema.TaggedError<EmptyAnnouncement>()(
+  "EmptyAnnouncement",
   {},
   { httpApiStatus: 400 },
 ) {}

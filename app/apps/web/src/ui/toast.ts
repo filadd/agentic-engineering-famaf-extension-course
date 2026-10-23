@@ -1,8 +1,12 @@
 import { createElement } from "react";
 import { toast } from "sonner";
 
-import { ErrorToast } from "./ErrorToast.tsx";
+import { Toast, type ToastVariant } from "./Toast.tsx";
 
-// A plain function, so an operation hook's onError can call it outside React.
-export const showError = (text: string) =>
-  toast.custom((id) => createElement(ErrorToast, { text, onClose: () => toast.dismiss(id) }));
+const show = (variant: ToastVariant, text: string) =>
+  toast.custom((id) => createElement(Toast, { variant, text, onClose: () => toast.dismiss(id) }));
+
+// Plain functions, so an operation hook's onError can call them outside React.
+export const showError = (text: string) => show("error", text);
+
+export const showSuccess = (text: string) => show("success", text);

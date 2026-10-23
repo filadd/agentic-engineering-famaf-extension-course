@@ -34,6 +34,7 @@ const voter = "01PVTA00000000000000000000";
 const withPolls = "01PSA000000000000000000000";
 const disabled = "01PSB000000000000000000000";
 const teachers = "01PSC000000000000000000000";
+const bigCloud = "01PSD000000000000000000000";
 
 const activeUnvoted = "01PQ1000000000000000000000";
 const activeVoted = "01PQ2000000000000000000000";
@@ -113,6 +114,23 @@ test(
       myResponse: { words: ["hola"] },
       results: { count: 1, words: [{ word: "hola", count: 1 }] },
     });
+  }),
+);
+
+test(
+  "a word cloud counts each word once per student and lists every word, the most sent first",
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+    const [cloud] = yield* studentPolls(url, reader, `?sessionId=${bigCloud}&status=closed`);
+    const words = cloud?.results?.words ?? [];
+
+    expect(cloud?.results?.count).toBe(12);
+    expect(words).toHaveLength(107);
+    expect(words.slice(0, 2)).toEqual([
+      { word: "todos", count: 12 },
+      { word: "dos", count: 2 },
+    ]);
+    expect(words.slice(2).every((word) => word.count === 1)).toBe(true);
   }),
 );
 

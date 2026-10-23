@@ -21,7 +21,7 @@ export const useUpdateSession = (
   useApiMutation({
     call: (api, input) =>
       api.adminSessions.update({ params: { id: input.id }, payload: input.change }),
-    invalidates: [queryKeys.sessions(), queryKeys.adminSessions()],
+    invalidates: [queryKeys.sessions(), queryKeys.adminSessions(), queryKeys.allAdminChangelog()],
     optimistic: [
       optimisticPatch<ReadonlyArray<SessionSummary>, SessionUpdate>({
         key: () => queryKeys.adminSessions(),
