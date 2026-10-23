@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prototipo · Aviso de email inválido</title>
+<style>
+  :root { --window: #FBF3EE; --ink: #1F1B18; --muted: #8A7E75; --line: #EADFD8; --side: #F3E8E1; --field: #FFFFFF; --active: #1F1B18; --active-ink: #FFFFFF; --rose: #F2B8C0; --danger: #B5485A; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9e6e3; font-family: 'Atkinson Hyperlegible', system-ui, sans-serif; color: #1F1B18; }
+  h1, h2, h3 { font-family: 'Rubik', system-ui, sans-serif; margin: 0; }
+  .wrap { max-width: 1180px; margin: 24px auto; padding: 0 20px 60px; }
+  .intro p, .tradeoff { margin: 6px 0 0; color: #6b625c; }
+  .alt { margin-top: 32px; }
+  .alt h2 { font-size: 22px; }
+  .strip { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; font-size: 14px; }
+  .strip button { font: inherit; border: 1px solid #cfc8c2; background: #fff; border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+  .strip button.on { background: #1F1B18; color: #fff; border-color: #1F1B18; }
+  .state-label { font-family: 'Rubik', system-ui, sans-serif; font-weight: 500; margin: 26px 0 8px; }
+
+  .i { display: inline-grid; place-items: center; flex: none; }
+  .i svg { width: 100%; height: 100%; }
+
+  .pair { display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; }
+  .cap { font-size: 13px; color: #6b625c; margin-bottom: 6px; }
+  .cap.example { font-weight: 700; color: #8a5a2b; }
+  .frame { position: relative; background: var(--window); color: var(--ink); border-radius: 12px; border: 1px solid #cfc8c2; overflow: hidden; }
+  .frame[inert] { user-select: none; }
+
+  .btn { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-size: 14px; border: 1.5px solid var(--line); background: transparent; color: var(--ink); border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+  .btn:disabled { opacity: 0.35; cursor: default; }
+  .btn.dark { background: #1F1B18; color: #fff; border-color: #1F1B18; }
+  /* A pending button keeps its full colour: it is disabled because it is working, not because it cannot be used. */
+  .btn[aria-busy="true"] { opacity: 1; cursor: progress; }
+  .spinner { width: 16px; height: 16px; flex: none; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .inline-error { display: flex; gap: 8px; border-radius: 14px; background: var(--rose); color: #1F1B18; padding: 12px 14px; font-size: 14px; text-align: left; }
+  .inline-error[hidden] { display: none; }
+
+  .field { display: block; font-size: 14px; font-weight: 700; text-align: left; }
+  .field input { display: block; width: 100%; margin-top: 6px; font: inherit; font-weight: 400; font-size: 16px; border: 1.5px solid var(--line); border-radius: 14px; padding: 11px 14px; background: var(--field); color: var(--ink); outline: none; }
+  .field input:focus, .field input.focused { border-color: var(--ink); }
+
+  /* The grid row animates from 0fr to 1fr, which reaches the error's real height, wrapped lines included.
+     The padding sits on the inner element so the clip can collapse to exactly 0. */
+  .error-slot { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows 180ms ease-out, opacity 180ms ease-out; }
+  .error-clip { min-height: 0; overflow: hidden; }
+  .field-error { padding: 5px 0 9px 2px; font-size: 13px; line-height: 18px; color: var(--danger); text-align: left; }
+  .field-wrap.invalid .error-slot { grid-template-rows: 1fr; opacity: 1; }
+
+  /* Email step: the auth card from registro-responsive.html. */
+  .auth { width: 420px; padding: 40px 32px 44px; display: grid; place-items: center; }
+  .panel { width: 100%; text-align: center; }
+  .mark { width: 64px; height: 64px; border-radius: 20px; background: #F8D0A0; display: grid; place-items: center; margin: 0 auto 18px; font-family: 'Rubik', system-ui, sans-serif; font-weight: 700; font-size: 26px; color: #1F1B18; }
+  .panel h1 { font-size: 30px; }
+  .panel .field-wrap { margin-top: 26px; }
+  .go { display: flex; justify-content: center; margin-top: 26px; }
+  .go .btn { background: var(--active); color: var(--active-ink); border-color: var(--active); font-family: 'Rubik', system-ui, sans-serif; font-weight: 500; font-size: 15px; padding: 11px 20px; }
+  .go + .inline-error { margin-top: 18px; }
+
+  /* Sheets over a dimmed page, from admin-usuarios.html. */
+  .users { width: 560px; height: 470px; }
+  .frame.example { width: 560px; height: 560px; }
+  .top { display: flex; align-items: center; gap: 12px; padding: 22px 26px 4px; }
+  .top h1 { font-size: 26px; flex: 1; }
+  .back { width: 36px; height: 36px; display: grid; place-items: center; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; background: #CCC4F0; display: grid; place-items: center; font-size: 20px; }
+  .list { padding: 14px 26px 0 74px; display: flex; flex-direction: column; gap: 8px; }
+  .user { display: flex; align-items: center; gap: 12px; background: var(--side); border-radius: 16px; padding: 10px 12px; }
+  .user .face { width: 34px; height: 34px; border-radius: 50%; background: #CCC4F0; display: grid; place-items: center; font-size: 18px; flex: none; }
+  .user small { display: block; color: var(--muted); font-size: 13px; }
+  .ghost { height: 58px; border-radius: 16px; background: var(--side); }
+  .scrim { position: absolute; inset: 0; background: rgba(31, 27, 24, 0.45); display: grid; place-items: center; }
+  .modal { background: var(--window); color: var(--ink); border-radius: 22px; width: 420px; padding: 22px 24px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); }
+  .modal h3 + form { margin-top: 14px; }
+  .modal .field input { font-size: 15px; padding: 10px 14px; }
+  .modal .field-wrap + .field-wrap { margin-top: 14px; }
+  .modal .inline-error { margin-top: 12px; }
+  .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+
+  /* A shown error brings its own 9px gap below, so the element after an invalid field drops its margin;
+     both changes run on the same timing, so the total height moves smoothly. */
+  .go, .actions, .field-wrap, .inline-error { transition: margin-top 180ms ease-out; }
+  .field-wrap.invalid + .go,
+  .modal .field-wrap.invalid + .field-wrap,
+  .modal .field-wrap.invalid + .inline-error:not([hidden]),
+  .modal .field-wrap.invalid + .inline-error[hidden] + .actions { margin-top: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .error-slot, .go, .actions, .field-wrap, .inline-error { transition: none; }
+  }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 0 16px 40px; }
+    .auth, .users, .frame.example { width: 100%; }
+    .list { padding-left: 26px; }
+    .modal { width: calc(100% - 24px); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="intro">
+    <h1>Aviso de email inválido</h1>
+    <p>El aviso aparece al apretar el botón con un email inválido y desde ahí se revisa con cada tecla.</p>
+  </div>
+  <section class="alt" id="alt">
+    <h2>A2 · Se revisa mientras escribís</h2>
+    <p class="tradeoff">El aviso se revisa con cada tecla y se va recién cuando el email es válido; confirma la corrección al instante, pero sigue a la vista mientras escribís.</p>
+    <div class="strip"></div>
+    <div class="stage"></div>
+  </section>
+</div>
+
+<script>
+const ICONS = {
+  'mail': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m2.357 7.714l6.98 4.654c.963.641 1.444.962 1.964 1.087c.46.11.939.11 1.398 0c.52-.125 1.001-.446 1.964-1.087l6.98-4.654M7.157 19.5h9.686c1.68 0 2.52 0 3.162-.327a3 3 0 0 0 1.31-1.311c.328-.642.328-1.482.328-3.162V9.3c0-1.68 0-2.52-.327-3.162a3 3 0 0 0-1.311-1.311c-.642-.327-1.482-.327-3.162-.327H7.157c-1.68 0-2.52 0-3.162.327a3 3 0 0 0-1.31 1.311c-.328.642-.328 1.482-.328 3.162v5.4c0 1.68 0 2.52.327 3.162a3 3 0 0 0 1.311 1.311c.642.327 1.482.327 3.162.327"/></svg>',
+  'danger-circle': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 1 1-18 0a9 9 0 0 1 18 0m-9-4.373v5.5m0 3.246v-.5"/></svg>',
+  'arrow-left': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 12h-15m5.625 6L4.5 12l5.625-6"/></svg>',
+};
+const ic = (n, s = 20) => `<span class="i" style="width:${s}px;height:${s}px">${ICONS[n]}</span>`;
+
+const inlineError = (text) => `<div class="inline-error" role="alert" data-server>${ic('danger-circle', 18)}<span>${text}</span></div>`;
+
+// The validation rule: trim, lowercase, then this pattern.
+const RULE = /^(?:[A-Za-z0-9_'+\-]+\.)*[A-Za-z0-9_'+\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$/;
+
+const FIELDS = {
+  email: { check: (raw) => RULE.test(raw.trim().toLowerCase()), error: 'El email ingresado no es válido.', type: 'email', placeholder: 'nombre@mail.com' },
+  name: { check: (raw) => raw.trim() !== '', error: 'Ingresá un nombre.', type: 'text', placeholder: 'Cómo se llama' },
+};
+
+const BAD = 'ezequiel.pastore.@mi.unc.edu.ar';
+const STILL_BAD = 'ezequiel.pastore..@mi.unc.edu.ar';
+const GOOD = '  Ezequiel.Pastore@mi.unc.edu.ar ';
+const SEND_MS = 1200;
+
+const blank = { values: { name: '', email: '' }, submitted: false, focused: null, pending: false, server: false };
+
+// Placements with only the email field ignore the name.
+const STATES = {
+  empty: ['Vacío', {}],
+  typing: ['Escribiendo un email inválido', { values: { name: '', email: BAD }, focused: 'email' }],
+  submitted: ['Inválido después de enviar', { values: { name: '', email: BAD }, submitted: true }],
+  fixing: ['Corrigiendo después del error', { values: { name: 'Ezequiel', email: STILL_BAD }, submitted: true, focused: 'email' }],
+  valid: ['Válido', { values: { name: 'Ezequiel Pastore', email: GOOD } }],
+  pending: ['Enviando', { values: { name: 'Ezequiel Pastore', email: GOOD }, submitted: true, pending: true }],
+  server: ['Error del servidor', { values: { name: 'Ezequiel Pastore', email: GOOD }, submitted: true, server: true }],
+};
+
+const preset = (key) => ({ ...blank, ...STATES[key][1], values: { ...blank.values, ...STATES[key][1].values } });
+
+let nextId = 0;
+
+const field = (key, label) => {
+  nextId += 1;
+
+  return `
+    <div class="field-wrap">
+      <label class="field">${label}<input data-input="${key}" type="${FIELDS[key].type}" placeholder="${FIELDS[key].placeholder}" autocomplete="off" aria-describedby="field-error-${nextId}"></label>
+      <div class="error-slot" data-fielderror="${key}" aria-hidden="true"><div class="error-clip"><div class="field-error" role="alert" id="field-error-${nextId}">${FIELDS[key].error}</div></div></div>
+    </div>`;
+};
+
+const PLACES = {
+  step: {
+    cap: 'Login · paso del email',
+    fields: ['email'],
+    label: `${ic('mail', 18)} Mandame el link`,
+    pendingLabel: 'Enviando…',
+    html: () => `
+      <div class="frame auth">
+        <div class="panel">
+          <div class="mark">AV</div>
+          <h1>Entrar al aula</h1>
+          <form novalidate>
+            ${field('email', 'Tu email')}
+            <div class="go"><button type="submit" class="btn" data-submit></button></div>
+            ${inlineError('Ese email no está registrado. Pedile acceso al profe.')}
+          </form>
+        </div>
+      </div>`,
+  },
+  sheet: {
+    cap: 'Usuarios · Agregar por email',
+    fields: ['email'],
+    label: 'Agregar',
+    pendingLabel: 'Agregando…',
+    html: () => `
+      <div class="frame users">
+        <div class="top"><span class="back">${ic('arrow-left', 22)}</span><h1>Usuarios</h1><span class="avatar">🦉</span></div>
+        <div class="list">
+          <div class="user"><span class="face">🦊</span><div><b>Lucía</b><small>lucia@mi.unc.edu.ar</small></div></div>
+          <div class="user"><span class="face">🐼</span><div><b>Mateo</b><small>mateo.r@gmail.com</small></div></div>
+          <div class="user"><span class="face">🐸</span><div><b>Sofía</b><small>sofia@mi.unc.edu.ar</small></div></div>
+          <div class="user"><span class="face">🐨</span><div><b>Tomás</b><small>tomas.p@gmail.com</small></div></div>
+          <div class="user"><span class="face">🦁</span><div><b>Valentina</b><small>valen@mi.unc.edu.ar</small></div></div>
+        </div>
+        <div class="scrim">
+          <div class="modal">
+            <h3>Agregar por email</h3>
+            <form novalidate>
+              ${field('email', 'Email')}
+              ${inlineError('Ese email ya está registrado.')}
+              <div class="actions"><button type="button" class="btn" data-cancel>Cancelar</button><button type="submit" class="btn dark" data-submit></button></div>
+            </form>
+          </div>
+        </div>
+      </div>`,
+  },
+  example: {
+    cap: 'Ejemplo · formulario con dos campos',
+    capClass: 'example',
+    fields: ['name', 'email'],
+    label: 'Agregar',
+    pendingLabel: 'Agregando…',
+    html: () => `
+      <div class="frame example">
+        <div class="top"><h1>Ejemplo</h1></div>
+        <div class="list"><div class="ghost"></div><div class="ghost"></div><div class="ghost"></div><div class="ghost"></div><div class="ghost"></div><div class="ghost"></div></div>
+        <div class="scrim">
+          <div class="modal">
+            <h3>Nuevo usuario (ejemplo)</h3>
+            <form novalidate>
+              ${field('name', 'Nombre')}
+              ${field('email', 'Email')}
+              ${inlineError('Ese email ya está registrado.')}
+              <div class="actions"><button type="button" class="btn" data-cancel>Cancelar</button><button type="submit" class="btn dark" data-submit></button></div>
+            </form>
+          </div>
+        </div>
+      </div>`,
+  },
+};
+
+/* One instance is one placement with its own state. Every field is checked on the press; after it, each field is re-checked as it changes. */
+
+const hasText = (inst) => PLACES[inst.place].fields.some((k) => inst.s.values[k].trim() !== '');
+const showsError = (inst, key) => inst.s.submitted && !FIELDS[key].check(inst.s.values[key]);
+
+const sync = (inst) => {
+  const { s, els } = inst;
+  const place = PLACES[inst.place];
+
+  place.fields.forEach((key) => {
+    const input = els.inputs[key];
+
+    if (input.value !== s.values[key]) {
+      input.value = s.values[key];
+    }
+
+    input.classList.toggle('focused', s.focused === key);
+    input.setAttribute('aria-invalid', showsError(inst, key) ? 'true' : 'false');
+    els.errors[key].closest('.field-wrap').classList.toggle('invalid', showsError(inst, key));
+    els.errors[key].setAttribute('aria-hidden', showsError(inst, key) ? 'false' : 'true');
+  });
+
+  els.server.hidden = !s.server;
+  els.submit.disabled = s.pending || !hasText(inst);
+  els.submit.innerHTML = s.pending ? `<span class="spinner"></span>${place.pendingLabel}` : place.label;
+
+  if (s.pending) {
+    els.submit.setAttribute('aria-busy', 'true');
+  } else {
+    els.submit.removeAttribute('aria-busy');
+  }
+
+  if (els.cancel != null) {
+    els.cancel.disabled = s.pending;
+  }
+};
+
+const onSubmit = (inst) => {
+  const { s } = inst;
+
+  if (s.pending || !hasText(inst)) {
+    return;
+  }
+
+  current = null;
+  s.submitted = true;
+  s.server = false;
+  renderStrip();
+
+  if (PLACES[inst.place].fields.some((k) => showsError(inst, k))) {
+    sync(inst);
+
+    return;
+  }
+
+  s.pending = true;
+  sync(inst);
+
+  inst.send = setTimeout(() => {
+    s.pending = false;
+    s.server = true;
+    sync(inst);
+  }, SEND_MS);
+};
+
+const build = (place, s, isLive) => {
+  const holder = document.createElement('div');
+
+  holder.innerHTML = `<div class="cap ${PLACES[place].capClass ?? ''}">${PLACES[place].cap}</div>${PLACES[place].html()}`;
+
+  const frame = holder.querySelector('.frame');
+  const els = {
+    inputs: Object.fromEntries([...frame.querySelectorAll('[data-input]')].map((el) => [el.dataset.input, el])),
+    errors: Object.fromEntries([...frame.querySelectorAll('[data-fielderror]')].map((el) => [el.dataset.fielderror, el])),
+    server: frame.querySelector('[data-server]'),
+    submit: frame.querySelector('[data-submit]'),
+    cancel: frame.querySelector('[data-cancel]'),
+  };
+  const inst = { place, s, els, send: null };
+
+  if (isLive) {
+    Object.entries(els.inputs).forEach(([key, input]) => {
+      input.addEventListener('input', () => {
+        s.values[key] = input.value;
+        s.focused = key;
+        current = null;
+        sync(inst);
+        renderStrip();
+      });
+      input.addEventListener('focus', () => {
+        s.focused = key;
+        sync(inst);
+      });
+      input.addEventListener('blur', () => {
+        s.focused = null;
+        sync(inst);
+      });
+    });
+
+    frame.querySelector('form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      onSubmit(inst);
+    });
+
+    els.cancel?.addEventListener('click', () => {
+      clearTimeout(inst.send);
+      Object.assign(s, preset('empty'));
+      sync(inst);
+    });
+  } else {
+    frame.setAttribute('inert', '');
+  }
+
+  sync(inst);
+
+  return { holder, inst };
+};
+
+/* Page: live placements, or every state laid out statically. */
+
+let current = 'empty';
+let showAll = false;
+let live = [];
+let saved = Object.fromEntries(Object.keys(PLACES).map((p) => [p, preset('empty')]));
+
+const root = document.getElementById('alt');
+
+const renderStrip = () => {
+  root.querySelector('.strip').innerHTML = `
+    ${Object.entries(STATES).map(([k, [label]]) => `<button data-state="${k}" class="${!showAll && current === k ? 'on' : ''}">${label}</button>`).join('')}
+    <button data-all class="${showAll ? 'on' : ''}">${showAll ? 'Volver a los interactivos' : 'Ver todos los estados'}</button>`;
+};
+
+const pair = (states, isLive) => {
+  const wrap = document.createElement('div');
+
+  wrap.className = 'pair';
+
+  Object.keys(PLACES).forEach((place) => {
+    const { holder, inst } = build(place, states[place], isLive);
+
+    wrap.append(holder);
+
+    if (isLive) {
+      live.push(inst);
+    }
+  });
+
+  return wrap;
+};
+
+const renderStage = () => {
+  const stage = root.querySelector('.stage');
+
+  live.forEach((inst) => {
+    clearTimeout(inst.send);
+
+    // A send cut short by leaving the live view lands on its answer.
+    if (inst.s.pending) {
+      Object.assign(inst.s, { pending: false, server: true });
+    }
+  });
+
+  live = [];
+  stage.replaceChildren();
+
+  if (showAll) {
+    Object.entries(STATES).forEach(([k, [label]]) => {
+      const title = document.createElement('div');
+
+      title.className = 'state-label';
+      title.textContent = label;
+      stage.append(title, pair(Object.fromEntries(Object.keys(PLACES).map((p) => [p, preset(k)])), false));
+    });
+
+    return;
+  }
+
+  stage.append(pair(saved, true));
+};
+
+root.addEventListener('click', (e) => {
+  const t = e.target.closest('.strip button');
+
+  if (t == null) {
+    return;
+  }
+
+  if (t.hasAttribute('data-all')) {
+    showAll = !showAll;
+  } else {
+    live.forEach((inst) => clearTimeout(inst.send));
+    live = [];
+    saved = Object.fromEntries(Object.keys(PLACES).map((p) => [p, preset(t.dataset.state)]));
+    current = t.dataset.state;
+    showAll = false;
+  }
+
+  renderStage();
+  renderStrip();
+});
+
+// A preset can mark a field as focused without real focus; a click anywhere else drops that mark.
+document.addEventListener('pointerdown', (e) => {
+  live.forEach((inst) => {
+    if (inst.s.focused == null || Object.values(inst.els.inputs).includes(document.activeElement) || Object.values(inst.els.inputs).includes(e.target)) {
+      return;
+    }
+
+    inst.s.focused = null;
+    sync(inst);
+  });
+});
+
+renderStrip();
+renderStage();
+</script>
+</body>
+</html>
