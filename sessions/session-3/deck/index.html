@@ -323,11 +323,6 @@ p { margin: 0; }
 .section { display: flex; flex-direction: column; justify-content: center; height: 100%; }
 .section h1 { margin-bottom: 18px; }
 .section .secttrack { position: absolute; top: 110px; left: 72px; width: 820px; }
-.adopters { margin-top: 30px; }
-.achips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; max-width: 900px; }
-.achips b { padding: 6px 14px; font-size: 19px; border: var(--border); border-radius: 999px; background: var(--card); opacity: 0; transform: translateY(-40px) rotate(-10deg); transition: opacity .3s, transform .5s cubic-bezier(.2, .9, .3, 1.5); }
-.adopters.on .achips b { opacity: 1; transform: none; }
-.achips b.pi { background: var(--a3); color: #111; }
 
 /* ───────────── Cómo les fue ───────────── */
 
@@ -733,6 +728,11 @@ p { margin: 0; }
 .prim:nth-child(1) { background: color-mix(in srgb, var(--a1) 22%, var(--card)); }
 .prim:nth-child(2) { background: color-mix(in srgb, var(--a2) 26%, var(--card)); }
 .prim:nth-child(3) { background: color-mix(in srgb, var(--a4) 22%, var(--card)); }
+.exts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 20px; }
+.exts > * { min-width: 0; }
+.exts .prim { min-height: 300px; font-size: 19px; }
+.exts .prim h3 { font-size: 24px; }
+.extnote { margin-top: 26px; }
 .clientprim { display: flex; align-items: center; gap: 20px; margin-top: 24px; padding: 16px 24px; font-size: 22px; background: color-mix(in srgb, var(--a3) 22%, var(--card)); }
 .clientprim .ico { font-size: 44px; }
 .clientprim div { display: flex; flex-direction: column; gap: 4px; }
@@ -945,6 +945,7 @@ p { margin: 0; }
 .timer { position: absolute; right: 72px; top: 50px; font-family: var(--font-mono); font-size: 40px; padding: 8px 18px; border: var(--border); border-radius: 12px; background: var(--card); box-shadow: 4px 4px 0 var(--line); cursor: pointer; user-select: none; }
 .installs { display: flex; gap: 16px; }
 .steps-slide .track { margin-top: 140px; }
+.steps-slide .advanced { position: absolute; left: 72px; bottom: 60px; }
 .steps-slide .track .rider { --size: 100px; top: -44px; }
 
 /* ───────────── Cierre ───────────── */
@@ -1145,15 +1146,12 @@ p { margin: 0; }
 
   <!-- ───────── Skills ───────── -->
 
-  <section class="slide" data-id="sec-skills" data-steps="1">
+  <section class="slide" data-id="sec-skills">
     <div class="section">
       <div class="track mini secttrack" data-stops="AGENTS.md|skills|MCP|subagentes"></div>
       <h1>Skills</h1>
       <p class="big">¿y si el procedimiento son 60 líneas<br>y lo usás <span class="hl">una vez por semana</span>?</p>
-      <div class="adopters" data-step="1">
-        <span class="small">estándar abierto · agentskills.io · lo donó Anthropic a la AAIF (Linux Foundation) · lo leen</span>
-        <div class="achips"><b>Claude Code</b><b>Codex</b><b>Cursor</b><b>Copilot</b><b>Gemini CLI</b><b>OpenCode</b><b>Goose</b><b>Amp</b><b class="pi">Pi</b></div>
-      </div>
+      <p class="small" style="margin-top: 18px">estándar abierto · <span class="srclink"><a href="https://agentskills.io/" target="_blank" rel="noopener">agentskills.io ↗</a></span> · lo donó Anthropic a la <span class="mono">AAIF</span> (Linux Foundation)</p>
     </div>
     <div class="mascot" data-mood="skeptic"></div>
   </section>
@@ -1229,7 +1227,7 @@ p { margin: 0; }
       <div class="track mini secttrack" data-stops="AGENTS.md|skills|MCP|subagentes"></div>
       <h1>MCP</h1>
       <p class="big">Model Context Protocol:<br>el agente gana tools <span class="hl">en tiempo de ejecución</span></p>
-      <p class="small" style="margin-top: 18px">estándar abierto · lo donó Anthropic a la <span class="mono">AAIF</span> (Linux Foundation) · en Pi 1.0 viene de fábrica</p>
+      <p class="small" style="margin-top: 18px">estándar abierto · <span class="srclink"><a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">modelcontextprotocol.io ↗</a></span> · lo donó Anthropic a la <span class="mono">AAIF</span> (Linux Foundation) · en Pi 1.0 viene de fábrica</p>
     </div>
     <div class="mascot" data-mood="wow"></div>
   </section>
@@ -1292,6 +1290,17 @@ p { margin: 0; }
     <div class="card clientprim f-pop" data-step="4">
       <span class="ico">🙋</span><div><b>y al revés, el servidor le puede pedir al cliente: elicitation</b><span class="small">"¿confirmás que borro estos 40 registros?" — le pregunta al usuario a través del host</span></div>
     </div>
+  </section>
+
+  <section class="slide ext-slide" data-id="extensiones" data-steps="4">
+    <h2>Más allá del núcleo: extensiones</h2>
+    <div class="exts">
+      <div class="card prim f-flip" data-step="1"><span class="ico">🔐</span><h3>Authorization</h3><p>OAuth sin persona del otro lado: máquina a máquina, y acceso centralizado para empresas</p><span class="mono m">ext-auth</span></div>
+      <div class="card prim f-flip" data-step="2"><span class="ico">🖼️</span><h3>Apps</h3><p>el servidor muestra UI interactiva dentro del chat: un gráfico, un formulario, un video</p><span class="mono m">ext-apps</span></div>
+      <div class="card prim f-flip" data-step="3"><span class="ico">⏳</span><h3>Tasks</h3><p>operaciones largas: el cliente consulta el estado, le pasa datos a mitad de camino y retoma después</p><span class="mono m">tasks</span></div>
+      <div class="card prim f-flip" data-step="4"><span class="ico">🧩</span><h3>Skills over MCP</h3><p>un servidor publica skills como resources: el estándar de hace un rato, servido por MCP</p><span class="mono m">ext-skills</span></div>
+    </div>
+    <p class="small extnote">opcionales y apagadas por defecto · cliente y servidor las anuncian en sus <span class="mono">capabilities</span> · si el otro no la soporta, se vuelve al protocolo base · <span class="srclink"><a href="https://modelcontextprotocol.io/extensions/overview" target="_blank" rel="noopener">MCP, Extensions ↗</a></span></p>
   </section>
 
   <section class="slide seq-slide" data-id="conversacion" data-steps="4">
@@ -1526,6 +1535,7 @@ p { margin: 0; }
       <span class="install">pi install npm:pi-subagents</span>
     </div>
     <div class="track draw" data-stops="AGENTS.md (y podarlo)|probarlo en una sesión nueva|un skill para verificar que tu app anda|context7 por MCP|delegar a un subagente" data-finish></div>
+    <p class="small advanced">avanzado, si te sobra tiempo · tu propio servidor o cliente MCP en Python con <span class="srclink"><a href="https://gofastmcp.com/" target="_blank" rel="noopener"><b>FastMCP</b> ↗</a></span></p>
   </section>
 
   <section class="slide recap-slide" data-id="recap" data-steps="1">
@@ -3381,7 +3391,6 @@ withSlide("nxm", (el) => buildNM($(".nm", el)));
 withSlide("tresetapas", (el) => {
   $(".sgrid", el).innerHTML = SKILLS.map((s, i) => `<div class="sk">${s}<small>name + description</small>${i === 0 ? '<div class="res">📄 references/errores.md</div>' : ""}</div>`).join("");
 });
-$$(".achips b").forEach((b, i) => { b.style.transitionDelay = `${i * .08}s`; });
 $$(".code").forEach(buildCode);
 
 withSlide("capas", (el) => {
