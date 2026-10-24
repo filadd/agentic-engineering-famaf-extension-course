@@ -11,11 +11,7 @@ No se trata de dejar el proyecto configurado "bien" según una plantilla. Se tra
 - Trabajá sobre **el mismo proyecto** que venís usando desde la Sesión 1.
 - Tené a mano **tus notas de la tarea de la semana pasada**: qué le tuviste que explicar más de una vez. Si no las trajiste, mirá las respuestas que quedaron proyectadas y elegí las tuyas.
 - `git status` limpio antes de arrancar.
-- La única instalación nueva la hacemos **todos juntos al principio de la práctica**:
-
-```
-pi install npm:pi-mcp-adapter
-```
+- **No hay nada que instalar.** MCP viene de fábrica en Pi 1.
 
 ## Las reglas de hoy
 
@@ -180,31 +176,41 @@ Probalo: en una sesión nueva, entrá en plan mode y pedile una feature cualquie
 
 > El mismo molde sirve para cualquier otra secuencia de pasos que repitas: cómo se hace un release, cómo se agrega una migración, cómo se agrega un componente con su test. Hoy escribimos uno; los otros salen igual.
 
-### 4. Apuntá el adapter a context7 (~10 min)
+### 4. Enchufá context7 por MCP (~10 min)
 
 Este paso cubre dos temas de una: **MCP** y las **docs tools**.
 
 El problema que resuelve ya lo sufriste: el agente inventa una API que no existe, o usa la versión vieja de una librería. context7 sirve documentación actualizada de librerías, y **se consume como servidor MCP**.
 
-Desde la raíz del proyecto:
+Creá `.pi/mcp.json` en la raíz del proyecto:
+
+```json
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    }
+  }
+}
+```
+
+Es un servidor MCP como cualquier otro: un `command` y unos `args` que el harness va a levantar. Si Pi te pregunta si confiás en el proyecto, decí que sí: la config del proyecto se carga recién después de eso.
+
+Después, desde Pi:
 
 ```
-npx ctx7 setup
+/reload
+/mcp
 ```
 
-Eso te deja el servidor configurado. Después, desde Pi:
-
-```
-/mcp tools
-```
-
-**Mirá la config que quedó escrita.** Es un servidor MCP como cualquier otro: un `command` y unos `args` que el harness va a levantar. Lo que hoy te resolvió un instalador, mañana lo vas a escribir a mano para un servidor que no tenga uno.
+`/mcp` te muestra el servidor, si conectó, cuántas tools trae y su **exposure**.
 
 Ahora pedile algo sobre una librería que estés usando de verdad — algo donde antes te haya inventado la respuesta.
 
-**Fijate cuánto contexto te comió.** Es el número de la teoría, ahora en tu propia ventana. Y notá lo que hizo `pi-mcp-adapter`: no metió todas las tools del servidor en tu contexto, metió **una sola tool proxy** y va a buscar el resto cuando hace falta. Es el mismo truco del skill, aplicado a tools.
+**Fijate cuánto contexto te comió.** Por defecto la exposure es `codemode`: Pi no le declara las tools al modelo, las llama desde un script y al contexto vuelve solo el resultado. Es el mismo truco del skill, aplicado a tools. Si te sobra un minuto, cambiala a `direct` desde `/mcp` y compará: ese es el número de la teoría, en tu propia ventana.
 
-> Si te trabás con la instalación o con la autenticación, **levantá la mano en vez de pelearla sola/o**. Este paso es el que más se cuelga y no es donde está el aprendizaje.
+> Si te trabás con la conexión o con la autenticación, **levantá la mano en vez de pelearla sola/o**. Este paso es el que más se cuelga y no es donde está el aprendizaje.
 
 ## Resultado esperado
 
@@ -215,7 +221,7 @@ Al final del ejercicio deberías tener:
 - Un skill de planificación con una descripción que efectivamente lo dispara.
 - Una idea de cuánto contexto cuesta cada cosa que le enchufaste.
 
-Commiteá el `AGENTS.md`, el skill y el `.mcp.json`. Son parte del proyecto, igual que el código.
+Commiteá el `AGENTS.md`, el skill y el `.pi/mcp.json`. Son parte del proyecto, igual que el código.
 
 ## Para la semana
 

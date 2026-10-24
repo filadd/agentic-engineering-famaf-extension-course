@@ -6,23 +6,19 @@ title: Sesión 3 — Herramientas y Skills
 ---
 
 <!--
-Skeleton de la presentación de la Sesión 3.
-Cada slide tiene un título + una nota de oradora/orador (HTML comment).
-El contenido del cuerpo de cada slide está pendiente.
+Guion de la presentación de la Sesión 3. Sigue slide por slide al deck animado
+de deck/index.html: cada slide tiene su título, el contenido mínimo que tiene que
+estar en pantalla y la nota de orador (HTML comment).
 
-Excepción deliberada: tres slides SÍ traen cuerpo escrito, porque el
-contenido tiene que estar en pantalla textual para que la sala lo copie
-o lo lea — el hook `{ block: true, reason }`, la tabla de costos de MCP,
-el snippet de `.mcp.json` y la tabla de siempre-cargado vs. on-demand.
+Sesión de 2 h: 8 recap, 5 intro, 15 AGENTS.md, 7 skills, 18 MCP (con codemode),
+7 subagentes, 2 tabla de cierre, 5 pausa, 45 práctica, 3 cierre. Da 115: quedan
+5 min de colchón, y si algo se estira sale del recap.
 
-Sesión de 2 h: 10 recap, 5 intro, 13 anatomía, 11 AGENTS.md, 8 skills,
-10 MCP (cierra con la tabla), 5 pausa, 45 práctica, 8 cierre.
-
-Da 115: quedan ~5 min de colchón, que se los come la práctica si hace
-falta. Si igual se estira, se recorta del recap. Subagentes NO se dan
-hoy: los abre Agus en la Sesión 4. Worktrees quedan afuera del curso.
-El material del recap se recolecta con MENTIMETER y la pantalla queda
-proyectada toda la clase: se apunta a ella cuatro veces.
+Pi 1.0 trae MCP de fábrica. Subagentes se dan al final de la teoría, con la
+extensión pi-subagents (pide Pi 1.2.0 o más nueva: confirmar la versión de la
+sala). Code mode por dentro y FastMCP quedaron como propuesta para la Sesión 5
+(../session-5/propuesta-mcp/). El material del recap se recolecta con
+MENTIMETER y la pantalla queda proyectada toda la clase.
 -->
 
 # Sesión 3
@@ -31,225 +27,390 @@ proyectada toda la clase: se apunta a ella cuatro veces.
 **De Vibe Coding a Agentic Engineering** — FaMAF
 Diego Piloni
 
-<!-- Portada. Anclar: sesión 3 de 6, mismo proyecto, 2 h. Hoy se paga la deuda que dejó Agus la semana pasada: por qué el harness les restringía las herramientas en plan mode. -->
+`AGENTS.md` · Skills · `MCP` · Subagents
+
+<!-- Portada. Anclar: sesión 3 de 6, mismo proyecto, 2 h. -->
 
 ---
 
 ## Hoy
 
-<!-- Agenda en una slide: cómo les fue, dónde vive cada cosa que repetís, anatomía del harness, AGENTS.md, skills, MCP, y 45 min de práctica. Avisar que NO hay bloque de setup: la única instalación nueva la hacemos juntos al arrancar la práctica. -->
+¿cómo les fue? → AGENTS.md → skills → MCP → subagentes → práctica → cierre
+
+<!-- Agenda en una slide. No hay bloque de setup: MCP viene en Pi 1.0, y lo único que se instala es pi-subagents, en la práctica. -->
 
 ---
 
-# ¿Cómo les fue?
+## ¿Cómo les fue?
 
-<!-- Sección de recap. ~10 min de DISCUSIÓN, no de slides. Coordinar con Agus ANTES de la clase: cómo cerró la Sesión 2 y qué juntó en su reflexión, para no recolectar dos veces lo mismo. Este es el bloque elástico: si el día se estira, se recorta de acá. -->
+- ¿Les sirvió planificar? ¿Hubo algo que habrían ejecutado directo?
+- ¿Qué le tuviste que explicar **más de una vez**? → al menti
+  *ej: ¿cómo se levanta el server? ¿cómo se corren los tests?*
 
----
-
-## ¿Les pareció útil planificar? ¿Hubo algo que habrían ejecutado directo?
-
-<!-- Primer disparador. La tarea preguntaba "dónde fue pura ceremonia", que es demasiado abstracto para tirarlo a una sala; preguntarlo así y desbloquearlo con ejemplos concretos: un fix de una línea, un cambio de texto, un color. Lo que buscamos que encuentren es EL UMBRAL DONDE PLANIFICAR DEJA DE PAGAR — eso es criterio, no una regla. Las respuestas honestas ("para esto no me servía") son las buenas. NO DEFENDER EL PROCESO ACÁ. Y el puente al día: la respuesta de hoy a "planificar cada vez sale caro" es escribilo una vez y dejá de planificarlo. -->
-
----
-
-## ¿Qué le tuviste que explicar más de una vez?
-
-<!-- EL disparador. Va a MENTIMETER: pregunta abierta, todos responden a la vez y en anónimo, y la pantalla queda proyectada toda la clase. Es el insumo de los cuatro bloques que siguen y de los cuatro pasos de la práctica — sin esto la práctica se queda sin combustible. Juntar seis o siete. Si sale flojo, sembrar ejemplos concretos, redactados como los diría un estudiante: "los tests se corren con pnpm test", "usamos pnpm y npm me rompe el lockfile", "los componentes van en src/components/", "no me toques las migraciones", "no me pongas comentarios que repiten la línea de abajo". Tener el menti armado ANTES de entrar al aula; plan B si falla la red: mano alzada y pizarrón. -->
-
----
-
-# Qué vamos a ver hoy
-
-<!-- Sección. ~5 min. Toma las respuestas del menti y las ordena. -->
-
----
-
-## Dónde vive cada cosa que repetís
-
-<!-- La tabla que ordena el día: datos del proyecto → AGENTS.md (siempre cargado); un procedimiento → skill (on demand); un prompt que retipeás → prompt template (on demand); una capacidad que falta → tool/MCP (la definición siempre, el resultado on demand); un subtask entero → subagente, contexto aparte (SE NOMBRA Y SE DEJA PASAR: es la Sesión 4 de Agus). Ir tomando respuestas del menti en voz alta y diciendo a qué fila cae cada una. Algunas caen en dos filas y está bien: ELEGIR ES EL TEMA DE HOY. La metáfora del curso: la Sesión 2 fue vos poniendo el criterio a mano cada vez; hoy lo escribís una vez y el agente lo lee solo. Es lo que hace un manager cuando deja de repetir la misma corrección en cada 1:1 y escribe el onboarding. -->
+<!-- ~8 min de DISCUSIÓN, no de slides. Coordinar con Agus ANTES de la clase cómo cerró la Sesión 2. Primer disparador: desbloquearlo con ejemplos concretos (un fix de una línea, un cambio de texto, un color). Lo que buscamos es EL UMBRAL DONDE PLANIFICAR DEJA DE PAGAR. NO DEFENDER EL PROCESO ACÁ. Segundo disparador: va a MENTIMETER, pregunta abierta, vista de lista; es el insumo de los bloques que siguen y de la práctica. Juntar seis o siete. Semillas y plan B en INSTRUCTOR.md. Este es el bloque elástico. -->
 
 ---
 
 ## "Lo que le explicaste dos veces, escribilo una"
 
-<!-- La frase de la sesión. Que quede escrita a la vista toda la clase. -->
+- lunes: *los tests se corren con pnpm test* · *antes de terminar, corré pnpm lint*
+- miércoles: *antes de terminar, corré pnpm lint* · *los componentes van en src/components*
+- viernes: *los tests se corren con pnpm test* · *¿otra vez guardaste componentes fuera de src/components? 😤*
+
+```
+AGENTS.md
+- tests: pnpm test
+- lint: pnpm lint
+- componentes en src/components/
+```
+
+<!-- La frase de la sesión. Tres terminales con las mismas correcciones repetidas que, con un click, colapsan en un AGENTS.md de tres líneas: cada línea sale de algo que se repitió. Que la frase quede escrita a la vista. -->
 
 ---
 
 ## Nada de esto es gratis
 
-<!-- La contracara, y la segunda idea del día: TODO LO QUE LE AGREGÁS AL AGENTE SE PAGA EN CONTEXTO. La columna de la derecha de la tabla anterior es el tema real de la sesión. Elegir qué está siempre cargado y qué se carga on demand es una decisión de ingeniería, no un detalle de configuración. Es la regla del 50% de la Sesión 1, volviendo convertida en presupuesto. -->
+Una barra de la ventana de contexto (200k), con la línea del 50%: system prompt + tools de Pi, el `AGENTS.md` global (`~/.pi/agent/`, ~500) y el del repo (~1.500), 20 descripciones de skills (~2.000), Playwright MCP (~13.700) y Context7 MCP (~2.000).
 
----
-
-# Anatomía: tool, harness y extension points
-
-<!-- Sección. ~13 min. TEORÍA CON LA HERRAMIENTA ABIERTA, no con slides — pasar rápido y trabajar en la terminal. Es el bloque que paga la deuda de la Sesión 2. Ensayarlo con reloj. -->
-
----
-
-## Qué es una tool
-
-<!-- ~4 min. Un nombre, un schema y un handler. Eso es todo. El LLM no "usa" la tool: EMITE UN JSON que dice qué tool quiere y con qué argumentos, y el HARNESS la ejecuta y le devuelve el resultado como texto. Mostrar el toolbelt de Pi en vivo (read, write, edit, bash, grep, find, ls) y abrir una tool call real en la sesión: que vean el JSON. -->
-
----
-
-## Una tool mejor suele ganarle a un modelo mejor
-
-<!-- La idea que vale la pena que se lleven de este bloque. Un modelo excelente con bash y nada más va a reimplementar grep a mano, mal y caro. Es la razón por la que el resto de la sesión existe. -->
-
----
-
-## Qué hace el harness
-
-<!-- ~4 min. El programa que envuelve al LLM. Cuatro responsabilidades, en este orden porque es el orden en que las fueron sintiendo: (1) manejo del contexto — qué entra, qué se compacta, qué se tira (Sesión 1, la regla del 50%); (2) dispatch de tools — ejecutar lo que el modelo pidió y devolver el resultado; (3) permisos — decidir qué se ejecuta y qué no; (4) extension points — dejar que otros agreguen cosas. -->
-
----
-
-## Pi es casi todo extension points
-
-<!-- El regalo de Pi: toolbelt mínimo built-in, y casi todo lo demás enchufado. AGENTS.md = archivos de contexto al arrancar. Skills = SKILL.md con frontmatter. Prompt templates = expansión /nombre. Permisos y plan mode = UN HOOK. MCP = no viene, es una extensión. Subagentes = pi-subagents, y ahí SOLO NOMBRARLOS: el bloque de subagentes lo da Agus en la Sesión 4. Y LA LÍNEA QUE HAY QUE DECIR EN VOZ ALTA: que en Pi MCP venga como extensión y en Claude Code venga de fábrica no es un accidente ni un defecto — es el espacio de diseño de los harnesses. Un harness mínimo te muestra las costuras; uno con baterías incluidas te las esconde. Ninguno está mal. Esa es toda la comparación con Claude Code / Codex / OpenCode: UNA LÍNEA, NO UNA TABLA. -->
-
----
-
-## El reveal
-
-```ts
-onToolCall(({ name }) => {
-  if (planMode && !["grep", "find", "ls"].includes(name)) {
-    return { block: true, reason: "Estás en plan mode: solo podés leer." }
-  }
-  // sin return → la tool se ejecuta
-})
-```
-
-<!-- ~2 min. El punto 4 explica el punto 3, y explica la semana pasada. Pi llama a este hook JUSTO ANTES de ejecutar cada tool call. Si no devolvés nada, la tool corre. Si devolvés { block: true, reason }, LA TOOL NO SE EJECUTA. Eso es todo lo que era el plan mode. La frase: "lo que Plannotator les hizo la semana pasada era tool_call → { block: true }. El mismo hook que van a usar ustedes hoy." Decirla y dejar que caiga. NO convertir esto en una clase de TypeScript. -->
-
----
-
-## `reason` no es para vos, es para el modelo
-
-<!-- La parte que no es obvia y hay que decir explícita. Cuando bloqueás, Pi le devuelve al modelo el string de `reason` EN EL LUGAR DONDE IRÍA EL RESULTADO DE LA TOOL. Es la única información que el modelo tiene sobre por qué su acción no pasó, y de ahí decide qué hace después. "bloqueado" lo deja reintentando a ciegas; "estás en plan mode, proponé un plan y esperá aprobación" lo hace cambiar de estrategia solo. Escribir buenos reason es, literalmente, prompt engineering. Y el cierre: EL DIÁLOGO DE PERMISOS ES ESTE MISMO HOOK CON UN HUMANO EN EL MEDIO — si decís que no, el modelo recibe exactamente un { block: true, reason }. -->
-
----
-
-## Seguridad: el único lugar donde decidís antes
-
-<!-- ~3 min, acá y NO en un bloque aparte: los permisos SON un extension point, así que es el mismo material. (1) El allowlist/denylist y el diálogo de permisos no son burocracia: son el único lugar donde decidís antes de que el agente actúe; después ya está hecho. (2) bash es la tool más poderosa del toolbelt y por eso la más peligrosa: un agente con bash sin restricciones puede hacer cualquier cosa que puedas hacer vos en esa terminal. (3) Sandboxing y containerization: Pi tiene docs propias, mención y puntero, sin demo. (4) Y la que se les vuelve relevante en dos sesiones: EL AGENTE LEE TEXTO DE AFUERA (issues, docs, páginas web, resultados de MCP) y ese texto puede contener instrucciones. Nombrarlo y seguir: prompt injection es Sesión 4. -->
+<!-- La contracara y la segunda idea del día: TODO LO QUE LE AGREGÁS AL AGENTE SE PAGA EN CONTEXTO. Tres clicks: los dos AGENTS.md, los skills, los dos MCP; también se prenden y apagan a mano. Con todo prendido marca ~11%: lo que más pesa es Playwright. El global y el del repo separados a propósito: vuelven en "Cómo los encuentra Pi". El número de Context7 es estimado: MEDIRLO ANTES DE LA CLASE con /mcp y la exposure en direct. Es la regla del 50% de la Sesión 1, convertida en presupuesto. -->
 
 ---
 
 # `AGENTS.md`
 
-<!-- Sección. ~11 min. DESDE CERO: nadie en la sala escribió uno. El paso que lo pedía en la Sesión 1 se sacó y la Sesión 2 no lo tocó a propósito. No dar por sentado que saben qué es, ni siquiera los que ya usaron otro agente. -->
+un archivo que el agente lee al arrancar, todas las veces
 
----
+un README para agentes · estándar abierto · [agents.md](https://agents.md/) · lo donó OpenAI a la [AAIF](https://aaif.io/news/linux-foundation-announces-formation-of-aaif) (Agentic AI Foundation, Linux Foundation)
 
-## Un archivo que el agente lee al arrancar, todas las veces
-
-<!-- Qué es. No hay magia: se pega adelante de la conversación. Por eso funciona, y por eso cuesta. -->
+<!-- Sección. ~15 min. DESDE CERO: nadie en la sala escribió uno. Es un README para agentes: el README explica el proyecto a personas, el AGENTS.md le dice al agente lo que no puede deducir del código, y puede apuntar al README en vez de copiarlo. OpenAI lo donó a la Agentic AI Foundation (AAIF), dentro de la Linux Foundation, cuando se formó (dic 2025). Es el mismo hogar que MCP (donado por Anthropic en ese momento) y que Agent Skills (donado por Anthropic en oct 2026), que vienen en los bloques siguientes. Ninguno de los tres es de una sola empresa: lo donaron empresas que compiten entre sí. Decirlo acá una vez y nombrarlo de pasada en las otras dos portadas. -->
 
 ---
 
 ## Qué va adentro
 
-<!-- Lo que tuvieron que explicar dos veces y NO cambia entre tareas: (1) cómo se corre el proyecto y cómo se corren los tests — LOS COMANDOS DE VERIFICACIÓN SON LO MÁS VALIOSO QUE LE PODÉS PONER, porque son lo que le permite al agente saber si lo que hizo funciona sin preguntarte; (2) el stack y las decisiones ya tomadas ("usamos pnpm", "no agregues dependencias sin preguntar"); (3) dónde van las cosas; (4) el estilo, pero solo lo que un linter no puede decirle. Apuntar al menti mientras se dice cada punto. -->
+1. cómo se corre y cómo se verifica
+2. stack y decisiones ya tomadas
+3. dónde va cada cosa
+4. estilo, solo lo que un linter no puede decirle
+5. boundaries: siempre · nunca · preguntar primero
+6. no arranques de cero: pedile al agente un primer AGENTS.md, y después podalo
+
+```
+## Boundaries
+Siempre:
+- Corré `pnpm test` antes de decir que terminaste
+Nunca:
+- Uses npm: rompe el lockfile
+- Agregues una base de datos: los datos viven en `db.json`
+Preguntar primero:
+- No agregues dependencias sin preguntar
+```
+
+<!-- En el deck, el AGENTS.md del todo-app con cada sección resaltada por paso; en el 6 se resalta entero. LOS COMANDOS DE VERIFICACIÓN SON LO MÁS VALIOSO QUE LE PODÉS PONER: le permiten al agente saber si lo que hizo funciona sin preguntarte. Boundaries: qué puede hacer solo, qué nunca y qué tiene que consultar; es la sección que tienen los AGENTS.md reales (Cloudflare la llama always / ask first / never). El paso 6 anticipa el paso 1 de la práctica: el agente lee scripts y carpetas mejor que vos; lo tuyo es la poda. Apuntar al menti mientras se dice cada punto. -->
 
 ---
 
-## Qué no va
+## Instrucciones vagas vs. usables
 
-<!-- Documentación del dominio que cambia todo el tiempo. Cosas que valen para una sola tarea (eso es el prompt). Y la más común: UNA WIKI. Si le escribís 400 líneas, estás pagando 400 líneas en cada turno para siempre. Mostrar acá el AGENTS.md malo que tenemos escrito de antemano — genérico, larguísimo, del tipo "escribí código limpio". -->
+La especificidad sirve cuando le saca una decisión que el agente tendría que tomar.
 
----
+| Vaga | Qué falta | Más usable |
+|---|---|---|
+| "Corré los tests." | ¿Qué tests, dónde y cuándo? | Desde `services/api`, corré el archivo de pytest afectado mientras iterás. Corré `pytest tests/` antes de terminar un cambio en la API. |
+| "No edites el código generado." | ¿Qué código es generado? | No edites `packages/client/generated/`. Cambiá `schemas/openapi.yaml` y corré `pnpm generate:client`. |
+| "Seguí los patrones existentes." | ¿Cuál es la implementación de referencia? | Los handlers HTTP nuevos siguen a `services/api/routes/users.py`, incluida la validación y el manejo de errores. |
+| "Respetá la arquitectura." | ¿Qué límite hay que preservar? | `packages/core` no puede importar de `packages/ui`. El código compartido va en `packages/core`. |
+| "Usá el proceso de build estándar." | ¿Qué es lo estándar acá? | Corré `make build` desde la raíz del repo. No uses `go build`: el wrapper agrega metadata que el build necesita. |
 
-## Proyecto y global
-
-<!-- Pi los carga y los concatena desde varios lugares: ~/.pi/agent/ (global, tuyo, todos tus proyectos), los directorios padre, y el directorio actual. El ejemplo que lo explica: "prefiero tabs" va en el global; "los tests se corren con pnpm test" va en el del proyecto. Lo global viaja con vos entre proyectos; lo del proyecto viaja con el repo y le sirve a quien lo clone — INCLUIDO EL QUE LO CLONA EN DOS AÑOS, QUE CAPAZ SOS VOS. -->
-
----
-
-## El costo, dicho de frente
-
-<!-- Está en contexto en CADA TURNO. Es un impuesto que pagás siempre, uses o no esa información. Y dejar la pregunta abierta, porque es exactamente el bloque siguiente: "¿y si el procedimiento que quiero escribir son 60 líneas y lo uso una vez por semana?" -->
+<!-- Tabla traducida de AAIF, "Writing an effective AGENTS.md" (2026), link abajo a la derecha (se esconde en la última fila). Una fila por click. La columna del medio es la que hay que señalar: cada instrucción vaga deja una pregunta abierta, y el agente la contesta adivinando. Cerrar con el criterio para cada línea del AGENTS.md, dicho en voz alta: "¿SABERLO CAMBIA LO QUE HACE EL AGENTE?". Si no cambia nada, sobra. Y la contracara, QUÉ NO VA: consejos genéricos ("escribí código limpio"), lo que vale para una sola tarea (eso es el prompt), documentación del dominio que cambia todo el tiempo, lo que ya hace cumplir un linter o CI (va en la config de la herramienta), secretos y credenciales, y la más común: UNA WIKI. Un AGENTS.md de 400 líneas son ~6.000 tokens, × 40 turnos de una sesión = ~240.000 tokens. -->
 
 ---
 
-# Skills y prompt templates
+## Dos AGENTS.md de verdad
 
-<!-- Sección. ~8 min. -->
+- **[cloudflare/agents](https://github.com/cloudflare/agents/blob/main/AGENTS.md)** (monorepo TypeScript, un AGENTS.md por paquete): `pnpm run check` antes de terminar · `nx affected -t test` · `env.d.ts` ← `wrangler types`, no se edita a mano · *always · ask first · never*: never, force push a main
+- **[googleworkspace/go-samples](https://github.com/googleworkspace/go-samples/blob/main/AGENTS.md)** (samples sueltos, corto): `test -z $(gofmt -l .)`, el mismo chequeo que corre CI · `go build -v -a ./...`, que el cache no esconda nada
+
+Comandos exactos, excepciones y límites. Ninguno explica qué es Go o TypeScript (cosas que el agente ya sabe).
+
+<!-- Una columna por click y el remate; los nombres de los repos son links al AGENTS.md. NO LEERLAS ENTERAS: señalar una cosa de cada una. Cloudflare: los límites en tres niveles (la misma sección de Boundaries de dos slides atrás) y los archivos generados. Go: es corto y está bien que lo sea, son los mismos comandos que corre CI. Si piden un tercero: apache/airflow, ~250 líneas sin relleno (link en INSTRUCTOR.md). -->
 
 ---
 
-## El skill es la respuesta a ese impuesto
+## Cómo los encuentra Pi
 
-<!-- Un directorio con un SKILL.md y frontmatter (name, description, y opcionalmente allowed-tools). Vive en .pi/skills/ o .agents/skills/ en el proyecto, o en ~/.pi/agent/skills/ global — el MISMO par proyecto/global que AGENTS.md. Y ESTO NO ES DE PI: el formato es un estándar abierto (agentskills.io), publicado por Anthropic y adoptado por Claude Code, Cursor, Copilot, Codex, Gemini CLI, OpenCode y Pi, entre otros. Señalar que .agents/skills/ es justamente el path que no nombra ninguna herramienta. TREINTA SEGUNDOS, no abrir el sitio: el link va en resources/. -->
+Arrancando `pi` en `~/src/todo-app/web`:
+
+```
+~/.pi/agent/        AGENTS.md   global
+/  /home/  ~/src/   —           se saltean
+~/src/todo-app/     AGENTS.md   repo
+~/src/todo-app/web/ AGENTS.md   acá arrancaste
+…/web/api/          AGENTS.md   nunca: no baja a subcarpetas
+```
+
+1. global, y de `/` hasta donde arrancaste: no frena en la raíz del repo
+2. se pegan todos al system prompt, cada uno en `<project_instructions path="…">`: se suman; si chocan, gana el más cercano (y tu prompt, a todos)
+3. se leen al arrancar: aunque después abra archivos en `api/`, ese no entra · si editás uno, `/reload`
+
+<!-- No son un archivo que el modelo decide leer: son instrucciones fijas en el system prompt. El global vive en ~/.pi/agent/ (configurable con PI_CODING_AGENT_DIR). Lo de "gana el más cercano" es la convención de agents.md: Pi los pega todos y es el modelo el que la respeta. El paso 3 es el que los muerde: si arrancan Pi en la raíz del repo, el AGENTS.md de una subcarpeta no existe para el agente. AGENTS.override.md existe pero NO se nombra. Cerrar con la pregunta abierta: "¿y si el procedimiento son 60 líneas y lo uso una vez por semana?". -->
+
+---
+
+# Skills
+
+¿y si el procedimiento son 60 líneas y lo usás una vez por semana?
+
+estándar abierto · agentskills.io · lo donó Anthropic a la AAIF (Linux Foundation) · lo leen Claude Code, Codex, Cursor, Copilot, Gemini CLI, OpenCode, Goose, Amp, Pi
+
+<!-- Sección. ~7 min. El skill es la respuesta al impuesto del AGENTS.md. Y ESTO NO ES DE PI: es un estándar abierto, que Anthropic donó a la AAIF en octubre de 2026. TREINTA SEGUNDOS, no abrir el sitio. -->
+
+---
+
+## Un skill es una carpeta
+
+```
+verificar-api/
+├── SKILL.md        obligatorio
+├── scripts/
+├── references/
+└── assets/
+```
+
+<!-- Vive en .agents/skills/ (proyecto) o ~/.pi/agent/skills/ (global): el mismo par que AGENTS.md. .agents/skills/ es el path que no nombra ninguna herramienta. El frontmatter tiene dos campos obligatorios, name y description; decirlo acá de pasada. El SKILL.md de ejemplo es un procedimiento de la Sesión 2 (verificar la API), y es la misma idea que el skill del paso 3 de la práctica. -->
 
 ---
 
 ## Cómo se carga: tres etapas
 
-<!-- El artefacto concreto de toda la sesión. (1) Al arrancar, Pi escanea los skills y se queda con EL NOMBRE Y LA DESCRIPCIÓN de cada uno. (2) En el system prompt entra solo eso: la lista de nombres y descripciones. (3) EL CUERPO DEL SKILL.MD SE CARGA RECIÉN CUANDO LA TAREA LO AMERITA. Es decir: tenés veinte skills instalados y pagás veinte descripciones, no veinte procedimientos. Ese es el truco, y vuelve a aparecer en el bloque de MCP. El estándar abierto llama a esto PROGRESSIVE DISCLOSURE y son literalmente estas tres etapas (discovery → activation → execution): no es una optimización de Pi, es cómo está diseñado el formato. Y la consecuencia que importa: EL SKILL QUE ESCRIBEN HOY NO ESTÁ ATADO A PI — se lo llevan a la herramienta que usen en el trabajo. -->
+1. descubrimiento — `name` + `description` de todos (~100 tokens c/u)
+2. activación — el `SKILL.md` entero (< 5.000 tokens)
+3. ejecución — `references/`, `scripts/`, solo si hace falta
+
+Las tres etapas tienen nombre: **Progressive Disclosure**.
+
+<!-- El artefacto concreto de toda la sesión. Tenés veinte skills instalados y pagás veinte descripciones, no veinte procedimientos. El estándar lo llama PROGRESSIVE DISCLOSURE: no es una optimización de Pi. Y la consecuencia que importa: EL SKILL QUE ESCRIBEN HOY NO ESTÁ ATADO A PI. El truco vuelve en el bloque de MCP, como descubrimiento progresivo. -->
 
 ---
 
-## La descripción no es documentación, es el trigger
+## La descripción no es documentación: es el trigger
 
-<!-- La consecuencia práctica: la description es LO ÚNICO que decide si el skill se usa. Un skill perfecto con una descripción vaga no se carga nunca. Es el error más común cuando escriben el primero. -->
+> verificá que la ruta nueva de recordatorios ande
+
+- `planificar-feature` · *description: Ayuda a planificar ...* → nunca se carga
+- `verificar-api` · *description: Levanta el server y prueba la API con curl… Usar después de implementar o cambiar una ruta, o cuando el usuario pida verificar…* → se activa
+
+<!-- La description es LO ÚNICO que decide si el skill se usa. Un skill perfecto con una descripción vaga no se carga nunca. Es el error más común cuando escriben el primero. En el segundo click se resaltan las palabras del pedido que aparecen en la buena. -->
 
 ---
 
 ## Datos → `AGENTS.md` · Procedimientos → skill
 
-<!-- La regla de dedo de la sesión. Que quede escrita a la vista (pizarrón o slide fija) hasta el final de la práctica. -->
+<!-- La regla de dedo de la sesión: que quede escrita a la vista hasta el final de la práctica. También existe /skill:nombre para invocar un skill a mano. -->
 
 ---
 
-## Prompt templates
+# MCP
 
-<!-- ~1 min, la versión liviana. Un texto que expandís con /nombre. Cuando lo que repetís es un prompt y no un procedimiento, no hace falta un skill. También existe /skill:nombre para invocar un skill a mano. Mención y seguir. -->
+Model Context Protocol: el agente gana tools en tiempo de ejecución · estándar abierto, donado por Anthropic a la AAIF (Linux Foundation) · en Pi 1.0 viene de fábrica
 
----
-
-# MCP, y cuánto cuesta
-
-<!-- Sección. ~8 min. El bloque donde la tesis de la sesión consigue su número más duro. -->
+<!-- Sección. ~18 min, UN MINUTO Y MEDIO POR SLIDE. Tercer estándar de la AAIF del día: AGENTS.md, skills y MCP no son de ninguna herramienta, por eso lo que aprenden hoy sirve en cualquier harness. Es el bloque que más se estira sin darse cuenta. -->
 
 ---
 
-## Qué es
+## El problema: N × M
 
-<!-- ~2 min. El agente gana tools EN TIEMPO DE EJECUCIÓN: un servidor externo publica tools y el harness se las ofrece al modelo. En Pi no viene de fábrica — pi-mcp-adapter. Los servidores se declaran en .mcp.json (mcpServers, con command y args) y se maneja con /mcp setup, /mcp tools y /mcp-auth <server>. -->
+4 hosts × 5 servicios = 20 integraciones → con MCP, 4 + 5 = 9
 
----
-
-## Cuánto cuesta
-
-| Servidor MCP | Tools | Tokens | % de la ventana |
-|---|---|---|---|
-| Playwright MCP | 21 | 13.7k | 6.8% |
-| Chrome DevTools MCP | 26 | 18.0k | 9.0% |
-
-<!-- ~2 min. Números del post de Mario Zechner (mariozechner.at/posts/2025-11-02-what-if-you-dont-need-mcp/). VERIFICARLOS EL DÍA DE LA CLASE: son específicos de versiones y pueden haber cambiado; si cambiaron el argumento sigue en pie, actualizar la tabla. Decirlo sin vueltas: eso es contexto gastado ANTES DE QUE EL ESTUDIANTE ESCRIBA UNA SOLA PALABRA. Dos servidores instalados y ya pagaste ~15% de la ventana en capacidades que capaz hoy no usás. Es la regla del 50% comida por configuración. Y el segundo costo, menos obvio y más molesto: CUARENTA TOOLS CONFUNDEN AL MODELO. -->
+<!-- Una frase. Si el bloque viene atrasado, es la primera que se dice de pasada. -->
 
 ---
 
-## ¿Y si no necesitás MCP?
+## Host, cliente y servidor
 
-<!-- ~3 min, y merece la atención de la sala. MARIO ZECHNER, QUE ES QUIEN ESCRIBE PI, sostiene que muchas veces no lo necesitás. Su alternativa: cuatro scripts de CLI y un README de ~225 TOKENS, porque el modelo ya sabe escribir código y usar bash. Y el argumento más profundo es de composición: la salida de un CLI cae en un archivo y se puede encadenar, mientras que EL RESULTADO DE UNA TOOL MCP TIENE QUE PASAR POR LA VENTANA DE CONTEXTO para servir de algo. NO PRESENTARLO COMO LA RESPUESTA CORRECTA: son dos ingenieros con criterio que no están de acuerdo. Lo que tienen que ver es que "instalá el MCP server" es una decisión con precio, no un default. Decir quién es Zechner: es lo que le da peso. -->
+El host (Pi) crea un cliente por servidor. Local por stdio, remoto por Streamable HTTP.
 
----
-
-## La respuesta de ingeniería: una tool proxy
-
-<!-- ~1 min. pi-mcp-adapter NO expone las tools del servidor: expone UNA SOLA TOOL PROXY DE ~200 TOKENS y va a buscar el resto cuando hace falta. Nombrarlo al pasar — "es exactamente el truco de los skills, aplicado a tools: pagás el nombre, no el cuerpo" — y NO CERRAR ACÁ: quedan las docs tools y después sí la tabla, que es el cierre de la teoría. -->
+<!-- El servidor puede vivir en tu máquina (el host lo lanza como proceso) o en internet (HTTP, con OAuth). Las tools son las mismas de siempre: MCP es la forma estándar de traerlas de afuera. -->
 
 ---
 
-## Docs tools: cuando el agente inventa una API
+## Lo que puede ofrecer un servidor
 
-<!-- El arreglo a una falla que ya sintieron. context7 (context7.com) sirve docs actualizadas de librerías, y SE CONSUME COMO SERVIDOR MCP — por eso en la práctica MCP y context7 son un solo paso. context-hub (github.com/andrewyng/context-hub) hace algo parecido: mención al pasar, sin demo. -->
+- **tools** — las elige el modelo
+- **resources** — las elige la aplicación
+- **prompts** — los elige el usuario
+- y al revés: **elicitation**, el servidor le pregunta al usuario
+
+<!-- Las primitivas de modelcontextprotocol.io. Sampling quedó deprecado en el protocolo 2026-07-28: no nombrarlo. -->
+
+---
+
+## Una conversación MCP
+
+`server/discover` → `tools/list` → `tools/call` → `notifications/tools/list_changed`
+
+<!-- Cada click muestra un mensaje en el diagrama de secuencia y su JSON-RPC real al lado. Protocolo 2026-07-28: sin estado, cada request lleva su versión y capacidades en _meta (ya no hay initialize). Solo decirlo si alguien leyó una versión vieja. -->
+
+---
+
+## Enchufar un servidor: `.pi/mcp.json`
+
+```json
+{
+  "mcpServers": {
+    "context7": { "command": "npx", "args": ["-y", "@upstash/context7-mcp"] },
+    "linear": { "url": "https://mcp.linear.app/mcp", "description": "Issues y proyectos del equipo" }
+  }
+}
+```
+
+`/mcp` · `/mcp login <server>` · `pi mcp add` · `pi mcp list` · `/reload`
+
+<!-- Local: command + args. Remoto: url, y /mcp login si pide OAuth. ~/.pi/agent/mcp.json para lo global. context7 = docs actualizadas de librerías, el arreglo a "me inventa la API": es el que enchufan en la práctica. -->
+
+---
+
+## Desde la terminal: `pi mcp add`
+
+```bash
+pi mcp add context7 --url https://mcp.context7.com/mcp
+
+export CONTEXT7_API_KEY="tu-api-key"
+pi mcp add context7 --url https://mcp.context7.com/mcp --bearer-token-env-var CONTEXT7_API_KEY
+
+pi mcp list
+
+pi mcp add --local context7 --url https://mcp.context7.com/mcp
+```
+
+1. global por defecto: se guarda en `~/.pi/agent/mcp.json`
+2. con API key: límites de uso más altos (context7.com/dashboard); Pi guarda el nombre de la variable, no su valor
+3. verificar y usar: `pi mcp list` · `/reload` si la sesión ya estaba abierta · `/mcp` para inspeccionar → *"Usá Context7 para consultar cómo configurar routing en Next.js 16."*
+4. solo este proyecto: `--local` desde la raíz del repo → `.pi/mcp.json`
+
+<!-- Una terminal que se arma en cuatro clicks, con una tarjeta por click a la izquierda. La variable de la API key tiene que estar definida CUANDO ARRANCA PI, no cuando se corre pi mcp add. Las líneas con · de la terminal son explicación, no salida real del comando. -->
+
+---
+
+## Buena práctica 1: descubrimiento progresivo
+
+todo de entrada ~150.000 tokens → progresivo ~2.000
+
+1. **catálogo**: `search_tools({ query: "update salesforce record" })` → nombres y una línea (`salesforce_updateRecord`, `salesforce_upsertRecord`)
+2. **inspeccionar**: `get_tool_details({ name: "salesforce_updateRecord" })` → el schema de esa tool sola
+3. **ejecutar**: `salesforce_updateRecord({ objectType: "Account", recordId: "001xx0001", data: { Phone: "555-0100" } })`
+
+<!-- La primera buena práctica de cliente de la spec de MCP, con su ejemplo de Salesforce (link abajo en la slide). El switch del deck pasa de un número al otro. "Es exactamente el truco de los skills, aplicado a tools: pagás el nombre, no el cuerpo". En Pi 1.0: exposure deferred. El schema del paso 2 está simplificado y el código del paso 3 es nuestro: la spec no trae la llamada. -->
+
+---
+
+## Pi dijo que no a MCP… y después que sí
+
+- **nov 2025 · Zechner**, [*What if you don't need MCP at all?*](https://mariozechner.at/posts/2025-11-02-what-if-you-dont-need-mcp/): CLI + README de ~225 tokens. *"MCP servers also aren't composable."*
+- **sep 2026 · Earendil**, [*You Said No MCP!*](https://earendil.com/posts/you-said-no-mcp/): MCP entra al núcleo de Pi, con codemode. *"The biggest issue with MCP continues to be that it's hard to compose."*
+
+<!-- ~3 min, y merece la atención de la sala. La crítica no se retiró: SE CONVIRTIÓ EN DISEÑO. El costo → descubrimiento progresivo; la composición → code mode (el modelo escribe un script que llama a las tools y solo el resultado vuelve al contexto). "Instalá el MCP" sigue siendo una decisión con precio, no un default; lo que cambió es que ahora el precio lo administra el harness. Los títulos de los dos posts son links. -->
+
+---
+
+## Pi 1.0: cómo le llega cada tool al modelo
+
+| `exposure` | Qué ve el modelo |
+|---|---|
+| `codemode` (default) | nada declarado: las tools se llaman desde un script |
+| `deferred` | `tool_search` |
+| `direct` | todas las definiciones |
+| `hidden` | nada, y no se pueden usar |
+
+<!-- Selector en vivo en el deck. Con direct aparecen las diez tools de Linear. toolExposure hace lo mismo tool por tool. Las dos slides que siguen muestran codemode, el default, en acción. -->
+
+---
+
+## Codemode en acción: llamar un MCP
+
+```js
+const orgs = await tools.mcp__sentry__find_organizations({});
+const { organizations } = orgs.structuredContent;
+const results = await Promise.allSettled(organizations.map(org =>
+  tools.mcp__sentry__find_projects({ organizationSlug: org.slug, regionUrl: org.regionUrl })
+));
+return organizations.map((org, i) => { /* arma { org, projects } o { org, error } */ });
+```
+
+1. una tool MCP es una función: `tools.mcp__sentry__…`, no se le declara al modelo ni se descubre antes
+2. en paralelo: una llamada a `find_projects` por organización, con `Promise.allSettled`
+3. al modelo vuelve solo esto: el script arma el resultado y maneja los errores
+
+<!-- Código de Armin Ronacher, "What is Codemode" (oct 2026), link en la slide. Cada click resalta las líneas de un punto. El agente llama al MCP de Sentry sin descubrir sus tools: le alcanza con lo que sabe y lo que dice el system prompt. Las respuestas crudas no pasan por el contexto. -->
+
+---
+
+## Codemode en acción: clasificar con Jev
+
+```js
+const jev = await models.getModelOfType("classifier", "typesafe", "jev-latest");
+const r = await tools.bash({ command: "gh issue list --state open --limit 100 --json number,title,body,comments" });
+const issues = JSON.parse(r.output);
+const results = await Promise.all(issues.map(async (issue) => {
+  const res = await models.classify(jev, { state: { /* title, body, comments */ },
+    questions: { sentiment: { /* choice */ }, frustration: { /* score */ }, kind: { /* choice */ } } });
+  /* … */
+}));
+store("sentiment_results", results);
+return results.filter(r => !r.error).sort(/* por frustración */).slice(0, 12).map(/* una línea por issue */);
+```
+
+1. un modelo clasificador: Jev (typesafe) no es una tool, se usa desde el código con `models.getModelOfType`
+2. los datos entran por bash: `gh issue list`, 100 issues en JSON que nunca pasan por el contexto
+3. clasificar cada issue: `models.classify` con sentimiento, frustración y tipo, en paralelo (Pi corre 4 a la vez)
+4. filtrar antes de volver: `filter` · `sort` · `slice`, vuelven 12 líneas y no 100 issues; `store()` guarda el resto en la sesión
+
+<!-- Código de Armin Ronacher, "What is Codemode" (oct 2026). El deck muestra el script completo y resalta un bloque por click. El "filter" es el .filter() de JavaScript que arma el resultado. La idea: el modelo escribe el programa, el programa hace el trabajo pesado y al contexto vuelve solo lo que importa. -->
+
+---
+
+# Subagentes
+
+un subtask entero, en otro contexto
+
+<!-- Sección. ~7 min. En Pi viene con la extensión pi-subagents (pi install npm:pi-subagents, Pi 1.2.0 o más nueva). La idea en una línea: así como el skill saca un procedimiento del contexto hasta que hace falta, el subagente saca UN TRABAJO ENTERO de tu contexto. -->
+
+---
+
+## Investigar ensucia el contexto
+
+"¿Cómo maneja el login este repo?": 30 `read` y 12 `grep` para quedarte con un párrafo.
+
+| | tu sesión | contexto aparte |
+|---|---|---|
+| sin subagente | ~56k | — |
+| con subagente | ~3k | ~53k, se descarta |
+
+Tu sesión paga **el resumen**, no la búsqueda.
+
+<!-- Tres clicks: la barra sin subagente, las dos con subagente, y la frase. Es la regla del 50% otra vez: lo que no entra en tu ventana no te degrada el agente. Los números son ilustrativos. -->
+
+---
+
+## Cómo funciona
+
+1. le pasás una tarea, no tu conversación: el prompt es todo lo que sabe
+2. contexto, transcript y tools propios
+3. vuelve un solo mensaje: el resultado
+
+<!-- En el deck, a la derecha, una sesión de Pi que delega la exploración del login y recibe un solo mensaje de vuelta. EL PUNTO 1 ES EL QUE LOS VA A MORDER: el subagente no vio nada de lo que hablaron, así que una tarea mal escrita vuelve con un resultado malo. Escribirle la tarea es escribir un prompt. Con pi-subagents se pide en lenguaje natural ("usá scout para explorar cómo funciona el login"); la tool se llama subagent y trae agentes de fábrica: scout, researcher, worker, reviewer, oracle. -->
+
+---
+
+## Cuándo sí y cuándo no
+
+| delegá | hacelo en tu sesión |
+|---|---|
+| explorar o investigar mucho para quedarte con poco | cuando querés ver el razonamiento o decidir a mitad de camino |
+| revisar con ojos frescos: no vio cómo lo escribiste | trabajo que depende de lo que ya hablaron |
+| tareas independientes, en paralelo | |
+
+<!-- Dos clicks, una columna cada uno. Decirlo en voz alta aunque ya no esté en la slide: el subagente no es "más IA", es economía de contexto; en total se gastan MÁS tokens, no menos. -->
 
 ---
 
@@ -258,69 +419,29 @@ onToolCall(({ name }) => {
 | | Siempre cargado | On demand |
 |---|---|---|
 | Contexto del proyecto | `AGENTS.md` | skill |
-| Tools externas | todas las definiciones | la tool proxy |
-| Trabajo | tu sesión | *(Sesión 4)* |
+| Tools externas | todas las definiciones (`direct`) | `deferred` · `codemode` |
+| Trabajo | tu sesión | subagente |
 
-<!-- EL CIERRE DE LA TEORÍA, y acá sí frenar. Dos tecnologías distintas, el mismo movimiento. Si se llevan una sola cosa de la clase, que sea esta tabla. LA TERCERA FILA SE DEJA ABIERTA A PROPÓSITO: el trabajo mismo también se puede delegar a un contexto aparte, eso son los subagentes, Y LO ABRE AGUS LA SEMANA QUE VIENE con un caso de uso de documentación. Una línea y seguir — no dar el bloque hoy. DEJAR LA TABLA PROYECTADA MIENTRAS ARRANCA LA PRÁCTICA. -->
-
----
-
-# Pausa (5 min)
-
-<!-- Aprovechar para dejar la tabla anterior en pantalla y abrir la terminal para el paso 0 de la práctica. -->
+<!-- EL CIERRE DE LA TEORÍA, y acá sí frenar. Una fila por click. Tres tecnologías distintas, el mismo movimiento: lo que no hace falta en cada turno sale de la ventana hasta que hace falta. Si se llevan una sola cosa de la clase, que sea esta tabla. DEJARLA PROYECTADA MIENTRAS ARRANCA LA PRÁCTICA. Después: pausa de 5 min. -->
 
 ---
 
-# Práctica (45 min)
+## Práctica (45 min)
 
-<!-- Sección. Cuatro pasos, y LOS CUATRO ATACAN LA MISMA REPETICIÓN que el estudiante puso en el menti: es un hilo, no cinco mandados. -->
+1. `AGENTS.md` (y podarlo)
+2. probarlo en una sesión nueva
+3. un skill para verificar que tu app anda
+4. context7 por MCP
+5. delegar a un subagente
 
----
+`context7 → .pi/mcp.json` · `/reload · /mcp` · `pi install npm:pi-subagents`
 
-## Primero, todos juntos
-
-```
-pi install npm:pi-mcp-adapter
-```
-
-<!-- Un minuto, la sala entera, en voz alta, ANTES de soltarlos. No se pidió como pre-work a propósito: un pre-work opcional lo hace la mitad de la sala y arrancamos el paso 4 con dos poblaciones distintas. Es un comando, no un setup. Esperar a que confirmen. -->
+<!-- Ver exercise/README.md, no leerlos desde la slide. El timer del deck arranca al entrar a la slide (click para reiniciar). INSISTIR EN DOS COSAS: el paso 1 lo escribe el agente pero LA PODA ES EL EJERCICIO, y EL PASO 2 NO SE SALTEA. Por qué la poda, con datos (los cita la AAIF en "Writing an effective AGENTS.md", 2026): Gloaguen et al. encontró que los AGENTS.md generados por un LLM casi no mejoran el resultado y suben el costo, que los escritos por devs rinden más, y que los resúmenes del repo no ayudan al agente a encontrar código; así que el árbol de directorios se va. Del lado bueno, con un archivo cuidado: Lulla et al. midió −29% de tiempo y −17% de tokens de salida (124 tareas, 10 repos; mide eficiencia, no si el cambio está bien), y en la prueba de la AAIF 2 de 5 corridas sin AGENTS.md hicieron un build de producción que nadie pidió, contra 0 de 5 con el archivo. Para el paso 2: si el agente tropieza dos veces con lo mismo, es una línea nueva; una advertencia vieja es peor que ninguna. Paso 3: el skill dice cómo levantar la app y cómo comprobar que anda (tests, un curl, abrirla); la description tiene que nombrar cuándo usarlo. Paso 4: el archivo va en .pi/ (o pi mcp add --local), aceptar project trust, y /reload. Paso 5: pedirle a un subagente que explore algo del repo (scout) o que revise el diff (reviewer), y comparar cuánto contexto gastó la sesión principal. -->
 
 ---
 
-## Los cuatro pasos
+## ¿Qué aprendimos?
 
-<!-- Ver exercise/README.md, no leerlos desde la slide. (1) Que el AGENTE escriba el AGENTS.md, con tus notas en el prompt, y podarlo ~12 min. (2) Probalo: la misma tarea en una sesión nueva ~5 min. (3) Un skill para planificar una feature ~10 min. (4) Apuntá el adapter a context7 ~10 min. INSISTIR EN DOS COSAS: el paso 1 no se escribe a mano —el agente lee el repo mejor que vos— pero LA PODA ES EL EJERCICIO, y las notas del menti las pone el estudiante en el prompt. Y EL PASO 2 NO SE SALTEA. Con cuatro pasos hay aire: el que sobra va al paso 4, que es el que se cuelga. -->
+Siete tarjetas: escribilo una vez · `AGENTS.md` corto · skills on demand · la description es el trigger · host/cliente/servidor · descubrimiento progresivo · subagentes: un trabajo entero, en otro contexto.
 
----
-
-## Para copiar: context7
-
-```
-npx ctx7 setup
-```
-
-<!-- El paso 4 es el que se come el reloj: descarga, config, capaz /mcp-auth. Este comando en pantalla es CERO DESCUBRIMIENTO — dejarlo proyectado durante todo el paso 4. VERIFICAR antes de la clase, en la red del aula, si hace falta API key. Después: /mcp tools, y que le pregunten al agente algo sobre una librería que estén usando de verdad. Y pedirles que ABRAN LA CONFIG QUE DEJÓ ESCRITA: es el mismo mcpServers con command y args de la teoría, y hoy se lo escribió un instalador. -->
-
----
-
-## El costo, en su propia ventana
-
-<!-- El callback para tirar caminando la sala: "fijate cuánto contexto te comió el server que acabás de instalar". Y el remate: pi-mcp-adapter no metió las tools del servidor en su contexto, metió UNA tool proxy. Es el truco del skill, aplicado a tools — la tercera vez que aparece la misma idea en el día. -->
-
----
-
-# Cierre
-
-<!-- Sección. ~8 min. -->
-
----
-
-## ¿Qué cambió en el paso 2?
-
-<!-- LA pregunta de la sesión. Que cuenten un caso concreto de algo que el agente hizo solo, sin que se lo dijeran. Sin ese contraste, el AGENTS.md es un archivo que escribieron porque se lo pedimos. Segunda pregunta, abierta, del programa: ¿qué les sorprendió del tooling? — sirve para pescar lo que no cubrimos. Y cerrar volviendo a la tabla de siempre-cargado vs. on-demand: hoy fue AGENTS.md, skills y MCP, pero el criterio se aplica a cualquier harness. Es la idea que sobrevive al curso. -->
-
----
-
-## Para la semana · Próxima sesión
-
-<!-- Tarea: seguir usando el AGENTS.md y anotar QUÉ LE SIGUIERON EXPLICANDO IGUAL — el archivo crece toda la semana, y lo que no entra en él es lo que Agus va a llamar SPEC. Segunda parte: traer una feature que NO puedan describir en una frase; es el insumo de spec-driven development. La Sesión 4 es de Agus: context engineering, orquestación de agentes y prompt injection, que hoy solo nombramos. -->
+<!-- Recap visual, y es la última slide. No leerla: dejarla un momento y abrir la discusión de cierre (¿qué cambió en el paso 2? ¿qué les sorprendió del tooling?). -->

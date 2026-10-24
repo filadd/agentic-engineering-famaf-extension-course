@@ -27,4 +27,4 @@ COURSE_PROGRAM.md  — full course design document
 
 ## Tool
 
-The course runs on [Pi](https://pi.dev) for all six sessions — terminal-based, minimal, standard `AGENTS.md`. Students install it in session 1, and later sessions add extensions on top of it rather than switching harness: `@plannotator/pi-extension` (file-based plan mode and review) and `pi-subagents` in session 2, `pi-mcp-adapter` in session 3. In session 6 the same tool is pointed at an open-weights model served by UNC's HPC center — which is the point of teaching structure instead of a product.
+The course runs on [Pi](https://pi.dev) for all six sessions — terminal-based, minimal, standard `AGENTS.md`. Students install it in session 1, and later sessions add extensions on top of it rather than switching harness: `@plannotator/pi-extension` (file-based plan mode and review) and `pi-subagents` in session 2. The course uses Pi 1, which ships MCP built in, so session 3 installs nothing new. In session 6 the same tool is pointed at an open-weights model served by UNC's HPC center — which is the point of teaching structure instead of a product.
