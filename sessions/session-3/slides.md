@@ -16,7 +16,8 @@ Sesión de 2 h: 8 recap, 5 intro, 15 AGENTS.md, 7 skills, 18 MCP (con codemode),
 
 Pi 1.0 trae MCP de fábrica. Subagentes se dan al final de la teoría, con la
 extensión pi-subagents (pide Pi 1.2.0 o más nueva: confirmar la versión de la
-sala). Code mode por dentro y FastMCP quedaron como propuesta para la Sesión 5
+sala). Code mode por dentro y FastMCP quedaron como propuesta para la Sesión 5 (FastMCP
+solo se nombra en la práctica, como avanzado opcional)
 (../session-5/propuesta-mcp/). El material del recap se recolecta con
 MENTIMETER y la pantalla queda proyectada toda la clase.
 -->
@@ -161,7 +162,7 @@ Arrancando `pi` en `~/src/todo-app/web`:
 
 ¿y si el procedimiento son 60 líneas y lo usás una vez por semana?
 
-estándar abierto · agentskills.io · lo donó Anthropic a la AAIF (Linux Foundation) · lo leen Claude Code, Codex, Cursor, Copilot, Gemini CLI, OpenCode, Goose, Amp, Pi
+estándar abierto · [agentskills.io](https://agentskills.io/) · lo donó Anthropic a la AAIF (Linux Foundation)
 
 <!-- Sección. ~7 min. El skill es la respuesta al impuesto del AGENTS.md. Y ESTO NO ES DE PI: es un estándar abierto, que Anthropic donó a la AAIF en octubre de 2026. TREINTA SEGUNDOS, no abrir el sitio. -->
 
@@ -212,7 +213,7 @@ Las tres etapas tienen nombre: **Progressive Disclosure**.
 
 # MCP
 
-Model Context Protocol: el agente gana tools en tiempo de ejecución · estándar abierto, donado por Anthropic a la AAIF (Linux Foundation) · en Pi 1.0 viene de fábrica
+Model Context Protocol: el agente gana tools en tiempo de ejecución · estándar abierto · [modelcontextprotocol.io](https://modelcontextprotocol.io/) · donado por Anthropic a la AAIF (Linux Foundation) · en Pi 1.0 viene de fábrica
 
 <!-- Sección. ~18 min, UN MINUTO Y MEDIO POR SLIDE. Tercer estándar de la AAIF del día: AGENTS.md, skills y MCP no son de ninguna herramienta, por eso lo que aprenden hoy sirve en cualquier harness. Es el bloque que más se estira sin darse cuenta. -->
 
@@ -242,6 +243,19 @@ El host (Pi) crea un cliente por servidor. Local por stdio, remoto por Streamabl
 - y al revés: **elicitation**, el servidor le pregunta al usuario
 
 <!-- Las primitivas de modelcontextprotocol.io. Sampling quedó deprecado en el protocolo 2026-07-28: no nombrarlo. -->
+
+---
+
+## Más allá del núcleo: extensiones
+
+- **Authorization** — OAuth máquina a máquina y acceso centralizado para empresas (`ext-auth`)
+- **Apps** — el servidor muestra UI interactiva dentro del chat (`ext-apps`)
+- **Tasks** — operaciones largas: consultar el estado, pasar datos a mitad de camino, retomar
+- **Skills over MCP** — un servidor publica skills como resources (`ext-skills`)
+
+opcionales y apagadas por defecto · cliente y servidor las anuncian en sus capabilities · si el otro no la soporta, se vuelve al protocolo base · [MCP, Extensions](https://modelcontextprotocol.io/extensions/overview)
+
+<!-- Un click por tarjeta, UN MINUTO EN TOTAL: es un mapa, no un tema. Lo que tiene que quedar: el núcleo del protocolo es chico y lo demás se agrega como extensión que ambos lados tienen que soportar. Skills over MCP es el gancho con el bloque anterior: el mismo estándar de skills, servido desde un servidor en vez de una carpeta. Si el bloque viene atrasado, nombrar solo Skills over MCP y seguir. -->
 
 ---
 
@@ -436,7 +450,9 @@ Tu sesión paga **el resumen**, no la búsqueda.
 
 `context7 → .pi/mcp.json` · `/reload · /mcp` · `pi install npm:pi-subagents`
 
-<!-- Ver exercise/README.md, no leerlos desde la slide. El timer del deck arranca al entrar a la slide (click para reiniciar). INSISTIR EN DOS COSAS: el paso 1 lo escribe el agente pero LA PODA ES EL EJERCICIO, y EL PASO 2 NO SE SALTEA. Por qué la poda, con datos (los cita la AAIF en "Writing an effective AGENTS.md", 2026): Gloaguen et al. encontró que los AGENTS.md generados por un LLM casi no mejoran el resultado y suben el costo, que los escritos por devs rinden más, y que los resúmenes del repo no ayudan al agente a encontrar código; así que el árbol de directorios se va. Del lado bueno, con un archivo cuidado: Lulla et al. midió −29% de tiempo y −17% de tokens de salida (124 tareas, 10 repos; mide eficiencia, no si el cambio está bien), y en la prueba de la AAIF 2 de 5 corridas sin AGENTS.md hicieron un build de producción que nadie pidió, contra 0 de 5 con el archivo. Para el paso 2: si el agente tropieza dos veces con lo mismo, es una línea nueva; una advertencia vieja es peor que ninguna. Paso 3: el skill dice cómo levantar la app y cómo comprobar que anda (tests, un curl, abrirla); la description tiene que nombrar cuándo usarlo. Paso 4: el archivo va en .pi/ (o pi mcp add --local), aceptar project trust, y /reload. Paso 5: pedirle a un subagente que explore algo del repo (scout) o que revise el diff (reviewer), y comparar cuánto contexto gastó la sesión principal. -->
+avanzado, si te sobra tiempo · tu propio servidor o cliente MCP en Python con [FastMCP](https://gofastmcp.com/)
+
+<!-- Ver exercise/README.md, no leerlos desde la slide. El timer del deck arranca al entrar a la slide (click para reiniciar). INSISTIR EN DOS COSAS: el paso 1 lo escribe el agente pero LA PODA ES EL EJERCICIO, y EL PASO 2 NO SE SALTEA. Por qué la poda, con datos (los cita la AAIF en "Writing an effective AGENTS.md", 2026): Gloaguen et al. encontró que los AGENTS.md generados por un LLM casi no mejoran el resultado y suben el costo, que los escritos por devs rinden más, y que los resúmenes del repo no ayudan al agente a encontrar código; así que el árbol de directorios se va. Del lado bueno, con un archivo cuidado: Lulla et al. midió −29% de tiempo y −17% de tokens de salida (124 tareas, 10 repos; mide eficiencia, no si el cambio está bien), y en la prueba de la AAIF 2 de 5 corridas sin AGENTS.md hicieron un build de producción que nadie pidió, contra 0 de 5 con el archivo. Para el paso 2: si el agente tropieza dos veces con lo mismo, es una línea nueva; una advertencia vieja es peor que ninguna. Paso 3: el skill dice cómo levantar la app y cómo comprobar que anda (tests, un curl, abrirla); la description tiene que nombrar cuándo usarlo. Paso 4: el archivo va en .pi/ (o pi mcp add --local), aceptar project trust, y /reload. Paso 5: pedirle a un subagente que explore algo del repo (scout) o que revise el diff (reviewer), y comparar cuánto contexto gastó la sesión principal. FastMCP es solo para quien termine antes: nombrarlo, no enseñarlo; armar un servidor por dentro es tema de la Sesión 5. -->
 
 ---
 
