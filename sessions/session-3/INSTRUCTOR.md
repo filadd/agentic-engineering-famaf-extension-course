@@ -206,7 +206,7 @@ La idea que tienen que llevarse: **el modelo escribe el programa, el programa ha
 
 ### Subagentes (~7 min)
 
-**Volvieron a esta sesión.** El programa los había mandado a la Sesión 4; ahora se dan acá, al final de la teoría, con la extensión [`pi-subagents`](https://pi.dev/packages/pi-subagents). La idea en una línea: así como el skill saca un procedimiento del contexto hasta que hace falta, **el subagente saca un trabajo entero de tu contexto**.
+**Volvieron a esta sesión.** El programa los había mandado a la Sesión 4; ahora se dan acá, al final de la teoría. **Pi no trae subagentes de fábrica**: la funcionalidad se agrega con una extensión, y la que usamos es [`pi-subagents`](https://pi.dev/packages/pi-subagents) (`pi install npm:pi-subagents`). La slide de sección lo dice; marcar el contraste con MCP, que en Pi 1.0 sí viene incluido. La idea en una línea: así como el skill saca un procedimiento del contexto hasta que hace falta, **el subagente saca un trabajo entero de tu contexto**.
 
 Cuatro slides:
 

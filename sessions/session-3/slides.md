@@ -396,9 +396,9 @@ return results.filter(r => !r.error).sort(/* por frustración */).slice(0, 12).m
 
 # Subagentes
 
-un subtask entero, en otro contexto
+un subtask entero, en otro contexto · Pi no los trae de fábrica: se agregan con una extensión · por ejemplo [pi-subagents](https://pi.dev/packages/pi-subagents) · `pi install npm:pi-subagents`
 
-<!-- Sección. ~7 min. En Pi viene con la extensión pi-subagents (pi install npm:pi-subagents, Pi 1.2.0 o más nueva). La idea en una línea: así como el skill saca un procedimiento del contexto hasta que hace falta, el subagente saca UN TRABAJO ENTERO de tu contexto. -->
+<!-- Sección. ~7 min. Decirlo explícito: a diferencia de MCP, que en Pi 1.0 viene de fábrica, los subagentes NO son nativos; la funcionalidad se agrega con una extensión, y pi-subagents es una que ya existe (Pi 1.2.0 o más nueva). La idea en una línea: así como el skill saca un procedimiento del contexto hasta que hace falta, el subagente saca UN TRABAJO ENTERO de tu contexto. -->
 
 ---
 
