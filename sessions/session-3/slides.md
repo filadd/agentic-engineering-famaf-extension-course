@@ -129,12 +129,10 @@ La especificidad sirve cuando le saca una decisión que el agente tendría que t
 
 ## Dos AGENTS.md de verdad
 
-- **[cloudflare/agents](https://github.com/cloudflare/agents/blob/main/AGENTS.md)** (monorepo TypeScript, un AGENTS.md por paquete): `pnpm run check` antes de terminar · `nx affected -t test` · `env.d.ts` ← `wrangler types`, no se edita a mano · *always · ask first · never*: never, force push a main
-- **[googleworkspace/go-samples](https://github.com/googleworkspace/go-samples/blob/main/AGENTS.md)** (samples sueltos, corto): `test -z $(gofmt -l .)`, el mismo chequeo que corre CI · `go build -v -a ./...`, que el cache no esconda nada
+- **[cloudflare/agents](https://github.com/cloudflare/agents/blob/main/AGENTS.md)** · monorepo TypeScript, un AGENTS.md por paquete
+- **[googleworkspace/go-samples](https://github.com/googleworkspace/go-samples/blob/main/AGENTS.md)** · samples sueltos, corto
 
-Comandos exactos, excepciones y límites. Ninguno explica qué es Go o TypeScript (cosas que el agente ya sabe).
-
-<!-- Una columna por click y el remate; los nombres de los repos son links al AGENTS.md. NO LEERLAS ENTERAS: señalar una cosa de cada una. Cloudflare: los límites en tres niveles (la misma sección de Boundaries de dos slides atrás) y los archivos generados. Go: es corto y está bien que lo sea, son los mismos comandos que corre CI. Si piden un tercero: apache/airflow, ~250 líneas sin relleno (link en INSTRUCTOR.md). -->
+<!-- Solo los links, uno por click: se abren y se recorren en vivo en la clase. NO LEERLOS ENTEROS: señalar una cosa de cada uno. Cloudflare: `pnpm run check` antes de terminar, `nx affected -t test`, `env.d.ts` generado con `wrangler types` (no se edita a mano) y los límites en tres niveles, always · ask first · never (la misma sección de Boundaries de dos slides atrás). Go: es corto y está bien que lo sea; `test -z $(gofmt -l .)` y `go build -v -a ./...` son los mismos comandos que corre CI. Cerrar con: comandos exactos, excepciones y límites; ninguno explica qué es Go o TypeScript, cosas que el agente ya sabe. Si piden un tercero: apache/airflow, ~250 líneas sin relleno (link en INSTRUCTOR.md). -->
 
 ---
 
@@ -280,23 +278,6 @@ opcionales y apagadas por defecto · cliente y servidor las anuncian en sus capa
 
 ---
 
-## Enchufar un servidor: `.pi/mcp.json`
-
-```json
-{
-  "mcpServers": {
-    "context7": { "command": "npx", "args": ["-y", "@upstash/context7-mcp"] },
-    "linear": { "url": "https://mcp.linear.app/mcp", "description": "Issues y proyectos del equipo" }
-  }
-}
-```
-
-`/mcp` · `/mcp login <server>` · `pi mcp add` · `pi mcp list` · `/reload`
-
-<!-- Local: command + args. Remoto: url, y /mcp login si pide OAuth. ~/.pi/agent/mcp.json para lo global. context7 = docs actualizadas de librerías, el arreglo a "me inventa la API": es el que enchufan en la práctica. -->
-
----
-
 ## Desde la terminal: `pi mcp add`
 
 ```bash
@@ -316,6 +297,23 @@ pi mcp add --local context7 --url https://mcp.context7.com/mcp
 4. solo este proyecto: `--local` desde la raíz del repo → `.pi/mcp.json`
 
 <!-- Una terminal que se arma en cuatro clicks, con una tarjeta por click a la izquierda. La variable de la API key tiene que estar definida CUANDO ARRANCA PI, no cuando se corre pi mcp add. Las líneas con · de la terminal son explicación, no salida real del comando. -->
+
+---
+
+## Enchufar un servidor: `.pi/mcp.json`
+
+```json
+{
+  "mcpServers": {
+    "context7": { "command": "npx", "args": ["-y", "@upstash/context7-mcp"] },
+    "linear": { "url": "https://mcp.linear.app/mcp", "description": "Issues y proyectos del equipo" }
+  }
+}
+```
+
+`/mcp` · `/mcp login <server>` · `pi mcp add` · `pi mcp list` · `/reload`
+
+<!-- Local: command + args. Remoto: url, y /mcp login si pide OAuth. ~/.pi/agent/mcp.json para lo global. context7 = docs actualizadas de librerías, el arreglo a "me inventa la API": es el que enchufan en la práctica. -->
 
 ---
 

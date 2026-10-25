@@ -124,12 +124,12 @@ Y el criterio para cada línea, dicho en voz alta: **"¿saberlo cambia lo que ha
 
 **Qué no va** — sin slide propia, se dice sobre la misma tabla: consejos genéricos (*"escribí código limpio"*), lo que vale para una sola tarea (eso es el prompt), documentación del dominio que cambia todo el tiempo, lo que ya hace cumplir un linter o CI (va en la config de la herramienta), secretos y credenciales, y —la más común— **una wiki**. Un `AGENTS.md` de 400 líneas son ~6.000 tokens; en 40 turnos de una sesión, ~240.000.
 
-**Dos `AGENTS.md` de verdad.** Una columna por click; los nombres de los repos son links al archivo. No leerlas enteras: señalar una cosa de cada una.
+**Dos `AGENTS.md` de verdad.** La slide tiene solo los dos links, uno por click: se abren y se recorren en vivo. No leerlos enteros: señalar una cosa de cada uno.
 
 - [**cloudflare/agents**](https://github.com/cloudflare/agents/blob/main/AGENTS.md) — monorepo TypeScript, un `AGENTS.md` por paquete: `pnpm run check` antes de terminar, `nx affected -t test` para testear solo lo que tocaste, `env.d.ts` generado por `wrangler types` (no se edita a mano), y los límites en tres niveles (*never*: force push a main).
 - [**googleworkspace/go-samples**](https://github.com/googleworkspace/go-samples/blob/main/AGENTS.md) — corto, y está bien que lo sea: `test -z $(gofmt -l .)`, el mismo chequeo que corre CI, y `go build -v -a ./...` para que el cache no esconda nada.
 
-El remate: *comandos exactos, excepciones y límites. Ninguno explica qué es Go o TypeScript (cosas que el agente ya sabe).* Si piden un tercero: [apache/airflow](https://github.com/apache/airflow/blob/main/AGENTS.md), ~250 líneas sin relleno, con límites de arquitectura y reglas que el agente no podría deducir.
+El remate, que ya no está escrito en la slide: *comandos exactos, excepciones y límites. Ninguno explica qué es Go o TypeScript (cosas que el agente ya sabe).* Si piden un tercero: [apache/airflow](https://github.com/apache/airflow/blob/main/AGENTS.md), ~250 líneas sin relleno, con límites de arquitectura y reglas que el agente no podría deducir.
 
 **Cómo los encuentra Pi.** No es un archivo que el modelo decide leer: son instrucciones fijas en el system prompt. La slide arranca `pi` en `~/src/todo-app/web` y muestra la búsqueda en tres pasos:
 
@@ -181,8 +181,8 @@ El bloque donde la tesis de la sesión consigue su número más duro, y donde la
 
 **2. Cómo se enchufa en Pi 1.0 (~3 min).** Dos slides:
 
-- **`.pi/mcp.json`**: `mcpServers`, `command` + `args` para uno local, `url` para uno remoto (`/mcp login <server>` si pide OAuth).
 - **`pi mcp add`**, con el ejemplo de Context7 en una terminal que se arma en cuatro clicks: `pi mcp add context7 --url https://mcp.context7.com/mcp` (global por defecto, en `~/.pi/agent/mcp.json`); con API key, `--bearer-token-env-var CONTEXT7_API_KEY` (límites de uso más altos; la key sale de context7.com/dashboard, y Pi guarda el nombre de la variable, no su valor, así que tiene que estar definida cuando arranca Pi); `pi mcp list`, `/reload` si la sesión ya estaba abierta y `/mcp` para inspeccionar, con el pedido *"Usá Context7 para consultar cómo configurar routing en Next.js 16"*; y `--local` desde la raíz del repo para que quede en `.pi/mcp.json`. Las líneas con `·` de la terminal son explicación, no salida real del comando.
+- **`.pi/mcp.json`**: `mcpServers`, `command` + `args` para uno local, `url` para uno remoto (`/mcp login <server>` si pide OAuth).
 
 [Context7](https://context7.com/) sirve docs actualizadas de librerías —el arreglo a "me inventa la API"— y se consume **como servidor MCP**: es el que enchufan en la práctica. [context-hub](https://github.com/andrewyng/context-hub) existe y hace algo parecido; mención al pasar.
 
