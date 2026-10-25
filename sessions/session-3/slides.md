@@ -306,14 +306,14 @@ pi mcp add --local context7 --url https://mcp.context7.com/mcp
 {
   "mcpServers": {
     "context7": { "command": "npx", "args": ["-y", "@upstash/context7-mcp"] },
-    "linear": { "url": "https://mcp.linear.app/mcp", "description": "Issues y proyectos del equipo" }
+    "notion": { "url": "https://mcp.notion.com/mcp", "description": "Páginas y bases del workspace" }
   }
 }
 ```
 
 `/mcp` · `/mcp login <server>` · `pi mcp add` · `pi mcp list` · `/reload`
 
-<!-- Local: command + args. Remoto: url, y /mcp login si pide OAuth. ~/.pi/agent/mcp.json para lo global. context7 = docs actualizadas de librerías, el arreglo a "me inventa la API": es el que enchufan en la práctica. -->
+<!-- Local: command + args. Remoto: url, y /mcp login si pide OAuth (Notion lo pide). ~/.pi/agent/mcp.json para lo global. context7 = docs actualizadas de librerías, el arreglo a "me inventa la API": es el que enchufan en la práctica. -->
 
 ---
 
@@ -347,7 +347,7 @@ todo de entrada ~150.000 tokens → progresivo ~2.000
 | `direct` | todas las definiciones |
 | `hidden` | nada, y no se pueden usar |
 
-<!-- Selector en vivo en el deck. Con direct aparecen las diez tools de Linear. toolExposure hace lo mismo tool por tool. Las dos slides que siguen muestran codemode, el default, en acción. -->
+<!-- Selector en vivo en el deck. Con direct aparecen diez tools de Notion. toolExposure hace lo mismo tool por tool. Las dos slides que siguen muestran codemode, el default, en acción. -->
 
 ---
 

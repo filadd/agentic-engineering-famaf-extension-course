@@ -1370,7 +1370,7 @@ p { margin: 0; }
       <div class="code" data-code="mcp-json" data-marks="1=3-6 2=7-10" style="--h: 400px"></div>
       <div class="cfgside">
         <div class="card cfgn" data-step="1"><b>📚 context7</b><span>docs actualizadas de librerías: el arreglo a "me inventa la API". Lo instalan en la práctica.</span></div>
-        <div class="card cfgn" data-step="2"><b>📋 linear</b><span>remoto: solo la <span class="mono">url</span>. Si pide OAuth, <span class="mono">/mcp login linear</span></span></div>
+        <div class="card cfgn" data-step="2"><b>📝 notion</b><span>remoto: solo la <span class="mono">url</span>. Pide OAuth: <span class="mono">/mcp login notion</span></span></div>
         <div class="card cfgn mono small" data-step="2">/mcp · pi mcp add · pi mcp list · /reload</div>
       </div>
     </div>
@@ -2012,9 +2012,9 @@ Content-Type: application/json
       "command": "npx",
       "args": ["-y", "@upstash/context7-mcp"]
     },
-    "linear": {
-      "url": "https://mcp.linear.app/mcp",
-      "description": "Issues y proyectos del equipo"
+    "notion": {
+      "url": "https://mcp.notion.com/mcp",
+      "description": "Páginas y bases del workspace"
     }
   }
 }` },
@@ -2309,8 +2309,8 @@ return len(urgentes)` },
 
 const exposureCode = (mode) => ({ lang: "json", title: ".pi/mcp.json", src: `{
   "mcpServers": {
-    "linear": {
-      "url": "https://mcp.linear.app/mcp",
+    "notion": {
+      "url": "https://mcp.notion.com/mcp",
       "exposure": "${mode}"
     }
   }
@@ -2587,7 +2587,7 @@ const PD_TOK = [0, 2000, 3200, 4000];
 /* ───────────── N×M ───────────── */
 
 const HOSTS = ["Pi", "Claude Code", "Cursor", "Codex"];
-const SERVICES = ["GitHub", "Postgres", "Sentry", "Linear", "Figma"];
+const SERVICES = ["GitHub", "Postgres", "Sentry", "Notion", "Figma"];
 const hostY = (i) => 80 + i * 103;
 const svcY = (i) => 55 + i * 90;
 
@@ -2674,12 +2674,12 @@ const setTransform = (el, mode) => {
 
 /* ───────────── Exposure ───────────── */
 
-const LINEAR = ["mcp__linear__list_issues", "mcp__linear__get_issue", "mcp__linear__create_issue", "mcp__linear__update_issue", "mcp__linear__list_comments", "mcp__linear__create_comment", "mcp__linear__list_projects", "mcp__linear__list_teams", "mcp__linear__list_users", "mcp__linear__search_docs"];
+const NOTION = ["mcp__notion__notion-search", "mcp__notion__notion-fetch", "mcp__notion__notion-create-pages", "mcp__notion__notion-update-page", "mcp__notion__notion-move-pages", "mcp__notion__notion-duplicate-page", "mcp__notion__notion-create-database", "mcp__notion__notion-create-comment", "mcp__notion__notion-get-comments", "mcp__notion__notion-get-users"];
 
 const EXPOSURE = {
   codemode: { tools: ["codemode"], meta: true, cap: "las tools no se declaran: un script JS las llama como funciones y al contexto vuelve solo el resultado" },
   deferred: { tools: ["tool_search"], meta: true, cap: "<b>tool_search</b> encuentra la que hace falta y la declara para la próxima llamada" },
-  direct: { tools: LINEAR, cap: "<b>todas declaradas</b>, como una tool más: es lo que costaba 13.7k" },
+  direct: { tools: NOTION, cap: "<b>todas declaradas</b>, como una tool más: es lo que costaba 13.7k" },
   hidden: { tools: [], cap: "registradas, pero <b>inalcanzables</b>" },
 };
 

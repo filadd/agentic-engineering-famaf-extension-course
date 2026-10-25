@@ -195,7 +195,7 @@ El bloque donde la tesis de la sesión consigue su número más duro, y donde la
 
 La línea para decir: **la crítica no se retiró, se convirtió en diseño** — el costo se resuelve con descubrimiento progresivo, la composición con code mode. "Instalá el MCP" sigue siendo una decisión con precio, no un default. Lo que cambió es que ahora el precio lo administra el harness.
 
-**5. Cómo lo hace Pi 1.0: `exposure` (~1 min).** La slide tiene un selector en vivo: `codemode` (default), `deferred`, `direct`, `hidden`, y muestra qué tiene declarado el modelo en cada caso. Con `direct` aparecen las diez tools de Linear; con `codemode`, ninguna.
+**5. Cómo lo hace Pi 1.0: `exposure` (~1 min).** La slide tiene un selector en vivo: `codemode` (default), `deferred`, `direct`, `hidden`, y muestra qué tiene declarado el modelo en cada caso. Con `direct` aparecen diez tools de Notion; con `codemode`, ninguna.
 
 **6. Codemode en acción (~4 min).** Dos slides con código real de Armin Ronacher, [*What is Codemode*](https://lucumr.pocoo.org/2026/10/6/codemode/) (oct 2026), link en cada una. Cada click resalta las líneas que hacen una cosa y suma una tarjeta que la explica.
 
