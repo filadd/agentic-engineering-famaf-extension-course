@@ -139,13 +139,13 @@ El remate: *comandos exactos, excepciones y límites. Ninguno explica qué es Go
 
 El paso 3 es el que los muerde. `AGENTS.override.md` existe (en cada carpeta le gana a `AGENTS.md`), pero **no se nombra**: salió de la slide a propósito. La distinción global/repo con un ejemplo: *"prefiero tabs" va en el global; "los tests se corren con `pnpm test`" va en el del repo.* Lo del repo viaja con el repo y le sirve a quien lo clone — **incluido el que lo clona en dos años, que capaz sos vos**.
 
-**El costo, dicho de frente.** Está en contexto en cada turno. Es un impuesto que pagás siempre, uses o no esa información. Dejar la pregunta abierta —*"¿y si el procedimiento que quiero escribir son 60 líneas y lo uso una vez por semana?"*— porque es exactamente el bloque siguiente.
+**El costo, dicho de frente.** Está en contexto en cada turno. Es un impuesto que pagás siempre, uses o no esa información. Dejar la pregunta abierta —*"¿y si tengo un procedimiento largo y lo uso en situaciones específicas?"*— porque es exactamente el bloque siguiente.
 
 ### Skills (~7 min)
 
 **El skill es la respuesta al impuesto que acabamos de nombrar.**
 
-Un skill es un directorio con un `SKILL.md` y frontmatter (`name` y `description` obligatorios, y opcionalmente `allowed-tools`), con `scripts/`, `references/` y `assets/` al lado. Vive en `.pi/skills/` o `.agents/skills/` en el proyecto, o en `~/.pi/agent/skills/` global — el mismo par proyecto/global que `AGENTS.md`. El frontmatter ya no tiene slide propia: decir los dos campos obligatorios sobre la de la carpeta.
+Un skill es un directorio con un `SKILL.md` y frontmatter (`name` y `description` obligatorios, y opcionalmente `allowed-tools`), con `scripts/`, `references/` y `assets/` al lado. Vive en `.pi/skills/` o `.agents/skills/` en el proyecto, o en `~/.pi/agent/skills/` global — el mismo par proyecto/global que `AGENTS.md`. El frontmatter ya no tiene slide propia: en el primer click de la slide de la carpeta se iluminan sus líneas con la etiqueta "frontmatter"; nombrarlo ahí y decir los dos campos obligatorios.
 
 **Lo que hay que mostrar es cómo se carga, en tres etapas.** Es el artefacto concreto de toda la sesión:
 
@@ -158,6 +158,8 @@ Tenés veinte skills instalados y pagás veinte descripciones, no veinte procedi
 **Y nada de esto es una particularidad de Pi: es un estándar abierto.** El formato lo publicó Anthropic como [Agent Skills](https://agentskills.io/), **lo donó a la AAIF el 22 de octubre de 2026** (la misma casa que `AGENTS.md` y MCP), y lo adoptaron un montón de herramientas: Claude Code, Cursor, Copilot y VS Code, Codex, Gemini CLI, OpenCode, Goose, Amp — **y Pi**. Detalle para señalar al pasar: el `.agents/skills/` es justamente el path que no lleva el nombre de ninguna herramienta. **Treinta segundos, sin abrir el sitio**: el skill que escriben hoy es la primera cosa del curso que se llevan tal cual a la herramienta que usen el año que viene.
 
 **La consecuencia práctica**: la `description` es lo único que decide si el skill se usa. Un skill perfecto con una descripción vaga no se carga nunca. La slide lo muestra con el pedido *"verificá que la ruta nueva de recordatorios ande"*: `planificar-feature` (*"Ayuda a planificar ..."*) nunca se carga; `verificar-api`, con una descripción que dice qué hace y cuándo usarlo, se activa. Decirlo así: *"la descripción no es documentación, es el trigger"*.
+
+El tercer click muestra la otra puerta: en Pi todo skill también se invoca a mano como comando, `/skill:verificar-api`. Y si no querés que el modelo lo dispare solo (un deploy, algo destructivo), `disable-model-invocation: true` en el frontmatter lo saca de la lista que ve el modelo y queda solo como comando.
 
 **La regla de dedo de la sesión**, que queda a la vista en una slide fija:
 
@@ -174,6 +176,7 @@ El bloque donde la tesis de la sesión consigue su número más duro, y donde la
 - **N × M → N + M.** Sin un protocolo común, cada host integra cada servicio a mano; con MCP, cada host implementa un cliente y cada servicio un servidor. Una frase.
 - **Host, cliente y servidor.** El host (Pi) crea **un cliente por servidor**. El servidor puede ser local (stdio: el host lo lanza como proceso) o remoto (Streamable HTTP, con OAuth). Las tools son las mismas de siempre: MCP es la forma estándar de traerlas de afuera.
 - **Primitivas.** Un servidor ofrece **tools** (las elige el modelo), **resources** (las elige la aplicación) y **prompts** (los elige el usuario). Y al revés, el servidor le puede pedir al usuario con **elicitation**. Sampling quedó deprecado en la versión `2026-07-28` del protocolo: no nombrarlo.
+- **Un ejemplo de cada una.** La slide siguiente baja las tres primitivas a JSON con el escenario de viajes de la [doc oficial](https://modelcontextprotocol.io/docs/2026-07-28/learn/server-concepts): la tool `searchFlights` (con su `inputSchema`, que es lo que el modelo ve para armar la llamada), el resource template `weather://forecast/{city}/{date}` y el prompt `plan-vacation`, que el usuario elige como `/plan-vacation`. Que vean que las tres trabajan juntas: el prompt arranca, el resource da contexto, la tool actúa.
 - **Una conversación.** `server/discover` → `tools/list` → `tools/call` → `notifications/tools/list_changed`, con el JSON-RPC real en pantalla. La versión `2026-07-28` es **sin estado**: ya no hay `initialize`. No hace falta decirlo salvo que alguien haya leído una versión vieja.
 
 **2. Cómo se enchufa en Pi 1.0 (~3 min).** Dos slides:
@@ -208,13 +211,14 @@ La idea que tienen que llevarse: **el modelo escribe el programa, el programa ha
 Cuatro slides:
 
 1. **Portada**: *un subtask entero, en otro contexto.*
-2. **Investigar ensucia el contexto.** El ejemplo: *"¿cómo maneja el login este repo?"* son 30 `read` y 12 `grep` para quedarte con un párrafo. Tres barras: sin subagente tu sesión carga ~56k; con subagente carga ~3k, y los ~53k de la búsqueda quedan en el contexto del subagente, que se descarta al terminar. La frase: **tu sesión paga el resumen, no la búsqueda.** Los números son ilustrativos.
-3. **Cómo funciona.** Tres ideas, con una sesión de Pi animada al lado que delega la exploración y recibe un solo mensaje de vuelta: (1) le pasás una tarea, no tu conversación — **el prompt es todo lo que sabe**; (2) tiene contexto, transcript y tools propios; (3) vuelve un solo mensaje, que entra a tu sesión como una respuesta más. **El punto 1 es el que los va a morder**: el subagente no vio nada de lo que hablaron, así que una tarea mal escrita vuelve con un resultado malo. Escribirle la tarea es escribir un prompt.
-4. **Cuándo sí y cuándo no.** Delegá: explorar o investigar mucho para quedarte con poco, revisar con ojos frescos (no vio cómo lo escribiste), tareas independientes en paralelo. Hacelo en tu sesión: cuando querés ver el razonamiento o decidir a mitad de camino, y trabajo que depende de lo que ya hablaron. Decirlo en voz alta aunque ya no esté escrito: el subagente no es "más IA", es economía de contexto; en total se gastan **más** tokens, no menos.
+2. **Investigar ensucia el contexto.** El ejemplo: *"¿cómo maneja el login este repo?"* son 30 `read` y 12 `grep` para quedarte con un párrafo. Tres barras: sin subagente tu sesión carga ~56k; con subagente carga ~3k, y los ~53k de la búsqueda quedan en el contexto del subagente, que se descarta al terminar. La frase: **tu sesión ve el resumen, no la búsqueda.** Los números son ilustrativos.
+3. **Cómo funciona.** Tres ideas, con una sesión de Pi animada al lado que delega la exploración y recibe un solo mensaje de vuelta: (1) le pasás una tarea, no tu conversación — **el prompt es todo lo que sabe**; (2) tiene contexto, transcript y tools propios; (3) vuelve un solo mensaje, que entra a tu sesión como una respuesta más. **El punto 1 es el que los va a morder**: el subagente no vio nada de lo que hablaron, así que una tarea mal escrita vuelve con un resultado malo. Escribirle la tarea es escribir un prompt. El pedido de la demo termina en *"Usá un subagente para explorar."*: la delegación se pide explícita.
+4. **En paralelo.** Una sesión de Pi pide tres alternativas de la slide de título, un subagente por estilo (minimalista, ilustrada, terminal). Los tres corren a la vez, y al final aparecen las tres miniaturas a la izquierda. Dos ideas: si las tareas no dependen entre sí, **tarda lo que el más lento, no la suma**; y elegir entre tres es más fácil que corregir uno. Los tiempos son ilustrativos. Si alguien pregunta por coordinar agentes: eso es orquestación y es de la Sesión 4; acá cada uno hace lo suyo y vuelve.
+5. **Cuándo sí y cuándo no.** Delegá: explorar o investigar mucho para quedarte con poco, revisar con ojos frescos (no vio cómo lo escribiste), tareas independientes en paralelo. Hacelo en tu sesión: cuando querés ver el razonamiento o decidir a mitad de camino, y trabajo que depende de lo que ya hablaron. Decirlo en voz alta aunque ya no esté escrito: el subagente no es "más IA", es economía de contexto; en total se gastan **más** tokens, no menos.
 
 **Cómo se usa `pi-subagents`**, para la práctica: se pide en lenguaje natural y Pi decide si llama a la tool `subagent`. Trae agentes de fábrica: **scout** (reconocimiento rápido del código), **researcher** (web y docs, necesita `pi-web-access`), **worker** (implementa), **reviewer** (revisa contra la tarea y los tests), **oracle** (segunda opinión, no edita) y **delegate**. Pedidos de ejemplo: *"Use reviewer to review this diff"*, *"Run parallel reviewers: one for correctness, one for tests…"*. Comandos útiles: `/subagents-doctor` para chequear la instalación y `/subagents-fleet` para ver los que están corriendo.
 
-⚠️ En la terminal del deck la llamada aparece como `→ subagente · "…"`, no con la forma real de `pi-subagents`. Ver "Pendientes".
+⚠️ En las terminales del deck (*Cómo funciona* y *En paralelo*) la llamada aparece como `→ subagente · "…"`, no con la forma real de `pi-subagents`. Ver "Pendientes".
 
 ### La tabla de cierre (~2 min)
 

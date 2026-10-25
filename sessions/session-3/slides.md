@@ -154,13 +154,13 @@ Arrancando `pi` en `~/src/todo-app/web`:
 2. se pegan todos al system prompt, cada uno en `<project_instructions path="…">`: se suman; si chocan, gana el más cercano (y tu prompt, a todos)
 3. se leen al arrancar: aunque después abra archivos en `api/`, ese no entra · si editás uno, `/reload`
 
-<!-- No son un archivo que el modelo decide leer: son instrucciones fijas en el system prompt. El global vive en ~/.pi/agent/ (configurable con PI_CODING_AGENT_DIR). Lo de "gana el más cercano" es la convención de agents.md: Pi los pega todos y es el modelo el que la respeta. El paso 3 es el que los muerde: si arrancan Pi en la raíz del repo, el AGENTS.md de una subcarpeta no existe para el agente. AGENTS.override.md existe pero NO se nombra. Cerrar con la pregunta abierta: "¿y si el procedimiento son 60 líneas y lo uso una vez por semana?". -->
+<!-- No son un archivo que el modelo decide leer: son instrucciones fijas en el system prompt. El global vive en ~/.pi/agent/ (configurable con PI_CODING_AGENT_DIR). Lo de "gana el más cercano" es la convención de agents.md: Pi los pega todos y es el modelo el que la respeta. El paso 3 es el que los muerde: si arrancan Pi en la raíz del repo, el AGENTS.md de una subcarpeta no existe para el agente. AGENTS.override.md existe pero NO se nombra. Cerrar con la pregunta abierta: "¿y si tengo un procedimiento largo y lo uso en situaciones específicas?". -->
 
 ---
 
 # Skills
 
-¿y si el procedimiento son 60 líneas y lo usás una vez por semana?
+¿y si tenés un procedimiento largo y lo usás en situaciones específicas?
 
 estándar abierto · [agentskills.io](https://agentskills.io/) · lo donó Anthropic a la AAIF (Linux Foundation)
 
@@ -178,7 +178,7 @@ verificar-api/
 └── assets/
 ```
 
-<!-- Vive en .agents/skills/ (proyecto) o ~/.pi/agent/skills/ (global): el mismo par que AGENTS.md. .agents/skills/ es el path que no nombra ninguna herramienta. El frontmatter tiene dos campos obligatorios, name y description; decirlo acá de pasada. El SKILL.md de ejemplo es un procedimiento de la Sesión 2 (verificar la API), y es la misma idea que el skill del paso 3 de la práctica. -->
+<!-- Vive en .agents/skills/ (proyecto) o ~/.pi/agent/skills/ (global): el mismo par que AGENTS.md. .agents/skills/ es el path que no nombra ninguna herramienta. En el primer click se iluminan las líneas 1-7 con la etiqueta "frontmatter": nombrarlo así, y decir que tiene dos campos obligatorios, name y description. El SKILL.md de ejemplo es un procedimiento de la Sesión 2 (verificar la API), y es la misma idea que el skill del paso 3 de la práctica. -->
 
 ---
 
@@ -200,14 +200,15 @@ Las tres etapas tienen nombre: **Progressive Disclosure**.
 
 - `planificar-feature` · *description: Ayuda a planificar ...* → nunca se carga
 - `verificar-api` · *description: Levanta el server y prueba la API con curl… Usar después de implementar o cambiar una ruta, o cuando el usuario pida verificar…* → se activa
+- En Pi también es un comando: `/skill:verificar-api` · ¿solo a mano? en el frontmatter: `disable-model-invocation: true`
 
-<!-- La description es LO ÚNICO que decide si el skill se usa. Un skill perfecto con una descripción vaga no se carga nunca. Es el error más común cuando escriben el primero. En el segundo click se resaltan las palabras del pedido que aparecen en la buena. -->
+<!-- La description es LO ÚNICO que decide si el skill se usa. Un skill perfecto con una descripción vaga no se carga nunca. Es el error más común cuando escriben el primero. En el segundo click se resaltan las palabras del pedido que aparecen en la buena. El tercero muestra la otra puerta: en Pi todo skill se invoca a mano con /skill:nombre, y con disable-model-invocation: true en el frontmatter el modelo deja de verlo y queda solo como comando (sirve para procedimientos que no querés que el agente dispare solo, como un deploy). -->
 
 ---
 
 ## Datos → `AGENTS.md` · Procedimientos → skill
 
-<!-- La regla de dedo de la sesión: que quede escrita a la vista hasta el final de la práctica. También existe /skill:nombre para invocar un skill a mano. -->
+<!-- La regla de dedo de la sesión: que quede escrita a la vista hasta el final de la práctica. -->
 
 ---
 
@@ -243,6 +244,18 @@ El host (Pi) crea un cliente por servidor. Local por stdio, remoto por Streamabl
 - y al revés: **elicitation**, el servidor le pregunta al usuario
 
 <!-- Las primitivas de modelcontextprotocol.io. Sampling quedó deprecado en el protocolo 2026-07-28: no nombrarlo. -->
+
+---
+
+## Un ejemplo de cada una: planear un viaje
+
+- **tool** · `searchFlights` con su `inputSchema` (origin, destination, date) → el modelo la llama
+- **resource** · el template `weather://forecast/{city}/{date}` → la aplicación lo lee
+- **prompt** · `plan-vacation` con sus argumentos (destination, duration, budget, interests) → el usuario lo elige con `/plan-vacation`
+
+Ejemplos recortados de [MCP, Understanding MCP servers](https://modelcontextprotocol.io/docs/2026-07-28/learn/server-concepts).
+
+<!-- Un click por tarjeta. Las tres son del mismo escenario de la doc oficial, así se ve que trabajan juntas: el usuario arranca con el prompt, la aplicación suma el pronóstico como resource y el modelo llama a searchFlights. Mostrar en la tool que el inputSchema es JSON Schema: es lo que el modelo ve para armar la llamada, igual que la description de un skill. Los JSON están recortados para que entren: la doc tiene descripciones por campo y otro template de vuelos. -->
 
 ---
 
@@ -400,7 +413,7 @@ un subtask entero, en otro contexto
 | sin subagente | ~56k | — |
 | con subagente | ~3k | ~53k, se descarta |
 
-Tu sesión paga **el resumen**, no la búsqueda.
+Tu sesión ve **el resumen**, no la búsqueda.
 
 <!-- Tres clicks: la barra sin subagente, las dos con subagente, y la frase. Es la regla del 50% otra vez: lo que no entra en tu ventana no te degrada el agente. Los números son ilustrativos. -->
 
@@ -412,7 +425,17 @@ Tu sesión paga **el resumen**, no la búsqueda.
 2. contexto, transcript y tools propios
 3. vuelve un solo mensaje: el resultado
 
-<!-- En el deck, a la derecha, una sesión de Pi que delega la exploración del login y recibe un solo mensaje de vuelta. EL PUNTO 1 ES EL QUE LOS VA A MORDER: el subagente no vio nada de lo que hablaron, así que una tarea mal escrita vuelve con un resultado malo. Escribirle la tarea es escribir un prompt. Con pi-subagents se pide en lenguaje natural ("usá scout para explorar cómo funciona el login"); la tool se llama subagent y trae agentes de fábrica: scout, researcher, worker, reviewer, oracle. -->
+<!-- En el deck, a la derecha, una sesión de Pi que delega la exploración del login y recibe un solo mensaje de vuelta. EL PUNTO 1 ES EL QUE LOS VA A MORDER: el subagente no vio nada de lo que hablaron, así que una tarea mal escrita vuelve con un resultado malo. Escribirle la tarea es escribir un prompt. Con pi-subagents se pide en lenguaje natural ("usá scout para explorar cómo funciona el login"); la tool se llama subagent y trae agentes de fábrica: scout, researcher, worker, reviewer, oracle. El pedido termina en "Usá un subagente para explorar.": la delegación se pide explícita, no se espera que el agente la decida solo. -->
+
+---
+
+## En paralelo: tres a la vez
+
+1. tareas independientes: cada subagente recibe su estilo y no sabe de los otros
+2. tarda lo que el más lento, no la suma
+3. vuelven tres resultados para comparar
+
+<!-- En el deck, a la derecha, una sesión de Pi que pide tres alternativas de la slide de título (minimalista, ilustrada, terminal), un subagente por estilo; los tres corren a la vez y a la izquierda aparecen las tres miniaturas. El punto: cuando las tareas no dependen entre sí, el paralelo te da varios intentos en el tiempo de uno, y elegir entre tres es más fácil que corregir uno. Los tiempos son ilustrativos. No es orquestación (eso es de la Sesión 4): no se coordinan ni comparten nada, cada uno hace lo suyo y vuelve. -->
 
 ---
 

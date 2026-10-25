@@ -458,6 +458,13 @@ p { margin: 0; }
 .cbar2 .sum { background: var(--a4); }
 .dirty-slide[data-step="3"] .child { opacity: .35; filter: grayscale(1); }
 .sub-slide .note2 { font-size: 20px; }
+.alts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.alt { display: flex; flex-direction: column; justify-content: center; gap: 4px; aspect-ratio: 16 / 9; padding: 10px 12px; border: var(--border); border-radius: 10px; box-shadow: var(--shadow); overflow: hidden; }
+.a-min { background: #fafafa; color: #111; font: 300 16px/1.1 var(--font-body); }
+.a-min b { font-weight: 300; letter-spacing: -.02em; }
+.a-ilu { align-items: center; text-align: center; background: linear-gradient(135deg, #ff9a8b, #ffd36e); color: #2b1a4a; font: 700 14px/1.1 var(--font-display); }
+.a-ilu span { font-size: 30px; line-height: 1; }
+.a-term { background: #0b0f0b; color: #4ade80; font: 700 13px/1.3 var(--font-mono); }
 .when { padding: 24px 30px; }
 .when h3 { margin: 0 0 14px; font: 700 30px var(--font-display); }
 .when ul { margin: 0; padding-left: 24px; display: flex; flex-direction: column; gap: 12px; font-size: 24px; line-height: 1.3; }
@@ -559,6 +566,8 @@ p { margin: 0; }
 .ftree .fl.hot { background: color-mix(in srgb, var(--a3) 30%, transparent); }
 .fwhere { margin-top: 18px; padding-top: 14px; border-top: 2px solid color-mix(in srgb, var(--ink) 15%, transparent); display: flex; flex-direction: column; gap: 6px; }
 .folder-slide .code { --fs: 16px; }
+.fmtag { position: absolute; top: 208px; right: 104px; padding: 6px 16px; border-radius: 999px; background: var(--a3); color: #111; font-weight: 700; font-size: 20px; opacity: 0; transform: scale(.5) rotate(4deg); transition: opacity .3s, transform .45s cubic-bezier(.2, .9, .3, 1.8); }
+.folder-slide[data-step="1"] .fmtag { opacity: 1; transform: rotate(4deg); }
 
 /* ───────────── Validador ───────────── */
 
@@ -619,12 +628,14 @@ p { margin: 0; }
 .tdesc { font-size: 17px; line-height: 1.5; color: var(--muted); }
 .tdesc u { text-decoration: none; border-radius: 4px; padding: 0 2px; transition: background .3s, color .3s; }
 .tverdict { margin-top: auto; align-self: flex-start; padding: 6px 14px; font-weight: 700; border-radius: 999px; opacity: 0; transform: scale(.5); transition: opacity .3s, transform .45s cubic-bezier(.2, .9, .3, 1.8); }
-.trigger-slide[data-step="2"] .tverdict { opacity: 1; transform: none; }
-.trigger-slide[data-step="2"] .vague { filter: grayscale(1); opacity: .5; }
-.trigger-slide[data-step="2"] .vague .tverdict { background: var(--card); border: 2px solid var(--muted); }
-.trigger-slide[data-step="2"] .good { background: color-mix(in srgb, var(--good) 22%, var(--card)); transform: scale(1.02); }
-.trigger-slide[data-step="2"] .good .tverdict { background: var(--good); color: #111; }
-.trigger-slide[data-step="2"] .good u { background: var(--a3); color: #111; }
+.trigger-slide:is([data-step="2"], [data-step="3"]) .tverdict { opacity: 1; transform: none; }
+.trigger-slide:is([data-step="2"], [data-step="3"]) .vague { filter: grayscale(1); opacity: .5; }
+.trigger-slide:is([data-step="2"], [data-step="3"]) .vague .tverdict { background: var(--card); border: 2px solid var(--muted); }
+.trigger-slide:is([data-step="2"], [data-step="3"]) .good { background: color-mix(in srgb, var(--good) 22%, var(--card)); transform: scale(1.02); }
+.trigger-slide:is([data-step="2"], [data-step="3"]) .good .tverdict { background: var(--good); color: #111; }
+.trigger-slide:is([data-step="2"], [data-step="3"]) .good u { background: var(--a3); color: #111; }
+.tcmd { display: flex; flex-direction: column; gap: 4px; margin-top: 22px; padding: 12px 22px; font-size: 21px; }
+.tcmd .small { color: var(--muted); font-size: 17px; }
 
 /* ───────────── Regla ───────────── */
 
@@ -792,6 +803,10 @@ p { margin: 0; }
 .l3c .code .ln { display: none; }
 .l3c .code .cl { padding-left: 14px; }
 .l3c .code .cbar { display: none; }
+.ex3-slide .layers3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.ex3-slide .l3c .code { --fs: 13px; }
+.ex3-slide .l3c .small { font-size: 17px; }
+.ex3-slide .l3c .small .mono { font-size: 15px; }
 .discnote { margin-top: 18px; }
 
 /* ───────────── Code mode ───────────── */
@@ -1150,7 +1165,7 @@ p { margin: 0; }
     <div class="section">
       <div class="track mini secttrack" data-stops="AGENTS.md|skills|MCP|subagentes"></div>
       <h1>Skills</h1>
-      <p class="big">¿y si el procedimiento son 60 líneas<br>y lo usás <span class="hl">una vez por semana</span>?</p>
+      <p class="big">¿y si tenés un procedimiento largo<br>y lo usás en <span class="hl">situaciones específicas</span>?</p>
       <p class="small" style="margin-top: 18px">estándar abierto · <span class="srclink"><a href="https://agentskills.io/" target="_blank" rel="noopener">agentskills.io ↗</a></span> · lo donó Anthropic a la <span class="mono">AAIF</span> (Linux Foundation)</p>
     </div>
     <div class="mascot" data-mood="skeptic"></div>
@@ -1174,6 +1189,7 @@ p { margin: 0; }
       </div>
       <div class="code" data-code="skill-md" data-marks="1=1-7 2=9-15 3=17-19" style="--h: 540px"></div>
     </div>
+    <div class="fmtag mono">frontmatter</div>
   </section>
 
   <section class="slide pd-slide" data-id="tresetapas" data-steps="3">
@@ -1196,7 +1212,7 @@ p { margin: 0; }
     <p class="mid pdname">Las tres etapas tienen nombre: <span class="hl">Progressive Disclosure</span>.</p>
   </section>
 
-  <section class="slide trigger-slide" data-id="trigger" data-steps="2">
+  <section class="slide trigger-slide" data-id="trigger" data-steps="3">
     <h2>La descripción no es documentación: es el trigger</h2>
     <div class="term tprompt"><div class="line"><span class="p">&gt;</span><span class="tq"></span></div></div>
     <div class="tcards">
@@ -1210,6 +1226,10 @@ p { margin: 0; }
         <div class="mono tdesc">description: Levanta el server y <u>prueba</u> la <u>API</u> con curl contra los casos de un documento de diseño. Usar después de implementar o cambiar una <u>ruta</u>, o cuando el usuario pida <u>verificar</u>, probar o pegarle a la API.</div>
         <div class="tverdict">se activa ✓</div>
       </div>
+    </div>
+    <div class="card tcmd f-pop" data-step="3">
+      <span>⌨️ en Pi también es un comando: <span class="mono hl">/skill:verificar-api</span></span>
+      <span class="small">¿solo a mano? en el frontmatter: <span class="mono">disable-model-invocation: true</span></span>
     </div>
   </section>
 
@@ -1290,6 +1310,16 @@ p { margin: 0; }
     <div class="card clientprim f-pop" data-step="4">
       <span class="ico">🙋</span><div><b>y al revés, el servidor le puede pedir al cliente: elicitation</b><span class="small">"¿confirmás que borro estos 40 registros?" — le pregunta al usuario a través del host</span></div>
     </div>
+  </section>
+
+  <section class="slide ex3-slide" data-id="mcp-ejemplos" data-steps="3">
+    <h2>Un ejemplo de cada una: planear un viaje</h2>
+    <div class="layers3">
+      <div class="card l3c f-flip" data-step="1"><h3>🔧 tool</h3><div class="code" data-code="ex-tool" style="--h: 350px"></div><span class="small">el modelo la llama: <span class="mono">searchFlights(…)</span></span></div>
+      <div class="card l3c f-flip" data-step="2"><h3>📚 resource</h3><div class="code" data-code="ex-resource" style="--h: 350px"></div><span class="small">la aplicación la lee: <span class="mono">weather://forecast/…</span></span></div>
+      <div class="card l3c f-flip" data-step="3"><h3>💬 prompt</h3><div class="code" data-code="ex-prompt" style="--h: 350px"></div><span class="small">el usuario lo elige: <span class="mono">/plan-vacation</span></span></div>
+    </div>
+    <p class="small discnote">ejemplos recortados de <span class="srclink"><a href="https://modelcontextprotocol.io/docs/2026-07-28/learn/server-concepts" target="_blank" rel="noopener">MCP, Understanding MCP servers ↗</a></span></p>
   </section>
 
   <section class="slide ext-slide" data-id="extensiones" data-steps="4">
@@ -1475,7 +1505,7 @@ p { margin: 0; }
         <b class="mono">~53k</b>
       </div>
     </div>
-    <p class="big center" data-step="3" style="margin-top: 40px">Tu sesión paga <span class="hl">el resumen</span>, no la búsqueda.<br><span class="mid" style="color: var(--muted)">El contexto del subagente se descarta cuando termina.</span></p>
+    <p class="big center" data-step="3" style="margin-top: 40px">Tu sesión ve <span class="hl">el resumen</span>, no la búsqueda.<br><span class="mid" style="color: var(--muted)">El contexto del subagente se descarta cuando termina.</span></p>
   </section>
 
   <section class="slide tool-slide sub-slide" data-id="delegar" data-steps="3">
@@ -1489,6 +1519,25 @@ p { margin: 0; }
       <div class="term chat">
         <div class="bar3"><i></i><i></i><i></i><span class="title">pi</span></div>
         <div class="viewport" style="height: 460px"><div class="feed" data-chat="delegar"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide tool-slide sub-slide par-slide" data-id="paralelo" data-steps="3">
+    <h2>En paralelo: tres a la vez</h2>
+    <div class="split" style="grid-template-columns: 560px 1fr">
+      <div class="notes">
+        <div class="note2 card" data-step="1"><b>🔀 tareas independientes</b><span>cada subagente recibe su estilo y no sabe de los otros</span></div>
+        <div class="note2 card" data-step="2"><b>⏱️ tarda lo que el más lento</b><span>no la suma: <span class="hl">tres intentos por el precio de uno</span> en tiempo</span></div>
+        <div class="alts" data-step="3">
+          <div class="alt a-min"><b>Agentic<br>Engineering</b></div>
+          <div class="alt a-ilu"><span>🐙</span><b>Agentic Engineering</b></div>
+          <div class="alt a-term"><b>$ agentic-<br>engineering_</b></div>
+        </div>
+      </div>
+      <div class="term chat">
+        <div class="bar3"><i></i><i></i><i></i><span class="title">pi</span></div>
+        <div class="viewport" style="height: 460px"><div class="feed" data-chat="paralelo"></div></div>
       </div>
     </div>
   </section>
@@ -2053,6 +2102,44 @@ return results
   .slice(0, 12)
   .map(r => \`#\${r.n} \${r.frustration.score.toFixed(2)} [\${r.kind.choice}] \${r.title}\`);` },
 
+  "ex-tool": { lang: "ts", title: "tools/list", src: `{
+  name: "searchFlights",
+  description:
+    "Search for available flights",
+  inputSchema: {
+    type: "object",
+    properties: {
+      origin: { type: "string" },
+      destination: { type: "string" },
+      date: { type: "string",
+              format: "date" }
+    },
+    required: ["origin",
+      "destination", "date"]
+  }
+}` },
+
+  "ex-resource": { lang: "json", title: "resources/templates/list", src: `{
+  "uriTemplate":
+    "weather://forecast/{city}/{date}",
+  "name": "weather-forecast",
+  "title": "Weather Forecast",
+  "mimeType": "application/json"
+}` },
+
+  "ex-prompt": { lang: "json", title: "prompts/list", src: `{
+  "name": "plan-vacation",
+  "title": "Plan a vacation",
+  "arguments": [
+    { "name": "destination",
+      "required": true },
+    { "name": "duration",
+      "description": "days" },
+    { "name": "budget" },
+    { "name": "interests" }
+  ]
+}` },
+
   disc1: { lang: "ts", title: "", src: `search_tools({
   query: "update salesforce record" })
 → [ { name: "salesforce_updateRecord",
@@ -2274,7 +2361,7 @@ const RULES = {
   md: [
     [/^---$/, "sep"],
     [/^#+ .*/, "h"],
-    [/^[\w-]+:(?=\s|$)/, "fm"],
+    [/^[\w-]+:(?=\s|$)|^\w+(?: \w+)+:$/, "fm"],
     [/^\s*(?:-|\d+\.)(?= )/, "k"],
     [/`[^`]*`/, "s"],
     [/>$/, "k"],
@@ -2872,6 +2959,8 @@ const hooks = {
 
   delegar: (step, el, { forward }) => playChat(step, el, forward),
 
+  paralelo: (step, el, { forward }) => playChat(step, el, forward),
+
   mcpadd: (step, el, { forward }) => playChat(step, el, forward),
 
   tool: (step, el, { forward }) => playChat(step, el, forward),
@@ -3013,8 +3102,8 @@ const CHATS = {
 
   delegar: [
     [
-      ["me", "¿qué hay que tocar para agregar \"recordarme\" al login?"],
-      ["ag", "es exploración: se la delego a un subagente"],
+      ["me", "¿qué hay que tocar para agregar \"recordarme\" al login? Usá un subagente para explorar."],
+      ["ag", "lanzo un subagente con una tarea concreta"],
       ["doc", "→ subagente · \"Encontrá dónde se maneja"],
       ["doc", "  el login y la sesión. Devolvé"],
       ["doc", "  archivos y líneas.\""],
@@ -3026,6 +3115,26 @@ const CHATS = {
       ["out", "← un solo mensaje:"],
       ["out", "login en server.js:88 · sesión en cookie, auth.js:12"],
       ["ok", "Hay que tocar auth.js (duración de la cookie) y login.html (el checkbox)."],
+    ],
+  ],
+
+  paralelo: [
+    [
+      ["me", "Armá 3 alternativas de la slide de título, con estilos distintos. Un subagente por estilo, en paralelo."],
+      ["ag", "son independientes: van a la vez"],
+      ["doc", "→ subagente 1 · \"estilo minimalista\""],
+      ["doc", "→ subagente 2 · \"estilo ilustrado\""],
+      ["doc", "→ subagente 3 · \"estilo terminal\""],
+    ],
+    [
+      ["wait", "minimalista…", { done: "minimalista lista · 1:40", ms: 1500, par: true }],
+      ["wait", "ilustrada…", { done: "ilustrada lista · 2:10", ms: 2400, par: true }],
+      ["wait", "terminal…", { done: "terminal lista · 1:55", ms: 1900, par: true }],
+      ["ag", "2:10, lo del más lento; no 5:45"],
+    ],
+    [
+      ["out", "← tres mensajes, uno por subagente"],
+      ["ok", "Las tres en alt/. ¿Con cuál seguimos?"],
     ],
   ],
 
@@ -3125,6 +3234,7 @@ const buildChat = (feed) => {
       `data-group="${g}"`,
       `data-text="${esc(text)}"`,
       extra.done == null ? "" : `data-done="${esc(extra.done)}" data-ms="${extra.ms}"`,
+      extra.par == null ? "" : "data-par",
       extra.act == null ? "" : `data-act="${extra.act}"`,
     ].join(" ");
 
@@ -3175,9 +3285,15 @@ const playChat = async (step, el, forward, act = async () => {}) => {
     return;
   }
 
+  const handled = new Set();
+
   for (const l of lines.filter((x) => Number(x.dataset.group) === current)) {
     if (token !== run) {
       return;
+    }
+
+    if (handled.has(l)) {
+      continue;
     }
 
     const typed = l.classList.contains("me") || l.classList.contains("cmd");
@@ -3195,6 +3311,34 @@ const playChat = async (step, el, forward, act = async () => {}) => {
       const speed = l.classList.contains("cmd") ? 14 : l.classList.contains("ans") ? 40 : 22;
       await typeInto($(".t", l), l.dataset.text, speed, token);
       await sleep(250);
+    } else if (l.dataset.par != null) {
+      // Every par wait of the group spins at once and settles at its own ms
+      const batch = lines.filter((x) => Number(x.dataset.group) === current && x.dataset.par != null);
+      const start = Date.now();
+
+      batch.forEach((x) => {
+        handled.add(x);
+        $(".t", x).textContent = x.dataset.text;
+        x.classList.remove("hide");
+      });
+      scroll();
+
+      for (let f = 0; batch.some((x) => !x.classList.contains("done")); f += 1) {
+        if (token !== run) {
+          return;
+        }
+
+        batch.filter((x) => !x.classList.contains("done")).forEach((x) => {
+          if (Date.now() - start >= Number(x.dataset.ms)) {
+            settleLine(x);
+          } else {
+            $(".p", x).textContent = SPIN[f % SPIN.length];
+          }
+        });
+        await sleep(80);
+      }
+
+      await sleep(300);
     } else if (l.classList.contains("wait")) {
       const end = Date.now() + Number(l.dataset.ms);
 
