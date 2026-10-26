@@ -9,9 +9,7 @@ export interface DropSuppressedRecipientsProps {
   subdomainId: string;
 }
 
-export interface DropSuppressedRecipientsAttributes {
-  zoneId: string;
-  subdomainId: string;
+export interface DropSuppressedRecipientsAttributes extends DropSuppressedRecipientsProps {
   dropSuppressedRecipients: true;
 }
 
