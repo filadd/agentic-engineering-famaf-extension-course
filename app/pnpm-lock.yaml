@@ -111,6 +111,9 @@ importers:
 
   apps/infra:
     dependencies:
+      '@distilled.cloud/cloudflare':
+        specifier: 1.0.0-rc.15
+        version: 1.0.0-rc.15(effect@4.0.5)
       '@effect/platform-node':
         specifier: 4.0.5
         version: 4.0.5(effect@4.0.5)(redis@6.3.0)

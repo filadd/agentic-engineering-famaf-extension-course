@@ -10,6 +10,7 @@
     "destroy": "alchemy destroy"
   },
   "dependencies": {
+    "@distilled.cloud/cloudflare": "1.0.0-rc.15",
     "@effect/platform-node": "4.0.5",
     "@kurasu/api": "workspace:*",
     "@kurasu/web": "workspace:*",
