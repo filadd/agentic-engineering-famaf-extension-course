@@ -1,12 +1,7 @@
-import { useId } from "react";
-import * as Schema from "effect/Schema";
-import { revalidateLogic, useForm } from "@tanstack/react-form";
-
-import { Email } from "@kurasu/contract/user";
-
 import { Button } from "../../ui/Button.tsx";
 import { FieldError } from "../../ui/FieldError.tsx";
 import { Icon } from "../../ui/Icon.tsx";
+import { useEmailForm } from "../../helpers/useEmailForm.ts";
 import { AuthNotice } from "./AuthNotice.tsx";
 import { linkNotices } from "./link-notices.ts";
 import type { LinkNotice } from "./link-notices.ts";
@@ -19,20 +14,8 @@ interface Props {
   onSubmit: (email: string) => void;
 }
 
-const emailFormSchema = Schema.toStandardSchemaV1(Schema.Struct({ email: Email }));
-
 export const EmailStep = ({ title, initialEmail, notice, sending, onSubmit }: Props) => {
-  const errorId = useId();
-
-  const form = useForm({
-    defaultValues: { email: initialEmail },
-    validationLogic: revalidateLogic(),
-    canSubmitWhenInvalid: true,
-    validators: { onDynamic: emailFormSchema },
-    onSubmit: ({ value }) => {
-      onSubmit(Schema.decodeSync(Email)(value.email));
-    },
-  });
+  const { form, errorId } = useEmailForm({ initialEmail, onValidEmail: onSubmit });
 
   return (
     <form

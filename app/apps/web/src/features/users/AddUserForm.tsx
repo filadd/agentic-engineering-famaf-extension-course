@@ -1,37 +1,24 @@
 import * as Predicate from "effect/Predicate";
-import * as Schema from "effect/Schema";
-import { useId } from "react";
-import { revalidateLogic, useForm } from "@tanstack/react-form";
-
-import { Email } from "@kurasu/contract/user";
 
 import { Button } from "../../ui/Button.tsx";
 import { FieldError } from "../../ui/FieldError.tsx";
 import { InlineError } from "../../ui/InlineError.tsx";
 import { Sheet } from "../../ui/Sheet.tsx";
+import { useEmailForm } from "../../helpers/useEmailForm.ts";
 import { useAddUser } from "./useAddUser.ts";
 
 interface Props {
   onClose: () => void;
 }
 
-const emailFormSchema = Schema.toStandardSchemaV1(Schema.Struct({ email: Email }));
-
 // Someone added by email gets access at once and goes through the setup the
 // first time they enter.
 export const AddUserForm = ({ onClose }: Props) => {
-  const errorId = useId();
-
   const add = useAddUser({ onSuccess: onClose });
 
-  const form = useForm({
-    defaultValues: { email: "" },
-    validationLogic: revalidateLogic(),
-    canSubmitWhenInvalid: true,
-    validators: { onDynamic: emailFormSchema },
-    onSubmit: ({ value }) => {
-      add.mutate(Schema.decodeSync(Email)(value.email));
-    },
+  const { form, errorId } = useEmailForm({
+    initialEmail: "",
+    onValidEmail: (email) => add.mutate(email),
   });
 
   return (
