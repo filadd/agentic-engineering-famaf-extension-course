@@ -1,5 +1,5 @@
 import * as Schema from "effect/Schema";
-import { SchemaTransformation } from "effect";
+import * as SchemaTransformation from "effect/SchemaTransformation";
 
 import { Ulid } from "./ulid.ts";
 

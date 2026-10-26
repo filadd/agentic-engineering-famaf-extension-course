@@ -247,9 +247,10 @@ test(
     const list = yield* request(url, "GET", "/api/admin/users", { cookie });
     const users = yield* bodyOf(Schema.Array(User), list);
 
-    const existing = users.find((user) => user.email === "ana@usuarios.kurasu.test");
-
-    expect(existing).toMatchObject({ email: "ana@usuarios.kurasu.test", hasAccess: true });
+    expect(users.find((user) => user.email === "ana@usuarios.kurasu.test")).toMatchObject({
+      email: "ana@usuarios.kurasu.test",
+      hasAccess: true,
+    });
   }),
 );
 

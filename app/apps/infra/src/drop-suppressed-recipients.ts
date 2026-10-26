@@ -27,15 +27,8 @@ export const DropSuppressedRecipients = Resource<DropSuppressedRecipients>(
   "Kurasu.DropSuppressedRecipients",
 );
 
-/**
- * Turns on `drop_suppressed_recipients` on a Cloudflare Email Sending
- * subdomain. Without it a single suppressed recipient fails the whole send
- * request; with it Email Service drops that recipient and delivers the rest.
- *
- * The setting lives on the subdomain that `Cloudflare.Email.SendingSubdomain`
- * owns, so this resource never creates or deletes anything: it only patches
- * the flag on reconcile.
- */
+// `Cloudflare.Email.SendingSubdomain` owns the subdomain's lifecycle, so this
+// resource only patches the flag on reconcile and does nothing on delete.
 export const dropSuppressedRecipientsProvider = () =>
   Provider.succeed(DropSuppressedRecipients, {
     reconcile: Effect.fn(function* ({ news }) {
@@ -49,6 +42,5 @@ export const dropSuppressedRecipientsProvider = () =>
 
       return { zoneId, subdomainId, dropSuppressedRecipients: true };
     }),
-    // SendingSubdomain owns the subdomain's lifecycle.
     delete: () => Effect.void,
   });
