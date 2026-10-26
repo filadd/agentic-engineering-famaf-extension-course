@@ -95,13 +95,11 @@ Este es el bloque elástico: **si el día se estira, se recorta de acá** (mismo
 
 ### Qué vamos a ver hoy (~5 min)
 
-Dos slides después del recap, y las dos plantan el día.
+Una slide después del recap, y planta el día.
 
 **"Lo que le explicaste dos veces, escribilo una."** Tres terminales (lunes, miércoles, viernes) con las mismas correcciones —*los tests se corren con `pnpm test`*, *antes de terminar, corré `pnpm lint`*, *¿otra vez guardaste componentes fuera de `src/components`?*— que con un click colapsan en un `AGENTS.md` de tres líneas. Cada línea del archivo sale de algo que se repitió. Es la frase de la sesión; que quede escrita a la vista.
 
 En la metáfora del curso: la Sesión 2 fue **vos poniendo el criterio a mano, cada vez**. Hoy lo escribís una vez y el agente lo lee solo. Es lo que hace un manager cuando deja de repetir la misma corrección en cada 1:1 y escribe el onboarding.
-
-**Nada de esto es gratis.** La contracara, y el tema real del día: todo lo que le agregás al agente se paga en contexto. En el deck es una barra de la ventana (200k) con la línea del 50%, y tres clicks prenden filas: el `AGENTS.md` global (`~/.pi/agent/AGENTS.md`, ~500 tokens: el tuyo, para todos tus proyectos) y el del repo (~1.500); las descripciones de 20 skills (~2.000); Playwright MCP (~13.700) y Context7 MCP (~2.000). Con todo prendido marca ~11%, y lo que más pesa es Playwright. Separar el global del del repo es a propósito: planta desde el principio que hay dos, y vuelve en *Cómo los encuentra Pi*. Es la regla del 50% de la Sesión 1, vuelta presupuesto.
 
 ### `AGENTS.md` (~15 min)
 
@@ -324,7 +322,7 @@ El deck termina en **¿Qué aprendimos?**: siete tarjetas (escribilo una vez, `A
 - **`AGENTS.override.md`**: existe, pero se sacó de *Cómo los encuentra Pi* para no sumar un concepto más.
 - **`eli5` como ejemplo de skill**, y con él el matiz que enseñaba (el archivo viaja tal cual, lo que pide no) y la extensión `pi-artifacts`.
 - **Prompt templates en el deck**: salieron de la regla de dedo. Quedan como respuesta si alguien pregunta.
-- **Slides que salieron del deck y dónde quedó lo que importaba**: *No hay magia: se pega adelante* (el costo por turno vive en *Nada de esto es gratis*); *Proyecto y global* (en *Nada de esto es gratis* y *Cómo los encuentra Pi*); *Qué no va: una wiki* y *¿Sirve de algo?* (en la nota de la tabla de vagas vs. usables y en la de la práctica); *El frontmatter* (se dice sobre *Un skill es una carpeta*); *Cuánto cuesta* (el número de Playwright está en *Nada de esto es gratis*); *Dónde vive cada cosa que repetís*; *¿Qué cambió en el paso 2?*, *Para la semana* y *Para leer* (las preguntas de cierre y la tarea están en "Cierre"; los links, en las slides donde se usa cada fuente y en esta sección de recursos).
+- **Slides que salieron del deck y dónde quedó lo que importaba**: *No hay magia: se pega adelante*; *Proyecto y global* (en *Cómo los encuentra Pi*); *Qué no va: una wiki* y *¿Sirve de algo?* (en la nota de la tabla de vagas vs. usables y en la de la práctica); *El frontmatter* (se dice sobre *Un skill es una carpeta*); *Cuánto cuesta* (el número de Playwright está en *Pi dijo que no a MCP… y después que sí*); *Nada de esto es gratis* (la barra de la ventana de 200k con lo que pesa cada cosa que se le agrega al agente); *Dónde vive cada cosa que repetís*; *¿Qué cambió en el paso 2?*, *Para la semana* y *Para leer* (las preguntas de cierre y la tarea están en "Cierre"; los links, en las slides donde se usa cada fuente y en esta sección de recursos).
 
 ## Pendientes (para próximas iteraciones)
 
@@ -333,7 +331,7 @@ El deck termina en **¿Qué aprendimos?**: siete tarjetas (escribilo una vez, `A
 - ~~Redactar el Mentimeter~~ → **escrito**, en el bloque de recap. Queda **cargarlo en Mentimeter** antes de la clase y **probar que la pantalla se pueda dejar proyectada** mientras seguimos con las slides.
 - **Probar el paso 4 en una máquina limpia** y cronometrarlo: con `pi mcp add --local` y con `.pi/mcp.json` a mano, aceptar *project trust*, `/reload`, `/mcp`. Mirar cuánto tarda la primera corrida y si el prompt de *project trust* aparece donde lo esperamos. Y probar que cambiar la exposure a `direct` desde `/mcp` funciona.
 - **Probar context7 en la red del aula con 20-30 personas.** Definir si hace falta API key y, si hace falta, resolverlo antes de la clase y no en el momento.
-- **Medir el costo de Context7 y verificar el de Playwright.** El ~2.000 de Context7 en *Nada de esto es gratis* es una estimación nuestra: medirlo con `/mcp` y la exposure en `direct`. El 13.7k de Playwright es de Zechner y depende de la versión.
+- **Verificar el costo de Playwright.** El 13.7k es de Zechner y depende de la versión: medirlo con `/mcp` y la exposure en `direct`.
 - **Poner la llamada real de `pi-subagents` en la slide *Cómo funciona*.** Hoy la terminal muestra `→ subagente · "…"`. Correr una delegación con `scout` en la máquina de la demo y copiar cómo se ve.
 - **Revisar la slide del trigger.** El pedido es *"verificá que la ruta nueva de recordatorios ande"* y la tarjeta vaga es `planificar-feature`: ese skill no se activaría aunque tuviera una buena descripción, así que el contraste se debilita. Opciones: cambiar el pedido a uno de planificación, o poner un `planificar-feature` bien escrito a la derecha.
 - **Confirmar la donación de Agent Skills a la AAIF** con el anuncio oficial antes de decirlo en la sala: es del 22 de octubre de 2026, muy reciente.

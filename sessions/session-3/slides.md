@@ -69,14 +69,6 @@ AGENTS.md
 
 ---
 
-## Nada de esto es gratis
-
-Una barra de la ventana de contexto (200k), con la línea del 50%: system prompt + tools de Pi, el `AGENTS.md` global (`~/.pi/agent/`, ~500) y el del repo (~1.500), 20 descripciones de skills (~2.000), Playwright MCP (~13.700) y Context7 MCP (~2.000).
-
-<!-- La contracara y la segunda idea del día: TODO LO QUE LE AGREGÁS AL AGENTE SE PAGA EN CONTEXTO. Tres clicks: los dos AGENTS.md, los skills, los dos MCP; también se prenden y apagan a mano. Con todo prendido marca ~11%: lo que más pesa es Playwright. El global y el del repo separados a propósito: vuelven en "Cómo los encuentra Pi". El número de Context7 es estimado: MEDIRLO ANTES DE LA CLASE con /mcp y la exposure en direct. Es la regla del 50% de la Sesión 1, convertida en presupuesto. -->
-
----
-
 # `AGENTS.md`
 
 un archivo que el agente lee al arrancar, todas las veces

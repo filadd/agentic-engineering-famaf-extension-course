@@ -375,27 +375,6 @@ p { margin: 0; }
 .bin.dim .schip { background: var(--card); }
 .sort-slide .hint { left: 72px; }
 
-/* ───────────── Presupuesto ───────────── */
-
-.meter { padding: 24px 28px; }
-.mbarw { position: relative; }
-.mbar2 { display: flex; height: 66px; padding: 6px; gap: 0; border: var(--border); border-radius: 14px; background: var(--term-bg); overflow: hidden; }
-.mbar2 .mseg { height: 100%; width: 0; display: grid; place-items: center; overflow: hidden; white-space: nowrap; font: 700 14px var(--font-body); color: #111; border-radius: 6px; transition: width .6s cubic-bezier(.3, 1.2, .5, 1); }
-.mbar2 .mseg + .mseg { margin-left: 3px; }
-.half { position: absolute; left: 50%; top: -14px; bottom: -14px; border-left: 4px dashed var(--a1); }
-.half span { position: absolute; top: -26px; left: -22px; font: 700 18px var(--font-mono); color: var(--a1); }
-.mread { display: flex; align-items: baseline; gap: 20px; margin-top: 16px; }
-.mread .mpct { font-size: 46px; }
-.mread .mtok { font-size: 20px; color: var(--muted); }
-.toggles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 24px; }
-.tgl { display: flex; align-items: center; gap: 12px; padding: 12px 16px; font: 700 19px var(--font-body); color: var(--ink); text-align: left; border: var(--border); border-radius: 14px; background: var(--card); cursor: pointer; opacity: .55; transition: opacity .25s, transform .25s, box-shadow .25s; }
-.tgl i { flex: none; width: 22px; height: 22px; border-radius: 6px; border: 3px solid var(--line); }
-.tgl small { display: block; font: 400 15px var(--font-mono); color: var(--muted); }
-.tgl.on { opacity: 1; box-shadow: 4px 4px 0 #05051a; }
-.tgl.on i { background: var(--c); }
-.tgl.fixed { cursor: default; }
-.budget-slide .hint { bottom: 30px; }
-
 /* ───────────── Se pega adelante ───────────── */
 
 .stackwrap { display: grid; grid-template-columns: 640px 1fr; gap: 40px; margin-top: 4px; }
@@ -1058,20 +1037,6 @@ p { margin: 0; }
       <div class="ln">- componentes en <b>src/components/</b></div>
     </div>
     <div class="mascot" data-mood="happy"></div>
-  </section>
-
-  <section class="slide budget-slide" data-id="presupuesto" data-steps="3">
-    <h2>Nada de esto es gratis</h2>
-    <p class="mid lead">Todo lo que le agregás al agente se paga en <span class="hl">contexto</span>.</p>
-    <div class="meter card">
-      <div class="mbarw">
-        <div class="mbar2"></div>
-        <div class="half"><span>50%</span></div>
-      </div>
-      <div class="mread"><b class="mono mpct">0%</b><span class="mono mtok">0 / 200.000 tokens</span></div>
-    </div>
-    <div class="toggles"></div>
-    <p class="small hint">click para prender y apagar · tokens aproximados, ventana de 200k</p>
   </section>
 
   <!-- ───────── AGENTS.md ───────── -->
@@ -2507,51 +2472,6 @@ const placeChips = (el, animate) => {
   }
 };
 
-/* ───────────── Budget ───────────── */
-
-const BUDGET = [
-  { id: "base", label: "system prompt + tools de Pi", tok: 3000, c: "var(--a2)", fixed: true },
-  { id: "agents-global", label: "AGENTS.md global", tok: 500, c: "#4ecdc4", step: 1 },
-  { id: "agents", label: "AGENTS.md del repo", tok: 1500, c: "var(--a4)", step: 1 },
-  { id: "skills", label: "20 skills · descripciones", tok: 2000, c: "var(--a3)", step: 2 },
-  { id: "play", label: "Playwright MCP", tok: 13700, c: "var(--a1)", step: 3 },
-  { id: "context7", label: "Context7 MCP", tok: 2000, c: "#ff8c42", step: 3 },
-];
-
-const WINDOW = 200000;
-let budgetManual = new Map();
-let budgetStep = 0;
-
-const renderBudget = (el) => {
-  const on = (b) => b.fixed || (budgetManual.has(b.id) ? budgetManual.get(b.id) : budgetStep >= b.step);
-  const total = BUDGET.filter(on).reduce((s, b) => s + b.tok, 0);
-
-  BUDGET.forEach((b) => {
-    const seg = $(`.mseg[data-id="${b.id}"]`, el);
-    seg.style.width = on(b) ? `${(b.tok / WINDOW) * 100}%` : "0";
-    $(`.tgl[data-id="${b.id}"]`, el).classList.toggle("on", on(b));
-  });
-
-  $(".mpct", el).textContent = `${((total / WINDOW) * 100).toFixed(1)}%`;
-  $(".mtok", el).textContent = `${fmt(total)} / ${fmt(WINDOW)} tokens`;
-};
-
-const buildBudget = (el) => {
-  $(".mbar2", el).innerHTML = BUDGET.map((b) => `<div class="mseg" data-id="${b.id}" style="background: ${b.c}"></div>`).join("");
-  $(".toggles", el).innerHTML = BUDGET.map((b) => `<button class="tgl${b.fixed ? " fixed" : ""}" data-id="${b.id}" style="--c: ${b.c}"><i></i><span>${b.label}<small>~${fmt(b.tok)} tokens</small></span></button>`).join("");
-
-  $$(".tgl", el).forEach((t) => t.addEventListener("click", () => {
-    const b = BUDGET.find((x) => x.id === t.dataset.id);
-
-    if (b.fixed) {
-      return;
-    }
-
-    budgetManual.set(b.id, !t.classList.contains("on"));
-    renderBudget(el);
-  }));
-};
-
 /* ───────────── Wiki ───────────── */
 
 const WIKI = [
@@ -2848,12 +2768,6 @@ const hooks = {
   dondevive: (step, el, { entered }) => {
     sorted = new Set($$(".schip", el).filter((c) => Number(c.dataset.i) < step));
     placeChips(el, !entered);
-  },
-
-  presupuesto: (step, el) => {
-    budgetStep = step;
-    budgetManual = new Map();
-    renderBudget(el);
   },
 
   "sec-agents": sectionAt(0),
@@ -3518,7 +3432,6 @@ withSlide("dondevive", (el) => $$(".schip", el).forEach((c, i) => {
   });
 }));
 
-withSlide("presupuesto", buildBudget);
 withSlide("noVa", buildWiki);
 withSlide("nxm", (el) => buildNM($(".nm", el)));
 withSlide("tresetapas", (el) => {
