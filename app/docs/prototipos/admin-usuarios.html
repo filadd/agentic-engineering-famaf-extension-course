@@ -165,8 +165,8 @@ const modal = () => v.adding ? `
   <div class="scrim" data-shut>
     <div class="modal" data-stay>
       <h3>Agregar por email</h3>
-      <label class="field">Email<input data-newemail placeholder="nombre@mail.com" value="${v.newEmail}"></label>
-      <div class="actions"><button class="btn" data-shut>Cancelar</button><button class="btn dark" data-add ${v.newEmail.includes('@') ? '' : 'disabled'}>Agregar</button></div>
+      <label class="field">Email<input data-newemail type="text" inputmode="email" placeholder="nombre@mail.com" value="${v.newEmail}"></label>
+      <div class="actions"><button class="btn" data-shut>Cancelar</button><button class="btn dark" data-add ${v.newEmail.trim() !== '' ? '' : 'disabled'}>Agregar</button></div>
     </div>
   </div>` : v.confirm === 'regen' ? `
   <div class="scrim" data-noconfirm>
@@ -219,7 +219,7 @@ root.addEventListener('input', (e) => {
     root.querySelector('.list').innerHTML = shown().map(row).join('') || '<div class="empty">Nadie coincide con la búsqueda.</div>';
   } else if (e.target.matches('[data-newemail]')) {
     v.newEmail = e.target.value.trim();
-    root.querySelector('[data-add]').disabled = !v.newEmail.includes('@');
+    root.querySelector('[data-add]').disabled = v.newEmail === '';
   }
 });
 

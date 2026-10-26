@@ -57,7 +57,7 @@
   .panel .field-wrap { margin-top: 26px; }
   .go { display: flex; justify-content: center; margin-top: 26px; }
   .go .btn { background: var(--active); color: var(--active-ink); border-color: var(--active); font-family: 'Rubik', system-ui, sans-serif; font-weight: 500; font-size: 15px; padding: 11px 20px; }
-  .go + .inline-error { margin-top: 18px; }
+  .panel .inline-error { margin-top: 18px; }
 
   /* Sheets over a dimmed page, from admin-usuarios.html. */
   .users { width: 560px; height: 470px; }
@@ -82,7 +82,8 @@
   /* A shown error brings its own 9px gap below, so the element after an invalid field drops its margin;
      both changes run on the same timing, so the total height moves smoothly. */
   .go, .actions, .field-wrap, .inline-error { transition: margin-top 180ms ease-out; }
-  .field-wrap.invalid + .go,
+  .panel .field-wrap.invalid + .inline-error:not([hidden]),
+  .panel .field-wrap.invalid + .inline-error[hidden] + .go,
   .modal .field-wrap.invalid + .field-wrap,
   .modal .field-wrap.invalid + .inline-error:not([hidden]),
   .modal .field-wrap.invalid + .inline-error[hidden] + .actions { margin-top: 0; }
@@ -127,7 +128,7 @@ const inlineError = (text) => `<div class="inline-error" role="alert" data-serve
 const RULE = /^(?:[A-Za-z0-9_'+\-]+\.)*[A-Za-z0-9_'+\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$/;
 
 const FIELDS = {
-  email: { check: (raw) => RULE.test(raw.trim().toLowerCase()), error: 'El email ingresado no es válido.', type: 'email', placeholder: 'nombre@mail.com' },
+  email: { check: (raw) => RULE.test(raw.trim().toLowerCase()), error: 'El email ingresado no es válido.', type: 'text', inputmode: 'email', placeholder: 'nombre@mail.com' },
   name: { check: (raw) => raw.trim() !== '', error: 'Ingresá un nombre.', type: 'text', placeholder: 'Cómo se llama' },
 };
 
@@ -158,8 +159,8 @@ const field = (key, label) => {
 
   return `
     <div class="field-wrap">
-      <label class="field">${label}<input data-input="${key}" type="${FIELDS[key].type}" placeholder="${FIELDS[key].placeholder}" autocomplete="off" aria-describedby="field-error-${nextId}"></label>
-      <div class="error-slot" data-fielderror="${key}" aria-hidden="true"><div class="error-clip"><div class="field-error" role="alert" id="field-error-${nextId}">${FIELDS[key].error}</div></div></div>
+      <label class="field">${label}<input data-input="${key}" type="${FIELDS[key].type}"${FIELDS[key].inputmode == null ? '' : ` inputmode="${FIELDS[key].inputmode}"`} placeholder="${FIELDS[key].placeholder}" autocomplete="off" aria-describedby="field-error-${nextId}"></label>
+      <div class="error-slot" data-fielderror="${key}" aria-hidden="true"><div class="error-clip"><div class="field-error" id="field-error-${nextId}">${FIELDS[key].error}</div></div></div>
     </div>`;
 };
 

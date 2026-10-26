@@ -206,10 +206,10 @@ const codeForm = (v) => `
 
 const emailForm = (v) => `
   <div class="panel">${brand}<h1>${v.flow === 'enroll' ? 'Sumate al aula' : 'Entrar al aula'}</h1>
-    <label class="field">Tu email<input data-email type="email" placeholder="nombre@mail.com" value="${v.email}"></label>
-    <div class="go"><button class="btn" data-send ${v.email.includes('@') ? '' : 'disabled'}>${ic('mail', 18)} Mandame el link</button></div>
+    <label class="field">Tu email<input data-email type="text" inputmode="email" placeholder="nombre@mail.com" value="${v.email}"></label>
     ${v.notice === 'blocked' ? '<div class="error">Tu cuenta todavía no tiene acceso al aula. Pedile al profe que te habilite.</div>' : ''}
     ${v.notice === 'unregistered' ? '<div class="error">Ese email no está registrado. Pedile acceso al profe.</div>' : ''}
+    <div class="go"><button class="btn" data-send ${v.email.trim() !== '' ? '' : 'disabled'}>${ic('mail', 18)} Mandame el link</button></div>
   </div>`;
 
 // A stand-in for the student's inbox: the real link arrives by email.
@@ -359,15 +359,7 @@ const keep = (root) => {
 
       input.focus();
 
-      // Email inputs expose no caret position; emptying and refilling the value leaves the caret at the end.
-      if (field.pos == null) {
-        const value = input.value;
-
-        input.value = '';
-        input.value = value;
-      } else {
-        input.setSelectionRange(field.pos, field.pos);
-      }
+      input.setSelectionRange(field.pos, field.pos);
     }
   };
 };
