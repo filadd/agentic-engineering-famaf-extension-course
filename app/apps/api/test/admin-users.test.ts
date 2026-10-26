@@ -254,22 +254,29 @@ test(
 );
 
 test(
-  "adding an email with a dot at the start or before the at sign is rejected",
+  "adding an email with a dot at the start, before the at sign or consecutive dots is rejected",
   Effect.gen(function* () {
     const { url } = yield* stack;
     const cookie = yield* teacherLogin(url);
 
-    const added = yield* request(url, "POST", "/api/admin/users", {
-      cookie,
-      body: { email: "ezequiel.pastore.@mi.unc.edu.ar" },
-    });
+    const invalidEmails = [
+      ".juan@usuarios.kurasu.test",
+      "ezequiel.pastore.@mi.unc.edu.ar",
+      "juan..perez@usuarios.kurasu.test",
+    ];
 
-    expect(added.status).toBe(400);
+    for (const email of invalidEmails) {
+      const added = yield* request(url, "POST", "/api/admin/users", { cookie, body: { email } });
+
+      expect(added.status).toBe(400);
+    }
 
     const list = yield* request(url, "GET", "/api/admin/users", { cookie });
     const users = yield* bodyOf(Schema.Array(User), list);
 
-    expect(users.some((user) => user.email === "ezequiel.pastore.@mi.unc.edu.ar")).toBe(false);
+    for (const email of invalidEmails) {
+      expect(users.some((user) => user.email === email)).toBe(false);
+    }
   }),
 );
 

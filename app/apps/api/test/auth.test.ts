@@ -254,14 +254,24 @@ test(
     const { url } = yield* stack;
     const since = yield* Clock.currentTimeMillis;
 
-    const response = yield* requestLink(url, { email: "ezequiel.pastore.@mi.unc.edu.ar" });
+    const invalidEmails = [
+      ".juan@auth.kurasu.test",
+      "ezequiel.pastore.@mi.unc.edu.ar",
+      "juan..perez@auth.kurasu.test",
+    ];
 
-    expect(response.status).toBe(400);
-    expect(yield* mailSentSince("ezequiel.pastore.@mi.unc.edu.ar", since)).toBe(false);
+    for (const email of invalidEmails) {
+      const response = yield* requestLink(url, { email });
+
+      expect(response.status).toBe(400);
+      expect(yield* mailSentSince(email, since)).toBe(false);
+    }
 
     const users = yield* allUsers(url);
 
-    expect(users.some((user) => user.email === "ezequiel.pastore.@mi.unc.edu.ar")).toBe(false);
+    for (const email of invalidEmails) {
+      expect(users.some((user) => user.email === email)).toBe(false);
+    }
   }),
 );
 
