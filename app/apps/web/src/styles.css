@@ -114,6 +114,39 @@
     @apply mt-2.5 block text-sm font-bold;
   }
 
+  .field-error-slot {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition:
+      grid-template-rows 180ms ease-out,
+      opacity 180ms ease-out;
+  }
+
+  .field-error-clip {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .field-error {
+    padding: 5px 0 9px 2px;
+    font-size: 13px;
+    line-height: 18px;
+    text-align: left;
+    @apply text-danger;
+  }
+
+  .field-error-slot[data-open="true"] {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .field-error-slot {
+      transition: none;
+    }
+  }
+
   .paper {
     @apply rounded-[18px] bg-paper text-coal;
   }

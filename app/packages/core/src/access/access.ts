@@ -84,7 +84,7 @@ export class Access extends Context.Service<
 
         return Access.of({
           requestLink: Effect.fn("Access.requestLink")(function* (email, enrollmentCode) {
-            const code = yield* userCodeFor(email.toLowerCase(), enrollmentCode);
+            const code = yield* userCodeFor(email, enrollmentCode);
 
             yield* mailer.sendMagicLink(email, linkUrl(code)).pipe(
               Effect.tapError((error) =>

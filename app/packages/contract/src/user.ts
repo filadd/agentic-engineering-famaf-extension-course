@@ -1,4 +1,5 @@
 import * as Schema from "effect/Schema";
+import * as SchemaTransformation from "effect/SchemaTransformation";
 
 import { Ulid } from "./ulid.ts";
 
@@ -99,9 +100,17 @@ export const Role = Schema.Literals(["teacher", "student"]);
 
 export type Role = typeof Role.Type;
 
-export const Email = Schema.String.check(
-  Schema.isMaxLength(254),
-  Schema.isPattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/),
+const emailPattern =
+  /^(?:[A-Za-z0-9_'+-]+\.)*[A-Za-z0-9_'+-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9-]*\.)+[A-Za-z]{2,}$/;
+
+const invalidEmailMessage = "El email ingresado no es válido.";
+
+export const Email = Schema.String.pipe(
+  Schema.decodeTo(Schema.String, SchemaTransformation.trim()),
+  Schema.decodeTo(Schema.String, SchemaTransformation.toLowerCase()),
+).check(
+  Schema.isMaxLength(254, { message: invalidEmailMessage }),
+  Schema.isPattern(emailPattern, { message: invalidEmailMessage }),
 );
 
 export type Email = typeof Email.Type;

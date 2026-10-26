@@ -208,4 +208,75 @@ describe("/admin/usuarios", () => {
     expect(within(view).getByRole("img", { name: /registro\?codigo=Q9ZR3$/ })).toBeTruthy();
     expect(store.writes).toEqual([{ method: "POST", body: "enrollment-code" }]);
   });
+
+  test("an empty email before the first add keeps the add button disabled and shows no field error", async () => {
+    const { user } = await openUsers();
+
+    await user.click(screen.getByRole("button", { name: "Agregar por email" }));
+
+    const dialog = screen.getByRole("dialog", { name: "Agregar por email" });
+
+    expect(within(dialog).getByRole("button", { name: "Agregar" })).toHaveProperty(
+      "disabled",
+      true,
+    );
+    expect(within(dialog).queryByText("El email ingresado no es válido.")).toBeNull();
+  });
+
+  test("typing an invalid email shows no error while typing and the field error on add without asking the API", async () => {
+    const { user, store } = await openUsers();
+
+    await user.click(screen.getByRole("button", { name: "Agregar por email" }));
+
+    const dialog = screen.getByRole("dialog", { name: "Agregar por email" });
+    const input = within(dialog).getByLabelText("Email");
+    const button = within(dialog).getByRole("button", { name: "Agregar" });
+
+    await user.type(input, "ezequiel.pastore.@mi.unc.edu.ar");
+    expect(within(dialog).queryByText("El email ingresado no es válido.")).toBeNull();
+
+    await user.click(button);
+
+    expect(await within(dialog).findByText("El email ingresado no es válido.")).toBeTruthy();
+    expect(store.writes).toEqual([]);
+  });
+
+  test("after a failed add the field error revalidates on each keystroke and the add button disables on an empty email", async () => {
+    const { user } = await openUsers();
+
+    await user.click(screen.getByRole("button", { name: "Agregar por email" }));
+
+    const dialog = screen.getByRole("dialog", { name: "Agregar por email" });
+    const input = within(dialog).getByLabelText("Email");
+    const button = within(dialog).getByRole("button", { name: "Agregar" });
+
+    await user.type(input, "ezequiel.pastore.@mi.unc.edu.ar");
+    await user.click(button);
+
+    expect(await within(dialog).findByText("El email ingresado no es válido.")).toBeTruthy();
+
+    await user.clear(input);
+
+    expect(await within(dialog).findByText("El email ingresado no es válido.")).toBeTruthy();
+    expect(button).toHaveProperty("disabled", true);
+
+    await user.type(input, "nueva@gmail.com");
+
+    await waitFor(() =>
+      expect(within(dialog).queryByText("El email ingresado no es válido.")).toBeNull(),
+    );
+  });
+
+  test("adding an email with spaces and capitals sends the normalized email", async () => {
+    const { user, list, store } = await openUsers();
+
+    await user.click(screen.getByRole("button", { name: "Agregar por email" }));
+
+    const dialog = screen.getByRole("dialog", { name: "Agregar por email" });
+    await user.type(within(dialog).getByLabelText("Email"), "  Nueva@Gmail.com  ");
+    await user.click(within(dialog).getByRole("button", { name: "Agregar" }));
+
+    expect(await within(list).findByRole("listitem", { name: "nueva@gmail.com" })).toBeTruthy();
+    expect(store.writes).toEqual([{ method: "POST", body: "nueva@gmail.com" }]);
+  });
 });

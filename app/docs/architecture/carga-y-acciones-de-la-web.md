@@ -87,6 +87,11 @@ Cerrar sesión es directa pero queda en espera, porque no cambia nada que se pue
 > [!NOTE] Por qué la forma depende de cómo se hace la acción
 > La regla busca que ninguna acción deje al usuario sin respuesta: lo directo se ve enseguida, y lo que ya pasó por una confirmación o un formulario muestra que está esperando.
 
+Un formulario puede controlar sus campos en la web antes de mandar el pedido. Lo hace con el schema del pedido, la definición de los datos del pedido que la API controla al recibirlo, así que la web y la API aplican la misma regla. Así controlan el email la pantalla del email, en el login y el registro, y la hoja "Agregar por email" del profe (ver [login y acceso](login-y-acceso.md)). Al apretar el botón, la web controla todos los campos. Si alguno no cumple, muestra el error de ese campo debajo de él y el pedido no sale, así que la acción no queda en espera. Desde ese envío, la web revisa cada campo cada vez que cambia: su error se va cuando el valor cumple y vuelve si deja de cumplir. Un campo que el usuario vacía después de un envío fallido conserva su error, porque vacío no cumple.
+
+> [!TIP] La validación propia del navegador, considerada y no elegida
+> El navegador acepta direcciones que el schema rechaza, como una con un punto justo antes de la @, y muestra su propio mensaje en una burbuja, fuera del formulario. Con el schema de la API, la web y la API no pueden estar en desacuerdo sobre un dato.
+
 Si el servidor rechaza una acción al instante o no responde, la pantalla vuelve a como estaba y aparece un toast de error. Si falla una acción en espera, el error aparece dentro de su formulario o modal, que quedan abiertos con lo que el usuario cargó. Cerrar sesión, que no tiene formulario ni modal, muestra el error en un toast. Cada acción define el texto de su toast. Cuando el anuncio de novedades sale, la web cierra su modal y muestra el toast de éxito "Anuncio enviado." (ver [novedades por mail](novedades-por-mail.md)). Una acción que recibe una respuesta de sin sesión o sin acceso lleva al login, igual que una carga.
 
 ## 🛑 Cómo se confirma una acción destructiva
@@ -109,7 +114,13 @@ Un toast es una card con un ícono, un texto y una X para cerrarlo. El de error 
 
 La pantalla de error no tiene header. Muestra el cuervo grande centrado, "No se pudo cargar la página", "Probá de nuevo en un rato." y el botón "Volver al inicio", que lleva al inicio del estudiante o al admin del profe.
 
+### ❗ Error de un campo
+
+El error de un campo es texto rojo, sin recuadro ni ícono, justo debajo del campo al que se refiere. Es una pieza distinta del error del formulario, que aparece dentro del formulario o modal cuando falla una acción en espera. Cuando aparece, ocupa su lugar y empuja lo que sigue, creciendo en altura durante un instante; con el movimiento reducido del sistema aparece sin animación. En un formulario con varios campos, cada campo muestra su propio error.
+
 [Prototipo de las piezas compartidas: el botón en espera, el toast de error y el de éxito, y la pantalla de error](../prototipos/piezas.html)
+
+[Prototipo del error de un campo, en la pantalla del email, en la hoja "Agregar por email" del profe y en un formulario con dos campos](../prototipos/aviso-email.html)
 
 ---
 

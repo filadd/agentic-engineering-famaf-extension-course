@@ -40,7 +40,7 @@ export const AdminUsersHandlers = (webOrigin: string) => {
           const crypto = yield* Crypto.Crypto;
           const id = yield* crypto.randomULID.pipe(Effect.orDie);
 
-          return yield* users.create({ id, email: payload.email.toLowerCase() });
+          return yield* users.create({ id, email: payload.email });
         }),
       )
       .handle("setAccess", ({ params, payload }) =>

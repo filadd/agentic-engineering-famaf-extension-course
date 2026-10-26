@@ -31,6 +31,25 @@ const profe = "01M3TC5H13G99CJSZ03NS6AKSK";
 
 const teacherLogin = (url: string) => loginByMail(url, "profe@usuarios.kurasu.test");
 
+const rejectsEmails = (emails: string[]) =>
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+    const cookie = yield* teacherLogin(url);
+
+    for (const email of emails) {
+      const added = yield* request(url, "POST", "/api/admin/users", { cookie, body: { email } });
+
+      expect(added.status).toBe(400);
+    }
+
+    const list = yield* request(url, "GET", "/api/admin/users", { cookie });
+    const users = yield* bodyOf(Schema.Array(User), list);
+
+    for (const email of emails) {
+      expect(users.some((user) => user.email === email)).toBe(false);
+    }
+  });
+
 // The enrollment code tests run in order: the stage starts with no code, the
 // first read creates it and the later ones reuse or regenerate it.
 test(
@@ -185,6 +204,36 @@ test(
 );
 
 test(
+  "adding a valid email with spaces around and uppercase saves the normalized one",
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+    const cookie = yield* teacherLogin(url);
+
+    const added = yield* request(url, "POST", "/api/admin/users", {
+      cookie,
+      body: { email: "  Camila@Usuarios.Kurasu.Test  " },
+    });
+
+    expect(added.status).toBe(201);
+    expect(added.body).toMatchObject({
+      email: "camila@usuarios.kurasu.test",
+      role: "student",
+      hasAccess: true,
+      name: null,
+      avatar: null,
+    });
+
+    const list = yield* request(url, "GET", "/api/admin/users", { cookie });
+    const users = yield* bodyOf(Schema.Array(User), list);
+
+    expect(users.find((user) => user.email === "camila@usuarios.kurasu.test")).toMatchObject({
+      email: "camila@usuarios.kurasu.test",
+      hasAccess: true,
+    });
+  }),
+);
+
+test(
   "adding an email that already exists answers EmailTaken",
   Effect.gen(function* () {
     const { url } = yield* stack;
@@ -198,6 +247,44 @@ test(
     expect(added.status).toBe(409);
     expect(failedWith(added, EmailTaken)).toBe(true);
   }),
+);
+
+test(
+  "adding an email with spaces and uppercase that already exists answers EmailTaken",
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+    const cookie = yield* teacherLogin(url);
+
+    const added = yield* request(url, "POST", "/api/admin/users", {
+      cookie,
+      body: { email: "  ANA@usuarios.Kurasu.Test  " },
+    });
+
+    expect(added.status).toBe(409);
+    expect(failedWith(added, EmailTaken)).toBe(true);
+
+    const list = yield* request(url, "GET", "/api/admin/users", { cookie });
+    const users = yield* bodyOf(Schema.Array(User), list);
+
+    expect(users.find((user) => user.email === "ana@usuarios.kurasu.test")).toMatchObject({
+      email: "ana@usuarios.kurasu.test",
+      hasAccess: true,
+    });
+  }),
+);
+
+test(
+  "adding an email with a dot at the start, before the at sign or consecutive dots is rejected",
+  rejectsEmails([
+    ".juan@usuarios.kurasu.test",
+    "ezequiel.pastore.@mi.unc.edu.ar",
+    "juan..perez@usuarios.kurasu.test",
+  ]),
+);
+
+test(
+  "adding an email that is empty, too long or has an invalid domain is rejected",
+  rejectsEmails(["", `${"a".repeat(300)}@usuarios.kurasu.test`, "juan@localhost"]),
 );
 
 test(

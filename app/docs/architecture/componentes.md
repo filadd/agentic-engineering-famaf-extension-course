@@ -77,6 +77,11 @@ El aula de cada sesión es un Durable Object. Mientras el usuario está en el au
 
 Email Sending manda el mail con el magic link del registro y del login, desde `no-reply@kurasu.asermax.com`. Un usuario solo entra a la app con el link de ese mail. Desde la misma dirección manda también el anuncio de novedades que el profe envía desde el admin de una sesión, en tandas de hasta 50 direcciones por mail (ver [novedades por mail](novedades-por-mail.md)).
 
+El dominio de envío tiene prendido el ajuste "Drop suppressed recipients" de Email Sending: cuando una dirección de un mail está suprimida, porque un mail a ella rebotó o alguien lo marcó como spam, Email Sending la saca y manda el mail al resto. La infra de kurasu declara el dominio de envío y el ajuste juntos. En cada deploy crea el dominio si no existe, lee el ajuste y lo prende en él a través de la API de Cloudflare, así que si alguien lo apaga en el dashboard, el próximo deploy lo vuelve a prender. El ajuste existe solo en los entornos desplegados, donde existe el dominio de envío. Con el ajuste prendido, una dirección suprimida no hace que Email Sending rechace una tanda entera del anuncio (ver [novedades por mail](novedades-por-mail.md)).
+
+> [!NOTE] Por qué el ajuste se declara en la infra
+> El ajuste viene apagado en un dominio de envío nuevo. Prendido a mano en el dashboard, no queda registrado en ningún lado y se pierde si el dominio se crea de nuevo.
+
 > [!WARNING] Email Sending tiene requisitos propios
 > Email Sending está en beta, necesita el plan pago de Workers y que el dominio esté en el DNS de Cloudflare. Sin eso no sale ningún mail: nadie puede registrarse ni entrar, y el profe no puede mandar anuncios.
 

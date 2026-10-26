@@ -32,6 +32,7 @@ Answers how kurasu's web is built: how screens share pieces, how they reach the 
 ## Sources
 
 - `.scratch/aula-virtual/program-design/kurasu.md`, branches 7 and 8, and its section "Implementación · diferencias con el diseño".
-- `app/apps/web/src/api/api-error.ts`, `useApiQuery.ts`, `useApiMutation.ts`, `optimistic-patch.ts`, `create-query-client.ts`, `app/apps/web/src/ui/ConfirmAction.tsx`, `ConfirmDialog.tsx`, `Button.tsx`, `ButtonLink.tsx`, `SkeletonOf.tsx`, `ErrorScreen.tsx`, `Toast.tsx`, `toast.ts`, `Backdrop.tsx`, `useCloseOnEscape.ts`, `app/apps/web/src/router.tsx`, `routes/_app.tsx`, `app/apps/web/src/styles.css`, `app/apps/web/test/setup.ts`, `app/apps/web/src/features/materials/useSlidesCheck.ts`, `SlidesCheckNotice.tsx`, `app/apps/web/src/routes/_app/index.tsx`.
+- `app/apps/web/src/api/api-error.ts`, `useApiQuery.ts`, `useApiMutation.ts`, `optimistic-patch.ts`, `create-query-client.ts`, `app/apps/web/src/ui/ConfirmAction.tsx`, `ConfirmDialog.tsx`, `Button.tsx`, `ButtonLink.tsx`, `SkeletonOf.tsx`, `ErrorScreen.tsx`, `Toast.tsx`, `toast.ts`, `Backdrop.tsx`, `useCloseOnEscape.ts`, `Field.tsx`, `FieldError.tsx`, `app/apps/web/src/helpers/useEmailForm.ts`, `app/apps/web/src/router.tsx`, `routes/_app.tsx`, `app/apps/web/src/styles.css`, `app/apps/web/test/setup.ts`, `app/apps/web/src/features/materials/useSlidesCheck.ts`, `SlidesCheckNotice.tsx`, `app/apps/web/src/routes/_app/index.tsx`.
+- `.scratch/email-valido/program-design/kurasu.md`, branches 3 and 4.
 - `.scratch/ajustes-visuales/program-design/web.md`.
 - `.scratch/aula-virtual/tasks.md`, T19, T21, T23 and T26; `.scratch/aula-virtual/reports/validate/index.html`, F1.

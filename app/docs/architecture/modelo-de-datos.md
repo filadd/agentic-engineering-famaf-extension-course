@@ -105,7 +105,7 @@ erDiagram
 
 ### 👤 Usuario
 
-La entidad `User` tiene `email`, `name`, `avatar`, `role` y `has_access`. El usuario entra con su email, que es único. El avatar es un animal de una lista fija, guardado como su clave en inglés, por ejemplo `fox`; la web lo muestra con su emoji y lo busca por su nombre en español. El nombre y el avatar quedan vacíos hasta que el usuario completa el setup, y se pueden repetir entre usuarios. Si falta alguno de los dos, la app lleva al usuario al setup cuando entra (ver [login y acceso](login-y-acceso.md)).
+La entidad `User` tiene `email`, `name`, `avatar`, `role` y `has_access`. El usuario entra con su email, que es único. La API lo guarda recortado y en minúsculas, y solo si cumple la regla del email (ver [login y acceso](login-y-acceso.md)). El avatar es un animal de una lista fija, guardado como su clave en inglés, por ejemplo `fox`; la web lo muestra con su emoji y lo busca por su nombre en español. El nombre y el avatar quedan vacíos hasta que el usuario completa el setup, y se pueden repetir entre usuarios. Si falta alguno de los dos, la app lleva al usuario al setup cuando entra (ver [login y acceso](login-y-acceso.md)).
 
 El campo `role` vale `teacher` para el profe o `student` para el estudiante. Con `has_access` en falso, el usuario no puede entrar. La API revisa el acceso en cada pedido, y el profe lo da y lo saca desde Usuarios. Los usuarios no se borran; el profe le saca el acceso a quien no tiene que entrar.
 

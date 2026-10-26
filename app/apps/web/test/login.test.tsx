@@ -1,9 +1,10 @@
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { http } from "msw";
 import { describe, expect, test } from "vitest";
 
 import { apiError, noContent, url } from "./helpers/api.ts";
-import { recorder } from "./helpers/recorder.ts";
+import { isBefore } from "./helpers/is-before.ts";
+import { recordPosts } from "./helpers/record-posts.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
 
@@ -18,15 +19,7 @@ const requestLinkWith = async (email: string) => {
 
 describe("/login", () => {
   test("requesting the link shows the check-your-mail view with the email", async () => {
-    const requests = recorder<unknown>();
-
-    server.use(
-      http.post(url("/auth/link"), async ({ request }) => {
-        requests.record(await request.json());
-
-        return noContent();
-      }),
-    );
+    const requests = recordPosts("/auth/link");
 
     await requestLinkWith("lucia@mail.com");
 
@@ -40,9 +33,11 @@ describe("/login", () => {
 
     await requestLinkWith("tomas@mail.com");
 
-    expect((await screen.findByRole("alert")).textContent).toContain(
-      "Tu cuenta todavía no tiene acceso al aula",
-    );
+    const alert = await screen.findByRole("alert");
+    const button = screen.getByRole("button", { name: "Mandame el link" });
+
+    expect(alert.textContent).toContain("Tu cuenta todavía no tiene acceso al aula");
+    expect(isBefore(alert, button)).toBe(true);
   });
 
   test("an email that is not registered sees that it is not registered", async () => {
@@ -50,9 +45,11 @@ describe("/login", () => {
 
     await requestLinkWith("nadie@mail.com");
 
-    expect((await screen.findByRole("alert")).textContent).toContain(
-      "Ese email no está registrado",
-    );
+    const alert = await screen.findByRole("alert");
+    const button = screen.getByRole("button", { name: "Mandame el link" });
+
+    expect(alert.textContent).toContain("Ese email no está registrado");
+    expect(isBefore(alert, button)).toBe(true);
   });
 
   test("a mail that does not go out shows an error in the form and lets the person ask again", async () => {
@@ -68,10 +65,73 @@ describe("/login", () => {
 
     const user = await requestLinkWith("lucia@mail.com");
 
-    expect((await screen.findByRole("alert")).textContent).toContain("No pudimos mandarte el mail");
+    const alert = await screen.findByRole("alert");
+    const button = screen.getByRole("button", { name: "Mandame el link" });
+
+    expect(alert.textContent).toContain("No pudimos mandarte el mail");
+    expect(isBefore(alert, button)).toBe(true);
+
+    await user.click(button);
+
+    expect(await screen.findByRole("heading", { name: "Revisá tu mail" })).toBeTruthy();
+  });
+
+  test("an empty email before the first send keeps the button disabled and shows no field error", async () => {
+    await renderRoute("/login");
+
+    expect(await screen.findByRole("button", { name: "Mandame el link" })).toHaveProperty(
+      "disabled",
+      true,
+    );
+    expect(screen.queryByText("El email ingresado no es válido.")).toBeNull();
+  });
+
+  test("typing an invalid email shows no error while typing and the field error on send without asking the API", async () => {
+    const requests = recordPosts("/auth/link");
+
+    const { user } = await renderRoute("/login");
+    const input = await screen.findByLabelText("Tu email");
+
+    await user.type(input, "ezequiel.pastore.@mi.unc.edu.ar");
+    expect(screen.queryByText("El email ingresado no es válido.")).toBeNull();
 
     await user.click(screen.getByRole("button", { name: "Mandame el link" }));
 
+    expect(await screen.findByText("El email ingresado no es válido.")).toBeTruthy();
+    expect(requests.calls).toEqual([]);
+  });
+
+  test("after a failed send the field error revalidates on each keystroke and the button disables on an empty email", async () => {
+    const { user } = await renderRoute("/login");
+
+    const input = await screen.findByLabelText("Tu email");
+    const button = screen.getByRole("button", { name: "Mandame el link" });
+
+    await user.type(input, "ezequiel.pastore.@mi.unc.edu.ar");
+    await user.click(button);
+
+    expect(await screen.findByText("El email ingresado no es válido.")).toBeTruthy();
+
+    await user.clear(input);
+
+    expect(await screen.findByText("El email ingresado no es válido.")).toBeTruthy();
+    expect(button).toHaveProperty("disabled", true);
+
+    await user.type(input, "lucia@mail.com");
+
+    await waitFor(() => expect(screen.queryByText("El email ingresado no es válido.")).toBeNull());
+  });
+
+  test("sending an email with spaces and capitals asks for the link with the normalized email", async () => {
+    const requests = recordPosts("/auth/link");
+
+    const { user } = await renderRoute("/login");
+
+    const input = await screen.findByLabelText("Tu email");
+    await user.type(input, "  Lucia@Mail.com  ");
+    await user.click(screen.getByRole("button", { name: "Mandame el link" }));
+
     expect(await screen.findByRole("heading", { name: "Revisá tu mail" })).toBeTruthy();
+    expect(requests.calls).toEqual([{ email: "lucia@mail.com" }]);
   });
 });

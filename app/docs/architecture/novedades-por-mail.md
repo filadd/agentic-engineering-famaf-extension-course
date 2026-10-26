@@ -121,8 +121,16 @@ La API lee como mucho los 100 usuarios con acceso que se registraron primero, ar
 
 Las tandas son best effort: la API intenta mandar todas, y no reintenta una tanda que falla. Si salió al menos una, la API borra las novedades incluidas (8) y responde éxito (9); las que el profe no eligió quedan pendientes. Si el profe que envía es el único usuario con acceso, no hay tandas. La API no manda ningún mail, borra las novedades incluidas y responde éxito igual. Si hubo tandas y no salió ninguna, responde error y no borra nada (10). La web muestra el toast de éxito, o deja el modal abierto con el error (11).
 
+Una dirección con formato inválido no llega a una tanda, porque no puede entrar a kurasu (ver [login y acceso](login-y-acceso.md)). Una dirección válida puede estar suprimida, porque un mail a ella rebotó o alguien lo marcó como spam. El dominio de envío tiene prendido "Drop suppressed recipients" (ver [componentes](componentes.md)), así que Email Sending saca la dirección suprimida de la tanda y manda la tanda al resto, y la API cuenta esa tanda como enviada.
+
+> [!NOTE] Por qué el dominio de envío saca las direcciones suprimidas
+> Con el ajuste apagado, una sola dirección suprimida hace que Email Sending rechace su tanda entera, y hasta 48 usuarios más se quedan sin el anuncio. El error tampoco dice qué dirección fue, así que la API no la puede sacar y reintentar.
+
 > [!WARNING] Una tanda que falla no se avisa
 > Si falla una tanda y sale otra, el profe ve "Anuncio enviado." y los usuarios de la tanda que falló no reciben el mail. Las novedades incluidas ya se borraron, así que no se pueden volver a elegir. La única señal es que el profe recibe una copia menos. Lo mismo pasa si una tanda sale pero no les llega a algunos de sus destinatarios: la API la cuenta como enviada.
+
+> [!WARNING] Una dirección suprimida no se avisa
+> Email Sending saca la dirección suprimida de su tanda y manda la tanda al resto. El profe ve "Anuncio enviado." y no tiene ninguna señal de quién no recibió el anuncio.
 
 > [!WARNING] Un anuncio sin destinatarios se ve como enviado
 > Si el profe que envía es el único usuario con acceso, la API no manda ningún mail y el profe ve "Anuncio enviado.". Las novedades incluidas se borran igual, y el profe tampoco recibe su copia.
