@@ -8,29 +8,25 @@ interface Props {
 export const FieldError = ({ id, error }: Props) => {
   const [lastText, setLastText] = useState<string | null>(error);
 
-  useEffect(() => {
-    let timeout: ReturnType<typeof setTimeout> | undefined;
+  if (error != null && error !== lastText) {
+    setLastText(error);
+  }
 
-    if (error != null) {
-      timeout = setTimeout(() => setLastText(error), 0);
-    } else if (lastText != null) {
-      timeout = setTimeout(() => setLastText(null), 180);
+  useEffect(() => {
+    if (error != null || lastText == null) {
+      return undefined;
     }
 
-    return () => {
-      if (timeout != null) {
-        clearTimeout(timeout);
-      }
-    };
-  }, [error, lastText]);
+    const timeout = setTimeout(() => setLastText(null), 180);
 
-  const text = error ?? lastText;
+    return () => clearTimeout(timeout);
+  }, [error, lastText]);
 
   return (
     <div className="field-error-slot" data-open={error != null} aria-hidden={error == null}>
       <div className="field-error-clip">
         <p className="field-error" id={id}>
-          {text}
+          {error ?? lastText}
         </p>
       </div>
     </div>

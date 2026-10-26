@@ -276,9 +276,7 @@ describe("/admin/usuarios", () => {
     await user.type(within(dialog).getByLabelText("Email"), "  Nueva@Gmail.com  ");
     await user.click(within(dialog).getByRole("button", { name: "Agregar" }));
 
-    const added = await within(list).findByRole("listitem", { name: "nueva@gmail.com" });
-
-    expect(added).toBeTruthy();
+    expect(await within(list).findByRole("listitem", { name: "nueva@gmail.com" })).toBeTruthy();
     expect(store.writes).toEqual([{ method: "POST", body: "nueva@gmail.com" }]);
   });
 });

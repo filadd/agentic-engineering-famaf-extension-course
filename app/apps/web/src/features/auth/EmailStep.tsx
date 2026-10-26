@@ -9,7 +9,7 @@ import { FieldError } from "../../ui/FieldError.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 import { AuthNotice } from "./AuthNotice.tsx";
 import { linkNotices } from "./link-notices.ts";
-import { type LinkNotice } from "./link-notices.ts";
+import type { LinkNotice } from "./link-notices.ts";
 
 interface Props {
   title: string;
@@ -35,7 +35,13 @@ export const EmailStep = ({ title, initialEmail, notice, sending, onSubmit }: Pr
   });
 
   return (
-    <form onSubmit={() => void form.handleSubmit()} noValidate>
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        void form.handleSubmit();
+      }}
+      noValidate
+    >
       <h1 className="text-[32px] font-bold max-[600px]:text-[28px]">{title}</h1>
       <form.Field name="email">
         {(field) => (

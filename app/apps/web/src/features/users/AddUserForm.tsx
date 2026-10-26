@@ -36,7 +36,13 @@ export const AddUserForm = ({ onClose }: Props) => {
 
   return (
     <Sheet open onClose={onClose} title="Agregar por email" width="narrow" pending={add.isPending}>
-      <form onSubmit={() => void form.handleSubmit()} noValidate>
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          void form.handleSubmit();
+        }}
+        noValidate
+      >
         <form.Field name="email">
           {(field) => (
             <>
