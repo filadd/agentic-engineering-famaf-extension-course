@@ -43,7 +43,7 @@ export const AddUserForm = ({ onClose }: Props) => {
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
                 aria-invalid={field.state.meta.errors.length > 0}
-                error={field.state.meta.errors[0]?.message ?? null}
+                error={field.state.meta.errors[0]?.message}
               />
               {add.error == null ? null : (
                 <InlineError className="mt-3">

@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 
 interface Props {
   id?: string;
-  error: string | null;
+  error?: string | undefined;
 }
 
 export const FieldError = ({ id, error }: Props) => {
-  const [lastText, setLastText] = useState<string | null>(error);
+  const [lastText, setLastText] = useState<string | null>(error ?? null);
 
   if (error != null && error !== lastText) {
     setLastText(error);

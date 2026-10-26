@@ -39,7 +39,7 @@ export const EmailStep = ({ title, initialEmail, notice, sending, onSubmit }: Pr
               onChange={field.handleChange}
               onBlur={field.handleBlur}
               aria-invalid={field.state.meta.errors.length > 0}
-              error={field.state.meta.errors[0]?.message ?? null}
+              error={field.state.meta.errors[0]?.message}
             />
             {notice == null || notice === "badCode" ? null : (
               <AuthNotice text={linkNotices[notice]} />
