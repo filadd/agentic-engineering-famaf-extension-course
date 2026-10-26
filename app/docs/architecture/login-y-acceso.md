@@ -91,7 +91,7 @@ sequenceDiagram
     W-->>U: Setup si faltan nombre o avatar, si no la app
 ```
 
-Antes de pedir el link (2), la web controla el email con la regla de arriba, como controla los campos de cualquier formulario (ver [carga y acciones de la web](carga-y-acciones-de-la-web.md)). Si el estudiante aprieta "Mandame el link" con un email inválido, el error de un campo dice "El email ingresado no es válido." y aparece debajo del campo del email. El botón está habilitado mientras haya texto en el campo. Los mensajes de la API, como el de que no está registrado, aparecen como error del formulario debajo del botón.
+Antes de pedir el link (2), la web controla el email con la regla de arriba, como controla los campos de cualquier formulario (ver [carga y acciones de la web](carga-y-acciones-de-la-web.md)). Si el estudiante aprieta "Mandame el link" con un email inválido, el error de un campo dice "El email ingresado no es válido." y aparece debajo del campo del email. El botón está habilitado mientras haya texto en el campo. Los mensajes de la API, como el de que no está registrado, aparecen como error del formulario antes del botón.
 
 > [!NOTE] Por qué el error del campo espera al botón
 > Mientras el estudiante escribe, el email está incompleto y no cumple la regla; un error desde la primera tecla marcaría como inválido un email que el estudiante todavía no terminó de escribir. Después del primer envío fallido, el estudiante está corrigiendo, y como la web revisa el email con cada tecla, el error se va apenas el email es válido.
