@@ -12,6 +12,7 @@
     "@kurasu/contract": "workspace:*",
     "@kurasu/slides": "workspace:*",
     "@tailwindcss/vite": "4.3.3",
+    "@tanstack/react-form": "1.33.5",
     "@tanstack/react-query": "5.104.4",
     "@tanstack/react-router": "1.170.45",
     "@tanstack/react-start": "1.169.3",
