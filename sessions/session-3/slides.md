@@ -119,6 +119,16 @@ La especificidad sirve cuando le saca una decisión que el agente tendría que t
 
 ---
 
+## Cuando un proyecto es muy grande
+
+- `AGENTS.md` gigante: todo cargado, todo el tiempo
+- `AGENTS.md` como índice: lo esencial más links a otros documentos (`docs/api.md`, `docs/db.md`…), que el agente lee cuando los necesita
+- 👉 Agus lo cuenta en la próxima clase
+
+<!-- Eventualmente, en proyectos más grandes, un AGENTS.md gigante no es muy útil: conviene tenerlo más como un índice a otros documentos. NO DESARROLLARLO ACÁ: lo explica Agus en la Sesión 4 (Context Engineering). Alcanza con plantar la idea. -->
+
+---
+
 ## Dos AGENTS.md de verdad
 
 - **[cloudflare/agents](https://github.com/cloudflare/agents/blob/main/AGENTS.md)** · monorepo TypeScript, un AGENTS.md por paquete

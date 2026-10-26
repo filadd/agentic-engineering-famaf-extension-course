@@ -458,6 +458,14 @@ p { margin: 0; }
 .rhead span { font-size: 19px; color: var(--muted); }
 .rhead a { text-decoration: none; }
 .rhead a:hover b { text-decoration: underline; }
+.big-slide .split { margin-top: 40px; }
+.bigmd { display: flex; flex-direction: column; gap: 14px; padding: 24px 30px; }
+.bmhead b { font-size: 28px; color: var(--a3); margin-right: 12px; }
+.bmhead span { font-size: 22px; color: var(--muted); }
+.bmbody { font-size: 20px; line-height: 1.5; }
+.giant .bmbody { height: 210px; overflow: hidden; mask-image: linear-gradient(#000 60%, transparent); }
+.bmfoot { font-size: 20px; color: var(--muted); }
+.bmnext { margin-top: 30px; text-align: center; }
 .awhere { display: grid; gap: 8px; margin-top: 22px; padding: 20px 30px; font-size: 22px; }
 .awhere div { display: grid; grid-template-columns: 140px 1fr; }
 .awhere span { color: var(--muted); }
@@ -1082,6 +1090,27 @@ p { margin: 0; }
       <tr data-step="5"><td>"Usá el proceso de build estándar."</td><td>¿Qué es lo estándar acá?</td><td>Corré <code>make build</code> desde la raíz del repo. No uses <code>go build</code>: el wrapper agrega metadata que el build necesita.</td></tr>
     </table>
     <p class="small cite2"><a href="https://aaif.io/blog/writing-an-effective-agents-md" target="_blank" rel="noopener">AAIF, “Writing an effective AGENTS.md” (2026) ↗</a></p>
+  </section>
+
+  <section class="slide big-slide" data-id="grande" data-steps="3">
+    <h2>Cuando un proyecto es muy grande</h2>
+    <div class="split">
+      <div class="card bigmd giant" data-step="1">
+        <div class="bmhead"><b class="mono">AGENTS.md</b><span>gigante</span></div>
+        <div class="mono bmbody">
+          <div>## Comandos</div><div>## Arquitectura</div><div>## API</div><div>## Base de datos</div><div>## Frontend</div><div>## Deploy</div><div>## Convenciones</div><div>…</div>
+        </div>
+        <div class="bmfoot">todo cargado, todo el tiempo</div>
+      </div>
+      <div class="card bigmd index" data-step="2">
+        <div class="bmhead"><b class="mono">AGENTS.md</b><span>como índice</span></div>
+        <div class="mono bmbody">
+          <div>## Comandos</div><div>pnpm test · pnpm check</div><div>## Para saber más</div><div>API → <span class="hl">docs/api.md</span></div><div>DB → <span class="hl">docs/db.md</span></div><div>deploy → <span class="hl">docs/deploy.md</span></div>
+        </div>
+        <div class="bmfoot">el agente lee el resto cuando lo necesita</div>
+      </div>
+    </div>
+    <p class="mid bmnext f-pop" data-step="3">👉 Agus lo cuenta en la próxima clase</p>
   </section>
 
   <section class="slide real-slide" data-id="ejemplos" data-steps="2">
