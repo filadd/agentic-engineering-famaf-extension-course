@@ -1,6 +1,6 @@
 # kurasu: checks and tests
 
-verified: 2026-10-22
+verified: 2026-10-26
 
 Answers which checks reject code in kurasu and where its tests live.
 
@@ -9,6 +9,7 @@ Answers which checks reject code in kurasu and where its tests live.
 - oxlint runs type-aware with every rule as an error; oxfmt formats the code.
 - A local plugin enforces boundaries: `apps/web` imports only `@kurasu/contract` and `@kurasu/slides` among the project's packages; `packages/core` imports no Cloudflare, Alchemy, Drizzle or jose; `packages/*` never import `apps/*`.
 - TypeScript rules: `== null` instead of `=== null` or `=== undefined`; no enums (a const map and a derived type); named exports only.
+- The tsconfig compiles with `exactOptionalPropertyTypes`: an optional prop `?: T` rejects an explicit `undefined`. A prop every caller writes is required and typed `T | undefined`; a prop callers may omit is `?: T | undefined`.
 - React rules: arrow-function components with a `Props` interface; React imported by name; conditional rendering with a ternary, never `&&`; no nested ternaries; one component per file; no destructured `useQuery` or `useMutation`.
 - The project copies anti-slop into `tools/oxlint/anti-slop/` and adapts it as its own, with its generic and Effect rules.
 - `@effect/tsgo` makes `tsc` fail on Effect diagnostics: missing services, `any` in error channels, global `Date`, `fetch` or `console` inside Effect.
