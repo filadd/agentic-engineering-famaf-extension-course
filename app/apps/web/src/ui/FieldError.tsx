@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 interface Props {
   id?: string;
-  error?: string | undefined;
+  error: string | undefined;
 }
 
 export const FieldError = ({ id, error }: Props) => {

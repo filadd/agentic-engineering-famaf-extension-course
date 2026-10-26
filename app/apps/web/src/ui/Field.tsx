@@ -11,7 +11,7 @@ interface Props extends Pick<
   value: string;
   onChange: (value: string) => void;
   onBlur: () => void;
-  error?: string | undefined;
+  error: string | undefined;
 }
 
 export const Field = ({
