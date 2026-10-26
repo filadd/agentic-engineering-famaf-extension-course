@@ -1,0 +1,3588 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sesión 3 — Herramientas y Skills</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=DM+Sans:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ───────────── Palette (pop noche) ───────────── */
+
+:root {
+  --radius: 20px;
+  --title-size: 58px;
+}
+
+:root {
+  --bg: #15153a;
+  --bg-pattern: radial-gradient(#ffffff16 2px, transparent 2px);
+  --bg-size: 28px 28px;
+  --ink: #fdf6e3;
+  --muted: #a9a6d6;
+  --card: #262660;
+  --line: #fdf6e3;
+  --border: 3px solid #fdf6e3;
+  --shadow: 8px 8px 0 #05051a;
+  --a1: #ff5c8a;
+  --a2: #5b8cff;
+  --a3: #ffd166;
+  --a4: #06d6a0;
+  --good: #06d6a0;
+  --bad: #ff5c5c;
+  --mascot: #ffd166;
+  --mascot-ink: #15153a;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --term-bg: #05051a;
+  --term-ink: #fdf6e3;
+}
+
+/* ───────────── Stage ───────────── */
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  overflow: hidden;
+  font-family: var(--font-body);
+  transition: background .4s, color .4s;
+}
+
+body {
+  background-image: var(--bg-pattern);
+  background-size: var(--bg-size);
+}
+
+#deck {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1280px;
+  height: 720px;
+  transform-origin: center;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  padding: 50px 72px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(60px) scale(.98);
+  transition: opacity .45s, transform .55s cubic-bezier(.2, .9, .3, 1.2);
+}
+
+.slide.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+.slide.past { transform: translateX(-60px) scale(.98); }
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  margin: 0 0 22px;
+  line-height: 1.1;
+  letter-spacing: -.02em;
+}
+
+h1 { font-size: 104px; }
+h2 { font-size: var(--title-size); white-space: nowrap; }
+h3 { font-size: 30px; }
+
+p { margin: 0; }
+
+.big { font-size: 40px; line-height: 1.25; }
+.mid { font-size: 30px; }
+.small { font-size: 22px; color: var(--muted); }
+.mono { font-family: var(--font-mono); }
+.center { text-align: center; }
+.hl { color: var(--a1); }
+
+.card {
+  background: var(--card);
+  border: var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px 26px;
+}
+
+.slide > .mascot { position: absolute; right: 80px; bottom: 50px; --size: 130px; }
+
+/* ───────────── Fragments ───────────── */
+
+[data-step] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .45s, transform .6s cubic-bezier(.2, .9, .3, 1.4);
+}
+
+[data-step].on { opacity: 1; transform: none; }
+
+.f-drop { transform: translateY(-120px) rotate(-8deg); }
+.f-drop.on { transform: rotate(var(--r, 0deg)); }
+.f-flip { transform: perspective(900px) rotateY(-95deg); transform-origin: left center; }
+.f-flip.on { transform: perspective(900px) rotateY(0); }
+.f-pop { transform: scale(.3); }
+.f-pop.on { transform: scale(1); }
+
+/* ───────────── Mascot ───────────── */
+
+.mascot {
+  width: var(--size, 120px);
+  height: var(--size, 120px);
+  display: inline-block;
+}
+
+.mascot svg { width: 100%; height: 100%; overflow: visible; animation: bob 2.4s ease-in-out infinite; }
+.mascot.jump svg { animation: jump .6s cubic-bezier(.3, 1.5, .5, 1) 1, bob 2.4s ease-in-out .6s infinite; }
+.mascot.bigjump svg { animation: bigjump .9s cubic-bezier(.3, 1.5, .5, 1) 1, bob 2.4s ease-in-out .9s infinite; }
+.mascot.shake svg { animation: shake .12s linear infinite; }
+
+@keyframes bob { 50% { transform: translateY(-5px) scaleY(1.02); } }
+@keyframes jump { 0% { transform: none; } 15% { transform: scale(1.15, .85); } 50% { transform: translateY(-90px) scale(.92, 1.1) rotate(-6deg); } 85% { transform: scale(1.12, .88); } 100% { transform: none; } }
+@keyframes bigjump { 0% { transform: none; } 15% { transform: scale(1.2, .8); } 45% { transform: translateY(-150px) rotate(-200deg); } 70% { transform: translateY(-40px) rotate(-360deg); } 85% { transform: scale(1.15, .85) rotate(-360deg); } 100% { transform: rotate(-360deg); } }
+@keyframes shake { 25% { transform: translateX(-3px) rotate(-2deg); } 75% { transform: translateX(3px) rotate(2deg); } }
+.mascot .tt { animation: wig 1.8s ease-in-out infinite alternate; --amp: 4deg; }
+.mascot .m-joy .tt, .mascot .m-wow .tt { animation-duration: .9s; --amp: 6deg; }
+.mascot .m-sweat .tt { animation: wig .16s linear infinite alternate; --amp: 1.6deg; }
+.mascot .m-frustrated .tt { animation-duration: .22s; --amp: 7deg; }
+.mascot .m-skeptic .tt { animation: none; }
+.mascot .m-dizzy .tt { animation-duration: 2.6s; --amp: 9deg; }
+.mascot .tt.wv { animation: wig .45s ease-in-out infinite alternate; --amp: 16deg; }
+.mascot .sway { transform-origin: 50px 90px; animation: sway 1.6s ease-in-out infinite alternate; }
+.mascot .orbit { transform-origin: 50px 12px; animation: orbit 1.4s linear infinite; }
+.mascot .drop { animation: drip 1.1s ease-in infinite; }
+.mascot .qmark { animation: qbob 1s ease-in-out infinite alternate; transform-origin: 84px 10px; }
+.mascot .steam { animation: steam .35s ease-in-out infinite alternate; }
+.mascot .puff { transform-origin: 14px 84px; animation: puff .7s ease-in-out infinite alternate; }
+.mascot .spark { transform-box: fill-box; transform-origin: center; animation: spark .8s ease-in-out infinite alternate; }
+@keyframes wig { from { transform: rotate(calc(var(--amp) * -1)); } to { transform: rotate(var(--amp)); } }
+@keyframes sway { from { transform: rotate(-7deg); } to { transform: rotate(7deg); } }
+@keyframes orbit { to { transform: rotate(360deg); } }
+@keyframes puff { from { transform: scale(.75); opacity: 1; } to { transform: scale(1.15) translate(-3px, 2px); opacity: .7; } }
+@keyframes spark { to { transform: scale(.5) rotate(45deg); opacity: .5; } }
+@keyframes qbob { to { transform: translateY(-4px) rotate(12deg); } }
+@keyframes steam { to { opacity: .4; transform: translate(2px, -2px); } }
+@keyframes drip { 0% { transform: translateY(-4px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(14px); opacity: 0; } }
+
+.confetti { position: absolute; width: 12px; height: 18px; border-radius: 3px; pointer-events: none; animation: confetti 1.4s cubic-bezier(.2, .6, .4, 1) forwards; }
+@keyframes confetti { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); opacity: 0; } }
+
+/* ───────────── Track ───────────── */
+
+.track {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-top: 64px;
+}
+
+.track .stop {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 22px;
+  text-align: center;
+}
+
+.track .stop::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  right: 50%;
+  width: 100%;
+  height: 6px;
+  background: var(--line);
+  opacity: .18;
+}
+
+.track .stop:first-child::before { display: none; }
+.track .stop.lit::before { background: var(--a2); opacity: 1; }
+
+.track .dot {
+  position: relative;
+  z-index: 1;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--card);
+  border: var(--border);
+  transition: background .3s, transform .4s cubic-bezier(.2, .9, .3, 1.8);
+}
+
+.track .stop.lit .dot { background: var(--a2); transform: scale(1.2); }
+
+.track .stop.finish .dot {
+  width: 44px;
+  height: 44px;
+  margin-top: -5px;
+  border-radius: 8px;
+  background: conic-gradient(#111 25%, #fff 0 50%, #111 0 75%, #fff 0) 0 0 / 14px 14px;
+}
+
+.track .stop.finish.lit .dot { transform: scale(1.3) rotate(-8deg); }
+
+.track .rider {
+  position: absolute;
+  top: -18px;
+  --size: 78px;
+  transform: translateX(-50%);
+  z-index: 20;
+  transition: left .6s cubic-bezier(.3, 1.3, .5, 1), opacity .3s;
+}
+
+.track.draw .stop { opacity: 0; animation: stopIn .5s cubic-bezier(.2, .9, .3, 1.6) forwards; }
+@keyframes stopIn { from { opacity: 0; transform: translateY(20px) scale(.6); } to { opacity: 1; transform: none; } }
+
+.track.mini { padding-top: 0; transform: scale(.72); transform-origin: top left; width: 139%; margin-bottom: -18px; }
+.track.mini .rider { top: -70px; --size: 60px; }
+.steps-slide .track .rider { --size: 100px; top: -44px; }
+
+
+/* ───────────── Shared pieces ───────────── */
+
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start; }
+.split > *, .layers3 > *, .prims > * { min-width: 0; }
+.lead { color: var(--muted); font-size: 26px; margin-bottom: 26px; }
+.hint { position: absolute; left: 72px; bottom: 34px; }
+.ico { line-height: 1; }
+
+.seg2 { display: inline-flex; gap: 0; border: var(--border); border-radius: 999px; overflow: hidden; box-shadow: 4px 4px 0 #05051a; }
+.seg2 button { padding: 8px 18px; font: 700 18px var(--font-body); color: var(--ink); background: var(--card); border: 0; cursor: pointer; transition: background .25s, color .25s; }
+.seg2 button + button { border-left: 2px solid var(--line); }
+.seg2 button.on { background: var(--a3); color: #111; }
+
+.install { display: inline-block; font-family: var(--font-mono); font-size: 20px; padding: 8px 16px; border-radius: 10px; background: var(--term-bg); color: var(--term-ink); }
+
+.note2 { display: flex; flex-direction: column; gap: 4px; padding: 14px 20px; font-size: 21px; line-height: 1.3; }
+.note2 b { font-family: var(--font-display); font-size: 24px; }
+.note2 span { color: var(--muted); }
+
+/* ───────────── Code blocks ───────────── */
+
+.code { position: relative; display: flex; flex-direction: column; height: var(--h, auto); background: var(--term-bg); color: var(--term-ink); border: var(--border); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; font-variant-ligatures: none; }
+.code .cbar { display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: #ffffff14; flex: none; }
+.code .cbar i { width: 13px; height: 13px; border-radius: 50%; background: #ff5f57; }
+.code .cbar i:nth-child(2) { background: #febc2e; }
+.code .cbar i:nth-child(3) { background: #28c840; }
+.code .cbar .title { margin-left: 8px; font-family: var(--font-mono); font-size: 15px; color: var(--muted); }
+.code .copy { margin-left: auto; padding: 3px 10px; font: 700 13px var(--font-body); color: var(--muted); background: transparent; border: 2px solid #ffffff30; border-radius: 8px; cursor: pointer; transition: color .2s, border-color .2s, background .2s; }
+.code .copy:hover { color: var(--ink); border-color: var(--ink); }
+.code .copy.done { color: #111; background: var(--good); border-color: var(--good); }
+.code .cbody { position: relative; flex: 1; overflow: hidden; padding: 12px 0; font-family: var(--font-mono); font-size: var(--fs, 18px); line-height: 1.5; scroll-behavior: smooth; }
+.code .cl { display: flex; padding: 0 18px 0 0; white-space: pre; border-left: 4px solid transparent; transition: opacity .35s, background .35s, border-color .35s; }
+.code .cl .ln { flex: none; width: 2.6em; padding-right: 14px; text-align: right; color: #ffffff38; user-select: none; }
+.code.focus .cl { opacity: .28; }
+.code.focus .cl.lit { opacity: 1; background: #ffffff0d; border-left-color: var(--a3); }
+.code.swap .cbody { animation: swapIn .45s cubic-bezier(.2, .9, .3, 1.3); }
+@keyframes swapIn { from { opacity: 0; transform: translateY(10px); } }
+
+.t-k { color: var(--a1); }
+.t-s { color: var(--a4); }
+.t-c { color: #8e8bbd; font-style: italic; }
+.t-d { color: var(--a3); }
+.t-num { color: var(--a3); }
+.t-f { color: #7fa6ff; }
+.t-key { color: #7fa6ff; }
+.t-h { color: #7fa6ff; font-weight: 700; }
+.t-fm { color: var(--a3); }
+.t-sep { color: var(--a1); font-weight: 700; }
+
+/* ───────────── Portada ───────────── */
+
+.cover { display: flex; flex-direction: column; justify-content: center; height: 100%; }
+.cover .kicker { font-size: 32px; color: var(--muted); }
+.cover h1 { white-space: nowrap; }
+.cover h1 .cursor { display: inline-block; width: .45em; height: .85em; background: var(--a1); vertical-align: -.06em; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.cover .mascot { position: absolute; right: 110px; bottom: 90px; --size: 220px; }
+.cover .mascot.enter { animation: dropIn .9s cubic-bezier(.3, 1.5, .5, 1) both; }
+@keyframes dropIn { from { transform: translateY(-600px) rotate(-20deg); } to { transform: none; } }
+.cover-chips { display: flex; gap: 14px; margin-top: 34px; }
+.cover-chips span { padding: 6px 14px; font-size: 20px; border: var(--border); border-radius: 999px; background: var(--card); opacity: 0; transform: translateY(14px) scale(.7); transition: opacity .35s, transform .45s cubic-bezier(.2, .9, .3, 1.8); }
+.cover-chips.on span { opacity: 1; transform: none; }
+.cover-chips span:nth-child(2) { transition-delay: .12s; }
+.cover-chips span:nth-child(3) { transition-delay: .24s; }
+.cover-chips span:nth-child(4) { transition-delay: .36s; }
+
+/* ───────────── Secciones ───────────── */
+
+.section { display: flex; flex-direction: column; justify-content: center; height: 100%; }
+.section h1 { margin-bottom: 18px; }
+.section .secttrack { position: absolute; top: 110px; left: 72px; width: 820px; }
+
+/* ───────────── Cómo les fue ───────────── */
+
+.recap2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 70px; }
+.recap2 .card { position: relative; min-height: 280px; display: flex; flex-direction: column; justify-content: center; gap: 18px; font-family: var(--font-display); font-size: 36px; font-weight: 700; line-height: 1.2; }
+.recap2 .card .emo { font-size: 60px; }
+.recap2 .card.hot { background: color-mix(in srgb, var(--a1) 28%, var(--card)); }
+.recap2 .ex { padding-bottom: 30px; font: italic 400 24px var(--font-body); color: var(--muted); }
+.recap2 .menti { position: absolute; right: 22px; bottom: 18px; padding: 4px 12px; font: 700 18px var(--font-body); color: #111; background: var(--a3); border-radius: 999px; }
+
+/* ───────────── Dos veces ───────────── */
+
+.days { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 50px; transition: opacity .6s, transform .7s, filter .6s; }
+.term { font-variant-ligatures: none; background: var(--term-bg); color: var(--term-ink); border-radius: 16px; border: var(--border); box-shadow: var(--shadow); padding: 0 0 22px; font-family: var(--font-mono); font-size: 26px; overflow: hidden; }
+.term .bar3 { display: flex; gap: 10px; padding: 14px 18px; background: #ffffff14; margin-bottom: 16px; }
+.term .bar3 i { width: 16px; height: 16px; border-radius: 50%; background: #ff5f57; }
+.term .bar3 i:nth-child(2) { background: #febc2e; }
+.term .bar3 i:nth-child(3) { background: #28c840; }
+.term .bar3 .title { margin-left: 12px; font-size: 17px; color: var(--muted); }
+.term .line { padding: 6px 28px; min-height: 46px; display: flex; gap: 14px; align-items: baseline; }
+.term .line .p { color: var(--a3); }
+.term .caret { display: inline-block; width: 13px; height: 28px; background: var(--term-ink); animation: blink 1s steps(1) infinite; vertical-align: middle; }
+.day .line { font-size: 19px; min-height: 0; padding: 6px 22px; }
+.day.f-drop { transition-delay: calc(var(--i) * .2s); }
+.twice-slide[data-step="2"] .days { opacity: .25; filter: grayscale(1); transform: scale(.9) translateY(-30px); }
+.once { position: absolute; left: 50%; top: 300px; width: 560px; padding: 22px 28px; font-family: var(--font-mono); font-size: 22px; background: color-mix(in srgb, var(--good) 22%, var(--card)); opacity: 0; transform: translate(-50%, 80px) scale(.5) rotate(-6deg); transition: opacity .4s, transform .7s cubic-bezier(.2, .9, .3, 1.5); }
+.twice-slide[data-step="2"] .once { opacity: 1; transform: translate(-50%, 0) rotate(-1deg); }
+.once .path { font-size: 15px; color: var(--muted); margin-bottom: 8px; }
+.once .ln { margin: 6px 0; }
+.once b { color: var(--a3); }
+.twice-slide > .mascot { --size: 120px; }
+
+/* ───────────── Dónde vive ───────────── */
+
+.sort { display: grid; grid-template-columns: 430px 1fr; gap: 30px; margin-top: 10px; }
+.pool { display: flex; flex-direction: column; gap: 10px; }
+.schip { padding: 10px 16px; font-size: 19px; font-weight: 700; line-height: 1.25; border: var(--border); border-radius: 14px; background: color-mix(in srgb, var(--a2) 30%, var(--card)); box-shadow: 4px 4px 0 #05051a; cursor: pointer; transition: transform .55s cubic-bezier(.3, 1.2, .5, 1), background .3s; }
+.schip:hover { background: color-mix(in srgb, var(--a2) 45%, var(--card)); }
+.bins { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.bin { min-height: 260px; padding: 12px 14px; border: 3px dashed color-mix(in srgb, var(--ink) 40%, transparent); border-radius: 18px; }
+.bin .bh { display: flex; flex-direction: column; margin-bottom: 10px; }
+.bin .bh b { font-family: var(--font-display); font-size: 24px; }
+.bin .bh span { font-size: 16px; color: var(--muted); }
+.bin .bslot { display: flex; flex-direction: column; gap: 8px; }
+.bin .schip { font-size: 16px; padding: 7px 12px; }
+.bin[data-kind="agents"] .schip { background: color-mix(in srgb, var(--a4) 30%, var(--card)); }
+.bin[data-kind="skill"] .schip { background: color-mix(in srgb, var(--a3) 30%, var(--card)); }
+.bin[data-kind="mcp"] .schip { background: color-mix(in srgb, var(--a1) 30%, var(--card)); }
+.bin.dim { opacity: .55; }
+.bin.dim .schip { background: var(--card); }
+.sort-slide .hint { left: 72px; }
+
+/* ───────────── Se pega adelante ───────────── */
+
+.stackwrap { display: grid; grid-template-columns: 640px 1fr; gap: 40px; margin-top: 4px; }
+.reqs { display: flex; gap: 12px; align-items: flex-end; height: 520px; }
+.req { flex: 1; display: flex; flex-direction: column-reverse; gap: 4px; padding: 8px; border: var(--border); border-radius: 14px; background: var(--card); animation: chipIn .45s cubic-bezier(.2, .9, .3, 1.5) both; }
+.req .rl { position: relative; padding: 4px 8px; font: 700 13px var(--font-mono); border-radius: 6px; background: color-mix(in srgb, var(--ink) 14%, transparent); white-space: nowrap; overflow: hidden; }
+.req .rl.sys { background: color-mix(in srgb, var(--a2) 40%, var(--card)); }
+.req .rl.ag { height: 34px; background: var(--a3); color: #111; display: flex; align-items: center; }
+.req .rl.me { background: color-mix(in srgb, var(--a1) 35%, var(--card)); }
+.req .rl.bot { background: color-mix(in srgb, var(--a4) 30%, var(--card)); }
+.req .rh { text-align: center; font: 700 15px var(--font-body); color: var(--muted); padding-top: 4px; }
+.req.fresh .rl.ag { animation: glow 1s ease-out; }
+@keyframes glow { 0% { box-shadow: 0 0 0 0 var(--a3); } 40% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--a3) 40%, transparent); } }
+@keyframes chipIn { from { transform: scale(0) rotate(-30deg); } }
+.stackside { display: flex; flex-direction: column; gap: 26px; padding-top: 20px; }
+.stackside .big { font-size: 34px; }
+.paid { text-align: center; padding: 18px; }
+.paidn { font-size: 84px; font-weight: 700; color: var(--a3); line-height: 1.1; }
+
+/* ───────────── Qué va adentro ───────────── */
+
+.notes { display: flex; flex-direction: column; gap: 14px; }
+.inside-slide .split { grid-template-columns: 650px 1fr; }
+.inside-slide .code { --fs: 15px; }
+.inside-slide .notes { gap: 8px; }
+.inside-slide .note2 { padding: 8px 16px; font-size: 17px; line-height: 1.25; }
+.inside-slide .note2 b { font-size: 20px; }
+.inside-slide .note2 .hl { color: var(--a1); }
+.inside-slide .note2.draft { background: color-mix(in srgb, var(--a3) 20%, var(--card)); }
+
+/* ───────────── Wiki ───────────── */
+
+.wiki-slide .split { grid-template-columns: 600px 1fr; }
+.wiki { padding-bottom: 0; }
+.wview { height: 470px; overflow: hidden; }
+.wfeed { padding: 0 22px; font-size: 16px; line-height: 1.55; }
+.wfeed div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #d6d3f0; }
+.wfeed .h { color: #7fa6ff; font-weight: 700; margin-top: 8px; }
+.wfeed .gen { transition: color .4s; }
+.wiki-slide[data-step="3"] .wfeed .gen { color: var(--a1); text-decoration: line-through; }
+.wside { display: flex; flex-direction: column; gap: 18px; }
+.wcount { display: flex; flex-direction: column; padding: 16px 22px; }
+.wcount b { font-size: 56px; color: var(--a3); }
+.wcount.bad b { color: var(--a1); }
+.nope { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 20px; line-height: 1.25; }
+
+/* ───────────── Subagentes ───────────── */
+
+.dirty-slide .lead { margin-top: 0; }
+.ctxrows { display: flex; flex-direction: column; gap: 22px; margin-top: 34px; padding: 28px; }
+.crow2 { display: grid; grid-template-columns: 230px 1fr 110px; align-items: center; gap: 22px; }
+.crow2 .who { font: 700 22px var(--font-body); }
+.crow2 .who small { display: block; font: 400 16px var(--font-body); color: var(--muted); }
+.crow2 > b { font-size: 24px; text-align: right; }
+.crow2.child { padding-left: 40px; grid-template-columns: 190px 1fr 110px; }
+.cbar2 { display: flex; gap: 3px; height: 52px; padding: 5px; border: var(--border); border-radius: 12px; background: var(--term-bg); }
+.cbar2 i { width: var(--w); min-width: 12px; display: grid; place-items: center; overflow: hidden; white-space: nowrap; font: normal 700 15px var(--font-body); color: #111; border-radius: 6px; }
+.cbar2 .me { background: var(--a2); }
+.cbar2 .ex { background: var(--a1); }
+.cbar2 .sum { background: var(--a4); }
+.dirty-slide[data-step="3"] .child { opacity: .35; filter: grayscale(1); }
+.sub-slide .note2 { font-size: 20px; }
+.alts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.alt { display: flex; flex-direction: column; justify-content: center; gap: 4px; aspect-ratio: 16 / 9; padding: 10px 12px; border: var(--border); border-radius: 10px; box-shadow: var(--shadow); overflow: hidden; }
+.a-min { background: #fafafa; color: #111; font: 300 16px/1.1 var(--font-body); }
+.a-min b { font-weight: 300; letter-spacing: -.02em; }
+.a-ilu { align-items: center; text-align: center; background: linear-gradient(135deg, #ff9a8b, #ffd36e); color: #2b1a4a; font: 700 14px/1.1 var(--font-display); }
+.a-ilu span { font-size: 30px; line-height: 1; }
+.a-term { background: #0b0f0b; color: #4ade80; font: 700 13px/1.3 var(--font-mono); }
+.when { padding: 24px 30px; }
+.when h3 { margin: 0 0 14px; font: 700 30px var(--font-display); }
+.when ul { margin: 0; padding-left: 24px; display: flex; flex-direction: column; gap: 12px; font-size: 24px; line-height: 1.3; }
+.when.yes { background: color-mix(in srgb, var(--good) 18%, var(--card)); }
+.when.no { background: color-mix(in srgb, var(--bad) 16%, var(--card)); }
+
+/* ───────────── AGENTS.md: usable, reales, sirve ───────────── */
+
+.reals { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; margin-top: 170px; }
+.real { display: flex; flex-direction: column; gap: 14px; padding: 28px 30px; }
+.rhead b { display: block; margin-bottom: 6px; font: 700 28px var(--font-mono); color: var(--a3); }
+.rhead span { font-size: 19px; color: var(--muted); }
+.rhead a { text-decoration: none; }
+.rhead a:hover b { text-decoration: underline; }
+.big-slide .split { margin-top: 40px; }
+.bigmd { display: flex; flex-direction: column; gap: 14px; padding: 24px 30px; }
+.bmhead b { font-size: 28px; color: var(--a3); margin-right: 12px; }
+.bmhead span { font-size: 22px; color: var(--muted); }
+.bmbody { font-size: 20px; line-height: 1.5; }
+.giant .bmbody { height: 210px; overflow: hidden; mask-image: linear-gradient(#000 60%, transparent); }
+.bmfoot { font-size: 20px; color: var(--muted); }
+.bmnext { margin-top: 30px; text-align: center; }
+.awhere { display: grid; gap: 8px; margin-top: 22px; padding: 20px 30px; font-size: 22px; }
+.awhere div { display: grid; grid-template-columns: 140px 1fr; }
+.awhere span { color: var(--muted); }
+.awhere b { color: var(--a3); }
+.proofs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; margin-top: 30px; }
+.proof { display: flex; flex-direction: column; gap: 12px; min-height: 290px; padding: 24px 26px; }
+.proof > b { font-size: 40px; color: var(--a4); line-height: 1.1; }
+.proof.bad > b { color: var(--a1); font-family: var(--font-display); }
+.proof span { flex: 1; font-size: 22px; line-height: 1.35; }
+.proof small { font-size: 16px; color: var(--muted); }
+
+.vague-slide .lead { margin-bottom: 0; }
+.vague-slide .cite2 { transition: opacity .3s; }
+.vague-slide[data-step="5"] .cite2 { opacity: 0; pointer-events: none; }
+.vague-slide .bigtable { margin-top: 4px; border-spacing: 0 6px; font-size: 17px; line-height: 1.25; }
+.vague-slide .bigtable td { padding: 8px 16px; }
+.vague-slide .bigtable th { padding: 0 18px; font-size: 18px; }
+.vague-slide .bigtable td:nth-child(1) { width: 270px; font-style: italic; }
+.vague-slide .bigtable td:nth-child(2) { width: 290px; color: var(--muted); }
+.vague-slide .bigtable code { font: 15px var(--font-mono); color: var(--a3); }
+
+.cm-slide .split { margin-top: 6px; }
+.cm-slide .code { --fs: 12.5px; }
+.cm-slide .code .cl { white-space: pre-wrap; }
+.cmcite { margin-top: 6px; }
+.cm-slide .notes { gap: 10px; }
+.cm-slide .note2 { padding: 10px 18px; font-size: 18px; }
+.cm-slide .note2 b { font-size: 21px; }
+.cm-slide .note2 .hl { color: var(--a1); }
+.cite2 a, .cmcite a, .refs a, .srclink a { color: inherit; text-decoration: none; }
+.cite2 a:hover, .cmcite a:hover, .refs a:hover, .srclink a:hover { text-decoration: underline; }
+
+.refs { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-top: 10px; }
+.refcol { padding: 22px 26px; }
+.refcol h3 { margin: 0 0 14px; font: 700 28px var(--font-display); }
+.refcol ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.refcol li { display: flex; flex-direction: column; font-size: 21px; line-height: 1.25; }
+.refcol li a { font-weight: 700; color: var(--a3); }
+.refcol li a::after { content: " ↗"; }
+.refcol li span { font-size: 16px; color: var(--muted); }
+
+/* ───────────── Cómo los encuentra Pi ───────────── */
+
+.find-slide .split { grid-template-columns: 680px 1fr; margin-top: 10px; }
+.find-slide .notes { gap: 10px; }
+.find-slide .note2 { padding: 10px 18px; font-size: 19px; }
+.find-slide .note2 b { font-size: 21px; }
+.walk { display: flex; flex-direction: column; gap: 8px; padding: 20px 24px; font-size: 18px; }
+.wcmd { margin-bottom: 8px; padding: 8px 14px; color: var(--term-ink); background: var(--term-bg); border-radius: 10px; }
+.wcmd .p { color: var(--a4); }
+.wl { display: grid; grid-template-columns: 240px auto 1fr; align-items: baseline; gap: 10px; }
+.wl .d { color: var(--muted); }
+.wl b { color: var(--a3); }
+.wl s { color: var(--muted); }
+.wl em { font: italic 15px var(--font-body); color: var(--muted); text-align: right; }
+.wl.hit b::before { content: "✓ "; color: var(--good); }
+.wl.child s { color: var(--bad); }
+.wl.child { margin-top: 8px; padding-top: 10px; border-top: 2px dashed var(--line); }
+.pi-inj { margin: 4px 0; padding: 8px 12px; font-size: 14px; line-height: 1.4; color: var(--term-ink) !important; background: var(--term-bg); border-radius: 8px; }
+
+/* ───────────── Proyecto y global ───────────── */
+
+.layers-slide .split { grid-template-columns: 640px 1fr; margin-top: 20px; }
+.tree { display: flex; flex-direction: column; gap: 16px; padding: 24px 26px; font-size: 20px; }
+.tree .tl { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 6px; }
+.tree .tl .ico { margin-right: 6px; }
+.tree .tl b { color: var(--a3); }
+.tree .tl em { flex-basis: 100%; padding-left: 36px; font: italic 16px var(--font-body); color: var(--muted); }
+.tree .dimline { color: var(--muted); }
+.tree .tl.on b { animation: glowtxt 1.2s ease-out; }
+@keyframes glowtxt { 30% { text-shadow: 0 0 18px var(--a3); } }
+.concat { display: flex; flex-direction: column; gap: 10px; }
+.cpiece { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 18px; font-size: 20px; }
+.cpiece small { font-size: 15px; color: var(--muted); }
+.cpiece:nth-of-type(2) { background: color-mix(in srgb, var(--a2) 26%, var(--card)); }
+.cpiece:nth-of-type(3) { background: color-mix(in srgb, var(--a4) 24%, var(--card)); }
+.cpiece:nth-of-type(4) { background: color-mix(in srgb, var(--a3) 24%, var(--card)); }
+
+/* ───────────── Carpeta ───────────── */
+
+.ftree { display: flex; flex-direction: column; gap: 6px; padding: 22px 24px; font-size: 19px; }
+.ftree .fl { padding: 3px 8px; border-radius: 8px; transition: background .35s, color .35s; white-space: nowrap; }
+.ftree .fl em { margin-left: 8px; font: italic 14px var(--font-body); color: var(--a3); }
+.ftree .fl.root { font-weight: 700; }
+.ftree .fl.hot { background: color-mix(in srgb, var(--a3) 30%, transparent); }
+.fwhere { margin-top: 18px; padding-top: 14px; border-top: 2px solid color-mix(in srgb, var(--ink) 15%, transparent); display: flex; flex-direction: column; gap: 6px; }
+.folder-slide .code { --fs: 16px; }
+.fmtag { position: absolute; top: 208px; right: 104px; padding: 6px 16px; border-radius: 999px; background: var(--a3); color: #111; font-weight: 700; font-size: 20px; opacity: 0; transform: scale(.5) rotate(4deg); transition: opacity .3s, transform .45s cubic-bezier(.2, .9, .3, 1.8); }
+.folder-slide[data-step="1"] .fmtag { opacity: 1; transform: rotate(4deg); }
+
+/* ───────────── Validador ───────────── */
+
+.vform { display: flex; flex-direction: column; gap: 10px; padding: 24px 26px; background: var(--term-bg); }
+.vrow { display: flex; align-items: center; gap: 12px; font-size: 20px; }
+.vrow.top { align-items: flex-start; }
+.vrow .k { color: var(--a3); flex: none; }
+.vrow .dash { color: var(--a1); font-weight: 700; }
+.vform input, .vform textarea { flex: 1; padding: 8px 12px; font: 20px var(--font-mono); color: var(--ink); background: #ffffff10; border: 2px solid #ffffff30; border-radius: 10px; outline: none; transition: border-color .2s, background .2s; }
+.vform textarea { height: 190px; resize: none; font-size: 17px; line-height: 1.45; }
+.vform input:focus, .vform textarea:focus { border-color: var(--a3); }
+.vform input.bad { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 14%, transparent); }
+.vcount { text-align: right; }
+.vcount.bad { color: var(--bad); }
+.vtry { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; }
+.vtry button { padding: 5px 12px; font: 15px var(--font-mono); color: var(--ink); background: var(--card); border: 2px solid var(--line); border-radius: 8px; cursor: pointer; }
+.vtry button:hover { background: var(--a2); }
+.vrules { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 22px 24px; font-size: 20px; min-height: 470px; }
+.rule2 { display: flex; align-items: center; gap: 12px; transition: color .25s; }
+.rule2 i { flex: none; width: 30px; height: 30px; display: grid; place-items: center; font-style: normal; font-weight: 700; border: 3px solid var(--line); border-radius: 50%; transition: background .25s, transform .3s cubic-bezier(.2, .9, .3, 1.8); }
+.rule2.ok i { background: var(--good); color: #111; }
+.rule2.ok i::after { content: "✓"; }
+.rule2.no { color: var(--bad); }
+.rule2.no i { background: var(--bad); color: #fff; transform: scale(1.12); }
+.rule2.no i::after { content: "✗"; }
+.rule2.soft.no { color: var(--a3); }
+.rule2.soft.no i { background: var(--a3); color: #111; }
+.rule2.soft.no i::after { content: "?"; }
+.vrules .mascot { position: absolute; right: 16px; bottom: 14px; --size: 90px; }
+
+/* ───────────── Tres etapas ───────────── */
+
+.pd-slide .track.mini { margin-bottom: 4px; }
+.pdwrap { display: grid; grid-template-columns: 1fr 330px; gap: 26px; margin-top: 30px; }
+.sgrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; align-content: start; }
+.sk { position: relative; padding: 8px 10px; min-height: 68px; font: 700 14px var(--font-mono); border: 2px solid color-mix(in srgb, var(--ink) 40%, transparent); border-radius: 10px; background: var(--card); opacity: .35; transition: opacity .4s, background .4s, transform .45s cubic-bezier(.2, .9, .3, 1.6), box-shadow .3s; }
+.sk small { display: block; margin-top: 4px; font: 400 11px var(--font-body); color: var(--muted); }
+.sk.meta { opacity: 1; }
+.sk.active { background: var(--a3); color: #111; transform: scale(1.14); box-shadow: 5px 5px 0 #05051a; z-index: 2; }
+.sk.active small { color: #333; }
+.sk .res { display: none; margin-top: 6px; padding: 4px 6px; font: 700 11px var(--font-mono); color: #111; background: var(--a4); border-radius: 6px; animation: chipIn .4s both; }
+.sk.res-on .res { display: block; }
+.pdside { display: flex; flex-direction: column; gap: 18px; }
+.pdstage { padding: 18px 22px; min-height: 150px; }
+.pdtitle { font-family: var(--font-display); font-weight: 700; font-size: 30px; margin-bottom: 8px; }
+.pdmeter { padding: 18px 22px; }
+.pdmeter b { display: block; font-size: 52px; color: var(--a3); }
+.pdall { margin-top: 4px; }
+.pdname { margin-top: 4px; font-size: 30px; }
+
+/* ───────────── Trigger ───────────── */
+
+.tprompt { padding: 8px 0; font-size: 24px; margin-top: 8px; }
+.tprompt .line { min-height: 40px; }
+.tcards { display: grid; grid-template-columns: 1fr 1.5fr; gap: 28px; margin-top: 30px; }
+.tcard { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 22px 24px; min-height: 280px; transition: background .5s, opacity .5s, transform .5s cubic-bezier(.2, .9, .3, 1.5), filter .5s; }
+.tname { font-size: 26px; font-weight: 700; }
+.tdesc { font-size: 17px; line-height: 1.5; color: var(--muted); }
+.tdesc u { text-decoration: none; border-radius: 4px; padding: 0 2px; transition: background .3s, color .3s; }
+.tverdict { margin-top: auto; align-self: flex-start; padding: 6px 14px; font-weight: 700; border-radius: 999px; opacity: 0; transform: scale(.5); transition: opacity .3s, transform .45s cubic-bezier(.2, .9, .3, 1.8); }
+.trigger-slide:is([data-step="2"], [data-step="3"]) .tverdict { opacity: 1; transform: none; }
+.trigger-slide:is([data-step="2"], [data-step="3"]) .vague { filter: grayscale(1); opacity: .5; }
+.trigger-slide:is([data-step="2"], [data-step="3"]) .vague .tverdict { background: var(--card); border: 2px solid var(--muted); }
+.trigger-slide:is([data-step="2"], [data-step="3"]) .good { background: color-mix(in srgb, var(--good) 22%, var(--card)); transform: scale(1.02); }
+.trigger-slide:is([data-step="2"], [data-step="3"]) .good .tverdict { background: var(--good); color: #111; }
+.trigger-slide:is([data-step="2"], [data-step="3"]) .good u { background: var(--a3); color: #111; }
+.tcmd { display: flex; flex-direction: column; gap: 4px; margin-top: 22px; padding: 12px 22px; font-size: 21px; }
+.tcmd .small { color: var(--muted); font-size: 17px; }
+
+/* ───────────── Regla ───────────── */
+
+.rulebig { display: flex; flex-direction: column; align-items: center; gap: 34px; margin-top: 150px; }
+.rb { display: grid; grid-template-columns: 420px 80px 360px; align-items: center; padding: 22px 34px; font-family: var(--font-display); font-weight: 700; font-size: 56px; }
+.rb b { color: var(--a1); text-align: center; }
+.rb .mono { font-size: 50px; }
+.rb:nth-child(1) { background: color-mix(in srgb, var(--a4) 26%, var(--card)); }
+.rb:nth-child(2) { background: color-mix(in srgb, var(--a3) 26%, var(--card)); }
+
+/* ───────────── Tool ───────────── */
+
+.chat .viewport { height: 418px; overflow: hidden; }
+.chat .feed { transition: transform .45s cubic-bezier(.3, 1, .4, 1); }
+.chat .line { min-height: 0; padding: 4px 28px; font-size: 22px; transition: opacity .4s; }
+.chat .line.gap { margin-top: 14px; }
+.chat .line.ag { color: var(--muted); }
+.chat .line.ag .p { color: var(--muted); }
+.chat .line.q .p { color: var(--a1); }
+.chat .line.ok .p { color: var(--a4); }
+.chat .line.ans { padding-left: 64px; }
+.chat .line.hide { display: none; }
+.chat .line.add, .chat .line.del, .chat .line.cmd, .chat .line.out { padding: 0 28px 0 64px; font-size: 19px; }
+.chat .line.cmd { padding-left: 28px; padding-top: 6px; color: var(--term-ink); }
+.chat .line.cmd .p { color: var(--a2); }
+.chat .line.out { color: var(--muted); }
+.chat .line.wait .p { color: var(--a3); }
+.chat .line.wait.done .p { color: var(--a4); }
+.chat .line .t { overflow-wrap: anywhere; }
+.chat .line.doc { padding: 0 28px 0 64px; font-size: 19px; color: var(--a3); }
+.chat .line.doc .p { color: var(--a2); }
+.chat .line.doc .t { white-space: pre; }
+.tool-slide .chat .line { font-size: 20px; }
+.add-slide .chat .line, .add-slide .chat .line.cmd { font-size: 15px; }
+.add-slide .note2 { font-size: 19px; }
+.tool-slide .chat .line.doc { font-size: 17px; }
+.tool-slide .code { --fs: 16px; }
+
+/* ───────────── N×M ───────────── */
+
+.nm { width: 100%; height: 470px; overflow: visible; margin-top: -10px; }
+.nm .mesh line { stroke: var(--a1); stroke-width: 2.5; opacity: .7; transition: opacity .5s; }
+.nm .hubl line { stroke: var(--a4); stroke-width: 4; stroke-dasharray: 600; stroke-dashoffset: 600; transition: stroke-dashoffset 1s ease-out; }
+.nm .hub { opacity: 0; transform: scale(.3); transform-origin: 568px 235px; transform-box: view-box; transition: opacity .4s, transform .6s cubic-bezier(.2, .9, .3, 1.6); }
+.nm .hub circle { fill: var(--a4); stroke: var(--line); stroke-width: 4; }
+.nm .hub text { font-family: var(--font-display); font-weight: 700; font-size: 34px; fill: #111; text-anchor: middle; }
+.nm .nodes rect { fill: var(--card); stroke: var(--line); stroke-width: 3; }
+.nm .nodes .h rect { fill: color-mix(in srgb, var(--a2) 40%, var(--card)); }
+.nm .nodes text { font-family: var(--font-body); font-weight: 700; font-size: 21px; fill: var(--ink); text-anchor: middle; dominant-baseline: middle; }
+.nm.hubbed .mesh line { opacity: 0; }
+.nm.hubbed .hubl line { stroke-dashoffset: 0; }
+.nm.hubbed .hub { opacity: 1; transform: none; }
+.nm:not(.hubbed) .mesh { animation: jitter .18s linear infinite; }
+@keyframes jitter { 50% { transform: translate(0, 1px); } }
+.nmcount { position: absolute; left: 72px; bottom: 44px; display: flex; align-items: baseline; gap: 16px; }
+.nmcount b { font-size: 44px; color: var(--a1); transition: color .4s; }
+.nm-slide[data-step="1"] .nmcount b { color: var(--a4); }
+
+/* ───────────── Arquitectura ───────────── */
+
+.arch { width: 100%; height: 470px; overflow: visible; }
+.arch .a1, .arch .a2, .arch .a3 { opacity: 0; transition: opacity .5s; }
+.arch-slide[data-step="1"] .a1, .arch-slide[data-step="2"] .a1, .arch-slide[data-step="3"] .a1,
+.arch-slide[data-step="2"] .a2, .arch-slide[data-step="3"] .a2, .arch-slide[data-step="3"] .a3 { opacity: 1; }
+.arch .host { fill: color-mix(in srgb, var(--a2) 14%, var(--card)); stroke: var(--line); stroke-width: 3; }
+.arch .model { fill: color-mix(in srgb, var(--a1) 35%, var(--card)); stroke: var(--line); stroke-width: 3; }
+.arch .client { fill: color-mix(in srgb, var(--a2) 40%, var(--card)); stroke: var(--line); stroke-width: 3; }
+.arch .server { fill: color-mix(in srgb, var(--a4) 30%, var(--card)); stroke: var(--line); stroke-width: 3; }
+.arch .server.remote { fill: color-mix(in srgb, var(--a3) 30%, var(--card)); }
+.arch .wire { fill: none; stroke: var(--muted); stroke-width: 3; }
+.arch .link { fill: none; stroke: var(--line); stroke-width: 4; stroke-dasharray: 10 8; animation: dash 1s linear infinite; }
+@keyframes dash { to { stroke-dashoffset: -18; } }
+.arch .lbl { font-family: var(--font-body); font-weight: 700; font-size: 22px; fill: var(--ink); text-anchor: middle; }
+.arch .lbl.big { font-family: var(--font-display); font-size: 26px; text-anchor: start; }
+.arch .sub { font-family: var(--font-mono); font-size: 16px; fill: var(--muted); text-anchor: middle; }
+.arch .tlbl { font-family: var(--font-mono); font-size: 17px; fill: var(--a3); text-anchor: middle; paint-order: stroke; stroke: var(--bg); stroke-width: 6px; }
+.arch .pkt { fill: var(--a3); }
+.archnotes { position: absolute; left: 72px; right: 72px; bottom: 30px; display: flex; gap: 40px; font-size: 22px; color: var(--muted); }
+
+/* ───────────── Capas ───────────── */
+
+.outer { margin-top: 22px; padding: 18px 20px 20px; background: color-mix(in srgb, var(--a3) 14%, var(--card)); }
+.otitle { font-size: 24px; margin-bottom: 6px; }
+.otitle b { font-family: var(--font-display); }
+.trdesc { min-height: 56px; margin-bottom: 14px; }
+.inner { display: flex; flex-direction: column; gap: 8px; padding: 16px 18px; font-size: 22px; background: color-mix(in srgb, var(--a2) 30%, var(--card)); }
+.inner b { font-family: var(--font-display); }
+.layer2-slide .outer[data-step] { opacity: .2; transform: none; }
+.layer2-slide .outer.on { opacity: 1; }
+.layer2-slide .outer .inner[data-step].on { opacity: 1; }
+
+/* ───────────── Primitivas ───────────── */
+
+.prims { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 20px; }
+.prim { display: flex; flex-direction: column; gap: 8px; min-height: 290px; font-size: 21px; line-height: 1.3; }
+.prim .ico { font-size: 46px; }
+.prim h3 { margin: 0; font-family: var(--font-mono); }
+.prim p { color: var(--muted); }
+.prim .who { margin-top: auto; padding: 6px 12px; align-self: flex-start; border-radius: 999px; background: color-mix(in srgb, var(--ink) 10%, transparent); }
+.prim .m { font-size: 14px; color: var(--muted); }
+.prim:nth-child(1) { background: color-mix(in srgb, var(--a1) 22%, var(--card)); }
+.prim:nth-child(2) { background: color-mix(in srgb, var(--a2) 26%, var(--card)); }
+.prim:nth-child(3) { background: color-mix(in srgb, var(--a4) 22%, var(--card)); }
+.exts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 20px; }
+.exts > * { min-width: 0; }
+.exts .prim { min-height: 300px; font-size: 19px; }
+.exts .prim h3 { font-size: 24px; }
+.extnote { margin-top: 26px; }
+.clientprim { display: flex; align-items: center; gap: 20px; margin-top: 24px; padding: 16px 24px; font-size: 22px; background: color-mix(in srgb, var(--a3) 22%, var(--card)); }
+.clientprim .ico { font-size: 44px; }
+.clientprim div { display: flex; flex-direction: column; gap: 4px; }
+
+/* ───────────── Secuencia ───────────── */
+
+.seq { width: 430px; height: 480px; padding: 0; overflow: visible; }
+.seq .actor rect { fill: color-mix(in srgb, var(--a2) 35%, var(--card)); stroke: var(--line); stroke-width: 3; }
+.seq .actor.server rect { fill: color-mix(in srgb, var(--a4) 35%, var(--card)); }
+.seq .actor text { font-family: var(--font-display); font-weight: 700; font-size: 20px; fill: var(--ink); text-anchor: middle; dominant-baseline: middle; }
+.seq .life { stroke: var(--muted); stroke-width: 2; stroke-dasharray: 6 6; }
+.seq text { font-family: var(--font-mono); font-size: 15px; fill: var(--ink); text-anchor: middle; paint-order: stroke; stroke: var(--card); stroke-width: 6px; }
+.seq .msg { opacity: 0; transition: opacity .3s; }
+.seq .msg.on { opacity: 1; }
+.seq .msg.cur text { fill: var(--a3); font-weight: 700; }
+.seq .msg line { stroke: var(--ink); stroke-width: 2.5; marker-end: url(#seq-head); stroke-dasharray: 262; stroke-dashoffset: 0; }
+.seq .msg.back line { stroke-dasharray: 7 6; }
+.seq .msg.fresh:not(.back) line { animation: seqdraw .5s ease-out; }
+.seq .msg.ok text { fill: var(--good); }
+.seq .msg.nt line { stroke: var(--a3); }
+.seq .notelbl { font-size: 13px; fill: var(--muted); }
+.seq marker path { fill: var(--ink); }
+@keyframes seqdraw { from { stroke-dashoffset: 262; } }
+.seqright .code { --fs: 15px; }
+.seqcap { margin-top: 14px; }
+
+/* ───────────── Config ───────────── */
+
+.cfgside { display: flex; flex-direction: column; gap: 14px; }
+.cfgn { display: flex; flex-direction: column; gap: 4px; padding: 14px 18px; font-size: 20px; line-height: 1.3; }
+.cfgn b { font-family: var(--font-display); font-size: 24px; }
+.cfgn span { color: var(--muted); }
+
+/* ───────────── Costo ───────────── */
+
+.costs { display: flex; flex-direction: column; gap: 12px; margin-top: 40px; }
+.crow { display: grid; grid-template-columns: 360px 120px 160px 1fr; align-items: center; gap: 20px; padding: 16px 24px; font-size: 28px; border: var(--border); border-radius: 16px; background: var(--card); }
+.crow.head { padding: 4px 24px; font-size: 20px; color: var(--muted); border: 0; background: none; }
+.cbar { position: relative; display: flex; align-items: center; gap: 14px; }
+.cbar i { display: block; height: 30px; width: 0; border-radius: 8px; background: var(--a1); transition: width 1.2s cubic-bezier(.3, 1.2, .5, 1) .2s; }
+.crow.on .cbar i { width: calc(var(--w) * 4); }
+.cbar b { font-size: 26px; }
+.cite2 { position: absolute; right: 72px; bottom: 34px; }
+
+/* ───────────── Discovery ───────────── */
+
+.discbar { display: flex; align-items: center; gap: 22px; padding: 16px 22px; margin-top: 4px; }
+.dmeter { flex: 1; height: 40px; padding: 4px; border: var(--border); border-radius: 10px; background: var(--term-bg); }
+.dfill { height: 100%; width: 75%; border-radius: 5px; background: repeating-linear-gradient(90deg, var(--a1) 0 14px, color-mix(in srgb, var(--a1) 70%, #000) 14px 16px); transition: width 1s cubic-bezier(.3, 1.2, .5, 1), background .4s; }
+.disc-slide.prog .dfill { width: 1%; background: var(--a4); }
+.dtok { min-width: 150px; font-size: 32px; color: var(--a1); text-align: right; transition: color .4s; }
+.disc-slide.prog .dtok { color: var(--a4); }
+.layers3 { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1.05fr) minmax(0, 0.9fr); gap: 20px; margin-top: 22px; }
+.l3c { display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; }
+.l3c h3 { margin: 0; font-size: 26px; }
+.l3c .code { --fs: 14px; box-shadow: none; }
+.l3c .code .ln { display: none; }
+.l3c .code .cl { padding-left: 14px; }
+.l3c .code .cbar { display: none; }
+.ex3-slide .layers3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.ex3-slide .l3c .code { --fs: 13px; }
+.ex3-slide .l3c .small { font-size: 17px; }
+.ex3-slide .l3c .small .mono { font-size: 15px; }
+.discnote { margin-top: 18px; }
+
+/* ───────────── Code mode ───────────── */
+
+.lanes { display: flex; flex-direction: column; gap: 22px; }
+.lane { display: grid; grid-template-columns: 260px 1fr 200px; align-items: center; gap: 22px; padding: 18px 24px; }
+.lh { display: flex; flex-direction: column; gap: 4px; }
+.lh b { font-family: var(--font-display); font-size: 28px; }
+.ltrack { position: relative; display: flex; align-items: center; gap: 10px; height: 110px; }
+.lnode { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 96px; height: 96px; font-size: 40px; border: var(--border); border-radius: 18px; background: var(--card); }
+.lnode small { font-size: 13px; color: var(--muted); }
+.lnode.sbx { background: color-mix(in srgb, var(--a3) 25%, var(--card)); }
+.lpipe { position: relative; flex: 1; height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--ink) 18%, transparent); }
+.ltok { text-align: right; }
+.ltok b { display: block; font-size: 40px; color: var(--muted); transition: color .3s; }
+.lane.hot .ltok b { color: var(--a1); }
+.lane.cool .ltok b { color: var(--a4); }
+.dot2 { position: absolute; top: 50%; z-index: 3; padding: 2px 6px; font: 700 12px var(--font-mono); color: #111; border-radius: 6px; white-space: nowrap; background: var(--a1); transform: translate(-50%, -50%); pointer-events: none; }
+.dot2.code { background: var(--a3); }
+.dot2.res { background: var(--a4); }
+.cm2-slide .code { --fs: 15px; }
+.cmside { display: flex; flex-direction: column; gap: 14px; }
+
+/* ───────────── Sandbox ───────────── */
+
+.flowsvg { width: 560px; height: 420px; overflow: visible; }
+.flowsvg .hostbox { fill: color-mix(in srgb, var(--a2) 12%, var(--card)); stroke: var(--line); stroke-width: 3; }
+.flowsvg .b { stroke: var(--line); stroke-width: 3; fill: var(--card); }
+.flowsvg .llm { fill: color-mix(in srgb, var(--a1) 32%, var(--card)); }
+.flowsvg .box { fill: color-mix(in srgb, var(--a3) 28%, var(--card)); }
+.flowsvg .cli { fill: color-mix(in srgb, var(--a2) 36%, var(--card)); }
+.flowsvg .srv { fill: color-mix(in srgb, var(--a4) 30%, var(--card)); }
+.flowsvg .lbl { font-family: var(--font-body); font-weight: 700; font-size: 20px; fill: var(--ink); text-anchor: middle; }
+.flowsvg .lbl.s { font-size: 16px; }
+.flowsvg .cap { font-family: var(--font-mono); font-size: 14px; fill: var(--a3); }
+.flowsvg path { fill: none; stroke: var(--ink); stroke-width: 3; stroke-dasharray: 8 7; animation: dash 1s linear infinite; }
+.flowsvg .fl3 { stroke: var(--a4); }
+.sec { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 18px; font-size: 25px; line-height: 1.3; }
+
+/* ───────────── Pi: no y después sí ───────────── */
+
+.posts { display: grid; grid-template-columns: 1fr 60px 1fr; align-items: stretch; gap: 14px; margin-top: 10px; }
+.post { display: flex; flex-direction: column; gap: 12px; padding: 20px 24px; background: color-mix(in srgb, var(--a1) 16%, var(--card)); }
+.post.yes { background: color-mix(in srgb, var(--a4) 18%, var(--card)); }
+.post h3 { margin: 0; font-size: 26px; }
+.post ul { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 8px; font-size: 20px; line-height: 1.3; }
+.post q { margin-top: auto; font: italic 18px var(--font-body); color: var(--a3); }
+.pdate { font-size: 15px; color: var(--muted); }
+.parrow { align-self: center; text-align: center; font: 700 48px var(--font-display); color: var(--a1); }
+
+/* ───────────── Exposure ───────────── */
+
+.exseg button { font-family: var(--font-mono); font-size: 16px; }
+.expo-slide .code { --fs: 16px; }
+.xflist.exlist { gap: 6px; }
+.xflist.exlist span { padding: 4px 7px; font-size: 12.5px; }
+
+/* ───────────── Anatomía ───────────── */
+
+.term.mini2 { padding-bottom: 14px; }
+.term.mini2 .line { min-height: 0; padding: 4px 22px; font-size: 17px; }
+.term.mini2 .line.dim { color: var(--muted); }
+.tally { margin: 12px 22px 0; padding: 6px 14px; display: inline-block; font: 700 17px var(--font-body); border-radius: 999px; }
+.tally.bad { background: var(--a1); color: #111; }
+.tally.good { background: var(--good); color: #111; }
+.better-slide .term.mini2 { min-height: 330px; }
+.reason-slide .term.mini2 { min-height: 360px; }
+
+.hgrid { display: grid; grid-template-columns: 1fr 260px 1fr; grid-template-rows: 1fr 1fr; gap: 24px; margin-top: 30px; height: 460px; }
+.hgrid > :nth-child(1) { grid-column: 1; grid-row: 1; }
+.hgrid > :nth-child(2) { grid-column: 3; grid-row: 1; }
+.hgrid > :nth-child(3) { grid-column: 2; grid-row: 1 / 3; }
+.hgrid > :nth-child(4) { grid-column: 1; grid-row: 2; }
+.hgrid > :nth-child(5) { grid-column: 3; grid-row: 2; }
+.hcard { display: flex; flex-direction: column; gap: 8px; padding: 20px 24px; font-size: 22px; line-height: 1.3; }
+.hcard b { font-family: var(--font-display); font-size: 30px; }
+.hcard small { margin-top: auto; font-size: 17px; color: var(--muted); }
+.hcard.hot { background: color-mix(in srgb, var(--a3) 26%, var(--card)); }
+.hcard.hot small { color: var(--a3); font-weight: 700; }
+.hcore { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; border: 4px dashed color-mix(in srgb, var(--ink) 35%, transparent); border-radius: 50%; font-size: 26px; font-weight: 700; }
+.hcore .mascot { --size: 140px; }
+
+.exttable { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.er { display: grid; grid-template-columns: 260px 1fr 220px; align-items: center; gap: 16px; padding: 10px 20px; font-size: 21px; border: var(--border); border-radius: 12px; background: var(--card); }
+.er > span:first-child { font-weight: 700; }
+.er em { text-align: right; font-size: 17px; color: var(--muted); }
+.er.hot { background: color-mix(in srgb, var(--a1) 28%, var(--card)); }
+.er.hot em { color: var(--ink); font-weight: 700; }
+.er.dim { opacity: .55; }
+
+.reveal-slide .code { --fs: 14px; }
+.calls { display: flex; flex-direction: column; gap: 10px; padding: 18px 20px; }
+.callsh { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.pmode { padding: 6px 14px; font: 700 16px var(--font-mono); color: var(--ink); background: var(--card); border: var(--border); border-radius: 999px; cursor: pointer; }
+.pmode.on { background: var(--a3); color: #111; }
+.call { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 14px; font-size: 17px; border: 2px solid color-mix(in srgb, var(--ink) 30%, transparent); border-radius: 10px; }
+.call b { padding: 3px 10px; font: 700 14px var(--font-body); border-radius: 999px; opacity: 0; transform: scale(.5); transition: opacity .3s, transform .4s cubic-bezier(.2, .9, .3, 1.8); }
+.calls.show .call b { opacity: 1; transform: none; }
+.call b.ok { background: var(--good); color: #111; }
+.call b.no { background: var(--bad); color: #fff; }
+.call.blocked { border-color: var(--bad); }
+.creason { min-height: 52px; padding: 8px 12px; color: var(--a3); border-left: 4px solid var(--a3); opacity: 0; transition: opacity .3s; }
+.calls.show .creason.on { opacity: 1; }
+
+.secgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 20px; }
+.secgrid .card { display: flex; flex-direction: column; gap: 6px; min-height: 200px; font-size: 22px; line-height: 1.3; }
+.secgrid .card h3 { margin: 0; }
+.secgrid .card .ico { font-size: 40px; }
+.secgrid .card p { color: var(--muted); }
+.secgrid .card.hot { background: color-mix(in srgb, var(--a1) 22%, var(--card)); }
+
+
+/* ───────────── FastMCP ───────────── */
+
+.fserver-slide .code { --fs: 14.5px; }
+.gen { display: flex; flex-direction: column; gap: 10px; }
+.gen .code { --fs: 14.5px; }
+.genh { font-weight: 700; }
+.frun-slide .chat .line { font-size: 18px; }
+.frun-slide .chat .line.cmd, .frun-slide .chat .line.out { font-size: 16px; }
+.fclient-slide .code, .compose-slide .code { --fs: 16px; }
+.frun-slide .code { --fs: 15px; }
+.ctree { display: flex; flex-direction: column; gap: 14px; }
+.cnode { padding: 12px 18px; font-size: 24px; font-weight: 700; }
+.cnode.main { background: color-mix(in srgb, var(--a3) 30%, var(--card)); }
+.cnode.remote { background: color-mix(in srgb, var(--a2) 30%, var(--card)); }
+.cbranch { display: flex; flex-direction: column; gap: 6px; margin-left: 40px; padding-left: 20px; border-left: 4px solid var(--line); }
+.ctool { color: var(--a4); }
+.xfseg button { font-family: var(--font-mono); font-size: 16px; }
+.xf-slide .code { --fs: 16px; }
+.xfsees { display: flex; flex-direction: column; gap: 10px; padding: 18px 20px; min-height: 400px; }
+.xflist { display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; min-height: 230px; }
+.xflist span { padding: 5px 10px; font: 700 15px var(--font-mono); border: 2px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--a2) 28%, var(--card)); animation: chipIn .35s cubic-bezier(.2, .9, .3, 1.8) both; }
+.xflist span.meta { background: var(--a3); color: #111; font-size: 18px; padding: 8px 14px; }
+.xfcap { margin-top: auto; font-size: 18px; }
+.xfcap b { color: var(--a3); }
+
+/* ───────────── Tabla ───────────── */
+
+.bigtable { width: 100%; margin-top: 40px; border-collapse: separate; border-spacing: 0 12px; font-size: 30px; }
+.bigtable th { text-align: left; padding: 0 24px; font-size: 22px; font-weight: 400; color: var(--muted); }
+.bigtable td { padding: 20px 24px; background: var(--card); border-top: var(--border); border-bottom: var(--border); }
+.bigtable td:first-child { border-left: var(--border); border-radius: 16px 0 0 16px; font-weight: 700; }
+.bigtable td:last-child { border-right: var(--border); border-radius: 0 16px 16px 0; background: color-mix(in srgb, var(--a4) 22%, var(--card)); }
+.bigtable td.open { color: var(--muted); font-style: italic; background: var(--card); }
+.bigtable tr[data-step] { transform: translateX(-30px); }
+.bigtable tr[data-step].on { transform: none; }
+
+/* ───────────── Práctica ───────────── */
+
+.timer { position: absolute; right: 72px; top: 50px; font-family: var(--font-mono); font-size: 40px; padding: 8px 18px; border: var(--border); border-radius: 12px; background: var(--card); box-shadow: 4px 4px 0 var(--line); cursor: pointer; user-select: none; }
+.installs { display: flex; gap: 16px; }
+.steps-slide .track { margin-top: 140px; }
+.steps-slide .advanced { position: absolute; left: 72px; bottom: 60px; }
+.steps-slide .track .rider { --size: 100px; top: -44px; }
+
+/* ───────────── Cierre ───────────── */
+
+.live { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 88%; gap: 30px; }
+.collage { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px 22px; margin-top: 6px; }
+.tile { display: flex; flex-direction: column; justify-content: space-between; gap: 10px; height: 205px; padding: 16px 18px; font-size: 21px; font-weight: 700; }
+.tile.f-drop { transition-delay: calc(var(--i) * .16s); }
+.tile:nth-child(4n + 1) { background: color-mix(in srgb, var(--a1) 22%, var(--card)); }
+.tile:nth-child(4n + 2) { background: color-mix(in srgb, var(--a2) 26%, var(--card)); }
+.tile:nth-child(4n + 3) { background: color-mix(in srgb, var(--a3) 22%, var(--card)); }
+.tile:nth-child(4n + 4) { background: color-mix(in srgb, var(--a4) 22%, var(--card)); }
+.tile .viz { flex: 1; display: flex; align-items: center; justify-content: center; gap: 12px; }
+.tile .viz.big { font-size: 30px; white-space: nowrap; }
+.vcards2 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; margin-top: 50px; }
+.vcards2 .card { display: flex; flex-direction: column; gap: 10px; min-height: 280px; font-size: 23px; line-height: 1.35; }
+.vcards2 .card h3 { margin: 0; }
+.vcards2 .card .ico { font-size: 44px; }
+.vcards2 .card.next { background: color-mix(in srgb, var(--a2) 28%, var(--card)); }
+
+/* ───────────── HUD ───────────── */
+
+#hud {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  font: 14px/1 system-ui, sans-serif;
+  color: var(--muted);
+  opacity: .25;
+  transition: opacity .3s;
+  z-index: 60;
+}
+
+#hud:hover { opacity: 1; }
+#hud.hidden { display: none; }
+#hud .stepdots i { display: inline-block; width: 7px; height: 7px; margin: 0 2px; border-radius: 50%; background: currentColor; opacity: .3; }
+#hud .stepdots i.on { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div id="deck">
+
+  <section class="slide" data-id="portada">
+    <div class="cover">
+      <div class="kicker">Sesión 3</div>
+      <h1><span class="typed"></span><span class="cursor"></span></h1>
+      <p class="mid">De Vibe Coding a Agentic Engineering · FaMAF</p>
+      <p class="small" style="margin-top: 10px">Diego Piloni</p>
+      <div class="cover-chips">
+        <span class="mono">AGENTS.md</span><span class="mono">Skills</span><span class="mono">MCP</span><span class="mono">Subagents</span>
+      </div>
+      <div class="mascot" data-mood="wave"></div>
+    </div>
+  </section>
+
+  <section class="slide" data-id="hoy">
+    <h2>Hoy</h2>
+    <div class="track draw" style="margin-top: 110px"
+         data-stops="¿cómo les fue?|AGENTS.md|skills|MCP|subagentes|práctica|cierre" data-finish></div>
+  </section>
+
+  <section class="slide" data-id="comoles" data-steps="2">
+    <h2>¿Cómo les fue?</h2>
+    <div class="recap2">
+      <div class="card f-drop" data-step="1" style="--r: -2deg"><span class="emo">🗺️</span>¿Les sirvió planificar? ¿Hubo algo que habrían ejecutado directo?</div>
+      <div class="card f-drop hot" data-step="2" style="--r: 2deg"><span class="emo">🔁</span><span>¿Qué le tuviste que explicar <span class="hl">más de una vez</span>?</span><span class="ex">ej: ¿cómo se levanta el server? ¿cómo se corren los tests?</span><span class="menti">→ Encuesta en el aula virtual</span></div>
+    </div>
+  </section>
+
+  <section class="slide twice-slide" data-id="dosveces" data-steps="2">
+    <h2>“Lo que le explicaste dos veces, escribilo una”</h2>
+    <div class="days">
+      <div class="term day f-drop" data-step="1" style="--r: -2deg; --i: 0">
+        <div class="bar3"><i></i><i></i><i></i><span class="title">lunes · pi</span></div>
+        <div class="line"><span class="p">&gt;</span>los tests se corren con pnpm test</div>
+        <div class="line"><span class="p">&gt;</span>antes de terminar, corré pnpm lint</div>
+      </div>
+      <div class="term day f-drop" data-step="1" style="--r: 1deg; --i: 1">
+        <div class="bar3"><i></i><i></i><i></i><span class="title">miércoles · pi</span></div>
+        <div class="line"><span class="p">&gt;</span>antes de terminar, corré pnpm lint</div>
+        <div class="line"><span class="p">&gt;</span>los componentes van en src/components</div>
+      </div>
+      <div class="term day f-drop" data-step="1" style="--r: -1deg; --i: 2">
+        <div class="bar3"><i></i><i></i><i></i><span class="title">viernes · pi</span></div>
+        <div class="line"><span class="p">&gt;</span>los tests se corren con pnpm test</div>
+        <div class="line"><span class="p">&gt;</span>¿otra vez guardaste componentes fuera de src/components? 😤</div>
+      </div>
+    </div>
+    <div class="once card">
+      <div class="path">AGENTS.md</div>
+      <div class="ln">- tests: <b>pnpm test</b></div>
+      <div class="ln">- lint: <b>pnpm lint</b></div>
+      <div class="ln">- componentes en <b>src/components/</b></div>
+    </div>
+    <div class="mascot" data-mood="happy"></div>
+  </section>
+
+  <!-- ───────── AGENTS.md ───────── -->
+
+  <section class="slide" data-id="sec-agents">
+    <div class="section">
+      <div class="track mini secttrack" data-stops="AGENTS.md|skills|MCP|subagentes"></div>
+      <h1 class="mono" style="font-size: 96px">AGENTS.md</h1>
+      <p class="big">un archivo que el agente lee al arrancar,<br><span class="hl">todas las veces</span></p>
+      <p class="small" style="margin-top: 18px">un README para agentes · estándar abierto · <span class="srclink"><a href="https://agents.md/" target="_blank" rel="noopener">agents.md ↗</a></span><br>lo donó OpenAI a la <span class="srclink"><a href="https://aaif.io/news/linux-foundation-announces-formation-of-aaif" target="_blank" rel="noopener"><span class="mono">AAIF</span> · Agentic AI Foundation, Linux Foundation ↗</a></span></p>
+    </div>
+    <div class="mascot" data-mood="happy"></div>
+  </section>
+
+  <section class="slide inside-slide" data-id="adentro" data-steps="6">
+    <h2>Qué va adentro</h2>
+    <div class="split">
+      <div class="code" data-code="agents-good" data-marks="1=3-6 2=8-10 3=12-15 4=17-19 5=21-28 6=1-28" style="--h: 520px"></div>
+      <div class="notes">
+        <div class="note2 card" data-step="1"><b>⚙️ Cómo se corre y cómo se verifica</b><span>lo más valioso: con esto el agente sabe si lo que hizo anda, sin preguntarte</span></div>
+        <div class="note2 card" data-step="2"><b>🧱 Stack y decisiones ya tomadas</b><span>"Node + Express, sin framework", "los datos viven en db.json"</span></div>
+        <div class="note2 card" data-step="3"><b>🗂️ Dónde va cada cosa</b><span>para que no invente carpetas nuevas</span></div>
+        <div class="note2 card" data-step="4"><b>✍️ Estilo</b><span>solo lo que un linter no puede decirle</span></div>
+        <div class="note2 card" data-step="5"><b>🚧 Boundaries</b><span>siempre · nunca · preguntar primero: qué hace solo y qué no</span></div>
+        <div class="note2 card draft" data-step="6"><b>🤖 No arranques de cero</b><span>pedile un primer AGENTS.md: lee scripts y carpetas mejor que vos. <span class="hl">Después lo podás.</span></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide vague-slide" data-id="reales" data-steps="5">
+    <h2>Instrucciones vagas vs. usables</h2>
+    <p class="mid lead">La especificidad sirve cuando <span class="hl">le saca una decisión</span> que el agente tendría que tomar.</p>
+    <table class="bigtable">
+      <tr><th>vaga</th><th>qué falta</th><th>más usable</th></tr>
+      <tr data-step="1"><td>"Corré los tests."</td><td>¿Qué tests, dónde y cuándo?</td><td>Desde <code>services/api</code>, corré el archivo de pytest afectado mientras iterás. Corré <code>pytest tests/</code> antes de terminar un cambio en la API.</td></tr>
+      <tr data-step="2"><td>"No edites el código generado."</td><td>¿Qué código es generado?</td><td>No edites <code>packages/client/generated/</code>. Cambiá <code>schemas/openapi.yaml</code> y corré <code>pnpm generate:client</code>.</td></tr>
+      <tr data-step="3"><td>"Seguí los patrones existentes."</td><td>¿Cuál es la implementación de referencia?</td><td>Los handlers HTTP nuevos siguen a <code>services/api/routes/users.py</code>, incluida la validación y el manejo de errores.</td></tr>
+      <tr data-step="4"><td>"Respetá la arquitectura."</td><td>¿Qué límite hay que preservar?</td><td><code>packages/core</code> no puede importar de <code>packages/ui</code>. El código compartido va en <code>packages/core</code>.</td></tr>
+      <tr data-step="5"><td>"Usá el proceso de build estándar."</td><td>¿Qué es lo estándar acá?</td><td>Corré <code>make build</code> desde la raíz del repo. No uses <code>go build</code>: el wrapper agrega metadata que el build necesita.</td></tr>
+    </table>
+    <p class="small cite2"><a href="https://aaif.io/blog/writing-an-effective-agents-md" target="_blank" rel="noopener">AAIF, “Writing an effective AGENTS.md” (2026) ↗</a></p>
+  </section>
+
+  <section class="slide big-slide" data-id="grande" data-steps="3">
+    <h2>Cuando un proyecto es muy grande</h2>
+    <div class="split">
+      <div class="card bigmd giant" data-step="1">
+        <div class="bmhead"><b class="mono">AGENTS.md</b><span>gigante</span></div>
+        <div class="mono bmbody">
+          <div>## Comandos</div><div>## Arquitectura</div><div>## API</div><div>## Base de datos</div><div>## Frontend</div><div>## Deploy</div><div>## Convenciones</div><div>…</div>
+        </div>
+        <div class="bmfoot">todo cargado, todo el tiempo</div>
+      </div>
+      <div class="card bigmd index" data-step="2">
+        <div class="bmhead"><b class="mono">AGENTS.md</b><span>como índice</span></div>
+        <div class="mono bmbody">
+          <div>## Comandos</div><div>pnpm test · pnpm check</div><div>## Para saber más</div><div>API → <span class="hl">docs/api.md</span></div><div>DB → <span class="hl">docs/db.md</span></div><div>deploy → <span class="hl">docs/deploy.md</span></div>
+        </div>
+        <div class="bmfoot">el agente lee el resto cuando lo necesita</div>
+      </div>
+    </div>
+    <p class="mid bmnext f-pop" data-step="3">👉 Agus lo cuenta en la próxima clase</p>
+  </section>
+
+  <section class="slide real-slide" data-id="ejemplos" data-steps="2">
+    <h2>Dos AGENTS.md de verdad</h2>
+    <div class="reals">
+      <div class="card real" data-step="1">
+        <div class="rhead"><a href="https://github.com/cloudflare/agents/blob/main/AGENTS.md" target="_blank" rel="noopener"><b>cloudflare/agents ↗</b></a><span>monorepo TypeScript · un AGENTS.md por paquete</span></div>
+      </div>
+      <div class="card real" data-step="2">
+        <div class="rhead"><a href="https://github.com/googleworkspace/go-samples/blob/main/AGENTS.md" target="_blank" rel="noopener"><b>googleworkspace/go-samples ↗</b></a><span>samples sueltos · corto</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide find-slide" data-id="comoencuentra" data-steps="3">
+    <h2>Cómo los encuentra Pi</h2>
+    <div class="split">
+      <div class="walk card mono">
+        <div class="wcmd"><span class="p">~/src/todo-app/web $</span> pi</div>
+        <div class="wl hit" data-step="1"><span class="d">~/.pi/agent/</span><b>AGENTS.md</b><em>global</em></div>
+        <div class="wl miss" data-step="1"><span class="d">/</span><s>—</s></div>
+        <div class="wl miss" data-step="1"><span class="d">/home/</span><s>—</s></div>
+        <div class="wl miss" data-step="1"><span class="d">~/src/</span><s>—</s></div>
+        <div class="wl hit" data-step="1"><span class="d">~/src/todo-app/</span><b>AGENTS.md</b><em>repo</em></div>
+        <div class="wl hit" data-step="1"><span class="d">~/src/todo-app/web/</span><b>AGENTS.md</b><em>acá arrancaste</em></div>
+        <div class="wl child" data-step="3"><span class="d">…/web/api/</span><s>AGENTS.md</s><em>nunca: no baja a subcarpetas</em></div>
+      </div>
+      <div class="notes">
+        <div class="note2 card" data-step="1"><b>1 · global, y de / hasta donde arrancaste</b><span>los que faltan se saltean · <span class="hl">no frena en la raíz del repo</span></span></div>
+        <div class="note2 card" data-step="2"><b>2 · se pegan todos al system prompt</b><span class="mono pi-inj">&lt;project_instructions path="…/AGENTS.md"&gt;…&lt;/project_instructions&gt;</span><span>se suman · si chocan, gana el más cercano (y tu prompt, a todos)</span></div>
+        <div class="note2 card" data-step="3"><b>⚠️ se leen al arrancar</b><span>aunque después abra archivos en <span class="mono">api/</span>, ese no entra · ¿editaste uno? <span class="mono">/reload</span></span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── Skills ───────── -->
+
+  <section class="slide" data-id="sec-skills">
+    <div class="section">
+      <div class="track mini secttrack" data-stops="AGENTS.md|skills|MCP|subagentes"></div>
+      <h1>Skills</h1>
+      <p class="big">¿y si tenés un procedimiento largo<br>y lo usás en <span class="hl">situaciones específicas</span>?</p>
+      <p class="small" style="margin-top: 18px">estándar abierto · <span class="srclink"><a href="https://agentskills.io/" target="_blank" rel="noopener">agentskills.io ↗</a></span> · lo donó Anthropic a la <span class="mono">AAIF</span> (Linux Foundation)</p>
+    </div>
+    <div class="mascot" data-mood="skeptic"></div>
+  </section>
+
+  <section class="slide folder-slide" data-id="carpeta" data-steps="3">
+    <h2>Un skill es una carpeta</h2>
+    <div class="split" style="grid-template-columns: 380px 1fr">
+      <div class="ftree card mono">
+        <div class="fl root">📁 verificar-api/</div>
+        <div class="fl" data-hot="1">├── 📄 SKILL.md <em>obligatorio</em></div>
+        <div class="fl" data-hot="3">├── 📁 scripts/</div>
+        <div class="fl" data-hot="3">│&nbsp;&nbsp;&nbsp;└── casos.sh</div>
+        <div class="fl" data-hot="3">├── 📁 references/</div>
+        <div class="fl" data-hot="3">│&nbsp;&nbsp;&nbsp;└── errores.md</div>
+        <div class="fl" data-hot="3">└── 📁 assets/</div>
+        <div class="fwhere small">
+          <div><b class="mono">.agents/skills/</b> · proyecto</div>
+          <div><b class="mono">~/.pi/agent/skills/</b> · global</div>
+        </div>
+      </div>
+      <div class="code" data-code="skill-md" data-marks="1=1-7 2=9-15 3=17-19" style="--h: 540px"></div>
+    </div>
+    <div class="fmtag mono">frontmatter</div>
+  </section>
+
+  <section class="slide pd-slide" data-id="tresetapas" data-steps="3">
+    <h2>Cómo se carga: tres etapas</h2>
+    <div class="track mini" data-stops="descubrimiento|activación|ejecución"></div>
+    <div class="pdwrap">
+      <div class="sgrid"></div>
+      <div class="pdside">
+        <div class="pdstage card">
+          <div class="pdtitle">·</div>
+          <div class="small pddesc">20 skills instalados</div>
+        </div>
+        <div class="pdmeter card">
+          <div class="small">en contexto</div>
+          <b class="mono pdtok">0</b>
+          <div class="small mono pdall">si cargara todo: ~60.000</div>
+        </div>
+      </div>
+    </div>
+    <p class="mid pdname">Las tres etapas tienen nombre: <span class="hl">Progressive Disclosure</span>.</p>
+  </section>
+
+  <section class="slide trigger-slide" data-id="trigger" data-steps="3">
+    <h2>La descripción no es documentación: es el trigger</h2>
+    <div class="term tprompt"><div class="line"><span class="p">&gt;</span><span class="tq"></span></div></div>
+    <div class="tcards">
+      <div class="card tcard vague">
+        <div class="mono tname">planificar-feature</div>
+        <div class="mono tdesc">description: Ayuda a planificar ...</div>
+        <div class="tverdict">nunca se carga 💤</div>
+      </div>
+      <div class="card tcard good">
+        <div class="mono tname">verificar-api</div>
+        <div class="mono tdesc">description: Levanta el server y <u>prueba</u> la <u>API</u> con curl contra los casos de un documento de diseño. Usar después de implementar o cambiar una <u>ruta</u>, o cuando el usuario pida <u>verificar</u>, probar o pegarle a la API.</div>
+        <div class="tverdict">se activa ✓</div>
+      </div>
+    </div>
+    <div class="card tcmd f-pop" data-step="3">
+      <span>⌨️ en Pi también es un comando: <span class="mono hl">/skill:verificar-api</span></span>
+      <span class="small">¿solo a mano? en el frontmatter: <span class="mono">disable-model-invocation: true</span></span>
+    </div>
+  </section>
+
+  <section class="slide real-slide" data-id="skillsreales" data-steps="2">
+    <h2>Dos repos de skills de verdad</h2>
+    <div class="reals">
+      <div class="card real" data-step="1">
+        <div class="rhead"><a href="https://github.com/asermax/claude-plugins/tree/master/mahou/skills" target="_blank" rel="noopener"><b>asermax/claude-plugins ↗</b></a><span>Agus · mahou: 41 skills, del diseño al PR</span></div>
+      </div>
+      <div class="card real" data-step="2">
+        <div class="rhead"><a href="https://github.com/mattpocock/skills/tree/main/skills" target="_blank" rel="noopener"><b>mattpocock/skills ↗</b></a><span>Matt Pocock · por categoría: tdd, diagnosing-bugs, code-review…</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-id="regla" data-steps="2">
+    <div class="rulebig">
+      <div class="rb card f-pop" data-step="1"><span>Datos</span><b>→</b><span class="mono">AGENTS.md</span></div>
+      <div class="rb card f-pop" data-step="2"><span>Procedimientos</span><b>→</b><span class="mono">skill</span></div>
+    </div>
+  </section>
+
+  <!-- ───────── MCP ───────── -->
+
+  <section class="slide" data-id="sec-mcp">
+    <div class="section">
+      <div class="track mini secttrack" data-stops="AGENTS.md|skills|MCP|subagentes"></div>
+      <h1>MCP</h1>
+      <p class="big">Model Context Protocol:<br>el agente gana tools <span class="hl">en tiempo de ejecución</span></p>
+      <p class="small" style="margin-top: 18px">estándar abierto · <span class="srclink"><a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">modelcontextprotocol.io ↗</a></span> · lo donó Anthropic a la <span class="mono">AAIF</span> (Linux Foundation) · en Pi 1.0 viene de fábrica</p>
+    </div>
+    <div class="mascot" data-mood="wow"></div>
+  </section>
+
+  <section class="slide nm-slide" data-id="nxm" data-steps="1">
+    <h2>El problema: N × M</h2>
+    <svg class="nm" viewBox="0 0 1136 470">
+      <g class="mesh"></g>
+      <g class="hubl"></g>
+      <g class="hub"><circle cx="568" cy="235" r="64" /><text x="568" y="244">MCP</text></g>
+      <g class="nodes"></g>
+    </svg>
+    <div class="nmcount"><b class="mono nmn">4 × 5 = 20</b><span class="small nml">integraciones a mano</span></div>
+  </section>
+
+  <section class="slide arch-slide" data-id="arquitectura" data-steps="3">
+    <h2>Host, cliente y servidor</h2>
+    <svg class="arch" viewBox="0 0 1136 470">
+      <g class="a1">
+        <rect class="host" x="20" y="20" width="470" height="430" rx="18" />
+        <text class="lbl big" x="44" y="62">🧑‍💻 host · Pi</text>
+        <rect class="model" x="44" y="185" width="150" height="100" rx="14" />
+        <text class="lbl" x="119" y="228">🧠</text>
+        <text class="lbl" x="119" y="262">modelo</text>
+      </g>
+      <g class="a2">
+        <path class="wire" d="M194 235 L240 125 M194 235 L240 235 M194 235 L240 345" />
+        <rect class="client" x="240" y="95" width="210" height="60" rx="12" /><text class="lbl" x="345" y="132">cliente 1</text>
+        <rect class="client" x="240" y="205" width="210" height="60" rx="12" /><text class="lbl" x="345" y="242">cliente 2</text>
+        <rect class="client" x="240" y="315" width="210" height="60" rx="12" /><text class="lbl" x="345" y="352">cliente 3</text>
+        <path class="link" id="arch-l1" d="M450 125 L760 115" />
+        <path class="link" id="arch-l2" d="M450 235 L760 235" />
+        <path class="link" id="arch-l3" d="M450 345 L760 355" />
+        <rect class="server" x="760" y="75" width="350" height="80" rx="14" /><text class="lbl" x="935" y="110">📁 filesystem</text><text class="sub" x="935" y="138">local</text>
+        <rect class="server" x="760" y="195" width="350" height="80" rx="14" /><text class="lbl" x="935" y="230">🗄️ postgres</text><text class="sub" x="935" y="258">local</text>
+        <rect class="server remote" x="760" y="315" width="350" height="80" rx="14" /><text class="lbl" x="935" y="350">🐞 sentry</text><text class="sub" x="935" y="378">remoto</text>
+      </g>
+      <g class="a3">
+        <text class="tlbl" x="605" y="105">stdio</text>
+        <text class="tlbl" x="605" y="222">stdio</text>
+        <text class="tlbl" x="605" y="335">Streamable HTTP</text>
+        <circle class="pkt" r="7"><animateMotion dur="1.6s" repeatCount="indefinite" path="M450 125 L760 115" /></circle>
+        <circle class="pkt" r="7"><animateMotion dur="1.9s" begin=".4s" repeatCount="indefinite" path="M760 235 L450 235" /></circle>
+        <circle class="pkt" r="7"><animateMotion dur="1.4s" begin=".8s" repeatCount="indefinite" path="M450 345 L760 355" /></circle>
+      </g>
+    </svg>
+    <div class="archnotes">
+      <span data-step="2">un cliente por servidor</span>
+      <span data-step="3">el servidor puede vivir en tu máquina o en internet</span>
+    </div>
+  </section>
+
+  <section class="slide prim-slide" data-id="primitivas" data-steps="4">
+    <h2>Lo que puede ofrecer un servidor</h2>
+    <div class="prims">
+      <div class="card prim f-flip" data-step="1"><span class="ico">🔧</span><h3>tools</h3><p>funciones que se ejecutan: consultar una base, crear un issue</p><span class="who">las elige <b>el modelo</b></span><span class="mono m">tools/list · tools/call</span></div>
+      <div class="card prim f-flip" data-step="2"><span class="ico">📚</span><h3>resources</h3><p>datos para leer: un archivo, el schema de la base</p><span class="who">los elige <b>la aplicación</b></span><span class="mono m">resources/list · resources/read</span></div>
+      <div class="card prim f-flip" data-step="3"><span class="ico">💬</span><h3>prompts</h3><p>plantillas reutilizables: "revisá este PR"</p><span class="who">los elige <b>el usuario</b></span><span class="mono m">prompts/list · prompts/get</span></div>
+    </div>
+    <div class="card clientprim f-pop" data-step="4">
+      <span class="ico">🙋</span><div><b>y al revés, el servidor le puede pedir al cliente: elicitation</b><span class="small">"¿confirmás que borro estos 40 registros?" — le pregunta al usuario a través del host</span></div>
+    </div>
+  </section>
+
+  <section class="slide ex3-slide" data-id="mcp-ejemplos" data-steps="3">
+    <h2>Un ejemplo de cada una: planear un viaje</h2>
+    <div class="layers3">
+      <div class="card l3c f-flip" data-step="1"><h3>🔧 tool</h3><div class="code" data-code="ex-tool" style="--h: 350px"></div><span class="small">el modelo la llama: <span class="mono">searchFlights(…)</span></span></div>
+      <div class="card l3c f-flip" data-step="2"><h3>📚 resource</h3><div class="code" data-code="ex-resource" style="--h: 350px"></div><span class="small">la aplicación la lee: <span class="mono">weather://forecast/…</span></span></div>
+      <div class="card l3c f-flip" data-step="3"><h3>💬 prompt</h3><div class="code" data-code="ex-prompt" style="--h: 350px"></div><span class="small">el usuario lo elige: <span class="mono">/plan-vacation</span></span></div>
+    </div>
+    <p class="small discnote">ejemplos recortados de <span class="srclink"><a href="https://modelcontextprotocol.io/docs/2026-07-28/learn/server-concepts" target="_blank" rel="noopener">MCP, Understanding MCP servers ↗</a></span></p>
+  </section>
+
+  <section class="slide ext-slide" data-id="extensiones" data-steps="4">
+    <h2>Más allá del núcleo: extensiones</h2>
+    <div class="exts">
+      <div class="card prim f-flip" data-step="1"><span class="ico">🔐</span><h3>Authorization</h3><p>OAuth sin persona del otro lado: máquina a máquina, y acceso centralizado para empresas</p><span class="mono m">ext-auth</span></div>
+      <div class="card prim f-flip" data-step="2"><span class="ico">🖼️</span><h3>Apps</h3><p>el servidor muestra UI interactiva dentro del chat: un gráfico, un formulario, un video</p><span class="mono m">ext-apps</span></div>
+      <div class="card prim f-flip" data-step="3"><span class="ico">⏳</span><h3>Tasks</h3><p>operaciones largas: el cliente consulta el estado, le pasa datos a mitad de camino y retoma después</p><span class="mono m">tasks</span></div>
+      <div class="card prim f-flip" data-step="4"><span class="ico">🧩</span><h3>Skills over MCP</h3><p>un servidor publica skills como resources: el estándar de hace un rato, servido por MCP</p><span class="mono m">ext-skills</span></div>
+    </div>
+    <p class="small extnote">opcionales y apagadas por defecto · cliente y servidor las anuncian en sus <span class="mono">capabilities</span> · si el otro no la soporta, se vuelve al protocolo base · <span class="srclink"><a href="https://modelcontextprotocol.io/extensions/overview" target="_blank" rel="noopener">MCP, Extensions ↗</a></span></p>
+  </section>
+
+  <section class="slide seq-slide" data-id="conversacion" data-steps="4">
+    <h2>Una conversación MCP</h2>
+    <div class="split" style="grid-template-columns: 430px 1fr">
+      <svg class="seq card" viewBox="0 0 430 480">
+        <defs><marker id="seq-head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" /></marker></defs>
+        <g class="actor"><rect x="16" y="16" width="140" height="44" rx="10" /><text x="86" y="39">🔌 cliente</text></g>
+        <g class="actor server"><rect x="274" y="16" width="140" height="44" rx="10" /><text x="344" y="39">🖥️ servidor</text></g>
+        <line class="life" x1="86" y1="60" x2="86" y2="466" />
+        <line class="life" x1="344" y1="60" x2="344" y2="466" />
+        <g class="msg" data-msg="1"><line x1="86" y1="110" x2="340" y2="110" /><text x="215" y="100">server/discover</text></g>
+        <g class="msg back" data-msg="1"><line x1="340" y1="140" x2="90" y2="140" /><text x="215" y="132">versiones + capacidades</text></g>
+        <g class="msg" data-msg="2"><line x1="86" y1="210" x2="340" y2="210" /><text x="215" y="200">tools/list</text></g>
+        <g class="msg back" data-msg="2"><line x1="340" y1="240" x2="90" y2="240" /><text x="215" y="232">[ weather_current, … ]</text></g>
+        <g class="msg" data-msg="3"><line x1="86" y1="310" x2="340" y2="310" /><text x="215" y="300">tools/call</text></g>
+        <g class="msg back ok" data-msg="3"><line x1="340" y1="340" x2="90" y2="340" /><text x="215" y="332">content: "24°C, despejado"</text></g>
+        <g class="msg back nt" data-msg="4"><line x1="340" y1="420" x2="90" y2="420" /><text x="215" y="412">tools/list_changed</text></g>
+        <text class="msg notelbl" data-msg="4" x="215" y="450">notificación: sin id, sin respuesta</text>
+      </svg>
+      <div class="seqright">
+        <div class="code" data-code="seq1" style="--h: 400px"></div>
+        <p class="small seqcap">protocolo <span class="mono">2026-07-28</span>: sin estado, cada request lleva su <span class="mono">_meta</span></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide tool-slide add-slide" data-id="mcpadd" data-steps="4">
+    <h2>Desde la terminal: <span class="mono">pi mcp add</span></h2>
+    <div class="split" style="grid-template-columns: 520px 1fr">
+      <div class="notes">
+        <div class="note2 card" data-step="1"><b>🌐 Global por defecto</b><span>se guarda en <span class="mono">~/.pi/agent/mcp.json</span></span></div>
+        <div class="note2 card" data-step="2"><b>🔑 Con API key</b><span>límites de uso más altos · sale de <span class="mono">context7.com/dashboard</span> · Pi guarda <span class="hl">el nombre de la variable, no su valor</span>: definila antes de arrancar Pi</span></div>
+        <div class="note2 card" data-step="3"><b>✅ Verificar y usar</b><span><span class="mono">pi mcp list</span> · con una sesión abierta, <span class="mono">/reload</span> · <span class="mono">/mcp</span> para inspeccionar</span></div>
+        <div class="note2 card" data-step="4"><b>📦 Solo este proyecto</b><span><span class="mono">--local</span> desde la raíz del repo → <span class="mono">.pi/mcp.json</span></span></div>
+      </div>
+      <div class="term chat">
+        <div class="bar3"><i></i><i></i><i></i><span class="title">terminal</span></div>
+        <div class="viewport" style="height: 430px"><div class="feed" data-chat="mcpadd"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide cfg-slide" data-id="config" data-steps="2">
+    <h2>Enchufar un servidor: <span class="mono">.pi/mcp.json</span></h2>
+    <p class="small">viene en Pi 1.0 · <span class="mono">.pi/mcp.json</span> en el proyecto · <span class="mono">~/.pi/agent/mcp.json</span> global</p>
+    <div class="split" style="grid-template-columns: 1fr 420px; margin-top: 22px">
+      <div class="code" data-code="mcp-json" data-marks="1=3-6 2=7-10" style="--h: 400px"></div>
+      <div class="cfgside">
+        <div class="card cfgn" data-step="1"><b>📚 context7</b><span>docs actualizadas de librerías: el arreglo a "me inventa la API". Lo instalan en la práctica.</span></div>
+        <div class="card cfgn" data-step="2"><b>📝 notion</b><span>remoto: solo la <span class="mono">url</span>. Pide OAuth: <span class="mono">/mcp login notion</span></span></div>
+        <div class="card cfgn mono small" data-step="2">/mcp · pi mcp add · pi mcp list · /reload</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide disc-slide" data-id="discovery" data-steps="4">
+    <h2>Buena práctica 1: descubrimiento progresivo</h2>
+    <div class="discbar card">
+      <div class="seg2"><button data-mode="all" class="on">todo de entrada</button><button data-mode="prog">progresivo</button></div>
+      <div class="dmeter"><div class="dfill"></div></div>
+      <b class="mono dtok">~150.000</b>
+    </div>
+    <div class="layers3">
+      <div class="card l3c" data-step="2"><h3>1 · catálogo</h3><div class="code" data-code="disc1" style="--h: 230px"></div><span class="small">nombres y una línea</span></div>
+      <div class="card l3c" data-step="3"><h3>2 · inspeccionar</h3><div class="code" data-code="disc2" style="--h: 230px"></div><span class="small">el schema de esa tool sola</span></div>
+      <div class="card l3c" data-step="4"><h3>3 · ejecutar</h3><div class="code" data-code="disc3" style="--h: 230px"></div><span class="small">sin cargar las demás</span></div>
+    </div>
+    <p class="small discnote">el truco de los skills, aplicado a tools: <b>pagás el nombre, no el cuerpo</b> · en Pi 1.0: <span class="mono">exposure: deferred</span> · <span class="srclink"><a href="https://modelcontextprotocol.io/docs/2026-07-28/develop/clients/client-best-practices#using-progressive-discovery" target="_blank" rel="noopener">MCP, Client Best Practices ↗</a></span></p>
+  </section>
+
+  <section class="slide posts-slide" data-id="sinmcp" data-steps="3">
+    <h2>Pi dijo que no a MCP… y después que sí</h2>
+    <div class="posts">
+      <div class="card post f-flip" data-step="1">
+        <div class="pdate mono">nov 2025 · Mario Zechner</div>
+        <h3 class="srclink"><a href="https://mariozechner.at/posts/2025-11-02-what-if-you-dont-need-mcp/" target="_blank" rel="noopener">“What if you don’t need MCP at all?” ↗</a></h3>
+        <ul>
+          <li>Playwright y Chrome DevTools MCP: <b>13.7k y 18k tokens</b>, antes de empezar</li>
+          <li>la alternativa: cuatro scripts y un README de <b>~225 tokens</b></li>
+          <li>la salida de un CLI se encadena; la de MCP pasa por el contexto</li>
+        </ul>
+        <q>MCP servers also aren't composable.</q>
+      </div>
+      <div class="parrow" data-step="2">→</div>
+      <div class="card post yes f-flip" data-step="2">
+        <div class="pdate mono">sep 2026 · Earendil, el equipo de Pi</div>
+        <h3 class="srclink"><a href="https://earendil.com/posts/you-said-no-mcp/" target="_blank" rel="noopener">“You Said No MCP!” ↗</a></h3>
+        <ul>
+          <li>MCP entra al núcleo de Pi 1.0</li>
+          <li>las tools <b>no se declaran</b>: se llaman desde codemode, o se cargan con <span class="mono">tool_search</span></li>
+          <li>codemode corre del lado del harness, no en el sandbox de las tools</li>
+        </ul>
+        <q>The biggest issue with MCP continues to be that it's hard to compose.</q>
+      </div>
+    </div>
+    <p class="mid center" data-step="3" style="margin-top: 30px">La crítica no se retiró: <span class="hl">se convirtió en diseño</span>.<br><span class="small">el costo → descubrimiento progresivo · la composición → code mode</span></p>
+  </section>
+
+  <section class="slide expo-slide" data-id="exposure" data-steps="2">
+    <h2>Pi 1.0: cómo le llega cada tool al modelo</h2>
+    <div class="seg2 exseg"><button data-ex="codemode" class="on">codemode · default</button><button data-ex="deferred">deferred</button><button data-ex="direct">direct</button><button data-ex="hidden">hidden</button></div>
+    <div class="split" style="grid-template-columns: 1fr 440px; margin-top: 18px">
+      <div>
+        <div class="code" data-code="ex-codemode" style="--h: 330px"></div>
+        <p class="small" style="margin-top: 12px"><span class="mono">toolExposure</span> hace lo mismo, tool por tool · cada tool se llama <span class="mono">mcp__&lt;server&gt;__&lt;tool&gt;</span></p>
+      </div>
+      <div class="card xfsees">
+        <div class="small">lo que el modelo tiene declarado</div>
+        <div class="xflist exlist"></div>
+        <div class="small xfcap excap"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide cm-slide" data-id="cm-mcp" data-steps="3">
+    <h2>Codemode en acción: llamar un MCP</h2>
+    <div class="split" style="grid-template-columns: 1fr 470px">
+      <div class="code" data-code="cm-sentry" data-marks="1=1-2 2=3-8 3=9-17" style="--h: 470px"></div>
+      <div class="notes">
+        <div class="note2 card" data-step="1"><b>🔌 Una tool MCP es una función</b><span><span class="mono">tools.mcp__sentry__…</span>: no se le declara al modelo ni se descubre antes</span></div>
+        <div class="note2 card" data-step="2"><b>⚡ En paralelo</b><span>una llamada a <span class="mono">find_projects</span> por organización, con <span class="mono">Promise.allSettled</span></span></div>
+        <div class="note2 card" data-step="3"><b>📦 Al modelo vuelve solo esto</b><span>el script arma el resultado y maneja los errores: <span class="hl">las respuestas crudas no pasan por el contexto</span></span></div>
+        <p class="small cmcite"><a href="https://lucumr.pocoo.org/2026/10/6/codemode/" target="_blank" rel="noopener">Armin Ronacher, "What is Codemode" (oct 2026) ↗</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide cm-slide" data-id="cm-jev" data-steps="4">
+    <h2>Codemode en acción: clasificar con Jev</h2>
+    <div class="split" style="grid-template-columns: 1fr 470px">
+      <div class="code" data-code="cm-jev" data-marks="1=1 2=2-6 3=8-9+15-40 4=48-53" style="--h: 470px"></div>
+      <div class="notes">
+        <div class="note2 card" data-step="1"><b>🧠 Un modelo clasificador</b><span>Jev (typesafe) no es una tool: se usa desde el código, con <span class="mono">models.getModelOfType</span></span></div>
+        <div class="note2 card" data-step="2"><b>📥 Los datos entran por bash</b><span><span class="mono">gh issue list</span>: 100 issues en JSON que nunca pasan por el contexto</span></div>
+        <div class="note2 card" data-step="3"><b>🏷️ Clasificar cada issue</b><span><span class="mono">models.classify</span>: sentimiento, frustración y tipo, todos en paralelo (Pi corre 4 a la vez)</span></div>
+        <div class="note2 card" data-step="4"><b>🔍 Filtrar antes de volver</b><span><span class="mono">filter</span> · <span class="mono">sort</span> · <span class="mono">slice</span>: <span class="hl">vuelven 12 líneas, no 100 issues</span>. <span class="mono">store()</span> guarda el resto en la sesión</span></div>
+        <p class="small cmcite"><a href="https://lucumr.pocoo.org/2026/10/6/codemode/" target="_blank" rel="noopener">Armin Ronacher, "What is Codemode" (oct 2026) ↗</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── Subagentes ───────── -->
+
+  <section class="slide" data-id="sec-sub">
+    <div class="section">
+      <div class="track mini secttrack" data-stops="AGENTS.md|skills|MCP|subagentes"></div>
+      <h1>Subagentes</h1>
+      <p class="big">un subtask entero,<br>en <span class="hl">otro contexto</span></p>
+      <p class="small" style="margin-top: 18px">Pi no los trae de fábrica: se agregan con una extensión · por ejemplo <span class="srclink"><a href="https://pi.dev/packages/pi-subagents" target="_blank" rel="noopener">pi-subagents ↗</a></span><br><span class="mono" style="white-space: nowrap">$ pi install npm:pi-subagents</span></p>
+    </div>
+    <div class="mascot" data-mood="happy"></div>
+  </section>
+
+  <section class="slide dirty-slide" data-id="ensucia" data-steps="3">
+    <h2>Investigar ensucia el contexto</h2>
+    <p class="mid lead">"¿Cómo maneja el login este repo?": 30 <span class="mono">read</span> y 12 <span class="mono">grep</span> para quedarte con un párrafo.</p>
+    <div class="ctxrows card">
+      <div class="crow2" data-step="1">
+        <span class="who">sin subagente<small>tu sesión</small></span>
+        <div class="cbar2"><i class="me" style="--w: 1%"></i><i class="ex" style="--w: 26.5%">30 read · 12 grep</i><i class="sum" style="--w: 1%"></i></div>
+        <b class="mono">~56k</b>
+      </div>
+      <div class="crow2" data-step="2">
+        <span class="who">con subagente<small>tu sesión</small></span>
+        <div class="cbar2"><i class="me" style="--w: 1%"></i><i class="sum" style="--w: 1%"></i></div>
+        <b class="mono">~3k</b>
+      </div>
+      <div class="crow2 child" data-step="2">
+        <span class="who">↳ subagente<small>contexto aparte</small></span>
+        <div class="cbar2"><i class="ex" style="--w: 26.5%">30 read · 12 grep</i></div>
+        <b class="mono">~53k</b>
+      </div>
+    </div>
+    <p class="big center" data-step="3" style="margin-top: 40px">Tu sesión ve <span class="hl">el resumen</span>, no la búsqueda.<br><span class="mid" style="color: var(--muted)">El contexto del subagente se descarta cuando termina.</span></p>
+  </section>
+
+  <section class="slide tool-slide sub-slide" data-id="delegar" data-steps="3">
+    <h2>Cómo funciona</h2>
+    <div class="split" style="grid-template-columns: 560px 1fr">
+      <div class="notes">
+        <div class="note2 card" data-step="1"><b>📨 le pasás una tarea, no tu conversación</b><span>no vio nada de lo que hablaron: <span class="hl">el prompt es todo lo que sabe</span></span></div>
+        <div class="note2 card" data-step="2"><b>🧠 contexto, transcript y tools propios</b><span>explora todo lo que necesite sin tocar tu ventana</span></div>
+        <div class="note2 card" data-step="3"><b>📬 vuelve un solo mensaje</b><span>el resultado entra a tu sesión como una respuesta más</span></div>
+      </div>
+      <div class="term chat">
+        <div class="bar3"><i></i><i></i><i></i><span class="title">pi</span></div>
+        <div class="viewport" style="height: 460px"><div class="feed" data-chat="delegar"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide tool-slide sub-slide par-slide" data-id="paralelo" data-steps="3">
+    <h2>En paralelo: tres a la vez</h2>
+    <div class="split" style="grid-template-columns: 560px 1fr">
+      <div class="notes">
+        <div class="note2 card" data-step="1"><b>🔀 tareas independientes</b><span>cada subagente recibe su estilo y no sabe de los otros</span></div>
+        <div class="note2 card" data-step="2"><b>⏱️ tarda lo que el más lento</b><span>no la suma: <span class="hl">tres intentos por el precio de uno</span> en tiempo</span></div>
+        <div class="alts" data-step="3">
+          <div class="alt a-min"><b>Agentic<br>Engineering</b></div>
+          <div class="alt a-ilu"><span>🐙</span><b>Agentic Engineering</b></div>
+          <div class="alt a-term"><b>$ agentic-<br>engineering_</b></div>
+        </div>
+      </div>
+      <div class="term chat">
+        <div class="bar3"><i></i><i></i><i></i><span class="title">pi</span></div>
+        <div class="viewport" style="height: 460px"><div class="feed" data-chat="paralelo"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide real-slide" data-id="agentesreales" data-steps="3">
+    <h2>Dos agentes de verdad</h2>
+    <p class="mid">Un agente es un markdown: <span class="hl">frontmatter YAML</span> arriba, <span class="hl">system prompt</span> abajo.</p>
+    <div class="reals" style="margin-top: 50px">
+      <div class="card real" data-step="1">
+        <div class="rhead"><a href="https://github.com/asermax/claude-plugins/blob/master/mahou/agents/reuse-reviewer.md" target="_blank" rel="noopener"><b>mahou · reuse-reviewer ↗</b></a><span>Agus · busca código que reimplementa algo que ya existe · no edita nada</span></div>
+      </div>
+      <div class="card real" data-step="2">
+        <div class="rhead"><a href="https://github.com/nicobailon/pi-subagents/blob/main/agents/researcher.md" target="_blank" rel="noopener"><b>pi-subagents · researcher ↗</b></a><span>de fábrica en pi-subagents · investiga en la web y escribe research.md</span></div>
+      </div>
+    </div>
+    <div class="card awhere mono" data-step="3">
+      <div><span>builtin</span><b>~/.pi/agent/extensions/subagent/agents/</b></div>
+      <div><span>usuario</span><b>~/.pi/agent/agents/**/*.md</b></div>
+      <div><span>proyecto</span><b>.pi/agents/**/*.md</b></div>
+    </div>
+  </section>
+
+  <section class="slide when-slide" data-id="cuando" data-steps="2">
+    <h2>Cuándo sí y cuándo no</h2>
+    <div class="split">
+      <div class="card when yes" data-step="1">
+        <h3>✅ delegá</h3>
+        <ul>
+          <li>explorar o investigar mucho para quedarte con poco</li>
+          <li>revisar con ojos frescos: no vio cómo lo escribiste</li>
+          <li>tareas independientes, en paralelo</li>
+        </ul>
+      </div>
+      <div class="card when no" data-step="2">
+        <h3>❌ hacelo en tu sesión</h3>
+        <ul>
+          <li>cuando querés ver el razonamiento o decidir a mitad de camino</li>
+          <li>trabajo que depende de lo que ya hablaron</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── Cierre ───────── -->
+
+  <section class="slide table-slide" data-id="tabla" data-steps="3">
+    <h2>Siempre cargado vs. on demand</h2>
+    <table class="bigtable">
+      <tr><th></th><th>siempre cargado</th><th>on demand</th></tr>
+      <tr data-step="1"><td>contexto del proyecto</td><td class="mono">AGENTS.md</td><td class="mono">skill</td></tr>
+      <tr data-step="2"><td>tools externas</td><td>todas las definiciones</td><td><span class="mono">deferred</span> · <span class="mono">codemode</span></td></tr>
+      <tr data-step="3"><td>trabajo</td><td>tu sesión</td><td>subagente</td></tr>
+    </table>
+  </section>
+
+  <section class="slide steps-slide" data-id="practica">
+    <h2>Práctica (45 min)</h2>
+    <div class="timer" title="click: reiniciar">⏱ 00:00</div>
+    <div class="installs">
+      <span class="install">context7 → .pi/mcp.json</span>
+      <span class="install">/reload · /mcp</span>
+      <span class="install">pi install npm:pi-subagents</span>
+    </div>
+    <div class="track draw" data-stops="AGENTS.md (y podarlo)|probarlo en una sesión nueva|un skill para verificar que tu app anda|context7 por MCP|delegar a un subagente" data-finish></div>
+    <p class="small advanced">avanzado, si te sobra tiempo · tu propio servidor o cliente MCP en Python con <span class="srclink"><a href="https://gofastmcp.com/" target="_blank" rel="noopener"><b>FastMCP</b> ↗</a></span></p>
+  </section>
+
+  <section class="slide recap-slide" data-id="recap" data-steps="1">
+    <h2>¿Qué aprendimos?</h2>
+    <div class="collage">
+      <div class="card tile f-drop" data-step="1" style="--r: -3deg; --i: 0"><div class="viz big">🔁 → 📄</div><span>lo que explicaste dos veces, escribilo una</span></div>
+      <div class="card tile f-drop" data-step="1" style="--r: 2deg; --i: 1"><div class="viz big mono" style="font-size: 24px">AGENTS.md</div><span>datos del proyecto, en cada turno: corto</span></div>
+      <div class="card tile f-drop" data-step="1" style="--r: -1deg; --i: 2"><div class="viz big">📁 SKILL.md</div><span>procedimientos, cargados on demand</span></div>
+      <div class="card tile f-drop" data-step="1" style="--r: 3deg; --i: 3"><div class="viz big">🎯</div><span>la description es el trigger</span></div>
+      <div class="card tile f-drop" data-step="1" style="--r: 2deg; --i: 4"><div class="viz big">🧑‍💻 ⇄ 🔌 ⇄ 🖥️</div><span>MCP: host, cliente y servidor</span></div>
+      <div class="card tile f-drop" data-step="1" style="--r: -2deg; --i: 5"><div class="viz big">🔎 150k → 2k</div><span>descubrimiento progresivo</span></div>
+      <div class="card tile f-drop" data-step="1" style="--r: 2deg; --i: 6"><div class="viz big">🧑‍🤝‍🧑 → 📬</div><span>subagentes: un trabajo entero, en otro contexto</span></div>
+    </div>
+  </section>
+
+</div>
+
+<div id="hud">
+  <div><span class="count"></span> &nbsp; <span class="stepdots"></span></div>
+  <div>← → navegar · F pantalla completa · H ocultar</div>
+</div>
+
+<script>
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+const rand = (a, b) => a + Math.random() * (b - a);
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/* ───────────── Mascot ───────────── */
+
+const INK = "var(--mascot-ink)";
+
+// Small eyes and mouth: the octopus is a creature, the tentacles carry the mood.
+const EYES = {
+  open: `<ellipse cx="42" cy="44" rx="3.2" ry="4.2" fill="${INK}"/><ellipse cx="58" cy="44" rx="3.2" ry="4.2" fill="${INK}"/><circle cx="43.2" cy="42.5" r="1.2" fill="#fff"/><circle cx="59.2" cy="42.5" r="1.2" fill="#fff"/>`,
+  wide: `<circle cx="41" cy="43" r="5.5" fill="#fff" stroke="${INK}" stroke-width="2"/><circle cx="59" cy="43" r="5.5" fill="#fff" stroke="${INK}" stroke-width="2"/><circle cx="41.5" cy="44" r="2.4" fill="${INK}"/><circle cx="58.5" cy="44" r="2.4" fill="${INK}"/>`,
+  happy: `<path d="M38 46 q4 -6 8 0 M54 46 q4 -6 8 0" fill="none" stroke="${INK}" stroke-width="2.8" stroke-linecap="round"/>`,
+  half: `<path d="M38 44 h8 M54 44 h8" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/><path d="M39 45 q3 4 6 0 M55 45 q3 4 6 0" fill="${INK}"/><path d="M53 36 l10 -2" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/>`,
+  angry: `<path d="M38 44 h8 M54 44 h8" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/><path d="M39 45 q3 4 6 0 M55 45 q3 4 6 0" fill="${INK}"/><path d="M37 36 l9 4 M63 36 l-9 4" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/>`,
+  spiral: `<path d="M42 44 m-1 0 a1 1 0 1 1 2 0 a2.5 2.5 0 1 1 -5 0 a4 4 0 1 1 8 0 M58 44 m-1 0 a1 1 0 1 1 2 0 a2.5 2.5 0 1 1 -5 0 a4 4 0 1 1 8 0" fill="none" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>`,
+  odd: `<circle cx="42" cy="45" r="2.8" fill="${INK}"/><circle cx="58" cy="43" r="5.5" fill="#fff" stroke="${INK}" stroke-width="2"/><circle cx="57.5" cy="44" r="2.4" fill="${INK}"/><path d="M37 39 l9 -2 M53 33 l10 3" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>`,
+};
+
+const MOUTH = {
+  smile: `<path d="M46 51 Q50 55 54 51" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>`,
+  grin: `<path d="M44.5 50 Q50 59 55.5 50 Z" fill="${INK}" stroke="${INK}" stroke-width="1.5" stroke-linejoin="round"/>`,
+  worried: `<path d="M46 54 Q50 50 54 54" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>`,
+  flat: `<path d="M46 53 h7" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>`,
+  o: `<ellipse cx="50" cy="54" rx="2.8" ry="3.5" fill="${INK}"/>`,
+  squiggle: `<path d="M45 53 q1.7 -2.5 3.4 0 t3.4 0 t3.4 0" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>`,
+};
+
+// Tiny tools, drawn around their own (0, 0) so a tentacle tip can hold them.
+const TOOLS = {
+  wrench: `<path d="M-7 8 L2 -1" stroke="${INK}" stroke-width="7.5" stroke-linecap="round"/><path d="M-7 8 L2 -1" stroke="var(--a2)" stroke-width="3.6" stroke-linecap="round"/><circle cx="4" cy="-3" r="5.5" fill="var(--a2)" stroke="${INK}" stroke-width="1.8"/><path d="M4.5 -3.5 L10 -9" stroke="${INK}" stroke-width="4" stroke-linecap="round"/>`,
+  term: `<rect x="-9" y="-7" width="18" height="14" rx="2.5" fill="var(--term-bg)" stroke="var(--a2)" stroke-width="2"/><rect x="-9" y="-7" width="18" height="4.5" rx="2" fill="var(--a2)"/><circle cx="-6" cy="-4.8" r=".9" fill="var(--a1)"/><circle cx="-3.4" cy="-4.8" r=".9" fill="var(--a3)"/><path d="M-6 0 l3 2.5 l-3 2.5 M0 5 h4" fill="none" stroke="var(--a4)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>`,
+  book: `<rect x="-6.5" y="-8.5" width="13" height="17" rx="2" fill="var(--a1)" stroke="${INK}" stroke-width="1.8"/><path d="M-3.5 -8.5 v17" stroke="${INK}" stroke-width="1.4"/><path d="M2 -4 l1 2 l2 .3 l-1.5 1.4 l.4 2 l-1.9 -1 l-1.9 1 l.4 -2 l-1.5 -1.4 l2 -.3 Z" fill="var(--a3)" stroke="${INK}" stroke-width=".8" stroke-linejoin="round"/>`,
+};
+
+const tool = (name, x, y, r = 0) => `<g transform="translate(${x} ${y}) rotate(${r})">${TOOLS[name]}</g>`;
+
+// A tentacle is a thick outlined tube that wiggles around its root.
+const tentacle = ([d, ox, oy, extra = "", cls = ""], i) => `<g class="tt ${cls}" style="transform-origin: ${ox}px ${oy}px; animation-delay: ${-i * .37}s">
+    <path d="${d}" fill="none" stroke="${INK}" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="${d}" fill="none" stroke="var(--mascot)" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/>${extra}</g>`;
+
+// legs hang under the head (drawn behind it), arms come off its sides (drawn in front)
+const LEGS = {
+  relaxed: [
+    ["M32 60 C28 70 22 76 18 82 C15 87 19 91 23 88", 32, 60],
+    ["M43 62 C42 72 40 80 37 86 C35 90 39 92 41 89", 43, 62],
+    ["M57 62 C58 72 60 80 63 86 C65 90 61 92 59 89", 57, 62],
+    ["M68 60 C72 70 78 76 82 82 C85 87 81 91 77 88", 68, 60],
+  ],
+  kick: [
+    ["M32 60 C24 66 16 66 11 72 C8 77 12 81 15 77", 32, 60],
+    ["M43 62 C40 72 34 78 30 86", 43, 62],
+    ["M57 62 C60 72 66 78 70 86", 57, 62],
+    ["M68 60 C76 66 84 66 89 72 C92 77 88 81 85 77", 68, 60],
+  ],
+  droop: [
+    ["M33 61 C31 72 36 80 41 89", 33, 61],
+    ["M44 63 C44 74 45 82 46 90", 44, 63],
+    ["M56 63 C56 74 55 82 54 90", 56, 63],
+    ["M67 61 C69 72 64 80 59 89", 67, 61],
+  ],
+  tangle: [
+    ["M32 60 C22 66 18 78 26 82 C33 85 34 76 28 76", 32, 60],
+    ["M43 62 C48 72 64 74 62 84 C60 91 52 88 55 84", 43, 62],
+    ["M57 62 C52 72 36 74 38 84 C40 91 48 88 45 84", 57, 62],
+    ["M68 60 C78 66 82 78 74 82 C67 85 66 76 72 76", 68, 60],
+  ],
+  stiff: [
+    ["M33 61 L30 89", 33, 61],
+    ["M44 63 L43 90", 44, 63],
+    ["M56 63 L57 90", 56, 63],
+    ["M67 61 L70 89", 67, 61],
+  ],
+  flare: [
+    ["M32 60 C24 68 14 74 4 76", 32, 60],
+    ["M42 62 C38 74 32 84 26 92", 42, 62],
+    ["M58 62 C62 74 68 84 74 92", 58, 62],
+    ["M68 60 C76 68 86 74 96 76", 68, 60],
+  ],
+  question: [
+    ["M32 60 C28 70 22 76 18 82 C15 87 19 91 23 88", 32, 60],
+    ["M43 62 C42 72 40 80 37 86 C35 90 39 92 41 89", 43, 62],
+    ["M57 62 C58 72 58 80 58 88", 57, 62],
+    ["M68 60 C78 58 86 64 84 72 C82 78 74 78 74 86", 68, 60],
+  ],
+  stomp: [
+    ["M32 60 C26 70 22 80 14 86", 32, 60],
+    ["M43 62 C41 72 38 82 34 90", 43, 62],
+    ["M57 62 C59 72 62 82 66 90", 57, 62],
+    ["M68 60 C74 70 78 80 86 86", 68, 60],
+  ],
+};
+
+const MOODS = {
+  happy: {
+    eyes: "open", mouth: "smile", legs: "relaxed",
+    arms: [
+      ["M26 52 C16 54 10 60 10 67", 26, 52, tool("book", 9, 74, -10)],
+      ["M74 52 C84 54 90 60 90 67", 74, 52, tool("wrench", 92, 72, 10)],
+    ],
+  },
+  wave: {
+    eyes: "happy", mouth: "grin", legs: "relaxed",
+    arms: [
+      ["M26 52 C16 54 10 60 10 67", 26, 52, tool("term", 10, 75, -6)],
+      ["M74 50 C86 46 92 34 90 22 C89 16 83 15 83 20", 74, 50, "", "wv"],
+    ],
+  },
+  joy: {
+    eyes: "happy", mouth: "grin", legs: "kick", sparks: true,
+    arms: [
+      ["M27 46 C16 40 10 30 12 20", 27, 46, tool("wrench", 12, 13, -30)],
+      ["M73 46 C84 40 90 30 88 20", 73, 46, tool("book", 88, 12, 12)],
+    ],
+  },
+  sweat: {
+    eyes: "wide", mouth: "worried", legs: "droop", drop: true,
+    arms: [
+      ["M27 55 C26 66 34 72 42 72", 27, 55],
+      ["M73 55 C74 66 66 72 58 72", 73, 55],
+    ],
+    front: tool("term", 50, 71),
+  },
+  dizzy: {
+    eyes: "spiral", mouth: "squiggle", legs: "tangle", stars: true, sway: true,
+    arms: [
+      ["M26 52 C14 52 10 42 16 37 C22 33 26 40 21 42", 26, 52],
+      ["M74 52 C86 52 90 62 84 67 C78 71 74 64 79 62", 74, 52],
+    ],
+  },
+  skeptic: {
+    eyes: "half", mouth: "flat", legs: "stiff",
+    arms: [
+      ["M27 57 C32 70 56 72 69 63", 27, 57],
+      ["M74 52 C84 50 88 42 86 33", 74, 52, tool("book", 85, 26, 8)],
+    ],
+  },
+  wow: {
+    eyes: "wide", mouth: "o", legs: "flare", burst: true,
+    arms: [
+      ["M26 48 C18 40 10 32 4 26", 26, 48],
+      ["M74 48 C82 40 90 32 96 26", 74, 48],
+    ],
+  },
+  confused: {
+    eyes: "odd", mouth: "squiggle", legs: "question", q: true,
+    arms: [
+      ["M26 50 C14 44 14 26 28 20", 26, 50],
+      ["M74 52 C84 56 88 62 87 69", 74, 52, tool("book", 88, 75, 170)],
+    ],
+  },
+  frustrated: {
+    eyes: "angry", mouth: "worried", legs: "stomp", steam: true, ink: true,
+    arms: [
+      ["M27 48 C18 44 14 36 16 28 C17 23 23 23 21 28", 27, 48],
+      ["M73 48 C82 44 86 36 84 28 C83 23 77 23 79 28", 73, 48],
+    ],
+  },
+};
+
+const HEAD = "M24 58 C20 34 32 14 50 14 C68 14 80 34 76 58 C72 66 28 66 24 58 Z";
+
+const mascotSVG = (mood) => {
+  const name = MOODS[mood] ? mood : "happy";
+  const m = MOODS[name];
+  const legs = LEGS[m.legs].map(tentacle).join("");
+  const arms = m.arms.map((a, i) => tentacle(a, i + 4)).join("");
+  const star = (x, y) => `<path d="M${x} ${y - 4} l1.2 2.8 l2.8 1.2 l-2.8 1.2 l-1.2 2.8 l-1.2 -2.8 l-2.8 -1.2 l2.8 -1.2 Z" fill="var(--a3)" stroke="${INK}" stroke-width=".9" stroke-linejoin="round"/>`;
+
+  return `<svg viewBox="0 0 100 100" class="m-${name}">
+    <ellipse cx="50" cy="94" rx="30" ry="4" fill="#000" opacity=".12"/>
+    ${m.ink ? `<g class="puff"><circle cx="12" cy="84" r="7.5" fill="var(--muted)" stroke="${INK}" stroke-width="1.5"/><circle cx="4" cy="76" r="5" fill="var(--muted)" stroke="${INK}" stroke-width="1.5"/><circle cx="19" cy="75" r="4.5" fill="var(--muted)" stroke="${INK}" stroke-width="1.5"/></g>` : ""}
+    <g${m.sway ? ' class="sway"' : ""}>
+    ${legs}
+    <path d="${HEAD}" fill="var(--mascot)" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+    <circle cx="60" cy="24" r="2.6" fill="var(--a1)" opacity=".4"/><circle cx="67" cy="31" r="2" fill="var(--a1)" opacity=".4"/><circle cx="58" cy="31" r="1.5" fill="var(--a1)" opacity=".4"/>
+    <ellipse cx="37" cy="26" rx="6.5" ry="3.5" fill="#fff" opacity=".5" transform="rotate(-35 37 26)"/>
+    <circle cx="34" cy="50" r="3.4" fill="#ff7a93" opacity=".45"/><circle cx="66" cy="50" r="3.4" fill="#ff7a93" opacity=".45"/>
+    ${EYES[m.eyes]}${MOUTH[m.mouth]}
+    ${arms}${m.front || ""}
+    </g>
+    ${m.stars ? `<g class="orbit">${star(30, 10)}${star(70, 14)}<circle cx="50" cy="3" r="2" fill="var(--a4)" stroke="${INK}" stroke-width=".9"/></g>` : ""}
+    ${m.sparks ? `<g class="spark">${star(28, 4)}</g><g class="spark" style="animation-delay: -.4s">${star(72, 4)}</g><g class="spark" style="animation-delay: -.2s">${star(50, -2)}</g>` : ""}
+    ${m.burst ? '<path class="steam" d="M50 7 v-7 M34 11 l-4 -6 M66 11 l4 -6 M22 20 l-6 -3 M78 20 l6 -3" stroke="var(--a3)" stroke-width="3" stroke-linecap="round"/>' : ""}
+    ${m.q ? `<text class="qmark" x="78" y="16" font-size="26" font-weight="700" fill="var(--a1)" stroke="${INK}" stroke-width="1" paint-order="stroke" font-family="var(--font-display)">?</text>` : ""}
+    ${m.steam ? '<path class="steam" d="M44 9 q-3 -4 0 -8 M56 9 q3 -4 0 -8 M50 7 v-8" fill="none" stroke="var(--a1)" stroke-width="3.2" stroke-linecap="round"/>' : ""}
+    ${m.drop ? `<path class="drop" d="M78 22 q-5 8 0 11 q5 -3 0 -11Z" fill="#6ec3ff" stroke="${INK}" stroke-width="1.5"/>` : ""}
+  </svg>`;
+};
+
+const setMood = (el, mood) => {
+  if (el == null || el.dataset.cur === mood) {
+    return;
+  }
+
+  el.dataset.cur = mood;
+  el.innerHTML = mascotSVG(mood);
+};
+
+const replay = (el, cls) => {
+  el.classList.remove(cls);
+  void el.offsetWidth;
+  el.classList.add(cls);
+};
+
+const confetti = (container, x, y, count = 28) => {
+  const colors = ["--a1", "--a2", "--a3", "--a4"];
+
+  for (let i = 0; i < count; i += 1) {
+    const c = document.createElement("div");
+    c.className = "confetti";
+    c.style.left = `${x}px`;
+    c.style.top = `${y}px`;
+    c.style.background = `var(${colors[i % colors.length]})`;
+    c.style.setProperty("--dx", `${rand(-220, 220)}px`);
+    c.style.setProperty("--dy", `${rand(-200, 160)}px`);
+    c.style.setProperty("--rot", `${rand(-540, 540)}deg`);
+    container.appendChild(c);
+    setTimeout(() => c.remove(), 1500);
+  }
+};
+
+/* ───────────── Track ───────────── */
+
+const buildTrack = (track) => {
+  const stops = track.dataset.stops.split("|");
+
+  track.innerHTML = stops.map((label, i) => {
+    const finish = track.hasAttribute("data-finish") && i === stops.length - 1;
+
+    return `<div class="stop${finish ? " finish" : ""}" style="animation-delay: ${i * .18}s; z-index: ${stops.length - i}"><div class="dot"></div><span>${label}</span></div>`;
+  }).join("") + '<div class="mascot rider" data-mood="happy"></div>';
+};
+
+const setTrack = (track, pos) => {
+  const stops = $$(".stop", track);
+  const rider = $(".rider", track);
+
+  stops.forEach((s, i) => s.classList.toggle("lit", i <= pos));
+
+  const target = stops[Math.max(pos, 0)];
+  rider.style.left = `${target.offsetLeft + target.offsetWidth / 2}px`;
+  rider.style.opacity = pos < 0 ? 0 : 1;
+};
+
+const redraw = (track) => replay(track, "draw");
+
+/* ───────────── Slide hooks ───────────── */
+
+let run = 0;
+let visit = 0;
+
+const typeInto = async (el, text, speed, token, clock = () => run) => {
+  el.textContent = "";
+
+  for (const ch of text) {
+    if (token !== clock()) {
+      return;
+    }
+
+    el.textContent += ch;
+    await sleep(speed);
+  }
+};
+
+const fmt = (n) => Math.round(n).toLocaleString("es-AR");
+
+// Counts a number up (or down) into el; stops when the slide moves on
+const countTo = async (el, from, to, ms, token, render = fmt) => {
+  const t0 = Date.now();
+
+  while (Date.now() - t0 < ms) {
+    if (token !== run) {
+      return;
+    }
+
+    const k = (Date.now() - t0) / ms;
+    el.textContent = render(from + (to - from) * (1 - (1 - k) ** 3));
+    await sleep(30);
+  }
+
+  el.textContent = render(to);
+};
+
+/* ───────────── Code blocks ───────────── */
+
+const CODES = {
+  "agents-good": { lang: "md", title: "AGENTS.md", src: `# todo-app
+
+## Comandos
+- \`pnpm install\` — instalar
+- \`pnpm dev\` — levanta el server en localhost:3000
+- \`pnpm test\` — corre los tests
+
+## Stack y decisiones
+- Node 22 + Express; sin framework de frontend
+- Los datos viven en \`db.json\`
+
+## Dónde va cada cosa
+- \`server.js\`: las rutas de la API
+- \`public/\`: HTML, CSS y JS del navegador
+- \`docs/\`: un documento de diseño por feature
+
+## Estilo
+- Mensajes de error para el usuario, en español
+- Nada de comentarios que repiten la línea de abajo
+
+## Boundaries
+Siempre:
+- Corré \`pnpm test\` antes de decir que terminaste
+Nunca:
+- Uses npm: rompe el lockfile
+- Agregues una base de datos: los datos viven en \`db.json\`
+Preguntar primero:
+- No agregues dependencias sin preguntar` },
+
+  "skill-md": { lang: "md", title: "verificar-api/SKILL.md", src: `---
+name: verificar-api
+description: >
+  Levanta el server y prueba la API con curl contra los
+  casos del documento de diseño en docs/. Usar después de
+  implementar o cambiar una ruta, o cuando pidan verificarla.
+---
+
+# Verificar la API
+
+1. Levantá el server con \`pnpm dev &\` y esperá el puerto :3000
+2. Leé los casos del documento de la feature en \`docs/\`
+3. Corré \`scripts/casos.sh docs/<feature>.md\`
+4. Si un caso falla, mirá \`references/errores.md\`
+5. Reportá una tabla: caso · esperado · obtenido
+
+## Gotchas
+- El server tarda ~2 s en levantar: no le pegues antes
+- Un 400 nunca escribe en \`db.json\`: verificalo con jq` },
+
+  "tool-def": { lang: "json", title: "una tool", src: `{
+  "name": "weather_current",
+  "description": "Clima actual de un lugar",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "location": { "type": "string" }
+    },
+    "required": ["location"]
+  }
+}` },
+
+  "tr-stdio": { lang: "bash", title: "stdio", src: `# el host lanza el servidor como proceso hijo
+$ npx -y @upstash/context7-mcp
+
+# y le habla por stdin / stdout, un JSON por línea
+→ {"jsonrpc":"2.0","id":2,"method":"tools/list"}
+← {"jsonrpc":"2.0","id":2,"result":{"tools":[…]}}
+
+# los logs del servidor van por stderr` },
+
+  "tr-http": { lang: "bash", title: "Streamable HTTP", src: `POST /mcp HTTP/1.1
+Host: mcp.sentry.dev
+Authorization: Bearer eyJhbGciOi…
+Content-Type: application/json
+
+{"jsonrpc":"2.0","id":2,"method":"tools/list"}
+
+# la respuesta: un JSON, o un stream SSE
+# si la operación es larga` },
+
+  seq0: { lang: "json", title: "mensajes", src: `// avanzá para ver cada mensaje` },
+
+  seq1: { lang: "json", title: "1 · descubrimiento", src: `// → cliente
+{ "jsonrpc": "2.0", "id": 1, "method": "server/discover",
+  "params": { "_meta": {
+    "io.modelcontextprotocol/protocolVersion": "2026-07-28" } } }
+
+// ← servidor
+{ "jsonrpc": "2.0", "id": 1, "result": {
+  "supportedVersions": ["2026-07-28"],
+  "capabilities": { "tools": { "listChanged": true } } } }` },
+
+  seq2: { lang: "json", title: "2 · qué tools hay", src: `// → cliente
+{ "jsonrpc": "2.0", "id": 2, "method": "tools/list" }
+
+// ← servidor
+{ "jsonrpc": "2.0", "id": 2, "result": { "tools": [{
+  "name": "weather_current",
+  "description": "Clima actual de un lugar",
+  "inputSchema": { "type": "object",
+    "properties": { "location": { "type": "string" } },
+    "required": ["location"] } }] } }` },
+
+  seq3: { lang: "json", title: "3 · usar una", src: `// → cliente
+{ "jsonrpc": "2.0", "id": 3, "method": "tools/call",
+  "params": { "name": "weather_current",
+              "arguments": { "location": "Córdoba" } } }
+
+// ← servidor
+{ "jsonrpc": "2.0", "id": 3, "result": {
+  "content": [{ "type": "text",
+                "text": "24°C, despejado" }] } }` },
+
+  seq4: { lang: "json", title: "4 · algo cambió", src: `// ← servidor, por el stream de subscriptions/listen
+{ "jsonrpc": "2.0",
+  "method": "notifications/tools/list_changed" }
+
+// sin "id": es una notificación, nadie responde
+// el cliente vuelve a pedir tools/list` },
+
+  "mcp-json": { lang: "json", title: ".pi/mcp.json", src: `{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    },
+    "notion": {
+      "url": "https://mcp.notion.com/mcp",
+      "description": "Páginas y bases del workspace"
+    }
+  }
+}` },
+
+  "cm-sentry": { lang: "js", title: "codemode · Sentry MCP", src: `const orgs = await tools.mcp__sentry__find_organizations({});
+const { organizations } = orgs.structuredContent;
+const results = await Promise.allSettled(organizations.map(org =>
+  tools.mcp__sentry__find_projects({
+    organizationSlug: org.slug,
+    regionUrl: org.regionUrl,
+  })
+));
+return organizations.map((org, i) => {
+  const r = results[i];
+  if (r.status !== "fulfilled") return { org: org.slug, error: String(r.reason) };
+  if (r.value.isError) return { org: org.slug, error: r.value.content };
+  return {
+    org: org.slug,
+    projects: r.value.structuredContent.projects.map(p => p.slug),
+  };
+});` },
+
+  "cm-jev": { lang: "js", title: "codemode · Jev", src: `const jev = await models.getModelOfType("classifier", "typesafe", "jev-latest");
+const r = await tools.bash({
+  command: "gh issue list --state open --limit 100 " +
+    "--json number,title,body,comments",
+});
+const issues = JSON.parse(r.output);
+
+const results = await Promise.all(issues.map(async (issue) => {
+  const res = await models.classify(jev, {
+    state: {
+      title: issue.title,
+      body: (issue.body || "").slice(0, 4000),
+      comments: issue.comments.slice(-5).map(c => c.body.slice(0, 800)),
+    },
+    questions: {
+      sentiment: {
+        type: "choice",
+        instructions: "What is the overall sentiment of the author towards pi?",
+        criteria: {
+          positive: "Appreciative, happy, constructive praise",
+          neutral: "Matter-of-fact report or request without emotion",
+          negative: "Frustrated, annoyed, upset, or angry",
+        },
+      },
+      frustration: {
+        type: "score",
+        instructions: "How frustrated is the reporter?",
+        criteria: ["not at all", "mildly", "clearly frustrated", "very angry"],
+      },
+      kind: {
+        type: "choice",
+        instructions: "What kind of issue is this?",
+        criteria: {
+          bug: "Bug report or regression",
+          feature: "Feature request or enhancement",
+          question: "Question or support request",
+          other: "Docs, discussion, meta, spam",
+        },
+      },
+    },
+  });
+  if (res.stopReason !== "stop") {
+    return { n: issue.number, title: issue.title, error: res.errorMessage };
+  }
+  return { n: issue.number, title: issue.title, ...res.answers };
+}));
+
+store("sentiment_results", results);
+return results
+  .filter(r => !r.error)
+  .sort((a, b) => b.frustration.score - a.frustration.score)
+  .slice(0, 12)
+  .map(r => \`#\${r.n} \${r.frustration.score.toFixed(2)} [\${r.kind.choice}] \${r.title}\`);` },
+
+  "ex-tool": { lang: "ts", title: "tools/list", src: `{
+  name: "searchFlights",
+  description:
+    "Search for available flights",
+  inputSchema: {
+    type: "object",
+    properties: {
+      origin: { type: "string" },
+      destination: { type: "string" },
+      date: { type: "string",
+              format: "date" }
+    },
+    required: ["origin",
+      "destination", "date"]
+  }
+}` },
+
+  "ex-resource": { lang: "json", title: "resources/templates/list", src: `{
+  "uriTemplate":
+    "weather://forecast/{city}/{date}",
+  "name": "weather-forecast",
+  "title": "Weather Forecast",
+  "mimeType": "application/json"
+}` },
+
+  "ex-prompt": { lang: "json", title: "prompts/list", src: `{
+  "name": "plan-vacation",
+  "title": "Plan a vacation",
+  "arguments": [
+    { "name": "destination",
+      "required": true },
+    { "name": "duration",
+      "description": "days" },
+    { "name": "budget" },
+    { "name": "interests" }
+  ]
+}` },
+
+  disc1: { lang: "ts", title: "", src: `search_tools({
+  query: "update salesforce record" })
+→ [ { name: "salesforce_updateRecord",
+      description: "Update fields on a
+        Salesforce object" },
+    { name: "salesforce_upsertRecord",
+      description: "Insert or update
+        based on external ID" } ]` },
+
+  disc2: { lang: "ts", title: "", src: `get_tool_details({
+  name: "salesforce_updateRecord"
+})
+→ { "inputSchema": {
+    "objectType": string,
+    "recordId": string,
+    "data": object },
+  "required": ["objectType",
+    "recordId", "data"] }` },
+
+  disc3: { lang: "ts", title: "", src: `salesforce_updateRecord({
+  objectType: "Account",
+  recordId: "001xx0001",
+  data: {
+    Phone: "555-0100" }
+})` },
+
+  codemode: { lang: "ts", title: "script.ts · corre en el sandbox", src: `// el host genera esto a partir de los schemas MCP
+declare function logging_getLogs(i: LogQuery):
+  Promise<{ entries: Log[] }>
+declare function ticketing_createIssue(i: NewIssue):
+  Promise<{ issueId: string }>
+
+// lo escribe el modelo
+const desde = Date.now() - 3_600_000
+const logs = await logging_getLogs({ level: "error", since: desde })
+const unicos = new Map(logs.entries.map((l) => [l.message, l]))
+for (const [msg] of unicos) {
+  await ticketing_createIssue({ title: msg, priority: "high" })
+}
+
+// solo esto vuelve al contexto del modelo
+console.log(\`\${unicos.size} tickets de \${logs.entries.length} errores\`)
+// → "3 tickets de 2140 errores"` },
+
+  "fastmcp-server": { lang: "python", title: "server.py", src: `from fastmcp import FastMCP
+from tareas import db
+
+mcp = FastMCP("tareas")
+
+@mcp.tool
+def agregar_tarea(titulo: str, prioridad: int = 1) -> dict:
+    """Agrega una tarea a la lista."""
+    return db.agregar(titulo, prioridad)
+
+@mcp.resource("tareas://{id}")
+def leer_tarea(id: int) -> dict:
+    """Una tarea, por id."""
+    return db.buscar(id)
+
+@mcp.prompt
+def planificar(feature: str) -> str:
+    """Planifica una feature."""
+    return f"Quiero agregar {feature}. Preguntame de a una."
+
+if __name__ == "__main__":
+    mcp.run()` },
+
+  gen1: { lang: "json", title: "tools/list", src: `{
+  "name": "agregar_tarea",
+  "description": "Agrega una tarea a la lista.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "titulo": { "type": "string" },
+      "prioridad": { "type": "integer",
+                     "default": 1 }
+    },
+    "required": ["titulo"]
+  }
+}` },
+
+  gen2: { lang: "json", title: "resources/templates/list", src: `{
+  "uriTemplate": "tareas://{id}",
+  "name": "leer_tarea",
+  "description": "Una tarea, por id."
+}
+
+// el host la lee con resources/read
+// uri: "tareas://7"` },
+
+  gen3: { lang: "json", title: "prompts/list", src: `{
+  "name": "planificar",
+  "description": "Planifica una feature.",
+  "arguments": [
+    { "name": "feature", "required": true }
+  ]
+}
+
+// lo elige el usuario, como un /comando` },
+
+  "fastmcp-json": { lang: "json", title: ".mcp.json", src: `{
+  "mcpServers": {
+    "tareas": {
+      "command": "uv",
+      "args": ["run", "fastmcp", "run",
+               "server.py:mcp"]
+    }
+  }
+}` },
+
+  "fastmcp-client": { lang: "python", title: "cliente.py", src: `import asyncio
+from fastmcp import Client
+
+client = Client("http://localhost:8000/mcp")
+
+async def main():
+    async with client:
+        tools = await client.list_tools()
+        r = await client.call_tool(
+            "agregar_tarea", {"titulo": "pan"})
+        print(r.data)
+
+asyncio.run(main())` },
+
+  "fastmcp-test": { lang: "python", title: "test_server.py", src: `import pytest
+from fastmcp import Client
+from server import mcp
+
+@pytest.fixture
+async def client():
+    async with Client(mcp) as c:
+        yield c
+
+async def test_agregar(client):
+    r = await client.call_tool(
+        "agregar_tarea", {"titulo": "pan"})
+    assert r.data["titulo"] == "pan"` },
+
+  "fastmcp-mount": { lang: "python", title: "curso.py", src: `from fastmcp import FastMCP
+from fastmcp.server import create_proxy
+from server import mcp as tareas
+
+curso = FastMCP("curso")
+curso.mount(tareas, namespace="tareas")
+curso.mount(create_proxy("https://api.example.com/mcp"),
+            namespace="api")` },
+
+  "xf-none": { lang: "python", title: "server.py", src: `from fastmcp import FastMCP
+
+mcp = FastMCP("tareas")
+
+# 12 tools: agregar_tarea, listar_tareas, …
+# todas van enteras al contexto` },
+
+  "xf-search": { lang: "python", title: "server.py", src: `from fastmcp import FastMCP
+from fastmcp.server.transforms.search import (
+    BM25SearchTransform,
+)
+
+mcp = FastMCP("tareas", transforms=[BM25SearchTransform()])
+
+# el modelo busca primero y llama después:
+# search_tools("completar") → call_tool(…)` },
+
+  "xf-code": { lang: "python", title: "server.py", src: `# pip install "fastmcp[code-mode]"   (experimental)
+from fastmcp import FastMCP
+from fastmcp.experimental.transforms.code_mode import (
+    CodeMode,
+)
+
+mcp = FastMCP("tareas", transforms=[CodeMode()])
+
+# el modelo manda Python al sandbox con execute:
+ts = await call_tool("listar_tareas", {"hechas": False})
+urgentes = [t for t in ts if t["prioridad"] > 2]
+return len(urgentes)` },
+};
+
+const exposureCode = (mode) => ({ lang: "json", title: ".pi/mcp.json", src: `{
+  "mcpServers": {
+    "notion": {
+      "url": "https://mcp.notion.com/mcp",
+      "exposure": "${mode}"
+    }
+  }
+}` });
+
+["codemode", "deferred", "direct", "hidden"].forEach((m) => { CODES[`ex-${m}`] = exposureCode(m); });
+
+const PY_KW = "from|import|def|return|async|await|with|as|if|for|in|class|None|True|False|not|and|or|yield|assert";
+const TS_KW = "const|let|await|async|for|of|if|return|function|declare|interface|new|type";
+
+const RULES = {
+  python: [
+    [/#.*/, "c"],
+    [/[rf]?"""[^]*?"""|[rf]?"(?:\\.|[^"\\])*"|[rf]?'(?:\\.|[^'\\])*'/, "s"],
+    [/@[\w.]+/, "d"],
+    [new RegExp(`\\b(?:${PY_KW})\\b`), "k"],
+    [/\b\d[\d_]*(?:\.\d+)?\b/, "num"],
+    [/[A-Za-z_]\w*(?=\()/, "f"],
+    [/[A-Za-z_]\w*/, null],
+  ],
+  ts: [
+    [/\/\/.*/, "c"],
+    [/`(?:\\.|[^`\\])*`|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/, "s"],
+    [new RegExp(`\\b(?:${TS_KW})\\b`), "k"],
+    [/\b\d[\d_]*(?:\.\d+)?\b/, "num"],
+    [/[A-Za-z_$][\w$]*(?=\()/, "f"],
+    [/[A-Za-z_$][\w$]*/, null],
+    [/[→←]/, "d"],
+  ],
+  json: [
+    [/\/\/.*/, "c"],
+    [/"(?:\\.|[^"\\])*"(?=\s*:)/, "key"],
+    [/"(?:\\.|[^"\\])*"/, "s"],
+    [/\b(?:true|false|null)\b/, "k"],
+    [/-?\b\d+(?:\.\d+)?\b/, "num"],
+  ],
+  md: [
+    [/^---$/, "sep"],
+    [/^#+ .*/, "h"],
+    [/^[\w-]+:(?=\s|$)|^\w+(?: \w+)+:$/, "fm"],
+    [/^\s*(?:-|\d+\.)(?= )/, "k"],
+    [/`[^`]*`/, "s"],
+    [/>$/, "k"],
+  ],
+  bash: [
+    [/#.*/, "c"],
+    [/^\$|^[→←]/, "k"],
+    [/^[A-Z]+(?= \/)|^[\w-]+:(?= )/, "key"],
+    [/"(?:\\.|[^"\\])*"/, "s"],
+    [/ --?[\w-]+/, "d"],
+  ],
+};
+
+const highlight = (line, lang) => {
+  const rules = (RULES[lang] || []).map(([re, cls]) => [new RegExp(re.source, "y"), cls]);
+  let out = "";
+  let i = 0;
+
+  while (i < line.length) {
+    let hit = null;
+
+    for (const [re, cls] of rules) {
+      re.lastIndex = i;
+      const m = re.exec(line);
+
+      if (m != null && m[0].length > 0) {
+        hit = [m[0], cls];
+        break;
+      }
+    }
+
+    if (hit == null) {
+      out += esc(line[i]);
+      i += 1;
+    } else {
+      out += hit[1] == null ? esc(hit[0]) : `<span class="t-${hit[1]}">${esc(hit[0])}</span>`;
+      i += hit[0].length;
+    }
+  }
+
+  return out;
+};
+
+const buildCode = (el) => {
+  const { lang, title, src } = CODES[el.dataset.code];
+  const lines = src.split("\n").map((l, i) => `<div class="cl" data-n="${i + 1}"><span class="ln">${i + 1}</span><span>${highlight(l, lang) || " "}</span></div>`).join("");
+
+  el.innerHTML = `<div class="cbar"><i></i><i></i><i></i><span class="title">${title}</span><button class="copy">copiar</button></div><div class="cbody">${lines}</div>`;
+};
+
+const swapCode = (el, key) => {
+  if (el.dataset.code === key) {
+    return;
+  }
+
+  el.dataset.code = key;
+  buildCode(el);
+  replay(el, "swap");
+};
+
+const parseRange = (spec) => spec.split("+").flatMap((r) => {
+  const [a, b = a] = r.split("-").map(Number);
+  return Array.from({ length: b - a + 1 }, (_, i) => a + i);
+});
+
+// data-marks="1=3-6 2=8-11": from that step on, those lines stay lit and the rest dims
+const markCode = (el, step) => {
+  const marks = el.dataset.marks.split(" ").map((m) => m.split("=")).map(([s, r]) => [Number(s), parseRange(r)]);
+  const cur = marks.filter(([s]) => s <= step).pop();
+  const body = $(".cbody", el);
+
+  el.classList.toggle("focus", cur != null);
+  $$(".cl", el).forEach((l) => l.classList.toggle("lit", cur != null && cur[1].includes(Number(l.dataset.n))));
+
+  const first = $(".cl.lit", el);
+  const last = $$(".cl.lit", el).pop();
+
+  if (first == null) {
+    body.scrollTop = 0;
+  } else if (last.offsetTop + last.offsetHeight > body.scrollTop + body.clientHeight || first.offsetTop < body.scrollTop) {
+    body.scrollTop = Math.max(0, first.offsetTop - 40);
+  }
+};
+
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".code .copy");
+
+  if (btn == null) {
+    return;
+  }
+
+  const { src } = CODES[btn.closest(".code").dataset.code];
+  const done = () => {
+    btn.textContent = "copiado ✓";
+    btn.classList.add("done");
+    setTimeout(() => { btn.textContent = "copiar"; btn.classList.remove("done"); }, 1400);
+  };
+
+  navigator.clipboard?.writeText(src).then(done, () => { btn.textContent = "no se pudo"; });
+});
+
+// A focused button would take the next Space or Enter for itself instead of the deck
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+
+  if (b != null) {
+    setTimeout(() => b.blur());
+  }
+});
+
+/* ───────────── FLIP ───────────── */
+
+// Moves elements in the DOM and animates them from where they were to where they land
+const flip = (els, mutate) => {
+  const k = $("#deck").getBoundingClientRect().width / 1280;
+  const before = new Map(els.map((e) => [e, e.getBoundingClientRect()]));
+
+  mutate();
+
+  els.forEach((e) => {
+    const a = before.get(e);
+    const b = e.getBoundingClientRect();
+    const dx = (a.left - b.left) / k;
+    const dy = (a.top - b.top) / k;
+
+    if (dx === 0 && dy === 0) {
+      return;
+    }
+
+    e.style.transition = "none";
+    e.style.transform = `translate(${dx}px, ${dy}px)`;
+    void e.offsetWidth;
+    e.style.transition = "";
+    e.style.transform = "";
+  });
+};
+
+/* ───────────── Sorting the repetitions ───────────── */
+
+let sorted = new Set();
+
+const placeChips = (el, animate) => {
+  const chips = $$(".schip", el).sort((a, b) => a.dataset.i - b.dataset.i);
+
+  const mutate = () => chips.forEach((c) => {
+    const target = sorted.has(c) ? $(`.bin[data-kind="${c.dataset.bin}"] .bslot`, el) : $(".pool", el);
+    target.appendChild(c);
+  });
+
+  if (animate) {
+    flip(chips, mutate);
+  } else {
+    mutate();
+  }
+};
+
+/* ───────────── Wiki ───────────── */
+
+const WIKI = [
+  ["h", "# Guía del proyecto"], ["gen", "Sos un desarrollador senior experto en todas las tecnologías."], ["gen", "Escribí siempre código limpio, legible y mantenible."],
+  ["h", "## Principios"], ["gen", "Seguí las mejores prácticas de la industria."], ["gen", "Aplicá SOLID, DRY, KISS y YAGNI en todo momento."], ["gen", "Usá nombres descriptivos para variables y funciones."], ["gen", "Pensá bien antes de escribir código."],
+  ["h", "## Historia del proyecto"], ["", "En marzo de 2024 arrancamos con una idea simple…"], ["", "La primera versión usaba MongoDB, después migramos…"], ["", "En la reunión del 12/5 decidimos que el login…"],
+  ["h", "## Glosario"], ["", "Tarea: unidad de trabajo que el usuario quiere hacer."], ["", "Recordatorio: aviso asociado a una tarea."], ["", "Vencida: tarea con fecha pasada y no hecha."],
+  ["h", "## Cómo pensar"], ["gen", "Razoná paso a paso."], ["gen", "Sé cuidadoso y prolijo."], ["gen", "No cometas errores."],
+  ["h", "## Feature actual: recordatorios"], ["", "Hoy estamos trabajando en los recordatorios, que…"], ["", "El PR #42 quedó a medias porque…"],
+  ["h", "## Seguridad"], ["gen", "Escribí código seguro."], ["gen", "Validá todo."],
+  ["h", "## Comandos"], ["", "pnpm test"],
+];
+
+const buildWiki = (el) => {
+  const rows = [...WIKI, ...WIKI, ...WIKI];
+  $(".wfeed", el).innerHTML = rows.map(([cls, t]) => `<div class="${cls}">${esc(t)}</div>`).join("");
+};
+
+/* ───────────── Skills grid ───────────── */
+
+const SKILLS = ["verificar-api", "planificar-feature", "release", "migraciones", "revisar-pr", "escribir-tests", "pdf", "deploy", "changelog", "i18n",
+  "accesibilidad", "perf-web", "seguridad", "docker", "sql", "diagramas", "onboarding", "debug", "refactor", "eli5"];
+
+const STAGES = [
+  ["·", "20 skills instalados, nada en contexto todavía"],
+  ["1 · descubrimiento", "al arrancar entra solo el name y la description de cada uno: ~100 tokens"],
+  ["2 · activación", "\"verificá la ruta nueva\" → se carga el SKILL.md entero (menos de 5.000 tokens)"],
+  ["3 · ejecución", "recién ahora, si hace falta: references/errores.md. Los scripts se corren sin leerlos"],
+];
+
+const PD_TOK = [0, 2000, 3200, 4000];
+
+/* ───────────── N×M ───────────── */
+
+const HOSTS = ["Pi", "Claude Code", "Cursor", "Codex"];
+const SERVICES = ["GitHub", "Postgres", "Sentry", "Notion", "Figma"];
+const hostY = (i) => 80 + i * 103;
+const svcY = (i) => 55 + i * 90;
+
+const buildNM = (svg) => {
+  $(".mesh", svg).innerHTML = HOSTS.flatMap((_, h) => SERVICES.map((_, s) => `<line x1="225" y1="${hostY(h)}" x2="911" y2="${svcY(s)}" />`)).join("");
+  $(".hubl", svg).innerHTML = HOSTS.map((_, h) => `<line x1="225" y1="${hostY(h)}" x2="506" y2="235" />`).join("")
+    + SERVICES.map((_, s) => `<line x1="630" y1="235" x2="911" y2="${svcY(s)}" />`).join("");
+  $(".nodes", svg).innerHTML = HOSTS.map((n, h) => `<g class="h"><rect x="35" y="${hostY(h) - 28}" width="190" height="56" rx="12" /><text x="130" y="${hostY(h)}">${n}</text></g>`).join("")
+    + SERVICES.map((n, s) => `<g><rect x="911" y="${svcY(s) - 28}" width="190" height="56" rx="12" /><text x="1006" y="${svcY(s)}">${n}</text></g>`).join("");
+};
+
+/* ───────────── Transports ───────────── */
+
+const TRANSPORTS = {
+  stdio: { name: "stdio", desc: "el host lanza el servidor como un proceso y le habla por stdin/stdout. Local, un solo cliente." },
+  http: { name: "Streamable HTTP", desc: "POST a una URL, con auth (OAuth, tokens). Remoto: un servidor, muchos clientes." },
+};
+
+const setTransport = (el, mode) => {
+  $$(".seg2 button", el).forEach((b) => b.classList.toggle("on", b.dataset.tr === mode));
+  $(".trname", el).textContent = TRANSPORTS[mode].name;
+  $(".trdesc", el).textContent = TRANSPORTS[mode].desc;
+  swapCode($(".code", el), `tr-${mode}`);
+};
+
+/* ───────────── Discovery ───────────── */
+
+let discManual = null;
+
+const setDiscovery = (el, mode, animate) => {
+  const tok = $(".dtok", el);
+  const prog = mode === "prog";
+  const was = el.classList.contains("prog");
+
+  el.classList.toggle("prog", prog);
+  $$(".discbar .seg2 button", el).forEach((b) => b.classList.toggle("on", b.dataset.mode === mode));
+
+  if (animate && was !== prog) {
+    countTo(tok, prog ? 150000 : 2000, prog ? 2000 : 150000, 900, run, (n) => `~${fmt(n)}`);
+  } else {
+    tok.textContent = prog ? "~2.000" : "~150.000";
+  }
+};
+
+/* ───────────── Code mode race ───────────── */
+
+const fly = (track, from, to, label, cls, ms) => {
+  const d = document.createElement("div");
+  d.className = `dot2 ${cls}`;
+  d.textContent = label;
+  track.appendChild(d);
+
+  const a = d.animate([{ left: `${from}px` }, { left: `${to}px` }], { duration: ms, easing: "ease-in-out", fill: "forwards" });
+  return a.finished.then(() => d.remove(), () => d.remove());
+};
+
+const center = (n) => n.offsetLeft + n.offsetWidth / 2;
+
+/* ───────────── Transforms ───────────── */
+
+const XF = {
+  none: { tools: ["agregar_tarea", "listar_tareas", "completar_tarea", "borrar_tarea", "buscar_tareas", "mover_tarea", "etiquetar_tarea", "asignar_tarea", "comentar_tarea", "archivar_tarea", "exportar_csv", "estadisticas"], cap: "<b>12 definiciones</b> en el contexto, se usen o no" },
+  search: { tools: ["search_tools", "call_tool"], meta: true, cap: "<b>2 meta-tools</b>: las 12 siguen ahí, se encuentran buscando" },
+  code: { tools: ["Search", "GetSchemas", "execute"], meta: true, cap: "<b>buscar · inspeccionar · ejecutar</b>: la cadena entera corre en un sandbox" },
+};
+
+let xfManual = null;
+
+const setTransform = (el, mode) => {
+  const x = XF[mode];
+
+  $$(".xfseg button", el).forEach((b) => b.classList.toggle("on", b.dataset.xf === mode));
+  swapCode($(".code", el), `xf-${mode}`);
+
+  const list = $(".xflist", el);
+
+  if (list.dataset.mode !== mode) {
+    list.dataset.mode = mode;
+    list.innerHTML = x.tools.map((t, i) => `<span class="${x.meta ? "meta" : ""}" style="animation-delay: ${i * 40}ms">${t}</span>`).join("");
+  }
+
+  $(".xfcap", el).innerHTML = x.cap;
+};
+
+/* ───────────── Exposure ───────────── */
+
+const NOTION = ["mcp__notion__notion-search", "mcp__notion__notion-fetch", "mcp__notion__notion-create-pages", "mcp__notion__notion-update-page", "mcp__notion__notion-move-pages", "mcp__notion__notion-duplicate-page", "mcp__notion__notion-create-database", "mcp__notion__notion-create-comment", "mcp__notion__notion-get-comments", "mcp__notion__notion-get-users"];
+
+const EXPOSURE = {
+  codemode: { tools: ["codemode"], meta: true, cap: "las tools no se declaran: un script JS las llama como funciones y al contexto vuelve solo el resultado" },
+  deferred: { tools: ["tool_search"], meta: true, cap: "<b>tool_search</b> encuentra la que hace falta y la declara para la próxima llamada" },
+  direct: { tools: NOTION, cap: "<b>todas declaradas</b>, como una tool más: es lo que costaba 13.7k" },
+  hidden: { tools: [], cap: "registradas, pero <b>inalcanzables</b>" },
+};
+
+const setExposure = (el, mode) => {
+  const x = EXPOSURE[mode];
+  const list = $(".exlist", el);
+
+  $$(".exseg button", el).forEach((b) => b.classList.toggle("on", b.dataset.ex === mode));
+  swapCode($(".code", el), `ex-${mode}`);
+
+  if (list.dataset.mode !== mode) {
+    list.dataset.mode = mode;
+    list.innerHTML = x.tools.map((t, i) => `<span class="${x.meta ? "meta" : ""}" style="animation-delay: ${i * 40}ms">${t}</span>`).join("");
+  }
+
+  $(".excap", el).innerHTML = x.cap;
+};
+
+/* ───────────── Anatomía ───────────── */
+
+CODES.hook = { lang: "ts", title: "plan-mode.ts · una extensión de Pi", src: `export default function (pi: ExtensionAPI) {
+  pi.on("tool_call", async (event) => {
+    const soloLeer = ["grep", "find", "ls"]
+    if (planMode && !soloLeer.includes(event.toolName)) {
+      return { block: true,
+               reason: "Plan mode: solo podés leer. Proponé un plan." }
+    }
+    // sin return → la tool se ejecuta
+  })
+}` };
+
+
+const READ_ONLY = ["grep", "find", "ls"];
+let planOn = true;
+let callsShown = false;
+
+const renderCalls = (el) => {
+  const calls = $(".calls", el);
+  let blocked = false;
+
+  calls.classList.toggle("show", callsShown);
+  $(".pmode", el).classList.toggle("on", planOn);
+  $(".pmode", el).textContent = `plan mode: ${planOn ? "ON" : "OFF"}`;
+
+  $$(".call", el).forEach((c) => {
+    const block = planOn && !READ_ONLY.includes(c.dataset.tool);
+    const b = $("b", c);
+    blocked ||= block;
+    c.classList.toggle("blocked", callsShown && block);
+    b.className = block ? "no" : "ok";
+    b.textContent = block ? "✗ block" : "✓ se ejecuta";
+  });
+
+  const reason = $(".creason", el);
+  reason.classList.toggle("on", blocked);
+  reason.textContent = blocked ? "el modelo recibe: \"Plan mode: solo podés leer. Proponé un plan.\"" : "";
+};
+
+/* ───────────── Validator ───────────── */
+
+const validate = (el) => {
+  const name = $(".vname", el).value;
+  const desc = $(".vdesc", el).value;
+
+  const rules = {
+    len: name.length >= 1 && name.length <= 64,
+    chars: name.length > 0 && /^[a-z0-9-]+$/.test(name),
+    edge: name.length > 0 && !/^-|-$/.test(name),
+    double: !name.includes("--"),
+    dir: name === "verificar-api",
+    desc: desc.trim().length >= 1 && desc.length <= 1024,
+  };
+
+  const soft = { when: /usar|cuando|cuándo/i.test(desc) && desc.trim().split(/\s+/).length >= 8 };
+
+  Object.entries({ ...rules, ...soft }).forEach(([k, ok]) => {
+    const r = $(`[data-rule="${k}"]`, el);
+    r.classList.toggle("ok", ok);
+    r.classList.toggle("no", !ok);
+  });
+
+  const hard = Object.values(rules).every(Boolean);
+
+  $(".vname", el).classList.toggle("bad", !(rules.len && rules.chars && rules.edge && rules.double && rules.dir));
+  $(".dcount", el).textContent = desc.length;
+  $(".vcount", el).classList.toggle("bad", !rules.desc);
+  setMood($(".vrules .mascot", el), !hard ? "sweat" : soft.when ? "joy" : "skeptic");
+};
+
+/* ───────────── Slide hooks ───────────── */
+
+// Section covers: the rider hops in from the previous section of the day
+const sectionAt = (pos) => (step, el, { entered, forward }) => {
+  const track = $(".secttrack", el);
+  const rider = $(".rider", track);
+
+  if (!entered) {
+    return;
+  }
+
+  const token = visit;
+
+  rider.style.transition = "none";
+  setTrack(track, forward ? Math.max(pos - 1, 0) : pos);
+  void rider.offsetWidth;
+  rider.style.transition = "";
+  setMood(rider, "happy");
+
+  if (forward && pos > 0) {
+    setTimeout(() => {
+      if (token === visit) {
+        replay(rider, "jump");
+        setTrack(track, pos);
+      }
+    }, 500);
+  }
+};
+
+const hooks = {
+  portada: (step, el, { entered }) => {
+    const m = $(".mascot", el);
+    const chips = $(".cover-chips", el);
+
+    if (!entered) {
+      return;
+    }
+
+    // Tied to the visit, not the render: the re-render after the web fonts load must not cut the typing
+    const token = visit;
+    m.classList.remove("enter");
+    m.style.opacity = 0;
+    chips.classList.remove("on");
+
+    typeInto($(".typed", el), "Herramientas y Skills", 70, token, () => visit).then(() => {
+      if (token !== visit) {
+        return;
+      }
+
+      m.style.opacity = 1;
+      m.classList.add("enter");
+      chips.classList.add("on");
+    });
+  },
+
+  hoy: (step, el, { entered }) => {
+    const track = $(".track", el);
+
+    if (entered) {
+      redraw(track);
+    }
+
+    setTrack(track, 0);
+  },
+
+  dosveces: (step, el, { forward }) => {
+    const m = $(":scope > .mascot", el);
+    setMood(m, step === 0 ? "happy" : step === 1 ? "frustrated" : "joy");
+
+    if (step === 2 && forward) {
+      replay(m, "jump");
+      const once = $(".once", el);
+      setTimeout(() => confetti(el, once.offsetLeft, once.offsetTop + 20, 36), 500);
+    }
+  },
+
+  dondevive: (step, el, { entered }) => {
+    sorted = new Set($$(".schip", el).filter((c) => Number(c.dataset.i) < step));
+    placeChips(el, !entered);
+  },
+
+  "sec-agents": sectionAt(0),
+
+  adelante: (step, el, { forward }) => {
+    const reqs = $(".reqs", el);
+
+    reqs.innerHTML = Array.from({ length: step }, (_, i) => {
+      const n = i + 1;
+      const turns = Array.from({ length: n }, (_, t) => `<div class="rl me">vos ${t + 1}</div>${t < n - 1 ? `<div class="rl bot">agente ${t + 1}</div>` : ""}`).join("");
+      const fresh = forward && n === step;
+
+      return `<div class="req${fresh ? " fresh" : ""}" style="${fresh ? "" : "animation: none"}"><div class="rh">turno ${n}</div><div class="rl sys">system prompt</div><div class="rl ag">AGENTS.md</div>${turns}</div>`;
+    }).join("");
+
+    $(".paidn", el).textContent = step;
+    $(".paidt", el).textContent = `${fmt(step * 1500)} tokens`;
+  },
+
+  noVa: (step, el, { forward }) => {
+    const feed = $(".wfeed", el);
+    const view = $(".wview", el);
+    const end = view.clientHeight - feed.scrollHeight;
+    const token = run;
+
+    feed.getAnimations().forEach((a) => a.cancel());
+    feed.style.transform = step >= 1 ? `translateY(${end}px)` : "";
+    $(".wtok", el).textContent = step >= 1 ? "~6.000" : "0";
+    $(".wtot", el).textContent = step >= 2 ? "~240.000" : "0";
+
+    if (forward && step === 1) {
+      feed.animate([{ transform: "translateY(0)" }, { transform: `translateY(${end}px)` }], { duration: 3200, easing: "ease-in-out" });
+      countTo($(".wtok", el), 0, 6000, 3200, token, (n) => `~${fmt(n)}`);
+    }
+
+    if (forward && step === 2) {
+      countTo($(".wtot", el), 6000, 240000, 1500, token, (n) => `~${fmt(n)}`);
+    }
+  },
+
+  "sec-skills": sectionAt(1),
+
+  carpeta: (step, el) => {
+    $$(".ftree .fl[data-hot]", el).forEach((f) => {
+      const h = Number(f.dataset.hot);
+      f.classList.toggle("hot", h === step || (h === 1 && step === 2));
+    });
+  },
+
+  frontmatter: (step, el) => validate(el),
+
+  tresetapas: (step, el, { forward }) => {
+    const track = $(".track", el);
+    const cards = $$(".sk", el);
+    const token = run;
+
+    setTrack(track, step - 1);
+
+    cards.forEach((c, i) => {
+      c.classList.toggle("meta", step >= 1);
+      c.classList.toggle("active", step >= 2 && i === 0);
+      c.classList.toggle("res-on", step >= 3 && i === 0);
+    });
+
+    $(".pdtitle", el).textContent = STAGES[step][0];
+    $(".pddesc", el).textContent = STAGES[step][1];
+
+    if (forward && step > 0) {
+      replay($(".rider", track), "jump");
+      countTo($(".pdtok", el), PD_TOK[step - 1], PD_TOK[step], 900, token);
+    } else {
+      $(".pdtok", el).textContent = fmt(PD_TOK[step]);
+    }
+  },
+
+  trigger: (step, el, { forward }) => {
+    const q = $(".tq", el);
+    const text = "verificá que la ruta nueva de recordatorios ande";
+
+    if (step === 0) {
+      q.innerHTML = '<span class="caret"></span>';
+    } else if (step === 1 && forward) {
+      typeInto(q, text, 35, run);
+    } else {
+      q.textContent = text;
+    }
+  },
+
+  "sec-mcp": sectionAt(2),
+
+  "sec-sub": sectionAt(3),
+
+  delegar: (step, el, { forward }) => playChat(step, el, forward),
+
+  paralelo: (step, el, { forward }) => playChat(step, el, forward),
+
+  mcpadd: (step, el, { forward }) => playChat(step, el, forward),
+
+  tool: (step, el, { forward }) => playChat(step, el, forward),
+
+  nxm: (step, el) => {
+    $(".nm", el).classList.toggle("hubbed", step >= 1);
+    $(".nmn", el).textContent = step >= 1 ? "4 + 5 = 9" : "4 × 5 = 20";
+    $(".nml", el).textContent = step >= 1 ? "un cliente por host, un servidor por servicio" : "integraciones a mano";
+  },
+
+  conversacion: (step, el, { forward }) => {
+    $$(".seq .msg", el).forEach((m) => {
+      const n = Number(m.dataset.msg);
+      m.classList.toggle("on", n <= step);
+      m.classList.toggle("cur", n === step);
+      m.classList.remove("fresh");
+
+      if (forward && n === step) {
+        replay(m, "fresh");
+      }
+    });
+
+    swapCode($(".code", el), `seq${step}`);
+  },
+
+  discovery: (step, el, { forward }) => {
+    discManual = null;
+    setDiscovery(el, step >= 1 ? "prog" : "all", forward && step === 1);
+  },
+
+  codemode: async (step, el, { forward }) => {
+    const [direct, code] = $$(".lane", el);
+    const dTrack = $(".ltrack", direct);
+    const cTrack = $(".ltrack", code);
+    const dTok = $(".ltok b", direct);
+    const cTok = $(".ltok b", code);
+    const token = run;
+
+    $$(".dot2", el).forEach((d) => d.remove());
+    direct.classList.toggle("hot", step >= 1);
+    code.classList.toggle("cool", step >= 2);
+    dTok.textContent = step >= 1 ? "~100.000+" : "0";
+    cTok.textContent = step >= 2 ? "~215" : "0";
+
+    if (!forward || step === 0) {
+      return;
+    }
+
+    if (step === 1) {
+      const [model, tools] = $$(".lnode", dTrack);
+      countTo(dTok, 0, 104000, 2600, token, (n) => `~${fmt(n)}`).then(() => token === run && (dTok.textContent = "~100.000+"));
+
+      for (let i = 0; i < 16; i += 1) {
+        if (token !== run) {
+          return;
+        }
+
+        fly(dTrack, center(tools), center(model), `logs ${i * 130 + 1}–${i * 130 + 130}`, "", 700);
+        await sleep(150);
+      }
+
+      return;
+    }
+
+    const [model, sbx, tools] = $$(".lnode", cTrack);
+    await fly(cTrack, center(model), center(sbx), "📜 ~200", "code", 800);
+
+    for (let i = 0; i < 4; i += 1) {
+      if (token !== run) {
+        return;
+      }
+
+      await fly(cTrack, center(sbx), center(tools), "call_tool", "code", 280);
+      await fly(cTrack, center(tools), center(sbx), "2140 logs", "", 280);
+    }
+
+    if (token !== run) {
+      return;
+    }
+
+    await fly(cTrack, center(sbx), center(model), "✓ ~15", "res", 800);
+
+    if (token === run) {
+      countTo(cTok, 0, 215, 500, token, (n) => `~${fmt(n)}`);
+    }
+  },
+
+  exposure: (step, el) => setExposure(el, ["codemode", "deferred", "direct"][step]),
+
+  "sec-fastmcp": sectionAt(2),
+
+  servidor: (step, el) => swapCode($(".gen .code", el), `gen${Math.max(step, 1)}`),
+
+  correr: (step, el, { forward }) => playChat(step, el, forward),
+
+  transforms: (step, el) => {
+    xfManual = null;
+    setTransform(el, ["none", "search", "code"][step]);
+  },
+
+  practica: (step, el, { entered }) => {
+    const track = $(".track", el);
+
+    if (!entered) {
+      return;
+    }
+
+    redraw(track);
+    setTrack(track, 0);
+    startTimer($(".timer", el));
+    walkSteps(track, visit, [0, 1, 2, 1, 2, 3, 4]);
+  },
+
+};
+
+/* ───────────── Chats ───────────── */
+
+const CHATS = {
+  mcpadd: [
+    [
+      ["cmd", "pi mcp add context7 --url https://mcp.context7.com/mcp"],
+      ["ag", "se agrega global, en ~/.pi/agent/mcp.json"],
+    ],
+    [
+      ["cmd", "export CONTEXT7_API_KEY=\"tu-api-key\""],
+      ["cmd", "pi mcp add context7 --url https://mcp.context7.com/mcp --bearer-token-env-var CONTEXT7_API_KEY"],
+      ["ag", "Pi guarda la referencia a la variable, no su valor"],
+    ],
+    [
+      ["cmd", "pi mcp list"],
+      ["ag", "con una sesión abierta: /reload, y /mcp para inspeccionar"],
+      ["me", "Usá Context7 para consultar cómo configurar routing en Next.js 16."],
+    ],
+    [
+      ["cmd", "pi mcp add --local context7 --url https://mcp.context7.com/mcp"],
+      ["ag", "--local: solo este repo, en .pi/mcp.json"],
+    ],
+  ],
+
+  delegar: [
+    [
+      ["me", "¿qué hay que tocar para agregar \"recordarme\" al login? Usá un subagente para explorar."],
+      ["ag", "lanzo un subagente con una tarea concreta"],
+      ["doc", "→ subagente · \"Encontrá dónde se maneja"],
+      ["doc", "  el login y la sesión. Devolvé"],
+      ["doc", "  archivos y líneas.\""],
+    ],
+    [
+      ["wait", "el subagente lee el repo en su contexto…", { done: "terminó: 42 tool calls, ~53k tokens, en su contexto", ms: 1600 }],
+    ],
+    [
+      ["out", "← un solo mensaje:"],
+      ["out", "login en server.js:88 · sesión en cookie, auth.js:12"],
+      ["ok", "Hay que tocar auth.js (duración de la cookie) y login.html (el checkbox)."],
+    ],
+  ],
+
+  paralelo: [
+    [
+      ["me", "Armá 3 alternativas de la slide de título, con estilos distintos. Un subagente por estilo, en paralelo."],
+      ["ag", "son independientes: van a la vez"],
+      ["doc", "→ subagente 1 · \"estilo minimalista\""],
+      ["doc", "→ subagente 2 · \"estilo ilustrado\""],
+      ["doc", "→ subagente 3 · \"estilo terminal\""],
+    ],
+    [
+      ["wait", "minimalista…", { done: "minimalista lista · 1:40", ms: 1500, par: true }],
+      ["wait", "ilustrada…", { done: "ilustrada lista · 2:10", ms: 2400, par: true }],
+      ["wait", "terminal…", { done: "terminal lista · 1:55", ms: 1900, par: true }],
+      ["ag", "2:10, lo del más lento; no 5:45"],
+    ],
+    [
+      ["out", "← tres mensajes, uno por subagente"],
+      ["ok", "Las tres en alt/. ¿Con cuál seguimos?"],
+    ],
+  ],
+
+  tool: [
+    [
+      ["me", "¿Qué tiempo hace en Córdoba?"],
+      ["ag", "el modelo no ejecuta nada: emite un JSON"],
+      ["doc", "{ \"name\": \"weather_current\","],
+      ["doc", "  \"arguments\": { \"location\": \"Córdoba\" } }"],
+    ],
+    [
+      ["wait", "el harness ejecuta la tool…", { done: "el harness ejecutó weather_current", ms: 1400 }],
+      ["out", "24°C, despejado, viento del norte"],
+      ["ag", "el resultado vuelve al modelo como texto"],
+      ["ok", "En Córdoba hay 24°C y está despejado."],
+    ],
+  ],
+
+  fastrun: [
+    [
+      ["cmd", "uv add fastmcp"],
+      ["out", "+ fastmcp"],
+    ],
+    [
+      ["cmd", "uv run fastmcp run server.py:mcp --transport http --port 8000"],
+      ["wait", "levantando el servidor…", { done: "escuchando en http://localhost:8000/mcp", ms: 1300 }],
+    ],
+    [
+      ["cmd", "npx @modelcontextprotocol/inspector"],
+      ["out", "abre el MCP Inspector en el navegador:"],
+      ["out", "probás cada tool a mano, antes de dársela al agente"],
+    ],
+    [
+      ["me", "agregá \"comprar pan\" a mis tareas"],
+      ["ag", "→ tareas · agregar_tarea { \"titulo\": \"comprar pan\" }"],
+      ["ok", "listo: tarea 8, prioridad 1"],
+    ],
+  ],
+};
+
+/* ───────────── Walking the steps ───────────── */
+
+const walkSteps = async (track, token, walk) => {
+  const rider = $(".rider", track);
+  const finish = walk[walk.length - 1];
+
+  await sleep(1600);
+
+  while (token === visit) {
+    for (let i = 0; i < walk.length; i += 1) {
+      if (token !== visit) {
+        return;
+      }
+
+      const pos = walk[i];
+      const backNext = walk[i + 1] != null && walk[i + 1] < pos;
+      const wentBack = i > 0 && pos < walk[i - 1];
+
+      if (i > 0) {
+        replay(rider, "jump");
+      }
+
+      setTrack(track, pos);
+      setMood(rider, wentBack ? "sweat" : pos === finish ? "joy" : "happy");
+
+      if (backNext) {
+        await sleep(700);
+        setMood(rider, "frustrated");
+        await sleep(900);
+      } else {
+        await sleep(pos === finish ? 300 : 1100);
+      }
+    }
+
+    if (token !== visit) {
+      return;
+    }
+
+    setMood(rider, "wave");
+    confetti(track, rider.offsetLeft, 20, 36);
+    await sleep(2600);
+  }
+};
+
+/* ───────────── Chat ───────────── */
+
+const CHAT_MARK = { me: "&gt;", ans: "&gt;", ag: "·", q: "?", ok: "✓", doc: "│", add: "+", del: "-", cmd: "$", out: "", wait: "⠋" };
+const SPIN = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏";
+
+const esc = (s) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+
+const buildChat = (feed) => {
+  feed.innerHTML = CHATS[feed.dataset.chat].flatMap((group, g) => group.map(([kind, text, extra = {}], i) => {
+    const cls = ["line", kind === "ans" ? "me ans" : kind, text.startsWith("#") ? "h" : "", i === 0 && g > 0 ? "gap" : ""].join(" ");
+    const tag = extra.tag == null ? "" : `<span class="tag">${extra.tag}</span>`;
+    const data = [
+      `data-group="${g}"`,
+      `data-text="${esc(text)}"`,
+      extra.done == null ? "" : `data-done="${esc(extra.done)}" data-ms="${extra.ms}"`,
+      extra.par == null ? "" : "data-par",
+      extra.act == null ? "" : `data-act="${extra.act}"`,
+    ].join(" ");
+
+    return `<div class="${cls}" ${data}><span class="p">${CHAT_MARK[kind]}</span><span class="t"></span>${tag}</div>`;
+  })).join("");
+};
+
+const settleLine = (l) => {
+  $(".t", l).textContent = l.dataset.done ?? l.dataset.text;
+
+  if (l.classList.contains("wait")) {
+    $(".p", l).textContent = "✓";
+    l.classList.add("done");
+  }
+};
+
+const PAUSE = { q: 900, doc: 140, add: 220, del: 220, out: 260 };
+
+// Plays the group of the current click; everything before it is rendered settled, actions included
+const playChat = async (step, el, forward, act = async () => {}) => {
+  const viewport = $(".viewport", el);
+  const feed = $(".feed", viewport);
+  const lines = $$(".line", feed);
+  const token = run;
+  const current = step - 1;
+
+  const scroll = () => {
+    const last = lines.filter((l) => !l.classList.contains("hide")).pop();
+    const bottom = last == null ? 0 : last.offsetTop + last.offsetHeight;
+    feed.style.transform = `translateY(${Math.min(0, viewport.clientHeight - bottom - 12)}px)`;
+  };
+
+  lines.forEach((l) => {
+    const g = Number(l.dataset.group);
+    l.classList.toggle("hide", g > current || (forward && g === current));
+    l.classList.remove("done");
+    $(".p", l).innerHTML = CHAT_MARK[l.classList[1]];
+    settleLine(l);
+  });
+
+  for (const l of lines.filter((x) => !x.classList.contains("hide") && x.dataset.act != null)) {
+    await act(l.dataset.act, false);
+  }
+
+  scroll();
+
+  if (!forward || step === 0) {
+    return;
+  }
+
+  const handled = new Set();
+
+  for (const l of lines.filter((x) => Number(x.dataset.group) === current)) {
+    if (token !== run) {
+      return;
+    }
+
+    if (handled.has(l)) {
+      continue;
+    }
+
+    const typed = l.classList.contains("me") || l.classList.contains("cmd");
+
+    if (typed) {
+      $(".t", l).textContent = "";
+    } else if (l.classList.contains("wait")) {
+      $(".t", l).textContent = l.dataset.text;
+    }
+
+    l.classList.remove("hide");
+    scroll();
+
+    if (typed) {
+      const speed = l.classList.contains("cmd") ? 14 : l.classList.contains("ans") ? 40 : 22;
+      await typeInto($(".t", l), l.dataset.text, speed, token);
+      await sleep(250);
+    } else if (l.dataset.par != null) {
+      // Every par wait of the group spins at once and settles at its own ms
+      const batch = lines.filter((x) => Number(x.dataset.group) === current && x.dataset.par != null);
+      const start = Date.now();
+
+      batch.forEach((x) => {
+        handled.add(x);
+        $(".t", x).textContent = x.dataset.text;
+        x.classList.remove("hide");
+      });
+      scroll();
+
+      for (let f = 0; batch.some((x) => !x.classList.contains("done")); f += 1) {
+        if (token !== run) {
+          return;
+        }
+
+        batch.filter((x) => !x.classList.contains("done")).forEach((x) => {
+          if (Date.now() - start >= Number(x.dataset.ms)) {
+            settleLine(x);
+          } else {
+            $(".p", x).textContent = SPIN[f % SPIN.length];
+          }
+        });
+        await sleep(80);
+      }
+
+      await sleep(300);
+    } else if (l.classList.contains("wait")) {
+      const end = Date.now() + Number(l.dataset.ms);
+
+      for (let f = 0; Date.now() < end; f += 1) {
+        if (token !== run) {
+          return;
+        }
+
+        $(".p", l).textContent = SPIN[f % SPIN.length];
+        await sleep(80);
+      }
+
+      settleLine(l);
+      await sleep(300);
+    } else {
+      await sleep(PAUSE[l.classList[1]] ?? 450);
+    }
+
+    if (token !== run) {
+      return;
+    }
+
+    if (l.dataset.act != null) {
+      await act(l.dataset.act, true);
+      await sleep(400);
+    }
+  }
+};
+
+/* ───────────── Timer ───────────── */
+
+let timerStart = null;
+let timerTick = null;
+
+const startTimer = (el) => {
+  if (timerStart != null) {
+    return;
+  }
+
+  timerStart = Date.now();
+  clearInterval(timerTick);
+
+  timerTick = setInterval(() => {
+    const s = Math.floor((Date.now() - timerStart) / 1000);
+    el.textContent = `⏱ ${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+  }, 250);
+};
+
+$(".timer")?.addEventListener("click", (e) => {
+  timerStart = null;
+  e.currentTarget.textContent = "⏱ 00:00";
+  startTimer(e.currentTarget);
+});
+
+/* ───────────── Titles ───────────── */
+
+// Titles stay on one line: shrink the ones that would overflow the slide width
+const fitTitles = () => $$(".slide h2").forEach((h) => {
+  h.style.fontSize = "";
+
+  let size = parseFloat(getComputedStyle(h).fontSize);
+
+  while (h.scrollWidth > h.clientWidth && size > 30) {
+    size -= 2;
+    h.style.fontSize = `${size}px`;
+  }
+});
+
+/* ───────────── Navigation ───────────── */
+
+const slides = $$(".slide");
+let idx = 0;
+let step = 0;
+
+// Inside kurasu the deck runs in a sandboxed iframe: the web moves it with kurasu:go messages and owns the
+// navigation, so the deck leaves the keys, the address bar and its own HUD alone.
+const embedded = window.parent !== window;
+
+const stepsOf = (s) => Number(s.dataset.steps || Math.max(0, ...$$("[data-step]", s).map((e) => Number(e.dataset.step))));
+
+const show = (entered, forward) => {
+  run += 1;
+
+  if (entered) {
+    visit += 1;
+  }
+
+  slides.forEach((s, i) => {
+    s.classList.toggle("active", i === idx);
+    s.classList.toggle("past", i < idx);
+  });
+
+  const slide = slides[idx];
+  slide.dataset.step = step;
+  $$("[data-step]", slide).forEach((e) => e.classList.toggle("on", Number(e.dataset.step) <= step));
+
+  const hook = hooks[slide.dataset.id];
+
+  if (hook != null) {
+    hook(step, slide, { entered, forward });
+  }
+
+  $$(".code[data-marks]", slide).forEach((c) => markCode(c, step));
+
+  $(".count").textContent = `${idx + 1} / ${slides.length}`;
+  $(".stepdots").innerHTML = Array.from({ length: stepsOf(slide) }, (_, i) => `<i class="${i < step ? "on" : ""}"></i>`).join("");
+  if (!embedded) {
+    history.replaceState(null, "", `${location.search}#${idx + 1}${step > 0 ? `.${step}` : ""}`);
+  }
+};
+
+const next = () => {
+  if (step < stepsOf(slides[idx])) {
+    step += 1;
+    show(false, true);
+  } else if (idx < slides.length - 1) {
+    idx += 1;
+    step = 0;
+    show(true, true);
+  }
+};
+
+const prev = () => {
+  if (step > 0) {
+    step -= 1;
+    show(false, false);
+  } else if (idx > 0) {
+    idx -= 1;
+    step = stepsOf(slides[idx]);
+    show(true, false);
+  }
+};
+
+document.addEventListener("keydown", (e) => {
+  if (embedded || e.target.closest("input, textarea") != null) {
+    return;
+  }
+
+  if (["ArrowRight", " ", "PageDown", "Enter"].includes(e.key)) {
+    e.preventDefault();
+    next();
+  } else if (["ArrowLeft", "PageUp", "Backspace"].includes(e.key)) {
+    e.preventDefault();
+    prev();
+  } else if (e.key === "f" || e.key === "F") {
+    document.fullscreenElement == null ? document.documentElement.requestFullscreen() : document.exitFullscreen();
+  } else if (e.key === "h" || e.key === "H") {
+    $("#hud").classList.toggle("hidden");
+  }
+});
+
+const fit = () => {
+  const k = Math.min(innerWidth / 1280, innerHeight / 720);
+  $("#deck").style.transform = `translate(-50%, -50%) scale(${k})`;
+};
+
+addEventListener("resize", fit);
+
+/* ───────────── Init ───────────── */
+
+const slideById = (id) => $(`.slide[data-id="${id}"]`);
+
+// Each deck carries a subset of the slides: wire only the ones that are there
+const withSlide = (id, fn) => {
+  const el = slideById(id);
+
+  if (el != null) {
+    fn(el);
+  }
+};
+
+hooks.reveal = (step, el) => {
+  planOn = true;
+  callsShown = step >= 2;
+  renderCalls(el);
+};
+
+withSlide("dondevive", (el) => $$(".schip", el).forEach((c, i) => {
+  c.dataset.i = i;
+  c.addEventListener("click", () => {
+    if (sorted.has(c)) {
+      sorted.delete(c);
+    } else {
+      sorted.add(c);
+    }
+
+    placeChips(el, true);
+  });
+}));
+
+withSlide("noVa", buildWiki);
+withSlide("nxm", (el) => buildNM($(".nm", el)));
+withSlide("tresetapas", (el) => {
+  $(".sgrid", el).innerHTML = SKILLS.map((s, i) => `<div class="sk">${s}<small>name + description</small>${i === 0 ? '<div class="res">📄 references/errores.md</div>' : ""}</div>`).join("");
+});
+$$(".code").forEach(buildCode);
+
+withSlide("capas", (el) => {
+  $$(".seg2 button", el).forEach((b) => b.addEventListener("click", () => setTransport(el, b.dataset.tr)));
+  setTransport(el, "stdio");
+});
+
+withSlide("discovery", (el) => $$(".discbar .seg2 button", el).forEach((b) => b.addEventListener("click", () => {
+  discManual = b.dataset.mode;
+  setDiscovery(el, discManual, true);
+})));
+
+withSlide("transforms", (el) => $$(".xfseg button", el).forEach((b) => b.addEventListener("click", () => {
+  xfManual = b.dataset.xf;
+  setTransform(el, xfManual);
+})));
+
+withSlide("exposure", (el) => $$(".exseg button", el).forEach((b) => b.addEventListener("click", () => setExposure(el, b.dataset.ex))));
+
+withSlide("reveal", (el) => $(".pmode", el).addEventListener("click", () => {
+  planOn = !planOn;
+  callsShown = true;
+  renderCalls(el);
+}));
+
+withSlide("frontmatter", (fm) => {
+  $$(".vname, .vdesc", fm).forEach((i) => i.addEventListener("input", () => validate(fm)));
+  $$(".vtry button", fm).forEach((b) => b.addEventListener("click", () => {
+    $(".vname", fm).value = b.dataset.try;
+    validate(fm);
+  }));
+});
+
+$$(".track").forEach(buildTrack);
+$$(".chat .feed").forEach(buildChat);
+$$(".mascot").forEach((m) => setMood(m, m.dataset.mood));
+fit();
+
+fitTitles();
+
+const [hashSlide, hashStep] = location.hash.slice(1).split(".").map(Number);
+idx = Math.min(Math.max((hashSlide || 1) - 1, 0), slides.length - 1);
+step = Math.min(hashStep || 0, stepsOf(slides[idx]));
+show(true, step === 0);
+
+document.fonts.ready.then(() => {
+  fitTitles();
+  show(false, false);
+});
+
+/* ───────────── kurasu ───────────── */
+
+// kurasu counts slides and steps from 1 and gives a slide without inner steps one step, so the deck's
+// step 0 is kurasu's step 1.
+if (embedded) {
+  $("#hud").classList.add("hidden");
+
+  window.parent.postMessage({
+    type: "kurasu:manifest",
+    slides: slides.map((s) => ({ steps: stepsOf(s) + 1 })),
+  }, "*");
+
+  addEventListener("message", (e) => {
+    const go = e.data;
+
+    if (e.source !== window.parent || go?.type !== "kurasu:go" || !Number.isInteger(go.slide) || !Number.isInteger(go.step)) {
+      return;
+    }
+
+    const nextIdx = Math.min(Math.max(go.slide - 1, 0), slides.length - 1);
+    const nextStep = Math.min(Math.max(go.step - 1, 0), stepsOf(slides[nextIdx]));
+    const forward = nextIdx > idx || (nextIdx === idx && nextStep >= step);
+    const entered = nextIdx !== idx;
+
+    if (!entered && nextStep === step) {
+      return;
+    }
+
+    idx = nextIdx;
+    step = nextStep;
+    show(entered, forward);
+  });
+}
+</script>
+</body>
+</html>
