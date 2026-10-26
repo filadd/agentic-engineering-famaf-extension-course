@@ -45,7 +45,7 @@ Diego Piloni
 ## ¿Cómo les fue?
 
 - ¿Les sirvió planificar? ¿Hubo algo que habrían ejecutado directo?
-- ¿Qué le tuviste que explicar **más de una vez**? → al menti
+- ¿Qué le tuviste que explicar **más de una vez**? → Encuesta en el aula virtual
   *ej: ¿cómo se levanta el server? ¿cómo se corren los tests?*
 
 <!-- ~8 min de DISCUSIÓN, no de slides. Coordinar con Agus ANTES de la clase cómo cerró la Sesión 2. Primer disparador: desbloquearlo con ejemplos concretos (un fix de una línea, un cambio de texto, un color). Lo que buscamos es EL UMBRAL DONDE PLANIFICAR DEJA DE PAGAR. NO DEFENDER EL PROCESO ACÁ. Segundo disparador: va a MENTIMETER, pregunta abierta, vista de lista; es el insumo de los bloques que siguen y de la práctica. Juntar seis o siete. Semillas y plan B en INSTRUCTOR.md. Este es el bloque elástico. -->
@@ -193,6 +193,15 @@ Las tres etapas tienen nombre: **Progressive Disclosure**.
 - En Pi también es un comando: `/skill:verificar-api` · ¿solo a mano? en el frontmatter: `disable-model-invocation: true`
 
 <!-- La description es LO ÚNICO que decide si el skill se usa. Un skill perfecto con una descripción vaga no se carga nunca. Es el error más común cuando escriben el primero. En el segundo click se resaltan las palabras del pedido que aparecen en la buena. El tercero muestra la otra puerta: en Pi todo skill se invoca a mano con /skill:nombre, y con disable-model-invocation: true en el frontmatter el modelo deja de verlo y queda solo como comando (sirve para procedimientos que no querés que el agente dispare solo, como un deploy). -->
+
+---
+
+## Dos repos de skills de verdad
+
+- **[asermax/claude-plugins](https://github.com/asermax/claude-plugins/tree/master/mahou/skills)** · Agus · mahou: 41 skills, del diseño al PR
+- **[mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills)** · Matt Pocock · por categoría: tdd, diagnosing-bugs, code-review…
+
+<!-- Solo los links, uno por click: se abren y se recorren en vivo. NO LEERLOS ENTEROS: abrir un SKILL.md de cada uno y mirar la description, que es lo que acabamos de ver. -->
 
 ---
 
@@ -426,6 +435,25 @@ Tu sesión ve **el resumen**, no la búsqueda.
 3. vuelven tres resultados para comparar
 
 <!-- En el deck, a la derecha, una sesión de Pi que pide tres alternativas de la slide de título (minimalista, ilustrada, terminal), un subagente por estilo; los tres corren a la vez y a la izquierda aparecen las tres miniaturas. El punto: cuando las tareas no dependen entre sí, el paralelo te da varios intentos en el tiempo de uno, y elegir entre tres es más fácil que corregir uno. Los tiempos son ilustrativos. No es orquestación (eso es de la Sesión 4): no se coordinan ni comparten nada, cada uno hace lo suyo y vuelve. -->
+
+---
+
+## Dos agentes de verdad
+
+Un agente es un markdown: frontmatter YAML arriba, system prompt abajo.
+
+- **[mahou · reuse-reviewer](https://github.com/asermax/claude-plugins/blob/master/mahou/agents/reuse-reviewer.md)** · Agus · busca código que reimplementa algo que ya existe, no edita nada
+- **[pi-subagents · researcher](https://github.com/nicobailon/pi-subagents/blob/main/agents/researcher.md)** · de fábrica en pi-subagents, investiga en la web y escribe `research.md`
+
+Dónde viven en Pi:
+
+```
+builtin    ~/.pi/agent/extensions/subagent/agents/
+usuario    ~/.pi/agent/agents/**/*.md
+proyecto   .pi/agents/**/*.md
+```
+
+<!-- Un link por click, se abren en vivo. Mirar el frontmatter: es el mismo formato que un skill (name y description), más lo que define al especialista que corre como sesión hija: qué tools tiene (reuse-reviewer: solo lectura y git; researcher: búsqueda web), qué modelo y dónde deja el resultado. El cuerpo es el system prompt. El tercer click: los mismos tres niveles que AGENTS.md y skills — de fábrica, tuyos para todo proyecto, y del repo. -->
 
 ---
 

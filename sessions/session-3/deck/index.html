@@ -458,6 +458,10 @@ p { margin: 0; }
 .rhead span { font-size: 19px; color: var(--muted); }
 .rhead a { text-decoration: none; }
 .rhead a:hover b { text-decoration: underline; }
+.awhere { display: grid; gap: 8px; margin-top: 22px; padding: 20px 30px; font-size: 22px; }
+.awhere div { display: grid; grid-template-columns: 140px 1fr; }
+.awhere span { color: var(--muted); }
+.awhere b { color: var(--a3); }
 .proofs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; margin-top: 30px; }
 .proof { display: flex; flex-direction: column; gap: 12px; min-height: 290px; padding: 24px 26px; }
 .proof > b { font-size: 40px; color: var(--a4); line-height: 1.1; }
@@ -1007,7 +1011,7 @@ p { margin: 0; }
     <h2>¿Cómo les fue?</h2>
     <div class="recap2">
       <div class="card f-drop" data-step="1" style="--r: -2deg"><span class="emo">🗺️</span>¿Les sirvió planificar? ¿Hubo algo que habrían ejecutado directo?</div>
-      <div class="card f-drop hot" data-step="2" style="--r: 2deg"><span class="emo">🔁</span><span>¿Qué le tuviste que explicar <span class="hl">más de una vez</span>?</span><span class="ex">ej: ¿cómo se levanta el server? ¿cómo se corren los tests?</span><span class="menti">→ al menti</span></div>
+      <div class="card f-drop hot" data-step="2" style="--r: 2deg"><span class="emo">🔁</span><span>¿Qué le tuviste que explicar <span class="hl">más de una vez</span>?</span><span class="ex">ej: ¿cómo se levanta el server? ¿cómo se corren los tests?</span><span class="menti">→ Encuesta en el aula virtual</span></div>
     </div>
   </section>
 
@@ -1184,6 +1188,18 @@ p { margin: 0; }
     <div class="card tcmd f-pop" data-step="3">
       <span>⌨️ en Pi también es un comando: <span class="mono hl">/skill:verificar-api</span></span>
       <span class="small">¿solo a mano? en el frontmatter: <span class="mono">disable-model-invocation: true</span></span>
+    </div>
+  </section>
+
+  <section class="slide real-slide" data-id="skillsreales" data-steps="2">
+    <h2>Dos repos de skills de verdad</h2>
+    <div class="reals">
+      <div class="card real" data-step="1">
+        <div class="rhead"><a href="https://github.com/asermax/claude-plugins/tree/master/mahou/skills" target="_blank" rel="noopener"><b>asermax/claude-plugins ↗</b></a><span>Agus · mahou: 41 skills, del diseño al PR</span></div>
+      </div>
+      <div class="card real" data-step="2">
+        <div class="rhead"><a href="https://github.com/mattpocock/skills/tree/main/skills" target="_blank" rel="noopener"><b>mattpocock/skills ↗</b></a><span>Matt Pocock · por categoría: tdd, diagnosing-bugs, code-review…</span></div>
+      </div>
     </div>
   </section>
 
@@ -1493,6 +1509,24 @@ p { margin: 0; }
         <div class="bar3"><i></i><i></i><i></i><span class="title">pi</span></div>
         <div class="viewport" style="height: 460px"><div class="feed" data-chat="paralelo"></div></div>
       </div>
+    </div>
+  </section>
+
+  <section class="slide real-slide" data-id="agentesreales" data-steps="3">
+    <h2>Dos agentes de verdad</h2>
+    <p class="mid">Un agente es un markdown: <span class="hl">frontmatter YAML</span> arriba, <span class="hl">system prompt</span> abajo.</p>
+    <div class="reals" style="margin-top: 50px">
+      <div class="card real" data-step="1">
+        <div class="rhead"><a href="https://github.com/asermax/claude-plugins/blob/master/mahou/agents/reuse-reviewer.md" target="_blank" rel="noopener"><b>mahou · reuse-reviewer ↗</b></a><span>Agus · busca código que reimplementa algo que ya existe · no edita nada</span></div>
+      </div>
+      <div class="card real" data-step="2">
+        <div class="rhead"><a href="https://github.com/nicobailon/pi-subagents/blob/main/agents/researcher.md" target="_blank" rel="noopener"><b>pi-subagents · researcher ↗</b></a><span>de fábrica en pi-subagents · investiga en la web y escribe research.md</span></div>
+      </div>
+    </div>
+    <div class="card awhere mono" data-step="3">
+      <div><span>builtin</span><b>~/.pi/agent/extensions/subagent/agents/</b></div>
+      <div><span>usuario</span><b>~/.pi/agent/agents/**/*.md</b></div>
+      <div><span>proyecto</span><b>.pi/agents/**/*.md</b></div>
     </div>
   </section>
 
