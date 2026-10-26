@@ -178,7 +178,7 @@ verificar-api/
 └── assets/
 ```
 
-<!-- Vive en .agents/skills/ (proyecto) o ~/.pi/agent/skills/ (global): el mismo par que AGENTS.md. .agents/skills/ es el path que no nombra ninguna herramienta. En el primer click se iluminan las líneas 1-7 con la etiqueta "frontmatter": nombrarlo así, y decir que tiene dos campos obligatorios, name y description. El SKILL.md de ejemplo es un procedimiento de la Sesión 2 (verificar la API), y es la misma idea que el skill del paso 3 de la práctica. -->
+<!-- Vive en .pi/skills/ (proyecto) o ~/.pi/agent/skills/ (global): el mismo par que AGENTS.md. En el primer click se iluminan las líneas 1-7 con la etiqueta "frontmatter": nombrarlo así, y decir que tiene dos campos obligatorios, name y description. El SKILL.md de ejemplo es un procedimiento de la Sesión 2 (verificar la API), y es la misma idea que el skill del paso 3 de la práctica. -->
 
 ---
 
