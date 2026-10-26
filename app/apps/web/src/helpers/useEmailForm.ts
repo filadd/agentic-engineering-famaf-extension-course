@@ -1,4 +1,3 @@
-import { useId } from "react";
 import * as Schema from "effect/Schema";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 
@@ -13,8 +12,6 @@ interface Props {
 
 // canSubmitWhenInvalid: the submit button gates on an empty email, not on validity, so an invalid send reaches onSubmit and shows the field error.
 export const useEmailForm = ({ initialEmail, onValidEmail }: Props) => {
-  const errorId = useId();
-
   const form = useForm({
     defaultValues: { email: initialEmail },
     validationLogic: revalidateLogic(),
@@ -25,5 +22,5 @@ export const useEmailForm = ({ initialEmail, onValidEmail }: Props) => {
     },
   });
 
-  return { form, errorId };
+  return { form };
 };

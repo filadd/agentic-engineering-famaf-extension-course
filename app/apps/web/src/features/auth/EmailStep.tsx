@@ -1,5 +1,5 @@
 import { Button } from "../../ui/Button.tsx";
-import { FieldError } from "../../ui/FieldError.tsx";
+import { Field } from "../../ui/Field.tsx";
 import { Icon } from "../../ui/Icon.tsx";
 import { useEmailForm } from "../../helpers/useEmailForm.ts";
 import { AuthNotice } from "./AuthNotice.tsx";
@@ -15,7 +15,7 @@ interface Props {
 }
 
 export const EmailStep = ({ title, initialEmail, notice, sending, onSubmit }: Props) => {
-  const { form, errorId } = useEmailForm({ initialEmail, onValidEmail: onSubmit });
+  const { form } = useEmailForm({ initialEmail, onValidEmail: onSubmit });
 
   return (
     <form
@@ -29,22 +29,18 @@ export const EmailStep = ({ title, initialEmail, notice, sending, onSubmit }: Pr
       <form.Field name="email">
         {(field) => (
           <>
-            <label className="mt-[26px] block text-left text-sm font-bold">
-              Tu email
-              <input
-                type="text"
-                inputMode="email"
-                autoComplete="email"
-                value={field.state.value}
-                onChange={(event) => field.handleChange(event.target.value)}
-                onBlur={field.handleBlur}
-                placeholder="nombre@mail.com"
-                className="mt-1.5 block w-full rounded-[14px] border-[1.5px] border-line bg-field px-3.5 py-[11px] text-base font-normal text-ink"
-                aria-invalid={field.state.meta.errors.length > 0}
-                aria-describedby={errorId}
-              />
-            </label>
-            <FieldError id={errorId} error={field.state.meta.errors[0]?.message ?? null} />
+            <Field
+              label="Tu email"
+              type="text"
+              inputMode="email"
+              autoComplete="email"
+              placeholder="nombre@mail.com"
+              value={field.state.value}
+              onChange={field.handleChange}
+              onBlur={field.handleBlur}
+              aria-invalid={field.state.meta.errors.length > 0}
+              error={field.state.meta.errors[0]?.message ?? null}
+            />
             {notice == null || notice === "badCode" ? null : (
               <AuthNotice text={linkNotices[notice]} />
             )}

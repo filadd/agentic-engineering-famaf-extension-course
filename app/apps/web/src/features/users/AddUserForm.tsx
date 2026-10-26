@@ -1,7 +1,7 @@
 import * as Predicate from "effect/Predicate";
 
 import { Button } from "../../ui/Button.tsx";
-import { FieldError } from "../../ui/FieldError.tsx";
+import { Field } from "../../ui/Field.tsx";
 import { InlineError } from "../../ui/InlineError.tsx";
 import { Sheet } from "../../ui/Sheet.tsx";
 import { useEmailForm } from "../../helpers/useEmailForm.ts";
@@ -16,7 +16,7 @@ interface Props {
 export const AddUserForm = ({ onClose }: Props) => {
   const add = useAddUser({ onSuccess: onClose });
 
-  const { form, errorId } = useEmailForm({
+  const { form } = useEmailForm({
     initialEmail: "",
     onValidEmail: (email) => add.mutate(email),
   });
@@ -33,22 +33,18 @@ export const AddUserForm = ({ onClose }: Props) => {
         <form.Field name="email">
           {(field) => (
             <>
-              <label className="field-label">
-                Email
-                <input
-                  type="text"
-                  inputMode="email"
-                  autoComplete="off"
-                  value={field.state.value}
-                  onChange={(event) => field.handleChange(event.target.value)}
-                  onBlur={field.handleBlur}
-                  placeholder="nombre@mail.com"
-                  className="input-field"
-                  aria-invalid={field.state.meta.errors.length > 0}
-                  aria-describedby={errorId}
-                />
-              </label>
-              <FieldError id={errorId} error={field.state.meta.errors[0]?.message ?? null} />
+              <Field
+                label="Email"
+                type="text"
+                inputMode="email"
+                autoComplete="off"
+                placeholder="nombre@mail.com"
+                value={field.state.value}
+                onChange={field.handleChange}
+                onBlur={field.handleBlur}
+                aria-invalid={field.state.meta.errors.length > 0}
+                error={field.state.meta.errors[0]?.message ?? null}
+              />
               {add.error == null ? null : (
                 <InlineError className="mt-3">
                   {Predicate.isTagged(add.error, "EmailTaken")
