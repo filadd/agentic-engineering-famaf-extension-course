@@ -65,6 +65,18 @@ test(
 );
 
 test(
+  "a login that sends the email with spaces and uppercase gets the link of the normalized account",
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+    const since = yield* Clock.currentTimeMillis;
+    const response = yield* requestLink(url, { email: "  Lucia@Auth.Kurasu.Test  " });
+
+    expect(response.status).toBe(204);
+    expect(yield* mailSentSince("lucia@auth.kurasu.test", since)).toBe(true);
+  }),
+);
+
+test(
   "a new email with the current enrollment code registers a student and gets the link",
   Effect.gen(function* () {
     const { url } = yield* stack;
@@ -75,6 +87,36 @@ test(
     });
 
     expect(response.status).toBe(204);
+
+    const users = yield* allUsers(url);
+
+    expect(users.find((user) => user.email === "nuevo@auth.kurasu.test")).toMatchObject({
+      role: "student",
+      hasAccess: true,
+      name: null,
+      avatar: null,
+    });
+
+    const opened = yield* openSession(url, yield* linkCodeFor("nuevo@auth.kurasu.test"));
+
+    expect(opened.status).toBe(200);
+  }),
+);
+
+test(
+  "a new email with spaces around and uppercase registers the normalized account and gets the link",
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+
+    const since = yield* Clock.currentTimeMillis;
+
+    const response = yield* requestLink(url, {
+      email: "  Nuevo@Auth.Kurasu.Test  ",
+      enrollmentCode: "H4XQ9",
+    });
+
+    expect(response.status).toBe(204);
+    expect(yield* mailSentSince("nuevo@auth.kurasu.test", since)).toBe(true);
 
     const users = yield* allUsers(url);
 
@@ -203,6 +245,51 @@ test(
 
     expect(second.status).toBe(502);
     expect(failedWith(second, MailNotSent)).toBe(true);
+  }),
+);
+
+test(
+  "an email with a dot at the start, before the at sign or consecutive dots is rejected",
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+    const since = yield* Clock.currentTimeMillis;
+
+    const response = yield* requestLink(url, { email: "ezequiel.pastore.@mi.unc.edu.ar" });
+
+    expect(response.status).toBe(400);
+    expect(yield* mailSentSince("ezequiel.pastore.@mi.unc.edu.ar", since)).toBe(false);
+
+    const users = yield* allUsers(url);
+
+    expect(users.some((user) => user.email === "ezequiel.pastore.@mi.unc.edu.ar")).toBe(false);
+  }),
+);
+
+test(
+  "an email that is empty, too long, has inner spaces or an invalid domain is rejected",
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+    const since = yield* Clock.currentTimeMillis;
+
+    const invalidEmails = [
+      "",
+      `${"a".repeat(300)}@auth.kurasu.test`,
+      "juan perez@auth.kurasu.test",
+      "juan@localhost",
+    ];
+
+    for (const email of invalidEmails) {
+      const response = yield* requestLink(url, { email });
+
+      expect(response.status).toBe(400);
+      expect(yield* mailSentSince(email, since)).toBe(false);
+    }
+
+    const users = yield* allUsers(url);
+
+    for (const email of invalidEmails) {
+      expect(users.some((user) => user.email === email)).toBe(false);
+    }
   }),
 );
 
