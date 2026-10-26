@@ -48,6 +48,25 @@ const allUsers = (url: string) =>
     return yield* bodyOf(Schema.Array(User), response);
   });
 
+const rejectsEmails = (emails: string[]) =>
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+    const since = yield* Clock.currentTimeMillis;
+
+    for (const email of emails) {
+      const response = yield* requestLink(url, { email });
+
+      expect(response.status).toBe(400);
+      expect(yield* mailSentSince(email, since)).toBe(false);
+    }
+
+    const users = yield* allUsers(url);
+
+    for (const email of emails) {
+      expect(users.some((user) => user.email === email)).toBe(false);
+    }
+  });
+
 test(
   "an account with access gets a mail with the link to open",
   Effect.gen(function* () {
@@ -250,57 +269,21 @@ test(
 
 test(
   "an email with a dot at the start, before the at sign or consecutive dots is rejected",
-  Effect.gen(function* () {
-    const { url } = yield* stack;
-    const since = yield* Clock.currentTimeMillis;
-
-    const invalidEmails = [
-      ".juan@auth.kurasu.test",
-      "ezequiel.pastore.@mi.unc.edu.ar",
-      "juan..perez@auth.kurasu.test",
-    ];
-
-    for (const email of invalidEmails) {
-      const response = yield* requestLink(url, { email });
-
-      expect(response.status).toBe(400);
-      expect(yield* mailSentSince(email, since)).toBe(false);
-    }
-
-    const users = yield* allUsers(url);
-
-    for (const email of invalidEmails) {
-      expect(users.some((user) => user.email === email)).toBe(false);
-    }
-  }),
+  rejectsEmails([
+    ".juan@auth.kurasu.test",
+    "ezequiel.pastore.@mi.unc.edu.ar",
+    "juan..perez@auth.kurasu.test",
+  ]),
 );
 
 test(
   "an email that is empty, too long, has inner spaces or an invalid domain is rejected",
-  Effect.gen(function* () {
-    const { url } = yield* stack;
-    const since = yield* Clock.currentTimeMillis;
-
-    const invalidEmails = [
-      "",
-      `${"a".repeat(300)}@auth.kurasu.test`,
-      "juan perez@auth.kurasu.test",
-      "juan@localhost",
-    ];
-
-    for (const email of invalidEmails) {
-      const response = yield* requestLink(url, { email });
-
-      expect(response.status).toBe(400);
-      expect(yield* mailSentSince(email, since)).toBe(false);
-    }
-
-    const users = yield* allUsers(url);
-
-    for (const email of invalidEmails) {
-      expect(users.some((user) => user.email === email)).toBe(false);
-    }
-  }),
+  rejectsEmails([
+    "",
+    `${"a".repeat(300)}@auth.kurasu.test`,
+    "juan perez@auth.kurasu.test",
+    "juan@localhost",
+  ]),
 );
 
 test(
