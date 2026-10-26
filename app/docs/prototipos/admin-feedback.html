@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Prototipo · Feedback del lado del profe</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9e6e3; font-family: 'Atkinson Hyperlegible', sans-serif; color: #1F1B18; }
+  h1, h2, h3, h4 { font-family: 'Rubik', sans-serif; margin: 0; }
+  .intro, .alt { max-width: 1180px; margin: 24px auto; padding: 0 20px; }
+  .intro h1 { font-size: 28px; }
+  .intro p, .tradeoff { margin: 6px 0 0; color: #6b625c; max-width: 1000px; }
+  .alt { border-top: 2px solid #d6cfc9; padding-top: 22px; }
+  .alt h2 { font-size: 21px; display: flex; gap: 10px; align-items: center; }
+  .letter { width: 30px; height: 30px; border-radius: 50%; background: #1F1B18; color: #fff; display: grid; place-items: center; font-size: 15px; }
+  .tradeoff { margin: 6px 0 12px; }
+
+  .frame { width: 1140px; max-width: 100%; height: 760px; border-radius: 14px; overflow: hidden; box-shadow: 0 0 0 1px #d6cfc9; position: relative; }
+
+  .app {
+    --window: #FBF3EE; --ink: #1F1B18; --muted: #8A7E75; --line: #EADFD8; --side: #F3E8E1; --field: #FFFFFF;
+    position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--window); color: var(--ink); display: flex; flex-direction: column;
+  }
+  .top { display: flex; align-items: center; gap: 12px; padding: 16px 32px 0 20px; }
+  .top h1 { font-size: 22px; flex: 1; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; background: #CCC4F0; display: grid; place-items: center; font-size: 20px; }
+  .back { width: 34px; height: 34px; border-radius: 50%; border: 0; background: none; font-size: 20px; cursor: pointer; color: var(--ink); }
+
+  .maintabs { display: flex; gap: 8px; padding: 10px 32px 0 86px; }
+  .pt { position: relative; display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 14px; border: 1.5px solid var(--line); background: transparent; color: var(--ink); border-radius: 999px; padding: 7px 16px; cursor: pointer; }
+  .pt.on { background: var(--ink); color: var(--window); border-color: var(--ink); }
+
+  .page { flex: 1; overflow: auto; padding: 18px 32px 28px 86px; }
+  .stack { display: flex; flex-direction: column; gap: 10px; max-width: 760px; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 14px; border: 1.5px solid var(--line); background: transparent; color: var(--ink); border-radius: 999px; padding: 7px 12px; cursor: pointer; }
+  .btn.dark { background: #1F1B18; color: #fff; border-color: #1F1B18; }
+  .btn.danger { color: #B5485A; border-color: #E9B3BC; background: #fff; }
+  .note { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+  .poll { background: #fff; color: #1F1B18; border-radius: 16px; }
+  .poll-head { display: flex; align-items: center; gap: 10px; width: 100%; font: inherit; text-align: left; background: none; border: 0; padding: 12px 14px; color: inherit; }
+  .poll-head .grow { flex: 1; }
+  .poll-head small { display: block; color: #8A7E75; font-size: 12px; }
+  .state { font-size: 12px; border-radius: 999px; padding: 2px 9px; flex: none; }
+  .state.active { background: #B4E8CC; }
+  .state.closed { background: #CCC4F0; }
+  .poll-body { padding: 0 14px 14px; }
+  .row { position: relative; overflow: hidden; display: flex; justify-content: space-between; border: 2px solid #EADFD8; border-radius: 10px; padding: 6px 10px; margin-top: 6px; font-size: 13px; }
+  .row i { position: absolute; inset: 0 auto 0 0; background: #F8D0A0; opacity: 0.6; }
+  .row span { position: relative; }
+  .chart { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; align-items: end; margin-top: 12px; }
+  .chart .col { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; }
+  .chart .bar { width: 100%; background: #CCC4F0; border-radius: 8px 8px 0 0; display: flex; justify-content: center; align-items: flex-end; font-size: 12px; padding-bottom: 2px; }
+  .chart .emoji { font-size: 19px; }
+  .chart.ends { display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: start; gap: 8px; font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .chart.ends span:nth-child(2) { text-align: center; }
+  .chart.ends span:last-child { text-align: right; }
+  .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+
+  .summary { display: flex; gap: 22px; align-items: flex-end; margin-top: 10px; }
+  .dist { display: flex; gap: 8px; align-items: flex-end; }
+  .dist .col { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 12px; width: 46px; }
+  .dist .bar { width: 100%; background: #CCC4F0; border-radius: 8px 8px 0 0; display: grid; place-items: end center; font-size: 11px; padding-bottom: 2px; min-height: 6px; }
+  .dist .emoji { font-size: 21px; }
+  .avg { font-family: 'Rubik', sans-serif; font-size: 30px; font-weight: 700; line-height: 1; }
+  .avg small { display: block; font-family: 'Atkinson Hyperlegible', sans-serif; font-size: 12px; font-weight: 400; color: var(--muted); margin-top: 4px; }
+
+  .list { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .item { display: flex; gap: 10px; align-items: flex-start; border: 2px solid #EADFD8; border-radius: 14px; padding: 10px 12px; }
+  .item .face { width: 32px; height: 32px; border-radius: 50%; background: #F3E8E1; display: grid; place-items: center; font-size: 17px; flex: none; }
+  .item .who { font-family: 'Rubik', sans-serif; font-size: 14px; font-weight: 500; }
+  .item .pick { font-size: 20px; margin-left: auto; }
+  .item p { margin: 2px 0 0; font-size: 14px; line-height: 1.4; }
+  .scroll-list { max-height: 330px; overflow: auto; padding-right: 4px; }
+
+  .scrim { position: absolute; inset: 0; background: rgba(31, 27, 24, 0.45); display: grid; place-items: center; padding: 30px; z-index: 5; }
+  .modal { display: flex; flex-direction: column; background: var(--window); color: var(--ink); border-radius: 22px; width: min(560px, 100%); max-height: 100%; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); overflow: hidden; }
+  .modal-head { display: flex; align-items: center; gap: 8px; padding: 18px 18px 6px 24px; }
+  .modal-head h3 { flex: 1; font-size: 19px; }
+  .modal-body { overflow: auto; padding: 6px 24px 22px; }
+  .iconbtn { width: 32px; height: 32px; border-radius: 50%; border: 0; background: transparent; color: inherit; cursor: pointer; font-size: 18px; flex: none; }
+
+  .drawer { position: absolute; top: 0; right: 0; bottom: 0; width: 440px; background: var(--window); border-left: 1.5px solid var(--line); box-shadow: -14px 0 40px rgba(0,0,0,0.18); display: flex; flex-direction: column; z-index: 5; }
+  .drawer-head { display: flex; align-items: center; gap: 8px; padding: 18px 18px 8px 22px; }
+  .drawer-head h3 { flex: 1; font-size: 19px; }
+  .drawer-body { overflow: auto; padding: 4px 22px 22px; }
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>Feedback del lado del profe</h1>
+  <p>La pestaña Encuestas del admin de una sesión, con el feedback entre las encuestas de siempre. La tarjeta resume con la misma visualización que ya usa una encuesta de escala: una barra por punto, con su cantidad, y el emoji debajo. La lista completa, con el nombre de cada alumno, se lee en un modal y no repite el resumen. Abrí la lista con su botón y cerrala con la X, con Escape o con un click afuera.</p>
+</div>
+
+<section class="alt">
+  <h2>La tarjeta y su modal</h2>
+  <div class="frame"><div class="app" id="app-a"></div></div>
+</section>
+
+
+
+<script>
+const PEOPLE = [
+  ['🦊', 'Agustín', 4, 'Me sirvió el ejercicio, aunque el tiempo para el segundo punto quedó corto.'],
+  ['🦉', 'Malena', 5, 'Muy claro el ejemplo del plan. Quiero más de esto.'],
+  ['🐼', 'Sofía', 3, 'Estuvo bien, pero el primer bloque me costó seguirlo.'],
+  ['🐸', 'Tomás', 4, 'El repaso del inicio ayudó a ubicarme.'],
+  ['🐙', 'Camila', 2, 'Me perdí entre el plan y el diff.'],
+  ['🦜', 'Julián', 5, 'La parte de revisar el diff fue lo mejor.'],
+  ['🐢', 'Lucía', 4, 'Buen ritmo, y el ejercicio se entendió.'],
+  ['🦔', 'Nicolás', 3, 'Esperaba más ejemplos de planes reales.'],
+  ['🐧', 'Valentina', 4, 'Me llevo la idea de escribir el plan antes de codear.'],
+  ['🦩', 'Mateo', 5, 'Excelente, y el tiempo alcanzó.'],
+  ['🐨', 'Inés', 2, 'Me costó el segundo punto sin un ejemplo a mano.'],
+  ['🦫', 'Ramiro', 4, 'Sirvió, sobre todo la checklist de revisión.'],
+];
+
+const EMOJIS = ['😞', '😕', '😐', '🙂', '😄'];
+const COUNTS = [1, 2, 2, 5, 2];
+const PCT = [8, 17, 17, 42, 16];
+const TOTAL = COUNTS.reduce((a, b) => a + b, 0);
+const QUESTION = '¿Cómo estuvo la sesión de hoy?';
+
+const header = () => `
+  <div class="top">
+    <button class="back" title="Volver a las sesiones">←</button>
+    <h1>Planificación y revisión</h1>
+    <div class="avatar">🦊</div>
+  </div>
+  <div class="maintabs">
+    <button class="pt">Contenido</button>
+    <button class="pt on">Encuestas</button>
+    <button class="pt">Aula</button>
+  </div>`;
+
+const existingPoll = () => `
+  <div class="poll">
+    <div class="poll-head"><span class="state active">Activa</span><span class="grow"><b>¿Qué tan cómodo te sentís revisando código generado?</b><small>Escala</small></span></div>
+    <div class="poll-body">
+      <div class="note">22 respuestas</div>
+      <div class="row"><i style="width:9%"></i><span>1</span><span>9%</span></div>
+      <div class="row"><i style="width:23%"></i><span>2</span><span>23%</span></div>
+      <div class="row"><i style="width:36%"></i><span>3</span><span>36%</span></div>
+      <div class="row"><i style="width:23%"></i><span>4</span><span>23%</span></div>
+      <div class="row"><i style="width:9%"></i><span>5</span><span>9%</span></div>
+    </div>
+  </div>`;
+
+const chart = () => {
+  const highest = Math.max(1, ...COUNTS);
+  return `
+    <div class="chart">
+      ${COUNTS.map((count, i) => `
+        <div class="col">
+          <div class="bar" style="height:${10 + (count / highest) * 60}px">${count}</div>
+          <span class="emoji">${EMOJIS[i]}</span>
+        </div>`).join('')}
+    </div>
+    <div class="chart ends"><span>No me gustó</span><span>Más o menos</span><span>Me gustó</span></div>`;
+};
+
+const feedbackCard = () => `
+  <div class="poll">
+    <div class="poll-head"><span class="state active">Abierta</span><span class="grow"><b>${QUESTION}</b><small>Feedback</small></span></div>
+    <div class="poll-body">
+      <div class="note">${TOTAL} respuestas</div>
+      ${chart()}
+      <div class="actions">
+        <button class="btn dark" data-open>Ver las respuestas</button>
+        <button class="btn danger">Borrar</button>
+        <button class="btn">Cerrar</button>
+      </div>
+    </div>
+  </div>`;
+
+const list = () => `
+  <div class="list">
+    ${PEOPLE.map(([face, name, pick, text]) => `
+      <div class="item">
+        <span class="face">${face}</span>
+        <div style="flex:1;min-width:0">
+          <div class="who">${name}</div>
+          <p>${text}</p>
+        </div>
+        <span class="pick">${EMOJIS[pick - 1]}</span>
+      </div>`).join('')}
+  </div>`;
+
+const modal = () => `
+  <div class="scrim">
+    <div class="modal">
+      <div class="modal-head"><h3>${TOTAL} respuestas</h3><button class="iconbtn">✕</button></div>
+      <div class="modal-body">${list()}</div>
+    </div>
+  </div>`;
+
+const state = { open: false };
+
+const render = () => {
+  document.getElementById('app-a').innerHTML = `
+    ${header()}
+    <div class="page"><div class="stack">${existingPoll()}${feedbackCard()}</div></div>
+    ${state.open ? modal() : ''}`;
+
+  document.querySelector('[data-open]').addEventListener('click', () => { state.open = true; render(); });
+
+  const iconbtn = document.querySelector('.iconbtn');
+  if (iconbtn != null) iconbtn.addEventListener('click', () => { state.open = false; render(); });
+
+  const scrim = document.querySelector('.scrim');
+  if (scrim != null) scrim.addEventListener('click', (event) => {
+    if (event.target === scrim) { state.open = false; render(); }
+  });
+};
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && state.open) { state.open = false; render(); }
+});
+
+render();
+</script>
+</body>
+</html>

@@ -75,7 +75,7 @@ Un store escribe su propia query cuando el repositorio no puede expresarla o la 
 
 | Store | Query propia |
 |---|---|
-| respuestas | los conteos de varias encuestas en una sola query: votos por opción o punto de la escala, el total y las palabras de cada nube, contadas una vez por estudiante |
+| respuestas | los conteos de varias encuestas en una sola query: votos por opción o punto de la escala, el total y las palabras de cada nube, contadas una vez por estudiante; y las respuestas de una encuesta de feedback con el nombre y el avatar de cada alumno |
 | manos levantadas | las manos de una sesión con el nombre y el avatar de cada estudiante, ordenadas por nombre |
 | preguntas | la lista y una pregunta, cada una con sus votos y si el que pide la votó |
 | material | crear, marcar como slides y borrar; cuando cambian las slides de la sesión, el mismo batch desmarca las anteriores y vuelve la posición del profe a la primera slide |

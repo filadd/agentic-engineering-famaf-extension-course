@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Prototipo · Feedback de la sesión</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9e6e3; font-family: 'Atkinson Hyperlegible', sans-serif; color: #1F1B18; }
+  h1, h2, h3, h4 { font-family: 'Rubik', sans-serif; margin: 0; }
+  .intro { max-width: 1520px; margin: 24px auto; padding: 0 20px; }
+  .intro h1 { font-size: 28px; }
+  .intro p { margin: 6px 0 0; color: #6b625c; max-width: 1100px; }
+
+  .strip { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 14px auto 20px; max-width: 1520px; padding: 0 20px; font-size: 14px; }
+  .strip button { font: inherit; border: 1px solid #cfc8c2; background: #fff; border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+  .strip button.on { background: #1F1B18; color: #fff; border-color: #1F1B18; }
+
+  .frames { display: flex; gap: 28px; align-items: flex-start; max-width: 1520px; margin: 0 auto; padding: 0 20px 40px; }
+  .frames[hidden] { display: none; }
+  .flabel { font-size: 13px; color: #6b625c; margin-bottom: 6px; }
+  .phone { width: 410px; height: 864px; border: 10px solid #1F1B18; border-radius: 44px; overflow: hidden; flex: none; background: #1F1B18; }
+  .desk { width: 1060px; height: 844px; border-radius: 12px; overflow: hidden; flex: none; box-shadow: 0 0 0 1px #d6cfc9; }
+
+  .app {
+    --window: #FBF3EE; --ink: #1F1B18; --muted: #8A7E75; --line: #EADFD8; --field: #FFFFFF;
+    container: app / inline-size;
+    position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--window); color: var(--ink);
+  }
+  .scroll { height: 100%; overflow: auto; scrollbar-width: thin; }
+  .window { padding: 32px 48px 40px; }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .hello { font-family: 'Rubik', sans-serif; font-size: 30px; font-weight: 700; }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; background: #CCC4F0; display: grid; place-items: center; font-size: 22px; }
+
+  .card { border-radius: 22px; padding: 20px 22px; background: #CCC4F0; color: #1F1B18; margin-top: 24px; }
+  .card h3 { font-size: 20px; }
+  .card p { margin: 12px 0 0; line-height: 1.45; }
+  .kicker { font-size: 13px; font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; opacity: 0.65; }
+
+  .polls { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+  .panel { background: #fff; border-radius: 18px; padding: 16px 18px; color: #1F1B18; }
+  .q { font-family: 'Rubik', sans-serif; font-weight: 500; display: flex; gap: 8px; align-items: flex-start; }
+  .q svg { flex: none; margin-top: 2px; }
+  .meta { font-size: 13px; opacity: 0.7; margin-top: 3px; }
+  .rows { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .row { display: flex; justify-content: space-between; gap: 10px; border: 2px solid #EADFD8; border-radius: 12px; padding: 9px 14px; background: #fff; font: inherit; color: #1F1B18; }
+  .row i { position: absolute; }
+
+  .emoji { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 12px; }
+  .emoji button { font: inherit; font-size: 26px; line-height: 1; border: 2px solid #EADFD8; background: #fff; border-radius: 14px; padding: 10px 0 8px; cursor: pointer; color: #1F1B18; }
+  .emoji button:hover { border-color: #1F1B18; }
+  .emoji button.on { border-color: #1F1B18; background: #F8D0A0; }
+  .emoji button:disabled { opacity: 0.5; cursor: default; }
+  .anchors { display: flex; justify-content: space-between; gap: 10px; margin-top: 6px; font-size: 12px; opacity: 0.7; }
+  .anchors span:nth-child(2) { text-align: center; }
+
+  .textarea { display: block; width: 100%; margin-top: 12px; font: inherit; font-size: 15px; border: 2px solid #EADFD8; border-radius: 14px; padding: 10px 14px; background: #fff; color: #1F1B18; resize: vertical; min-height: 74px; }
+  .textarea:focus { outline: none; border-color: #1F1B18; }
+  .foot { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 12px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-family: 'Rubik', sans-serif; font-weight: 500; border: 0; border-radius: 999px; padding: 10px 20px; cursor: pointer; background: #1F1B18; color: #fff; }
+  .btn:disabled { opacity: 0.55; cursor: default; }
+  .spinner { width: 14px; height: 14px; border: 2px solid rgba(255, 255, 255, 0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .textlink { font: inherit; font-size: 14px; background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; color: #1F1B18; }
+  .error { display: flex; gap: 8px; align-items: flex-start; margin-top: 10px; padding: 12px 14px; border-radius: 14px; background: #F2B8C0; font-size: 14px; color: #1F1B18; }
+  .error svg { flex: none; margin-top: 1px; }
+  .thanks { display: flex; gap: 12px; align-items: flex-start; margin-top: 12px; }
+  .thanks .mark { width: 34px; height: 34px; border-radius: 50%; background: #B4E8CC; display: grid; place-items: center; flex: none; font-size: 18px; }
+  .mine { display: flex; gap: 10px; align-items: baseline; margin-top: 10px; padding: 10px 14px; border: 2px solid #EADFD8; border-radius: 14px; }
+  .mine .chosen { font-size: 26px; }
+  .mine p { margin: 0; line-height: 1.4; }
+
+  .all { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; max-width: 1520px; margin: 0 auto; padding: 0 20px 40px; }
+  .all .slot { background: #CCC4F0; border-radius: 18px; padding: 16px; }
+  .all .slot .state-label { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+
+  @container app (max-width: 600px) {
+    .window { padding: 18px 16px 28px; }
+    .hello { font-size: 22px; }
+    .card { padding: 16px; }
+    .card h3 { font-size: 17px; }
+    .panel { padding: 14px; border-radius: 16px; }
+    .emoji button { font-size: 22px; padding: 8px 0 6px; }
+    .anchors { font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>Feedback de la sesión</h1>
+  <p>El bloque vive dentro de la card de la sesión, en el mismo lugar donde aparecen las encuestas. Se ve en un celular de 390 × 844 y en escritorio con la misma data. Elegí un emoji, escribí o no un texto, mandá, y cambiá la respuesta después. El texto es opcional; el puntaje no. El juego de emojis y los textos de las puntas son lo que falta elegir.</p>
+</div>
+
+<div class="strip" id="strip"></div>
+<div class="frames" id="frames">
+  <div><div class="flabel">Celular</div><div class="phone"><div class="app"><div class="scroll" id="phone"></div></div></div></div>
+  <div><div class="flabel">Escritorio</div><div class="desk"><div class="app"><div class="scroll" id="desk"></div></div></div></div>
+</div>
+<div class="all" id="all" hidden></div>
+
+<script>
+const EMOJIS = ['😞', '😕', '😐', '🙂', '😄'];
+const ANCHORS = ['No me gustó', 'Más o menos', 'Me gustó'];
+const SESSION = { n: 2, title: 'Sesión 2 · Planificar y revisar', summary: 'Cómo escribir un plan que otro pueda ejecutar, y cómo revisar lo que el agente devuelve.' };
+const POLL = { question: '¿Qué tan cómodo te sentís revisando código generado?', counts: [2, 5, 8, 5, 2], ends: ['Nada cómodo', 'Muy cómodo'] };
+const FEEDBACK = { question: '¿Cómo estuvo la sesión de hoy?' };
+
+const STATES = [
+  ['empty', 'Sin responder'],
+  ['sending', 'Enviando'],
+  ['answered', 'Respondido'],
+  ['editing', 'Editando'],
+  ['error', 'Error al enviar'],
+  ['closed', 'La encuesta se cerró'],
+];
+
+const state = { view: 'empty', pick: null, text: '', saved: null };
+
+const ic = (name) => ({
+  chart: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-6M22 20H2"/></svg>',
+  speech: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-8 8H7l-4 3v-6a8 8 0 0 1 8-9h2a8 8 0 0 1 8 4z"/></svg>',
+})[name];
+
+const panelHead = (icon, question, meta) =>
+  `<div class="q">${ic(icon)}<span>${question}</span></div><div class="meta">${meta}</div>`;
+
+const pollPanel = () => `
+  <div class="panel">
+    ${panelHead('chart', POLL.question, 'Encuesta de escala · 22 respuestas')}
+    <div class="rows">
+      ${POLL.counts.map((n, i) => `<div class="row"><span>${i + 1}</span><span>${n}</span></div>`).join('')}
+    </div>
+    <div class="anchors"><span>${POLL.ends[0]}</span><span></span><span>${POLL.ends[1]}</span></div>
+  </div>`;
+
+const emojiRow = (selected, disabled) => `
+  <div class="emoji" role="radiogroup" aria-label="Puntaje de la sesión">
+    ${EMOJIS.map((e, i) => `<button type="button" role="radio" aria-checked="${selected === i + 1}" aria-label="${i + 1} de 5" data-pick="${i + 1}" class="${selected === i + 1 ? 'on' : ''}" ${disabled ? 'disabled' : ''}>${e}</button>`).join('')}
+  </div>
+  <div class="anchors"><span>${ANCHORS[0]}</span><span>${ANCHORS[1]}</span><span>${ANCHORS[2]}</span></div>`;
+
+const form = (pick, text, sending, error, editing) => `
+  ${emojiRow(pick, sending)}
+  <textarea class="textarea" id="text" placeholder="¿Qué te pareció la sesión? (opcional)" ${sending ? 'disabled' : ''}>${text}</textarea>
+  ${error ? '<div class="error" role="alert"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1F1B18" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.6v5.5M12 16.4v.5"/></svg><span>No se pudo enviar tu feedback. Probá de nuevo.</span></div>' : ''}
+  <div class="foot">
+    <button class="btn" type="button" id="send" ${sending || pick == null ? 'disabled' : ''}>
+      ${sending ? '<span class="spinner"></span>Enviando…' : editing ? 'Modificar feedback' : 'Enviar feedback'}
+    </button>
+  </div>`;
+
+const saved = (entry) => `
+  <div class="mine">
+    <span class="chosen">${EMOJIS[entry.pick - 1]}</span>
+    <p>${entry.text ? entry.text : '<span style="opacity:0.6">Sin comentario.</span>'}</p>
+  </div>`;
+
+const answered = (entry, closed) => `
+  <div class="thanks">
+    <span class="mark">✓</span>
+    <div>
+      <div style="font-family:'Rubik',sans-serif;font-weight:500">${closed ? 'La encuesta se cerró.' : 'Gracias, ya nos llegó tu feedback.'}</div>
+      <div class="meta">${closed ? 'Esta encuesta no acepta cambios.' : 'Podés cambiarlo cuando quieras.'}</div>
+    </div>
+  </div>
+  ${saved(entry)}
+  ${closed ? '' : '<div class="foot" style="justify-content:flex-end"><button class="textlink" type="button" id="change">Cambiar mi respuesta</button></div>'}`;
+
+const feedbackPanel = (view, pick, text) => {
+  const entry = state.saved;
+  let body;
+  if (view === 'empty' || view === 'sending' || view === 'error') body = form(pick, text, view === 'sending', view === 'error', false);
+  else if (view === 'editing') body = form(pick, text, false, false, true) + '<div class="foot" style="justify-content:flex-end;margin-top:8px"><button class="textlink" type="button" id="cancel">Cancelar</button></div>';
+  else if (view === 'closed') body = entry ? answered(entry, true) : '<div class="meta">No respondiste esta encuesta.</div>';
+  else body = entry ? answered(entry, false) : answered({ pick: 4, text: 'Me sirvió el ejercicio, aunque el tiempo para el segundo punto quedó corto.' }, false);
+
+  const meta = view === 'closed' ? 'Encuesta de feedback · cerrada' : 'Encuesta de feedback · se puede cambiar';
+  return `<div class="panel" data-feedback>${panelHead('speech', FEEDBACK.question, meta)}${body}</div>`;
+};
+
+const card = (view, pick = state.pick, text = state.text) => `
+  <div class="top"><div class="hello">Hola, Agus</div><div class="avatar">🦊</div></div>
+  <div class="card">
+    <div class="kicker">Sesión destacada</div>
+    <h3>${SESSION.title}</h3>
+    <p>${SESSION.summary}</p>
+    <div class="polls">${pollPanel()}${feedbackPanel(view, pick, text)}</div>
+  </div>`;
+
+const wire = (root, view) => {
+  root.querySelectorAll('[data-pick]').forEach((button) => {
+    button.addEventListener('click', () => {
+      state.pick = Number(button.dataset.pick);
+      render();
+    });
+  });
+  const text = root.querySelector('#text');
+  if (text != null) text.addEventListener('input', () => { state.text = text.value; });
+
+  const send = root.querySelector('#send');
+  if (send != null) send.addEventListener('click', () => {
+    state.view = 'sending';
+    render();
+    setTimeout(() => {
+      state.saved = { pick: state.pick, text: state.text };
+      state.view = 'answered';
+      render();
+    }, 700);
+  });
+
+  const change = root.querySelector('#change');
+  if (change != null) change.addEventListener('click', () => {
+    state.pick = state.saved.pick;
+    state.text = state.saved.text;
+    state.view = 'editing';
+    render();
+  });
+
+  const cancel = root.querySelector('#cancel');
+  if (cancel != null) cancel.addEventListener('click', () => { state.view = 'answered'; render(); });
+};
+
+const render = () => {
+  document.querySelectorAll('#strip button').forEach((b) => b.classList.toggle('on', b.dataset.state === state.view));
+  const all = document.getElementById('all');
+  all.hidden = state.view !== 'all';
+  document.getElementById('frames').hidden = state.view === 'all';
+
+  if (state.view === 'all') {
+    all.innerHTML = STATES.map(([key, label]) => {
+      const pick = key === 'empty' ? null : state.saved.pick;
+      const text = key === 'empty' ? '' : state.saved.text;
+      return `
+      <div class="slot"><div class="state-label">${label}</div>
+        <div class="app"><div style="padding:14px">${card(key, pick, text)}</div></div>
+      </div>`;
+    }).join('');
+    return;
+  }
+
+  for (const id of ['phone', 'desk']) {
+    const root = document.getElementById(id);
+    root.innerHTML = `<div class="window">${card(state.view)}</div>`;
+    wire(root, state.view);
+    const panel = root.querySelector('[data-feedback]');
+    if (panel != null) root.scrollTop = panel.offsetTop - 24;
+  }
+};
+
+const strip = document.getElementById('strip');
+strip.innerHTML = STATES.map(([key, label]) => `<button type="button" data-state="${key}">${label}</button>`).join('') +
+  '<span class="sep"></span><button type="button" data-state="all">Ver todos los estados</button>';
+strip.querySelectorAll('button').forEach((button) => {
+  button.addEventListener('click', () => {
+    if (button.dataset.state === 'all') { state.view = 'all'; state.saved = { pick: 4, text: 'Me sirvió el ejercicio, aunque el tiempo para el segundo punto quedó corto.' }; }
+    else state.view = button.dataset.state;
+    render();
+  });
+});
+
+state.saved = { pick: 4, text: 'Me sirvió el ejercicio, aunque el tiempo para el segundo punto quedó corto.' };
+state.pick = null;
+state.text = '';
+render();
+</script>
+</body>
+</html>

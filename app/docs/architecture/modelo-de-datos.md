@@ -55,7 +55,7 @@ erDiagram
     POLL {
         ulid id PK
         ulid session_id FK
-        enum type "choice, words or scale"
+        enum type "choice, words, scale or feedback"
         enum status "draft, active or closed"
         string prompt
         json options "choice only"
@@ -67,7 +67,7 @@ erDiagram
         ulid id PK
         ulid poll_id FK "unique with user_id"
         ulid user_id FK
-        json value "option, 1 to 5 or words"
+        json value "option, 1 to 5, words or feedback"
     }
     QUESTION {
         ulid id PK
@@ -124,9 +124,9 @@ La entidad `Material` es un archivo, en `file`, con el `name` que le puso el pro
 
 ### 📊 Encuesta y respuesta
 
-La entidad `Poll` tiene `type`, `status`, `prompt` (la consigna) y `deleted_at`, la fecha en que se borró, si se borró. El tipo es `choice` (opción múltiple), `words` (word cloud) o `scale` (escala de 1 a 5), y el estado es `draft`, `active` o `closed`. Las de tipo `choice` tienen su lista de opciones en `options`, y las de tipo `scale` un texto para el 1 en `scale_min_label` y otro para el 5 en `scale_max_label`; los campos del otro tipo quedan vacíos. Borrar una encuesta la deja guardada con sus respuestas, pero nadie la ve.
+La entidad `Poll` tiene `type`, `status`, `prompt` (la consigna) y `deleted_at`, la fecha en que se borró, si se borró. El tipo es `choice` (opción múltiple), `words` (word cloud), `scale` (escala de 1 a 5) o `feedback` (un puntaje de emojis con un comentario libre), y el estado es `draft`, `active` o `closed`. Las de tipo `choice` tienen su lista de opciones en `options`, y las de tipo `scale` un texto para el 1 en `scale_min_label` y otro para el 5 en `scale_max_label`; los campos del otro tipo quedan vacíos. Las de feedback no llevan más contenido que la consigna. Borrar una encuesta la deja guardada con sus respuestas, pero nadie la ve.
 
-Cada estudiante tiene a lo sumo una `Response` por encuesta, y la base lo garantiza con un índice único sobre la encuesta y el estudiante. Su `value` es la opción elegida, un valor de 1 a 5 o la lista de palabras que mandó en el word cloud. Cambiar el voto reemplaza esa respuesta, y en un word cloud sumar palabras es mandar la lista completa otra vez. Una encuesta de opción múltiple tiene de 2 a 10 opciones, y en un word cloud cada estudiante manda hasta 10 palabras de hasta 30 caracteres. Nadie ve qué votó cada uno: el profe ve porcentajes y la cantidad de respuestas.
+Cada estudiante tiene a lo sumo una `Response` por encuesta, y la base lo garantiza con un índice único sobre la encuesta y el estudiante. Su `value` es la opción elegida, un valor de 1 a 5 o la lista de palabras que mandó en el word cloud. En el feedback es el punto elegido y, si escribió, su comentario. Cambiar el voto reemplaza esa respuesta, y en un word cloud sumar palabras es mandar la lista completa otra vez. Una encuesta de opción múltiple tiene de 2 a 10 opciones, y en un word cloud cada estudiante manda hasta 10 palabras de hasta 30 caracteres. En las encuestas de elección, palabras y escala nadie ve qué votó cada uno: el profe ve porcentajes y la cantidad de respuestas. En el feedback el profe lee cada respuesta con el nombre y el avatar de cada alumno (ver [feedback de una sesión](feedback-de-sesion.md)).
 
 ### ❓ Pregunta y voto
 
@@ -158,4 +158,4 @@ El código del magic link es una fila de `Code` de tipo `user`, con el `user_id`
 
 ---
 
-Related: [componentes](componentes.md), [login y acceso](login-y-acceso.md), [tiempo real del aula](tiempo-real-del-aula.md), [API de las slides](api-de-las-slides.md), [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md), [novedades por mail](novedades-por-mail.md)
+Related: [componentes](componentes.md), [login y acceso](login-y-acceso.md), [tiempo real del aula](tiempo-real-del-aula.md), [API de las slides](api-de-las-slides.md), [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md), [novedades por mail](novedades-por-mail.md), [feedback de una sesión](feedback-de-sesion.md)
