@@ -73,7 +73,7 @@ sequenceDiagram
 
 El envío reemplaza la respuesta anterior del mismo alumno: hay una por alumno y por encuesta, y volver a mandarla cambia el valor que ya estaba. La respuesta que vuelve trae la encuesta con lo que el alumno mandó y sin resultados, así que la pantalla pasa al estado de gracias sin esperar otra lectura.
 
-Del lado del profe, la lectura trae todas las respuestas de la encuesta con el nombre y el avatar de cada alumno.
+Del lado del profe, las respuestas llegan dentro de la encuesta: la misma lectura que trae las barras trae, en cada encuesta de feedback, todas sus respuestas con el nombre y el avatar de cada alumno, sin un pedido aparte. La encuesta del alumno no las lleva.
 
 ## ⚖️ Las reglas del envío
 
@@ -134,6 +134,11 @@ Del lado del profe, la tarjeta vive en la pestaña Encuestas y se abre, se cierr
 [Prototipo de la tarjeta del profe y su modal, con las respuestas de una sesión](../prototipos/admin-feedback.html)
 
 La lista se ordena por el id de la respuesta. Ese id no cambia cuando el alumno edita su respuesta, así que el orden es el de la primera vez que cada alumno respondió, y no hace falta guardar cuándo se envió.
+
+Con el modal abierto, cuando un alumno responde, la lista se actualiza sin cerrarse: el aviso del aula hace que la web vuelva a pedir las encuestas de la sesión, y el modal muestra las respuestas que llegan con ellas.
+
+> [!NOTE] Por qué la lista viaja dentro de la encuesta
+> Un pedido propio para la lista sumaría un endpoint, su clave de caché y su refresco, y tendría que decidir qué responder para una encuesta que no es de feedback. Dentro de la encuesta, la lista existe solo en el feedback y se refresca con las barras. El costo es que cada aviso de encuestas del aula hace que la web del profe vuelva a pedir todas las encuestas de la sesión con sus textos, también en el panel del aula, que no los muestra. Con unos 30 alumnos son unos pocos KB por pedido.
 
 ## 🔔 Lo que pasa después de guardar
 
