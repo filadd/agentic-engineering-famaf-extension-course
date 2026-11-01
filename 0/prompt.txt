@@ -1,0 +1,312 @@
+<skill name="learn" location="/home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--learn/SKILL.md">
+References are relative to /home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--learn.
+
+Load mahou:basics first. Then read `.mahou/learn.md` if present.
+
+Turns a session's friction into something reusable. The plugin grows this way, by keeping the corrections the user just made by hand instead of designing a pipeline upfront.
+
+## Modes
+
+Pick the mode from what the user asks.
+
+- **Discovery.** Follow `references/discover.md` when the user asks for nothing specific, or asks what the session, or a part of it, has to teach.
+- **Directed.** Follow `references/directed.md` when the user names what to build.
+- **Mixed.** When the user names some items and also asks what else there is, work the named items as directed and run discovery over the part of the session the ask points at.
+
+Before starting, tell the user which mode you are following. For a mixed ask, list the items you work as directed and the part of the session discovery covers. Every mode continues with Drafting once there is an item to draft.
+
+## Fidelity
+
+Anything produced here reproduces the patterns the session established exactly. The formats, the visualizations, the wording of a rule, the order of steps, and every correction the user made along the way are the specification. Do not adapt them, improve them, or generalize them into something the session did not do.
+
+Examples inside a skill or wiki entry are generic. They carry the shape the session used, with placeholders in place of the session's tickets, repositories and field names. A code example in a wiki entry names its components, hooks, endpoints and fields after a generic resource, such as `ResourceActionButton` or `useResourceAction`, never after the session's feature.
+
+## Drafting
+
+1. **Classify and scope each item before drafting it.** Process becomes a skill, new or iterated. Work a skill should hand to a subagent becomes an agent. Knowledge about a tool or technology becomes a wiki entry. A decision the user repeated for this project becomes a standing rule in a local file. A rule every change to this project respects, about how the product behaves or how the system is built, becomes a line in the project's invariants note. Global means useful in any project; local means true only for this one. Restate the job the item does, which kind it is and where it lands. Read the skill, entry or index it would land in to check it is not already there; if it already says this, the finding becomes an iteration on whatever failed to read it. Draft only once the user confirms the shape.
+
+2. **Draft every item in one reply**, ordered by confidence then by impact, each under its own heading, with the file it lands in. For a new skill, agent, wiki entry, design type or program design representation, give the full text; for an iteration, the old and new text. Before showing the drafts, write them to the change's scratch folder, per the convention in mahou:basics, and run `superpowers:unslop` over them. The user approves, corrects or drops each item separately; do not ask for a single approve-everything answer, though the user may give one.
+
+   - A new skill: the full draft, following the new skill checklist.
+   - A skill iteration: the exact change and the reason it is needed.
+   - An agent: the full draft, plus the change to the skill that dispatches it.
+   - A wiki entry: the draft plus its line in the index at the right level.
+   - A local file: the draft and which skill it changes.
+
+3. **Write each approved item** to its place. Leave everything uncommitted.
+
+## Where things land
+
+| Finding | Lands as |
+|---|---|
+| Reusable process | `skills/<name>/SKILL.md` in the plugin |
+| Work a skill should hand to a subagent | `agents/<name>.md` in the plugin, dispatched by the skill that needs it |
+| Knowledge about a tool or technology | `skills/wiki/references/<topic>/<entry>.md`, plus its line in that folder's `INDEX.md` |
+| A design type that generalizes beyond the session it came from | `skills/design/references/types/<type>.md`, plus its row in the types table of mahou:design. A type specific to one change stays out |
+| A program design representation that generalizes beyond the session it came from | `skills/program-design/references/representations/<form>.md`, plus its row in the representations table of mahou:program-design. A form specific to one change stays out |
+| A rule or fact true only for this project | `.mahou/<skill>.md`, or `.mahou/wiki/` with the same index-per-level shape as the global store |
+| A rule every change to this project respects | A line in the project's invariants note, in the section for its kind, linking the note that explains it when one does |
+
+## New skill checklist
+
+- A descriptive name. The magic vocabulary stays in mahou:basics and the README.
+- One job. Two jobs means proposing two skills.
+- A description precise enough to load when intended, and to let mahou:guide match goals to it. Descriptions that overlap an existing skill's are the main way routing degrades.
+- First lines of the body: load mahou:basics, then read `.mahou/<skill>.md` if present.
+- No decisions delegated to the agent. It maps the state and asks; the user settles. A draft that contains "choose the best option" or "decide whether" is not ready.
+- Nothing committed as a side effect.
+
+## Removing or replacing a skill
+
+When an item replaces an existing skill, the replacement is not done until the old directory is removed and every reference to it is updated: the plugin README and every skill that names it. List those edits as part of the item.
+
+## Committing
+
+Propose, never commit. When the user accepts an item, write the files and stop. Version bumps belong to whatever commits the marketplace; never hand-edit a `plugin.json` version.
+</skill>
+
+muestrame todas las fricciones pero nos concentremos en los cambios que plantee al test design
+
+---
+
+# Annotations on pi · last message
+
+## Annotation 1 (line 5)
+Remove this:
+```
+**1. Estrellas a emojis, filas a barras (explore/design, resumen).** Corregiste dos veces cómo se ve el puntaje: primero estrellas y después filas de elección. Las dos veces terminó en lo que ya existía, los emojis y las barras de la escala. Reusar lo que el producto ya tiene apareció como corrección, no como paso del flujo.
+```
+> I don't want this.
+
+## Annotation 2 (line 7)
+Remove this:
+```
+**2. El reviewer de documentación no corrió solo.** `write-documentation` pide pasar el `documentation-reviewer` antes de mostrar el borrador, y lo salteé; lo pediste vos ("lo corramos"). La skill ya lo pide, así que lo que falló fue cumplirla, no la regla.
+```
+> I don't want this.
+
+## Annotation 3 (line 9)
+Comment on: "**3. Un diff de código dentro del program design.** Pediste ver un diff de la lógica de encuestas contra la de hoy "para entender cómo afecta". `program-design` prohíbe mostrar código en las partes, y no tiene un lugar para un boceto de código que sirva para entender y quede fuera del registro. Ese lugar lo improvisamos."
+> realmente lo prohibimos? no es la idea usarlo directamente como representación, pero se  puede pedir por el usuario para dar detalle
+
+## Annotation 4 (line 11)
+Remove this:
+```
+**4. El diff en la rama equivocada, dos veces.** "Movelo a la rama donde te pregunté" lo leí como la rama de las preguntas abiertas, la 4, y vos te referías a la 2. Después lo dejé en la columna correcta pero afuera de la rama. Fueron errores míos al leer la referencia por voz.
+```
+> I don't want this.
+
+## Annotation 5 (line 13)
+Remove this:
+```
+**5. Notas del `code-snippet` amontonadas.** El mock de la skill de canvas les da 260 de ancho fijo. Intenté arreglarlo y auto-mode lo bloqueó por estar fuera del repo; al refrescar el canvas se veía bien. No quedó claro si es un problema del mock o del render.
+```
+> I don't want this.
+
+## Annotation 6 (line 15)
+Remove this:
+```
+**6. Un endpoint propio para la lista del profe.** En program design propuse `GET /api/admin/responses` y lo marqué como si siguiera de la wiki `api`. Vos lo cambiaste por meter la lista en `AdminPoll`, porque es "lo que ya hace" `forTeacher`. Esa propuesta abrió dos preguntas, Q1 y Q2, que desaparecieron con tu cambio. `program-design` pide buscar primero lo que el código ya resuelve; lo hice para las funciones, no para la forma del endpoint.
+```
+> I don't want this.
+
+## Annotation 7 (line 17)
+Comment on: "**7. Que la decisión se propague a todo.** Tuviste que preguntar si con Q3 había que actualizar las otras ramas. Fast track dice que una hoja corregida vuelve a ❔, pero no dice que una decisión que cambia una forma compartida obligue a revisar las ramas que la usan."
+> en general debería pasar esto, cuando se corrige una decisión que afecta a otras, se debería propagar el cambio
+> no es algo propio de fast track igual, en general es así para todo
+
+## Annotation 8 (line 19)
+Remove this:
+```
+**8. Dos ramas para el mismo entry point.** Las ramas 3 y 4 eran ambas `GET /api/admin/polls`, y pediste unirlas. `program-design` define una rama por entry point; yo las separé por tema, el resumen por un lado y la lista por otro.
+```
+> I don't want this.
+
+## Annotation 9 (line 21)
+Looks good: "**9. `changing` → `isEditing`.** Pediste el prefijo `is` "como todas las variables booleanas". No está en el `AGENTS.md` global ni en la wiki `fence`, así que es una convención que hoy existe solo en la sesión."
+
+## Annotation 10 (line 23)
+Remove this:
+```
+**10. Test design: buscar otra forma de leerlo.** Las matrices se te hicieron difíciles de leer. Probamos cuatro vistas y después una quinta, y descartaste todas. No quedó ningún formato nuevo, pero sí la señal de que el problema era el volumen.
+```
+> I don't want this.
+
+## Annotation 11 (line 25)
+Comment on: "**11. Test design: solo lo que el cambio afecta.** Pediste quedarte con las clasificaciones que el cambio mueve. Eso choca con la regla de la skill: "una fila por cada caso del entry point, incluidos los que la suite ya cubre; nunca sacar una fila porque un test ya la cubre"."
+> este esta bueno, la idea sería que los inputs, estados, etc que se usan para la clasificación sean solos los afectados por el cambio
+> esto no afecta la parte de que se muestren todos los tests por más que ya existan, solo se limita las variaciones a testear
+
+## Annotation 12 (line 27)
+Comment on: "**12. Test design: lo que el cambio toca de lo existente.** Pediste tener en cuenta que agregar el feedback cambia cómo funcionan las otras encuestas. La skill no tiene un paso que pregunte qué código compartido toca el cambio y qué tests existentes lo cubren."
+> esto debería estar incluido con la 11
+
+## Annotation 13 (line 29)
+Comment on: "**13. Test design: separar las variantes que se discutieron.** Pediste no juntar el texto en "con texto" y abrir cada variante, y lo mismo con las respuestas en distintos puntos. La skill pide unir las particiones "que el código trata igual". Al separarlas apareció Q4, el texto en blanco, que cambió el design."
+> también a incluirlo con el camibo de la 11, las diferentes clasificaciones/clases deberían tomar en cuenta todas las variantes que se consideraron en los pasos previos para asegurarnos que todo lo que se dicidió se testea
+
+## Annotation 14 (line 31)
+Remove this:
+```
+**14. Test design: no reescribir todo.** "No hace falta que reescribas todo entero cada vez." `test-design-with-canvas` ya dice que, cuando una rama cambia, se llama al helper otra vez con el mismo nombre; yo borraba el canvas y lo regeneraba entero. Es otra regla que existía y no seguí.
+```
+> I don't want this.
+
+---
+
+1. en el plugin
+2. claro, hay que incluir regresiones; implement-with-tdd debería tener en cuenta eso también, si no cambia no hace falta tocarla (pero debería seguir pasando), si cambia hay que modificarlo
+3. no hace falta incluirlos
+4. 3 y 7 van a lplugin, 9 a la wiki local
+
+---
+
+Plannotator: your recent messages (pn-82deff) — Feedback · 1 comment.
+
+# Message Annotations
+
+# Message Feedback
+
+The following feedback spans 1 assistant message. Each section includes an excerpt of the message it applies to.
+
+## Message 1 (2026-11-01T22:55:25.488Z)
+
+Message excerpt:
+```markdown
+Los cuatro borradores ya pasaron `unslop`, con 12 arreglos en la primera vuelta y ninguno revertido en la segunda. Están en `.scratch/feedback-de-sesion/learn/`. Aprobá, corregí o descartá cada uno por separado.
+
+## 1. test-design: clasificar lo que el cambio afecta
+
+Va en `skills/test-design/SKILL.md`, `skills/implement/SKILL.md` y `skills/implement-with-tdd/SKILL.md`. Borrador: `learn/test-design-scope.md`.
+
+**test-design, paso 1 de "Working a branch".** Reemplaza el párrafo por:
+
+> 1. **Classifications.** Read the existing test suite for the root's entry point, then derive the classifications from the inputs, states and outcomes the change affects: the input the entry point receives, the state it starts from, the configuration it reads, the responses of the systems it calls, the actor and how the actor arrives, and the outcome itself when the outcome branches. A classification that only the existing suite exercises, and that the change leaves untouched, stays out of the branch. Two sources add classifications to that list:
+>    - **Shared code the change alters.** List the code the change alters that other cases of the entry point also run through, such as a query, a helper or a...
+```
+
+# Feedback for Message 1
+
+I've reviewed this message and have 1 piece of feedback:
+
+## 1. (line 15) Feedback on: "Paso 2. Le suma al final: “…are one partition, unless one of them is a variant settled in an earlier stage.”"
+> cual era el text completo acá?
+
+---
+
+Please address the annotation feedback above.
+
+---
+
+okay, apliquemos estos cambios
+
+---
+
+<skill name="tasks" location="/home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--tasks/SKILL.md">
+References are relative to /home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--tasks.
+
+Load mahou:basics first. Then read `.mahou/tasks.md` if present.
+
+# Tasks
+
+Takes a design the user has settled and produces the tasks that implement it, in the project's tracker, whatever it is.
+
+## The tracker
+
+Read `.mahou/implement.md`. The project names its task tracker there, the tool that reaches it, and the states a task moves through. When that file is absent, ask the user which tracker holds the backlog and how to reach it, for example an MCP server, a CLI, or a file path. Whatever the mechanism, the skill works through it and never invents a second source of truth.
+
+When the user says the project has no tracker, say so and write no tasks; mahou:implement works without one.
+
+## Deriving the tasks
+
+The tasks come from what was settled, never from imagination. Read the design notes, the program design files in the change's scratch folder, and the test design notes. Derive the candidates:
+
+- One task per actionable outcome, not per built thing: split a deployable along the parts the architecture names, keep a migration whole, split an integration along its client, its steps, and its rules.
+- One task per piece the design names as risky enough to verify on its own, such as a proof or a spike that stays.
+- The test matrices do not become tasks; they are listed in the briefs the tasks generate.
+
+Show the candidates grouped per repository, each with what it requires in one or two sentences and the notes that ground it. The user settles each one: create it, reshape an existing task into it, or drop it.
+
+## Writing through
+
+Create and update through the tracker's mechanism, one call per task, in the order the work will run. Close a dropped task with a short comment naming why. Never delete one silently. Touch nothing else in the tracker.
+
+## Ending
+
+Report the tracker's state for this change: what was created, reshaped, dropped, and left standing. mahou:implement picks the list up from here.
+
+## What this skill is not
+
+It does not design, does not decide a task's shape without the user, and does not move tasks through their working states; that belongs to the agents that implement them.
+</skill>
+
+I want to use entire for the tasks using a Trail, can we check if that's a viable thing?
+
+---
+
+podemos verificar si entire tiene algún mecanismo para mantener tareas?
+sino vamos con el trail de entire y mantengamos las tareas en la descripción, reemplazando lo que hoy hhacemos de guardarlo en un archivo local
+
+---
+
+perfecto, vamos con eso
+
+---
+
+<skill name="commit-changes" location="/home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--commit-changes/SKILL.md">
+References are relative to /home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--commit-changes.
+
+Load mahou:basics first. Then read `.mahou/commit-changes.md` if present.
+
+# Commit changes
+
+Commits the changes done to this repository using conventional commits (https://www.conventionalcommits.org/en/v1.0.0/). This is the one skill whose job is committing, so the user asking for it, or a skill reaching a commit step the user approved, is the consent `basics` asks for. Pushing is not part of the job.
+
+## Message format
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+Types:
+
+- **fix**: patches a bug (PATCH in semantic versioning)
+- **feat**: introduces a feature (MINOR)
+- A `BREAKING CHANGE:` footer marks a breaking change (MAJOR) and can go on a commit of any type. Never use the `!` after the type or scope for this.
+- **build**, **chore**, **ci**, **docs**, **style**, **refactor**, **perf**, **test**, with their usual meanings from `@commitlint/config-conventional`.
+
+Footers other than `BREAKING CHANGE: <description>` follow the git trailer format.
+
+## Procedure
+
+1. **Analyze the repository state.** `git status` for everything modified, added and deleted; `git diff` for the nature of each change; `git diff --staged` for anything already staged. When the project has a `CLAUDE.md` or a `.mahou/commit-changes.md` that names a scope convention or a commit convention of its own, read it and follow it.
+
+2. **Plan the groups.** Group by logical relationship: same feature, same fix, same area. Tests, type definitions and directly related changes go with the main change. Never mix unrelated changes in one commit. Refactors go in their own commit unless small and tightly coupled to the main change.
+
+3. **Present the groups and wait.** Always, even when there is one group and it looks obvious. Show every group with its proposed message and its file list, then ask how to proceed: with one group, proceed or split further; with several, proceed or merge. Take the user's regrouping literally.
+
+4. **Commit each approved group.** Stage only that group's files with `git add <file>...`, then commit with the agreed message. Never `git add -A` or `git add .`; an untracked file the user did not mention is not part of any group until they say so.
+
+   A file whose changes belong to two groups is split by hunk. The file appears under both groups with a word on which change goes where. To stage one side, write the file's diff to a temporary patch with `git diff <file> > /tmp/<name>.diff`, delete the hunks that belong to the other group while keeping the diff header, and apply it with `git apply --cached /tmp/<name>.diff`. Once that group is committed, the hunks left in the working tree are what `git add <file>` stages for the other. `git add -p` is interactive and does not run here.
+
+## Message rules
+
+- Description in the imperative, present tense: "add", not "added" or "adding". Short, no trailing period.
+- The message says **what** the change does, never why it was made or where the request came from. "fix(auth): add null check for expired tokens", never "fix: address PR comments".
+- A body, when needed, is simple and direct: no file listings, no implementation walkthrough, no test section.
+- **Scope** is the area of the project the change touches: the top-level module, directory, package or service name, one or two lowercase words. Check `git log` for the scopes the project already uses and reuse them. When the change spans areas, use the primary one; when nothing dominates, omit the scope.
+
+## When something is off
+
+- No changes: say so and stop.
+- Merge conflict markers in the tree: say so and stop; nothing is committed over a conflict.
+- Untracked files: ask whether they belong in a group before staging them.
+</skill>
+
+---
+
+no incluyas los cambios en el plugin
