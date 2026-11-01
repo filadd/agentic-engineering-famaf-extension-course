@@ -40,7 +40,7 @@ classDiagram
     ResponseValue <|-- Feedback
 ```
 
-El punto se guarda como número de 1 a 5, no como el emoji que se toca. El texto es opcional, y cuando el alumno no escribe nada la clave no está en el valor, igual que los campos que no aplican a los otros tipos. El texto se guarda tal como lo escribió, sin recortar.
+El punto se guarda como número de 1 a 5, no como el emoji que se toca. El texto es opcional, y cuando el alumno no escribe nada la clave no está en el valor, igual que los campos que no aplican a los otros tipos. Un texto con contenido se guarda tal como lo escribió, sin recortar; un texto en blanco, vacío o de solo espacios y saltos de línea, no se guarda.
 
 > [!NOTE] Por qué el puntaje es un número y no el emoji
 > Los emojis de la pantalla pueden cambiar y el número no cambia de significado. Guardado el punto, un cambio de emojis no reinterpreta lo que ya contestaron los alumnos.
@@ -89,7 +89,7 @@ flowchart TD
     G --> O((Respuesta guardada))
 ```
 
-La API acepta el envío solo de un estudiante, sobre una encuesta de tipo feedback y activa, con un punto entre 1 y 5. El texto es opcional y no tiene tope: si llega vacío o no llega, la respuesta se guarda con el punto solo.
+La API acepta el envío solo de un estudiante, sobre una encuesta de tipo feedback y activa, con un punto entre 1 y 5. El texto es opcional y no tiene tope. Si no llega, la respuesta se guarda con el punto solo. Si llega en blanco, la API rechaza el envío; la web no lo manda: cuando el campo queda en blanco, envía el punto solo.
 
 Mientras la encuesta está abierta el alumno puede reemplazar su respuesta, y cuando el profe la cierra ya no. La web aplica las mismas reglas antes de mandar el pedido, y el backend manda. Un envío rechazado no guarda nada.
 
@@ -128,6 +128,8 @@ Cerrada, la tarjeta muestra solo la respuesta del alumno y ya no ofrece cambiarl
 [Prototipo de la tarjeta del alumno, con sus seis estados](../prototipos/feedback-sesion.html)
 
 En la card de la sesión, la tarjeta del feedback ocupa el lugar de las encuestas, debajo de las que están activas. En el aula aparece como cualquier encuesta activa.
+
+En el panel del aula, un borrador de feedback se ve como lo verá el alumno: los cinco emojis con sus extremos y el campo de texto, sin poder tocarlos.
 
 Del lado del profe, la tarjeta vive en la pestaña Encuestas y se abre, se cierra y se borra como cualquier encuesta. Muestra el total de respuestas y el reparto en las cinco barras de la encuesta de escala, con el emoji debajo de cada barra. Un botón abre un modal que solo lista las respuestas, cada una con el nombre, el emoji y el texto.
 
