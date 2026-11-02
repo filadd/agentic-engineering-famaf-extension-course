@@ -11,7 +11,7 @@ interface Props {
   title: string;
   text: string;
   content?: ReactNode;
-  confirmIcon?: IconName | null;
+  confirmIcon?: IconName | null | undefined;
   confirmLabel: string;
   pendingLabel: string;
   pending?: boolean;

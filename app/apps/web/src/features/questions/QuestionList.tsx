@@ -9,7 +9,7 @@ interface Props<Q extends Question | AdminQuestion> {
   renderVotes: (question: Q) => ReactNode;
   renderActions: (question: Q) => ReactNode;
   isDimmed?: (question: Q) => boolean;
-  emptyText?: string;
+  emptyText?: string | undefined;
 }
 
 export const QuestionList = <Q extends Question | AdminQuestion>({
