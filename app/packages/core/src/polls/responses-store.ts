@@ -1,4 +1,4 @@
-import type { ResponseValue } from "@kurasu/contract/polls";
+import type { FeedbackResponse, ResponseValue } from "@kurasu/contract/polls";
 import type { Ulid } from "@kurasu/contract/ulid";
 import * as Context from "effect/Context";
 import type * as Effect from "effect/Effect";
@@ -17,7 +17,8 @@ export type NewResponse = StoredResponse;
 export type ResponseChange = Partial<Pick<StoredResponse, "value">>;
 
 // The votes of one poll, counted without saying who voted what: every vote, the
-// votes per choice or point of the scale, and the students per word.
+// votes per choice or point of the scale or feedback (a feedback vote counts
+// as its pick alone, never its text), and the students per word.
 export interface ResponseCounts {
   readonly count: number;
   readonly values: ReadonlyArray<{ readonly value: ResponseValue; readonly count: number }>;
@@ -27,12 +28,17 @@ export interface ResponseCounts {
 export const noResponses: ResponseCounts = { count: 0, values: [], words: [] };
 
 // One response per student and poll. `counts` reads the counts of every given
-// poll in one query, and leaves out the polls without votes.
+// poll in one query, and leaves out the polls without votes. `feedbackOf` reads
+// the feedback responses of every given poll in one query, with who sent each,
+// ordered by response id, and leaves out the polls without responses.
 export class ResponsesStore extends Context.Service<
   ResponsesStore,
   Pick<Repository<StoredResponse, NewResponse, ResponseChange>, "list" | "upsert"> & {
     readonly counts: (
       pollIds: ReadonlyArray<Ulid>,
     ) => Effect.Effect<ReadonlyMap<Ulid, ResponseCounts>>;
+    readonly feedbackOf: (
+      pollIds: ReadonlyArray<Ulid>,
+    ) => Effect.Effect<ReadonlyMap<Ulid, ReadonlyArray<FeedbackResponse>>>;
   }
 >()("kurasu/ResponsesStore") {}

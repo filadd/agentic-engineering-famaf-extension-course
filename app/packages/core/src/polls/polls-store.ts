@@ -3,7 +3,7 @@ import * as Context from "effect/Context";
 
 import type { Repository } from "../repository.ts";
 
-export type StoredPoll = Omit<AdminPoll, "results">;
+export type StoredPoll = Omit<AdminPoll, "results" | "responses">;
 
 // Polls stored in D1. Every read leaves out deleted polls; `remove` marks the
 // poll as deleted and keeps the row and its responses.
