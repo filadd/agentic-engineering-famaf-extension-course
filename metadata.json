@@ -3,7 +3,7 @@
   "checkpoint_id": "01M6EMPK3X1GNADA42ZH40F43C",
   "strategy": "manual-commit",
   "branch": "feat/session-4-deck",
-  "checkpoints_count": 17,
+  "checkpoints_count": 18,
   "files_touched": [
     ".mahou/wiki/web.md",
     "app/apps/web/src/features/questions/FeaturedQuestions.tsx",
@@ -127,14 +127,21 @@
       "compact_transcript": "/15/transcript.jsonl",
       "content_hash": "/15/content_hash.txt",
       "prompt": "/15/prompt.txt"
+    },
+    {
+      "metadata": "/16/metadata.json",
+      "transcript": "/16/full.jsonl",
+      "compact_transcript": "/16/transcript.jsonl",
+      "content_hash": "/16/content_hash.txt",
+      "prompt": "/16/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 460,
-    "cache_creation_tokens": 922434,
-    "cache_read_tokens": 51647265,
-    "output_tokens": 130295,
-    "api_call_count": 217
+    "input_tokens": 468,
+    "cache_creation_tokens": 932940,
+    "cache_read_tokens": 51839091,
+    "output_tokens": 131325,
+    "api_call_count": 221
   },
   "redaction": {
     "replacements": 1,
