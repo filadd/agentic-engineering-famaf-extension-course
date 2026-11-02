@@ -100,4 +100,4 @@ El deck lleva solo conceptos. La sesión alterna entre estas slides y el trabajo
 
 ## ¿Qué aprendimos?
 
-<!-- 15 · (1 click) Ocho cartas: AGENTS.md como índice, cada cosa en su lugar, el problema antes que la solución, definir el problema, definir la solución, documentos vivos, un contexto por trabajo, ser dueño. Después, de palabra: la tarea, las demos de la Sesión 5 y la transición al tramo avanzado (están en INSTRUCTOR.md, no en el deck). -->
+<!-- 15 · (1 click) Ocho cartas: AGENTS.md como índice, cada cosa en su lugar, el problema antes que la solución, definir el problema, definir la solución, documentos vivos, un contexto por trabajo, ser dueño. Después, de palabra: las demos de la Sesión 5 y la transición al tramo avanzado (están en INSTRUCTOR.md, no en el deck). -->

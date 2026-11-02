@@ -4,11 +4,11 @@
 
 ## Objetivo de la sesión (en una frase)
 
-Que vean, sobre un proyecto real y en vivo, cómo se separa el problema de la solución, cómo se mantienen documentos vivos que registran las decisiones y cómo esos documentos y los subagentes sostienen el contexto del agente, para que lo repliquen en su proyecto durante la semana.
+Que vean, sobre un proyecto real y en vivo, cómo se separa el problema de la solución, cómo se mantienen documentos vivos que registran las decisiones y cómo esos documentos y los subagentes sostienen el contexto del agente, para que lo puedan replicar en su proyecto.
 
 ## Formato
 
-La sesión es una **demostración en vivo con slides de conceptos**. No hay práctica en clase: la práctica es la tarea.
+La sesión es una **demostración en vivo con slides de conceptos**. No hay práctica en clase ni tarea.
 
 - **El deck** (`deck/index.html`) lleva solo conceptos. No menciona las partes en vivo y se puede mirar después como resumen.
 - **La parte en vivo** es una feature nueva de kurasu, el aula virtual del curso: **un chat en el aula de la sesión destacada**. Se trabaja con los skills de mahou (explore, shape, design, write-documentation y, si da el tiempo, program design o implement), proyectando la terminal y el canvas.
@@ -18,7 +18,7 @@ La sesión es una **demostración en vivo con slides de conceptos**. No hay prá
 ## Audiencia y supuestos
 
 - **Dura 2 horas y no se instala nada.**
-- **Con qué llegan**: su proyecto, un `AGENTS.md`, al menos un skill, las notas de la tarea de la Sesión 3 (qué le tuvieron que explicar igual al agente) y una feature que no pueden describir en una frase. Las dos últimas alimentan la tarea de esta semana.
+- **Con qué llegan**: su proyecto, un `AGENTS.md`, al menos un skill, las notas de la tarea de la Sesión 3 (qué le tuvieron que explicar igual al agente) y una feature que no pueden describir en una frase.
 - Grupo heterogéneo, de primer año a graduados.
 - **Ya vieron kurasu**: es el aula donde siguen las slides, y la Sesión 2 mostró la grabación de cómo se construyó. Hoy ven el proceso en vivo, con las decisiones tomándose en el momento.
 
@@ -113,7 +113,6 @@ Slides 12 a 15. Lo que viene después de la slide 15 se dice de palabra: el deck
 - **Ser dueño.** Entender, decidir, discutir, mantener. Volver a deuda y rendición: hoy la sala tomó las decisiones del chat; el agente escribió, pero no pensó por ellos.
 - **¿Qué aprendimos?** Las ocho cartas del recap.
 - **Lo que viene**, de palabra:
-  - **Tarea**: documentar su proyecto (qué es, para quién y su objetivo, y un doc por feature con el problema arriba y la solución abajo), con el agente preguntándoles lo que no puede saber (el problema que quisieron resolver y el porqué de cada decisión). Después, la feature que trajeron: su doc vía interrogación antes de tocar código. Mantener los docs vivos durante la semana y anotar cuándo sirvieron y cuándo quedaron desactualizados. El detalle está en `exercise/README.md`.
   - **Demos**: la Sesión 5 abre con una hora de demos del proyecto. Se anunció en la Sesión 1 y ésta es la última clase antes. Voluntario, sin nota, 5 a 7 minutos, con el repo listo.
   - **La transición**: termina el tramo de "cómo trabajo bien con esta herramienta". La Sesión 5 abre el harness por adentro y la Sesión 6 cambia el modelo que tiene abajo.
 
@@ -130,14 +129,12 @@ Slides 12 a 15. Lo que viene después de la slide 15 se dice de palabra: el deck
 - **kurasu** (`app/` en este repo, https://kurasu.asermax.com): el proyecto de la parte en vivo y el aula donde la sala sigue el deck.
 - **mahou**: los skills de la parte en vivo (explore, shape, design, write-documentation, program design, implement) y su wiki por proyecto en `.mahou/wiki/`.
 - [`pi-subagents`](https://www.npmjs.com/package/pi-subagents), instalado en la Sesión 3.
-- [grill-me](https://github.com/mattpocock/skills/blob/main/skills/productivity/grill-me/SKILL.md), el skill de Matt Pocock que entrevista sobre una idea hasta resolver el árbol de decisiones. Es la versión liviana de shape para que la usen en la tarea.
+- [grill-me](https://github.com/mattpocock/skills/blob/main/skills/productivity/grill-me/SKILL.md), el skill de Matt Pocock que entrevista sobre una idea hasta resolver el árbol de decisiones. Es una versión liviana de shape para quien quiera probar la interrogación en su proyecto.
 - "Your Brain on ChatGPT: Accumulation of Cognitive Debt when Using an AI Assistant for Essay Writing Task" (MIT Media Lab, 2025), la fuente del término deuda cognitiva. Es un estudio chico y sobre ensayos, no sobre código: usar el término, no sobrevender el paper.
 - MIT Missing Semester 2026, clase de agentic coding: "don't use AI as a crutch", ya citado en la Sesión 1.
 - La charla interna de Filadd "Documentando para entender" (2026-08-14), la fuente del framework de dos dominios. No es material público.
 
 ## Pendientes (para próximas iteraciones)
 
-- **Actualizar `exercise/README.md`** al formato nuevo: sigue describiendo los dos bloques de práctica en clase, y ahora son la tarea. Las plantillas de `PROJECT.md` y `features/<nombre>.md` salieron del deck y quedan ahí.
 - **Hacer el ensayo** de la corrida en vivo y anotar acá dónde se trabó y qué etapa conviene cortar si falta tiempo.
-- **Probar grill-me en Pi** con un proyecto chico, para recomendarlo en la tarea con confianza.
-- **Alinear `COURSE_PROGRAM.md`**: todavía dice que esta sesión abre los subagentes y la trata como práctica en clase.
+- **Alinear la Sesión 5**: su bloque de demos todavía hace el recap de la Sesión 4 con la tarea de mantener los docs vivos (`INSTRUCTOR.md` y `slides.md`), y esa tarea ya no existe.

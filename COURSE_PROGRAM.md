@@ -105,9 +105,9 @@ These are the concepts to cover, roughly ordered by complexity:
 
 ### [Diego] Tier 3: Tooling & Skills
 
-> Prerequisite, not content: **Pi is installed in Session 1**, and Session 2 adds the Plannotator extension and the `agent-browser` CLI; `pi-subagents` is installed in Session 4, where subagents are taught. Tier 3 goes deeper on the harness — it does not introduce it. `AGENTS.md` **is** introduced here from scratch: the Session 1 step that had students write one was dropped, and Session 2 does not touch it.
+> Prerequisite, not content: **Pi is installed in Session 1**, and Session 2 adds the Plannotator extension and the `agent-browser` CLI; `pi-subagents` is installed in Session 3's hands-on, where subagents are taught. Tier 3 goes deeper on the harness — it does not introduce it. `AGENTS.md` **is** introduced here from scratch: the Session 1 step that had students write one was dropped, and Session 2 does not touch it.
 >
-> **Subagents moved to Tier 4** (decided while building Session 3): Agus opens them there with a documentation use case, so Tier 3 only names them — one row in the always-loaded vs. on-demand table, one row in the extension-points table. Session 2's "depth on subagents is Session 3" promise moves with them.
+> **Subagents are taught here** (moved back while building Session 3's deck, PR #16): the primitive closes the theory and the hands-on installs `pi-subagents`. Session 4 then shows them in use inside a real run, and Session 5 opens the mechanism.
 >
 > **Worktrees are out of the course**, not relocated. They were only ever a one-line mention riding along with subagents, no session's hands-on needs them, and Session 2's git block no longer names them either. Cut rather than parked.
 
@@ -117,20 +117,18 @@ These are the concepts to cover, roughly ordered by complexity:
 - Skills / slash commands: teaching AI reusable behaviors. **[Agent Skills](https://agentskills.io/) is an open standard**, not a Pi feature — a folder with a `SKILL.md`, published by Anthropic and adopted across Claude Code, Cursor, Copilot/VS Code, Codex, Gemini CLI, OpenCode and Pi. The three-stage loading taught here is the standard's *progressive disclosure*. Worth one sentence in class: it's the first artefact of the course that transfers to whatever tool the student uses next — and a small rehearsal of what Session 6 makes students verify by hand.
 - MCP / external tools: extending the harness — the LLM gains new tools at runtime
 - Documentation tools (e.g. [context7](https://context7.com/), [context-hub](https://github.com/andrewyng/context-hub)): fetching up-to-date library docs so the AI works with accurate references instead of guessing
-- Subagents: **named only, as the third row of the always-loaded vs. on-demand table** — the work itself can also go to a separate context. The block itself is Tier 4.
+- Subagents, the primitive: a whole job sent to a separate context, so only its conclusion comes back. Pi doesn't ship them; `pi-subagents` adds them
 
 ### [Agus] Tier 4: Context Engineering
-- Problem domain vs. solution domain: the same feature described as a need (actors, data and relations, processes, in problem terms) and as a system (data diagrams, breadboards/page sketches, flows). Starting from the solution means deciding without having considered the problem in depth, and inheriting the agent's average answer for every decision left open.
-- Living project documentation as context: `docs/PROJECT.md` (what the project is, main goal, constraints) plus one doc per feature (the problem it solves, then a design section with the model and one flow per interaction — each flow carries its screens, steps, rules and decisions with their reasons). Committed to the repo; `AGENTS.md` points to them.
-- Writing docs with the agent: interrogation before drafting — the agent asks, the student decides (e.g. Matt Pocock's grill-me skill). Delegating the writing is fine; delegating the thinking is the failure mode.
-- Research feeds the docs at high level: documentation tools (context7) to understand a library, while implementation details belong to the plan, not the doc
-- Subagents, the primitive: delegating a subtask to a separate context, and the available agent types (research, exploration, review). Moved here from Tier 3, and **opened through the research above** — sending the library research to its own context is where the delegation pays for itself, so the primitive and its best motivation land together.
-- The chain: doc → plan → implementation → review (the review checks against both the plan and the doc)
-- Cognitive debt and cognitive surrender: the cost of repeatedly delegating reasoning to the AI, and adopting its decisions as your own opinions
-- When to delegate vs. intervene (developing intuition)
-- Professional accountability: you sign off on what the AI produces
-- Orchestration, in passing: shared docs as the ground truth that lets several agents work in parallel
-- Cost and limits: tokens as a budget, model tiering, when NOT to use AI, skill atrophy, and what skills matter in an AI-augmented world. This tier closes the *"how do I work well with this thing?"* arc, so the judgment material lives here. The full-course retrospective belongs to Tier 6. (The spectrum revisit used to as well; it no longer happens anywhere.)
+- `AGENTS.md` as an index: what the agent needs every turn stays in it, and the rest sits one link away in the project's docs and wiki. What goes where: `AGENTS.md` (every turn), `docs/` (how each part of the system works and why), the wiki (how to work in this code)
+- Problem and solution: the same need admits many solutions. Starting from the solution means deciding without having considered the problem, and inheriting the agent's average answer for every decision left open. It is the old split between requirements and design, and it matters with or without AI
+- Defining the problem is mapping reality: actors, entities, processes, rules. Often a product team's job; in a student project, nobody else does it
+- Defining the solution: model, flows, states, components, screens and prototypes, each decision with its reason
+- Letting the agent ask the decisions one at a time, instead of asking it for the document. Delegating the writing is fine; delegating the thinking is the failure mode
+- Living documents: doc → code → review → reconcile. The review checks that what was built is what was decided, and catches what the implementation surfaced that the design didn't cover; reconciling brings the doc back in line with the code, and the next change reads it while exploring
+- Subagents in use: one context per job (scouts while exploring, one implementer per repository, one reviewer per facet). The brief is all a subagent knows, and the docs are the ground truth they share. The primitive is Tier 3's, the mechanism Tier 5's
+- Cognitive debt and cognitive surrender: the cost of repeatedly delegating reasoning to the AI, and adopting its decisions as your own
+- Cost and limits: money, context and attention; when NOT to use AI, skill atrophy, and ownership (understand, decide, discuss, maintain). This tier closes the *"how do I work well with this thing?"* arc, so the judgment material lives here. The full-course retrospective belongs to Tier 6
 
 ### [Agus] Tier 5: Harness Internals
 
@@ -301,7 +299,7 @@ Not a dedicated session, but surfaced where relevant:
 - Skills and slash commands: building reusable capabilities — and that the `SKILL.md` format is the open [Agent Skills](https://agentskills.io/) standard, so what they write today isn't tied to Pi
 - MCP and external tools: how external services plug into the harness as new tools — the agent's capabilities grow at runtime
 - Documentation tools (e.g. context7, context-hub): why accurate docs matter — the AI hallucinates APIs, context7, context-hub fixes that
-- Subagents: **named, not taught** — the third row of the always-loaded vs. on-demand table is left open and handed to Session 4
+- Subagents: the primitive closes the theory, and the hands-on installs `pi-subagents` and delegates one job
 - Security sidebar: sandboxing, permissions, allowlists
 
 **Hands-on (~1.5 hours)**
@@ -316,56 +314,48 @@ Not a dedicated session, but surfaced where relevant:
 
 ### Session 4: Context Engineering
 
-> Materials in `sessions/session-4/` (instructor notes, deck, exercise), all in Spanish. The session interleaves explanation and practice per block instead of one long hands-on. Documentation replaces spec-driven development as the spine.
+> Materials in `sessions/session-4/` (instructor notes and deck), all in Spanish. **The session is a live run with a concept-only deck.** Agus builds a new feature of kurasu, the course's own classroom app, with the mahou skills (explore, shape, design, write-documentation, and program design or implement if time allows). Short slide blocks introduce each concept and the live run applies it right after; questions get answered as they come up. There is no hands-on and no homework. The deck never names the live feature: the run is the example.
 
-**Recap (~10 min)**
-- Skills show-and-tell: new skills built or found during the week
-- Open questions left from Session 3
+**Recap**
+- A new skill built or found during the week, what they still had to explain to the agent (Session 3's homework), and open questions left from Session 3
 
-**Framing (~5 min)**
-- Building on planning (Session 2) and configuration (Session 3): project documents that feed the plans and record the decisions for the long run
+**Framing**
 - Cognitive debt and cognitive surrender, introduced here and returned to in the closing
 - The session's phrase: "documentar es pensar antes de construir"
 
-**Two domains (~15 min)**
-- One feature described twice: adding multi-user support to the task list (the Session 1 brief, same project as Session 3's demo)
-- Problem domain: the need, detailed with actors, data and relations, and processes, in problem terms
-- Solution domain: the system, detailed with data diagrams, breadboards or page sketches, and flows — one of many possible solutions
-- Same problem, many solutions; starting from the solution means deciding shallowly and inheriting the agent's average answer
-- The distinction matters with or without AI (requirements vs. design)
+**The project**
+- `AGENTS.md` as an index, the topic Session 3 hands over, and what goes in each place: `AGENTS.md`, `docs/`, wiki
+- Live: kurasu's `app/AGENTS.md`, its docs charter and architecture notes, its prototypes and the agent's wiki
 
-**Document what you already built (~30 min: ~5 templates + ~25 work)**
-- Two templates, committed to the repo: `docs/PROJECT.md` (what the project is, main goal, constraints) and `docs/features/<name>.md`, one per feature (the problem it solves, then a design section with the model and one flow per interaction — each flow carries its screens, steps, rules and decisions with their reasons)
-- Templates, not forms: each project adapts them. `AGENTS.md` points to these docs
-- Interactive drafting: the agent explores code, commits and past plans, shows a draft, and asks what it can't know — the problem and the whys; the student answers
+**The problem**
+- Problem and solution in general: one problem, many solutions; starting from the solution lets the agent pick the average answer; requirements vs. design, with or without AI
+- Defining the problem is mapping reality: actors, entities, processes, rules, often a product team's job
+- Live: explore and shape on the new feature, with **the room answering the shape questions**
 
-**Break (~5 min)**
+**The solution**
+- What gets decided before code: model, flows, states, components, screens, prototypes
+- Live: design over the shape tree, with a prototype to react to
 
-**Document the next feature and implement it (~40 min: ~5 explanation + ~35 work)**
-- The feature from Session 3's homework, the one that doesn't fit in one sentence — a new feature, or a change to an existing one (extending that feature's doc)
-- Interrogation before drafting: ask the agent to question you (Matt Pocock's grill-me skill); the doc gets written once the decisions are made
-- The doc stays high-level: context7 to understand libraries, implementation details go to the plan
-- The chain: doc → plan (Plannotator) → implement → review against both the plan and the doc
-- Optional aside for fast students: parallel agents (subagents, worktrees) with the docs as shared ground truth
+**Documenting**
+- Living documents: doc → code → review → reconcile, and the next change reads the doc while exploring
+- Live: write-documentation, showing the docs diff
 
-**Closing (~15 min) — the end of the base course**
+**Subagents**
+- One context per job: only the conclusion comes back. The primitive came in Session 3
+- Live: the scouts the explore sent, and program design or implement if time allows
+
+**Closing — the end of the base course**
 
 > **This is the milestone block.** Sessions 1-4 are a complete arc and this closes it: a student who has followed to here has the whole base course. Give it the weight of an ending, then point forward — *there are two more, and they take the machine apart.*
 >
 > **The two closings split by kind, not by rank.** Session 4 owns the human-judgment material: cost, limits, career, atrophy. **Session 6's closing is the retrospective itself** — fifteen minutes of open debate on the course, with no taught content. Neither repeats the other, and both are real endings — one of the base arc, one of the course.
->
-> The duplication that used to be here was a fossil: the course was originally 4 sessions and this was the finale — hence the old "compare your codebase across all 4 sessions".
 
-- What changed when the agent had the doc?
-- Cognitive debt and surrender, revisited with the class's own experience
-- Cost and limits: tokens as a budget, model tiering, and why context engineering saves money too, not just quality — this is the session that earns the point, since context engineering *is* budget management. (Session 6 later adds the other cost model: per-GPU-hour instead of per-token.)
-- When NOT to use AI: skill atrophy, "don't use AI as a crutch" (MIT Missing Semester)
-- Career implications: what skills matter in an AI-augmented world? Pairs with ownership below — you sign off on what the AI produces, and that is the skill that keeps mattering
-- Ownership: understand, decide, discuss, maintain
+- Everything has a cost: money (every subagent is another whole conversation), context, and your attention
+- When NOT to use AI: AI amplifies what you already know; skill atrophy, "don't use AI as a crutch" (MIT Missing Semester)
+- Ownership: understand, decide, discuss, maintain — if you can't explain your system without opening the code, you don't own it. Cognitive debt and surrender revisited
 - **Name the transition explicitly**, since Session 1 announced it and this is where it arrives: the base course ends here. The next two are the advanced arc, and they stop asking how to work well with the tool and start asking what it's made of.
 - Remind them of the demo hour that opens Session 5 — this is the last class before it
-- **Deliberately not here**: the full-course retrospective, which is Session 6's whole closing block — doing it here would spend the course's ending two sessions early. (The spectrum revisit used to be Session 6's too; it no longer happens anywhere. See Session 1's notes.)
-- Homework: keep the docs alive during the week; note when they helped and when they went stale against the code
+- **Deliberately not here**: the full-course retrospective, which is Session 6's whole closing block
 
 > ### Advanced arc — sessions 5-6
 >
@@ -381,8 +371,7 @@ Not a dedicated session, but surfaced where relevant:
 
 **Demo de proyectos (~60 min)**
 - Opens the session. Volunteers, ~8 turns of 5-7 min (4-5 showing, 2 of questions), at the projector, each one opening their own repo. Not a deliverable, not graded.
-- What they show: the project carried since Session 1 — and not only *what* they built but **how**: Session 2's plan, Session 3's `AGENTS.md` and skills, Session 4's docs. The question repeated every turn: *"what did you decide and what did the agent decide?"*
-- **Session 4's recap lives inside this block**, with no slot of its own: where did a doc help, and where did it go stale against the code? Asked of each person who presents.
+- What they show: the project carried since Session 1 — and not only *what* they built but **how**: Session 2's plan, Session 3's `AGENTS.md` and skills, and any docs they keep. The question repeated every turn: *"what did you decide and what did the agent decide?"*
 - **The elastic block**, the role the recap used to hold: if the day runs long, turns get cut. Plan B if fewer than eight hands go up: we pick, or the block shrinks.
 
 **Qué vamos a ver hoy (~3 min)**
@@ -509,7 +498,7 @@ For students who don't bring their own:
 - Exact session duration (2h vs 3h) — **Session 1 is 3 h and Session 5 is 2 h 30** (it opens with an hour of demos), **Session 2 is 1 h 30**, the rest are 2 h. Confirm the room allows it.
 - ~~Claude Code vs alternatives~~ → **decided: Pi is the course tool.** Terminal-based, minimal, standard `AGENTS.md`.
 - ~~Session 2 is written against Claude Code and misaligned with the Pi decision~~ → **resolved: Session 2 runs on Pi.** Planning and review go through `@plannotator/pi-extension`, which adds file-based plan mode (`pi --plan`) and `/plannotator-review` to Pi. One harness for the whole course. **Revised 2026-09-27**: Session 2 no longer runs on plan mode. Planning is explore → design → document with plain prompts, Plannotator is kept as a crutch for annotating documents and diffs, and plan mode is an optional aside.
-- ~~`pi-subagents` package is unpinned~~ → **decided: the unscoped `pi-subagents`** (`pi install npm:pi-subagents`), installed by students in Session 4. There are at least six forks on npm (`@tintinweb/`, `@gotgenes/`, `@yassimba/`, `@nklisch/`, plus bridges) — the course standardizes on one. **Confirm with Agus** before Session 4 builds on it — the subagents block is his now. **Moved 2026-09-27**: Session 2 no longer installs it, so Session 4 does.
+- ~~`pi-subagents` package is unpinned~~ → **decided: the unscoped `pi-subagents`** (`pi install npm:pi-subagents`), installed by students in Session 3. There are at least six forks on npm (`@tintinweb/`, `@gotgenes/`, `@yassimba/`, `@nklisch/`, plus bridges) — the course standardizes on one. **Moved 2026-09-27** from Session 2 to Session 4, and back to Session 3 with PR #16.
 - API keys: provide them or have students set up their own?
 - Pre-work: should students come to Session 1 with a project idea already?
 - ~~Do we want a final deliverable (repo + reflection) or is the journey enough?~~ → **half-answered: Session 5 opens with an hour of demos.** There is a public moment, but no deliverable and no grading — showing is voluntary. Still open: whether Session 6's retrospective wants a written reflection to go with it.
@@ -534,7 +523,7 @@ For students who don't bring their own:
 
 ### Session 1 — Vibecoding
 
-- [Sebastian Raschka: *The Components of a Coding Agent*](https://magazine.sebastianraschka.com/p/components-of-a-coding-agent) — **the reference for the fundamentals block's "what is a coding agent"**, and for the LLM + tool + harness vocabulary planted in Part 4. Separates LLM from reasoning model from agent (a control loop deciding what to inspect, what to call, when to stop) from harness, and argues the harness is often what makes one model outperform another — *"much of the apparent model quality is really context quality"*. Its six components run past Session 1 on purpose (context reduction and session memory are Session 5's, subagents are Session 4's), so it's instructor prep and optional student reading rather than class content.
+- [Sebastian Raschka: *The Components of a Coding Agent*](https://magazine.sebastianraschka.com/p/components-of-a-coding-agent) — **the reference for the fundamentals block's "what is a coding agent"**, and for the LLM + tool + harness vocabulary planted in Part 4. Separates LLM from reasoning model from agent (a control loop deciding what to inspect, what to call, when to stop) from harness, and argues the harness is often what makes one model outperform another — *"much of the apparent model quality is really context quality"*. Its six components run past Session 1 on purpose (context reduction and session memory are Session 5's, subagents are Session 3's), so it's instructor prep and optional student reading rather than class content.
 - [Andrej Karpathy: *From Vibe Coding to Agentic Engineering* (w/ Stephanie Zhan)](https://www.youtube.com/watch?v=96jN2OCOfLs) — the whole arc of this course in one talk, given by the person who coined "vibe coding", and under the same title. Useful twice: as Part 5 material, and as the reason the course is shaped the way it is.
 - [Anthropic: *Vibe coding in prod* | Code w/ Claude](https://www.youtube.com/watch?v=fHWFF_pnqDk) — the fourth of Part 5's four takes. Same video linked in "The Spectrum" above.
 - [Naval: *On Vibe Coding*](https://www.youtube.com/watch?v=hTdSU7q5WCo) — vibecoding as a video game, the second of Part 5's four takes. **Check whether this is the same material as the x.com clip cited in "The Spectrum"**; if it is, keep one and drop the other from the slide.
