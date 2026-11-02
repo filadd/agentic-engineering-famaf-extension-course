@@ -60,6 +60,7 @@
       "files": ["apps/web/**"],
       "rules": {
         "kurasu-boundaries/web-imports": "error",
+        "kurasu-boundaries/module-entry": "error",
         "kurasu/arrow-components": "error",
         "kurasu/props-name": "error",
         "kurasu/react-named-imports": "error",

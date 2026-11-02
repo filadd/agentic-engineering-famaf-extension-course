@@ -2,7 +2,7 @@ import type { AdminPoll, Poll, ResponseValue } from "@kurasu/contract/polls";
 import type { ReactNode } from "react";
 
 import { Icon } from "../../ui/Icon.tsx";
-import { PollResults } from "./PollResults.tsx";
+import { PollResults } from "./PollResults/index.ts";
 import { scaleLabelsOf } from "./scale-labels.ts";
 
 interface Props {

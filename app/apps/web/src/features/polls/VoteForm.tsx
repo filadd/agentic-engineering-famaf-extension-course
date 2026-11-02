@@ -6,7 +6,7 @@ import { Button } from "../../ui/Button.tsx";
 import { InlineError } from "../../ui/InlineError.tsx";
 import { Spinner } from "../../ui/Spinner.tsx";
 import { FeedbackForm } from "./FeedbackForm.tsx";
-import { PollResults } from "./PollResults.tsx";
+import { PollResults } from "./PollResults/index.ts";
 import { scaleLabelsOf } from "./scale-labels.ts";
 import { useVote } from "./useVote.ts";
 import { mergeWords } from "./words.ts";
