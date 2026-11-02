@@ -1,0 +1,23 @@
+<supervisor-agent>
+Review against the conventions in /home/agus/workspace/asermax/claude-plugins/mahou/skills/wiki/references/react/component-modules.md.
+
+Repository: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course (kurasu lives in app/). Base: HEAD of branch feat/session-4-deck (commit e0f75d2); the change is the uncommitted working tree, including a staged deletion of app/apps/web/src/features/questions/FeaturedQuestions.tsx. The full diff is at /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/slides-y-skeleton/diff.patch (git diff HEAD). Read the touched files in full where you need context.
+
+What the change does: (1) on the teacher's classroom, TeacherSlides keeps its own position while slide moves save, saves one position at a time and keeps only the last position made during a save; useMoveSlide drops its optimistic patch and its write-back. (2) on the student home, the featured card is one skeleton until the sessions, its active polls and, when featured questions are on, its questions arrive; FeaturedSession now receives the questions as data and FeaturedQuestions was removed. Docs api-de-las-slides.md and carga-y-acciones-de-la-web.md were updated.
+
+This is round 3. The ledger of rounds 1 and 2 is at /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/slides-y-skeleton/agentic-review/kurasu.md: every fix in it is settled (do not propose reverting or reshaping one unless the fix itself introduced a problem on your angle; then cite the entry), and every skip in it is settled (do not raise it again). Report only what still stands on your angle in the current diff.
+
+Write your findings to /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/slides-y-skeleton/agentic-review/round-3/react-component-modules.md and reply with only the path and the count. Edit no code. Do not spawn subagents.
+</supervisor-agent>
+
+<supervisor-agent>
+Review against the conventions in /home/agus/workspace/asermax/claude-plugins/mahou/skills/wiki/references/react/component-modules.md.
+
+Repository: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course (kurasu lives in app/). Base: HEAD of branch feat/session-4-deck (commit e0f75d2); the change is the uncommitted working tree, including a staged deletion of app/apps/web/src/features/questions/FeaturedQuestions.tsx. The full diff is at /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/slides-y-skeleton/diff.patch (git diff HEAD). Read the touched files in full where you need context.
+
+What the change does: (1) on the teacher's classroom, TeacherSlides keeps its own position while slide moves save, saves one position at a time and keeps only the last position made during a save; useMoveSlide drops its optimistic patch and its write-back. (2) on the student home, the featured card is one skeleton until the sessions, its active polls and, when featured questions are on, its questions arrive; FeaturedSession now receives the questions as data and FeaturedQuestions was removed. Docs api-de-las-slides.md and carga-y-acciones-de-la-web.md were updated.
+
+This is round 3. The ledger of rounds 1 and 2 is at /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/slides-y-skeleton/agentic-review/kurasu.md: every fix in it is settled (do not propose reverting or reshaping one unless the fix itself introduced a problem on your angle; then cite the entry), and every skip in it is settled (do not raise it again). Report only what still stands on your angle in the current diff.
+
+Write your findings to /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/slides-y-skeleton/agentic-review/round-3/react-component-modules.md and reply with only the path and the count. Edit no code. Do not spawn subagents.
+</supervisor-agent>
