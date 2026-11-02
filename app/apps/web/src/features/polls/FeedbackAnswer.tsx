@@ -27,7 +27,7 @@ export const FeedbackAnswer = ({ answer, isClosed, action }: Props) =>
           </div>
         </div>
       </div>
-      <div className="mt-2.5 flex items-baseline gap-2.5 rounded-[14px] border-2 border-sand px-3.5 py-2.5">
+      <div className="mt-2.5 flex items-baseline gap-2.5 answer-box">
         <span aria-label={`${answer.pick} de 5`} className="text-[26px]">
           {feedbackFaces[answer.pick - 1]}
         </span>

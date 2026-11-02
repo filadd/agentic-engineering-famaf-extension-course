@@ -13,11 +13,7 @@ export const FeedbackResponsesButton = ({ poll }: Props) => {
 
   return (
     <>
-      <Button
-        variant="pill-dark"
-        className="border-coal bg-coal text-white"
-        onClick={() => setIsOpen(true)}
-      >
+      <Button variant="pill-dark" onClick={() => setIsOpen(true)}>
         Ver las respuestas
       </Button>
       {isOpen ? <FeedbackResponsesSheet poll={poll} onClose={() => setIsOpen(false)} /> : null}
