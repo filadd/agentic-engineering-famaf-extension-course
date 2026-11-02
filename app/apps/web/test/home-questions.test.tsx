@@ -66,12 +66,18 @@ describe("the questions panel of the featured card", () => {
 
     await renderRoute("/");
 
+    await waitFor(() =>
+      expect(screen.getAllByRole("heading", { level: 1 })[0]?.textContent).toBe(
+        `Hola, ${student.name}`,
+      ),
+    );
+
     const skeleton = await waitFor(() => {
-      const found = screen.getByRole("region", { name: planning.title, hidden: true });
+      const found = document.querySelector<HTMLElement>("[inert]");
 
-      expect(found.closest("[inert]")).not.toBeNull();
+      expect(found).not.toBeNull();
 
-      return found;
+      return found ?? document.body;
     });
 
     expect(screen.queryByRole("region", { name: planning.title })).toBeNull();

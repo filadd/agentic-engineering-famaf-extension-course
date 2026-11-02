@@ -17,7 +17,7 @@ export const HomeFeaturedSession = ({ session }: Props) => {
   const questions = useQuestionsByVotes(session.id, { enabled: isWithQuestions });
 
   return polls.data == null || (isWithQuestions && questions.data == null) ? (
-    <FeaturedSessionSkeleton session={session} />
+    <FeaturedSessionSkeleton />
   ) : (
     <FeaturedSession
       session={session}
