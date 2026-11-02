@@ -4,6 +4,7 @@ export const pollTypeLabels: Record<PollType, string> = {
   choice: "Opción múltiple",
   words: "Word cloud",
   scale: "Escala 1 a 5",
+  feedback: "Feedback",
 };
 
 export const pollStatusLabels: Record<PollStatus, string> = {

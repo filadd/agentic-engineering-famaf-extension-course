@@ -13,12 +13,13 @@ import {
 } from "./errors.ts";
 import { CurrentUserMiddleware } from "./middleware.ts";
 import { Ulid } from "./ulid.ts";
+import { Animal } from "./user.ts";
 
 export const maxOptions = 10;
 export const maxWords = 10;
 export const maxWordLength = 30;
 
-export const PollType = Schema.Literals(["choice", "words", "scale"]);
+export const PollType = Schema.Literals(["choice", "words", "scale", "feedback"]);
 
 export type PollType = typeof PollType.Type;
 
@@ -68,6 +69,10 @@ export const ResponseValue = Schema.Union([
       Schema.String.check(Schema.isMinLength(1), Schema.isMaxLength(maxWordLength)),
     ).check(Schema.isMinLength(1), Schema.isMaxLength(maxWords)),
   }),
+  Schema.Struct({
+    pick: Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: 5 })),
+    text: Schema.optionalKey(Schema.String.check(Schema.isPattern(/\S/))),
+  }),
 ]);
 
 export type ResponseValue = typeof ResponseValue.Type;
@@ -80,6 +85,9 @@ export const PollResults = Schema.Struct({
   ),
   words: Schema.optionalKey(
     Schema.Array(Schema.Struct({ word: Schema.String, count: Schema.Int })),
+  ),
+  feedback: Schema.optionalKey(
+    Schema.Array(Schema.Int).check(Schema.isMinLength(5), Schema.isMaxLength(5)),
   ),
 });
 
@@ -95,11 +103,25 @@ export const Poll = Schema.Struct({
 
 export type Poll = typeof Poll.Type;
 
+export const FeedbackResponse = Schema.Struct({
+  id: Ulid,
+  user: Schema.Struct({
+    id: Ulid,
+    name: Schema.NullOr(Schema.String),
+    avatar: Schema.NullOr(Animal),
+  }),
+  pick: Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: 5 })),
+  text: Schema.optionalKey(Schema.String),
+});
+
+export type FeedbackResponse = typeof FeedbackResponse.Type;
+
 export const AdminPoll = Schema.Struct({
   ...pollFields,
   id: Ulid,
   status: PollStatus,
   results: PollResults,
+  responses: Schema.optionalKey(Schema.Array(FeedbackResponse)),
 });
 
 export type AdminPoll = typeof AdminPoll.Type;
