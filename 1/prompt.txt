@@ -1,0 +1,3 @@
+<supervisor-agent>
+Run exactly this bash command and nothing else: `echo "NESTED=${ENTIRE_PI_NESTED:-unset}"; echo "SESSION=$PI_SESSION_ID"; pwd; ls .pi/extensions 2>&1`. Then reply with its output verbatim, nothing more. Do not spawn subagents.
+</supervisor-agent>

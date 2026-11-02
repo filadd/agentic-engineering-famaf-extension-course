@@ -3,7 +3,7 @@
   "checkpoint_id": "01M6E552E7Z2YVYYVHWPQHNVZA",
   "strategy": "manual-commit",
   "branch": "main",
-  "checkpoints_count": 2,
+  "checkpoints_count": 3,
   "files_touched": [
     ".mahou/implement.md"
   ],
@@ -14,14 +14,21 @@
       "compact_transcript": "/0/transcript.jsonl",
       "content_hash": "/0/content_hash.txt",
       "prompt": "/0/prompt.txt"
+    },
+    {
+      "metadata": "/1/metadata.json",
+      "transcript": "/1/full.jsonl",
+      "compact_transcript": "/1/transcript.jsonl",
+      "content_hash": "/1/content_hash.txt",
+      "prompt": "/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 822,
-    "cache_creation_tokens": 1527941,
-    "cache_read_tokens": 127590864,
-    "output_tokens": 565209,
-    "api_call_count": 392
+    "input_tokens": 826,
+    "cache_creation_tokens": 1576319,
+    "cache_read_tokens": 127639041,
+    "output_tokens": 565406,
+    "api_call_count": 394
   },
   "redaction": {
     "replacements": 0,
