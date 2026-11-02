@@ -1,12 +1,12 @@
 import type { Session, SessionSummary } from "@kurasu/contract/sessions";
 import { useState } from "react";
 
-import { Button } from "../../ui/Button.tsx";
-import { InlineError } from "../../ui/InlineError.tsx";
-import { Sheet } from "../../ui/Sheet.tsx";
-import { Switch } from "../../ui/Switch.tsx";
-import { FeaturedEffects } from "./FeaturedEffects.tsx";
-import { useUpdateSession } from "./useUpdateSession.ts";
+import { Button } from "../../../ui/Button.tsx";
+import { InlineError } from "../../../ui/InlineError.tsx";
+import { Sheet } from "../../../ui/Sheet.tsx";
+import { SwitchButton } from "../../../ui/SwitchButton.tsx";
+import { FeaturedEffects } from "../FeaturedEffects.tsx";
+import { updateErrorText, useUpdateSession } from "../useUpdateSession.ts";
 
 interface Props {
   session: Session;
@@ -30,26 +30,21 @@ export const EnableSessionDialog = ({ session, featured, onClose }: Props) => {
       pending={update.isPending}
     >
       <p className="leading-[1.45]">Los estudiantes van a ver la sesión en su inicio.</p>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={isFeaturing}
+      <SwitchButton
+        isOn={isFeaturing}
         disabled={update.isPending}
         onClick={() => setIsFeaturing(!isFeaturing)}
-        className="mt-3.5 flex items-center gap-2.5 text-sm"
+        className="switch-row mt-3.5"
       >
         <span>Destacada</span>
-        <Switch on={isFeaturing} />
-      </button>
+      </SwitchButton>
       {isFeaturing && featured != null ? (
-        <div className="mt-3 rounded-[14px] bg-[#f9dde1] px-3.5 py-3 text-sm text-[#8a2e3d]">
+        <div className="mt-3 rounded-[14px] bg-blush px-3.5 py-3 text-sm text-wine">
           <p>{`Hoy la destacada es "${featured.title}" y deja de serlo:`}</p>
           <FeaturedEffects session={featured} />
         </div>
       ) : null}
-      {update.isError ? (
-        <InlineError className="mt-3">No se pudo guardar el cambio. Probá de nuevo.</InlineError>
-      ) : null}
+      {update.isError ? <InlineError className="mt-3">{updateErrorText}</InlineError> : null}
       <div className="mt-[18px] flex justify-end gap-2">
         <Button variant="pill" disabled={update.isPending} onClick={onClose}>
           Cancelar

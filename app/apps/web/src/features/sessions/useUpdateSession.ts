@@ -5,6 +5,8 @@ import { optimisticPatch } from "../../api/optimistic-patch.ts";
 import { queryKeys } from "../../api/query-keys.ts";
 import { useApiMutation } from "../../api/useApiMutation.ts";
 
+export const updateErrorText = "No se pudo guardar el cambio. Probá de nuevo.";
+
 export interface SessionUpdate {
   readonly id: string;
   readonly change: SessionChange;

@@ -4,7 +4,7 @@ import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 import { ChangelogColumn } from "../changelog/ChangelogColumn.tsx";
 import { AdminMaterials } from "../materials/AdminMaterials.tsx";
 import { DeleteSessionButton } from "./DeleteSessionButton.tsx";
-import { EnabledSwitch } from "./EnabledSwitch.tsx";
+import { EnabledSwitch } from "./EnabledSwitch/index.ts";
 import { FeaturedSwitch } from "./FeaturedSwitch.tsx";
 import { sessionExamples } from "./session-examples.ts";
 import { SessionDetailsForm } from "./SessionDetailsForm.tsx";

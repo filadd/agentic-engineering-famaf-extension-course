@@ -55,6 +55,8 @@
   --color-mint: #b4e8cc;
   --color-live: #e8505b;
   --color-danger: #b5485a;
+  --color-blush: #f9dde1;
+  --color-wine: #8a2e3d;
 }
 
 @layer base {
@@ -86,6 +88,10 @@
 
 /* The buttons and fields the prototypes repeat on every screen. */
 @layer components {
+  .switch-row {
+    @apply flex items-center gap-2.5 text-sm;
+  }
+
   .main-button {
     @apply inline-flex items-center justify-center gap-2 rounded-full bg-coal px-5 py-2.5 font-display font-medium text-white disabled:opacity-35;
   }

@@ -1,6 +1,6 @@
 import type { Session } from "@kurasu/contract/sessions";
 
-import { Switch } from "../../ui/Switch.tsx";
+import { SwitchButton } from "../../ui/SwitchButton.tsx";
 import { useUpdateSession } from "../sessions/useUpdateSession.ts";
 
 interface Props {
@@ -21,10 +21,8 @@ export const FeaturedQuestionsSwitch = ({ session }: Props) => {
   const update = useUpdateSession();
 
   return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={session.featuredQuestions}
+    <SwitchButton
+      isOn={session.featuredQuestions}
       disabled={!session.featured}
       onClick={() =>
         update.mutate({ id: session.id, change: { featuredQuestions: !session.featuredQuestions } })
@@ -35,7 +33,6 @@ export const FeaturedQuestionsSwitch = ({ session }: Props) => {
         <b className="block text-sm">Preguntas destacadas</b>
         <small className="block text-[13px] opacity-70">{lineOf(session)}</small>
       </span>
-      <Switch on={session.featuredQuestions} />
-    </button>
+    </SwitchButton>
   );
 };
