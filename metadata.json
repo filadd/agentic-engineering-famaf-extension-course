@@ -3,7 +3,7 @@
   "checkpoint_id": "01M6EMQD7VD1Y4984A6NKSPNFJ",
   "strategy": "manual-commit",
   "branch": "feat/session-4-deck",
-  "checkpoints_count": 22,
+  "checkpoints_count": 23,
   "files_touched": [
     "app/apps/web/src/features/classroom/StudentSlides.tsx",
     "app/apps/web/src/features/classroom/TeacherSlides.tsx",
@@ -160,6 +160,13 @@
       "compact_transcript": "/20/transcript.jsonl",
       "content_hash": "/20/content_hash.txt",
       "prompt": "/20/prompt.txt"
+    },
+    {
+      "metadata": "/21/metadata.json",
+      "transcript": "/21/full.jsonl",
+      "compact_transcript": "/21/transcript.jsonl",
+      "content_hash": "/21/content_hash.txt",
+      "prompt": "/21/prompt.txt"
     }
   ],
   "token_usage": {
