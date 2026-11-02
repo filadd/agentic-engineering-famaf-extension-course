@@ -25,7 +25,6 @@ import * as Context from "effect/Context";
 import * as Crypto from "effect/Crypto";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
-import * as Option from "effect/Option";
 
 import { Changelog } from "../changelog/changelog.ts";
 import { Classroom } from "../classroom.ts";
@@ -160,10 +159,7 @@ export class Polls extends Context.Service<
         );
 
       const isFeatured = (sessionId: Ulid) =>
-        Effect.map(
-          sessions.get(sessionId),
-          Option.exists((session) => session.featured),
-        );
+        Effect.isSuccess(featuredSession(sessions, sessionId));
 
       const notifyPolls = (poll: StoredPoll) => classroom.notify(poll.sessionId, "polls");
 

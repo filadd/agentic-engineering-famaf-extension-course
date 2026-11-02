@@ -47,7 +47,7 @@ export const D1Users = Layer.effect(
           yield* emailTaken(user.email);
 
           yield* repository.batch([
-            repository.statements.create(newStudent(user.id, user.email)),
+            repository.writes.create(newStudent(user.id, user.email)),
             db
               .insert(codes)
               .values({ id: code.id, type: "user", code: code.code, userId: user.id }),

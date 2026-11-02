@@ -41,10 +41,6 @@ export interface RemoveOptions {
 
 export const maxPage = 100;
 
-// The operations every D1 store shares. A store's port takes the ones it
-// exposes and adds its own. An `upsert` without `set` leaves the row it
-// conflicts with as it was. A store with logical deletion leaves the deleted
-// rows out of every read, and its `remove` marks the row instead of deleting it.
 // The methods that write, without running them: each gives back a `Write` to
 // run with `Batch`, inside an Effect when building it reads something.
 export interface Writes<A, New, Change> {
@@ -59,6 +55,10 @@ export interface Writes<A, New, Change> {
   readonly removeWhere: (where: Where<A>) => Effect.Effect<Write>;
 }
 
+// The operations every D1 store shares. A store's port takes the ones it
+// exposes and adds its own. An `upsert` without `set` leaves the row it
+// conflicts with as it was. A store with logical deletion leaves the deleted
+// rows out of every read, and its `remove` marks the row instead of deleting it.
 export interface Repository<A, New, Change> {
   readonly get: (id: Ulid) => Effect.Effect<Option.Option<A>>;
   readonly getMany: (ids: ReadonlyArray<Ulid>) => Effect.Effect<ReadonlyArray<A>>;

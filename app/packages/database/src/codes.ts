@@ -55,8 +55,8 @@ export const D1Codes = Layer.effect(
           const deletedAt = DateTime.toDateUtc(yield* DateTime.now);
 
           yield* repository.batch([
-            yield* repository.statements.updateWhere(currentEnrollment, { deletedAt }),
-            repository.statements.create({ id: next.id, type: "enrollment", code: next.code }),
+            yield* repository.writes.updateWhere(currentEnrollment, { deletedAt }),
+            repository.writes.create({ id: next.id, type: "enrollment", code: next.code }),
           ]);
 
           return next.code;

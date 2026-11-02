@@ -224,7 +224,7 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
 
     // A statement reads nothing after its write, so several can go in one D1
     // batch.
-    const statements = {
+    const writes = {
       create: (row: New<T>) => db.insert(table).values(row),
       update: (id: Ulid, change: Change<T>) =>
         db.update(table).set(change).where(byId(id)).returning({ id: table.id }),
@@ -260,7 +260,7 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
       }
 
       return Effect.gen(function* () {
-        const rows = yield* (yield* statements.removeWhere(where)).pipe(Effect.orDie);
+        const rows = yield* (yield* writes.removeWhere(where)).pipe(Effect.orDie);
 
         return areRows(rows)
           ? rows.length
@@ -271,9 +271,8 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
     type Shared = Repository<A, New<T>, Change<T>>;
 
     return {
-      statements,
-      writes: statements,
-      batch: (writes: ReadonlyArray<Statement>) => batch(client, writes),
+      writes,
+      batch: (statements: ReadonlyArray<Statement>) => batch(client, statements),
       get,
       getMany,
       find: (where: Where<A>): ReturnType<Shared["find"]> =>
@@ -329,7 +328,7 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
           return rows[0]?.count ?? 0;
         }),
       create: (row: New<T>): ReturnType<Shared["create"]> =>
-        statements.create(row).pipe(
+        writes.create(row).pipe(
           Effect.orDie,
           Effect.andThen(get(row.id)),
           Effect.flatMap(
@@ -349,13 +348,13 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
       update: (id: Ulid, change: Change<T>): ReturnType<Shared["update"]> =>
         Object.keys(change).length === 0
           ? get(id)
-          : statements.update(id, change).pipe(
+          : writes.update(id, change).pipe(
               Effect.orDie,
               Effect.flatMap((rows) => (rows.length === 0 ? Effect.succeedNone : get(id))),
             ),
       updateWhere: (where: Where<A>, change: Change<T>): ReturnType<Shared["updateWhere"]> =>
         Effect.gen(function* () {
-          const rows = yield* (yield* statements.updateWhere(where, change)).pipe(Effect.orDie);
+          const rows = yield* (yield* writes.updateWhere(where, change)).pipe(Effect.orDie);
 
           return rows.length;
         }),
@@ -364,7 +363,7 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
         options: UpsertOptions<keyof New<T> & string, Change<T>>,
       ): ReturnType<Shared["upsert"]> =>
         Effect.gen(function* () {
-          yield* (yield* statements.upsert(row, options)).pipe(Effect.orDie);
+          yield* (yield* writes.upsert(row, options)).pipe(Effect.orDie);
         }),
       remove: (id: Ulid, options?: RemoveOptions): ReturnType<Shared["remove"]> =>
         Effect.gen(function* () {
@@ -375,7 +374,7 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
           const current = yield* get(id);
 
           if (Option.isSome(current)) {
-            yield* (yield* statements.remove(id)).pipe(Effect.orDie);
+            yield* (yield* writes.remove(id)).pipe(Effect.orDie);
           }
 
           return current;

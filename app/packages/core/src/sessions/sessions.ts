@@ -49,7 +49,6 @@ const toStudentSession = (session: StoredSession): Session => ({
   currentStep: session.currentStep,
 });
 
-// The session that stops being featured with this change, if any.
 const leavingOf = (
   previous: StoredSession,
   current: Option.Option<SessionSummary>,
@@ -57,11 +56,11 @@ const leavingOf = (
   change: SessionChange,
 ) => {
   if (change.featured === true && Option.isSome(current) && current.value.id !== id) {
-    return Option.some(current.value);
+    return Option.some(current.value.id);
   }
 
   return previous.featured && (change.featured === false || change.enabled === false)
-    ? Option.some(toSummary(previous))
+    ? Option.some(previous.id)
     : Option.none();
 };
 
@@ -83,12 +82,12 @@ const changedTopics = (change: SessionChange): ReadonlyArray<ClassroomTopic> => 
 
 // The sessions as each side sees them. The student sees only enabled sessions,
 // without `enabled`; the featured one is the one the teacher marked, if any.
-// The teacher sees every session not deleted. A session is deleted only while disabled, and a
-// reorder lists every session not deleted. A student enters only the classroom
-// of the featured session; the teacher, that of any session not deleted. A
-// session that stops being featured, because another one is featured, the mark
-// is removed or it is disabled, loses its active polls, its raised hands and
-// its featured questions in the same batch as the change.
+// The teacher sees every session not deleted. A session is deleted only while
+// disabled, and a reorder lists every session not deleted. A student enters
+// only the classroom of the featured session; the teacher, that of any session
+// not deleted. A session that stops being featured, because another one is
+// featured, the mark is removed or it is disabled, loses its active polls, its
+// raised hands and its featured questions in the same batch as the change.
 export class Sessions extends Context.Service<
   Sessions,
   {
@@ -125,6 +124,41 @@ export class Sessions extends Context.Service<
       const featured = () =>
         Effect.map(store.find({ enabled: true, featured: true }), Option.map(toSummary));
 
+      const updateLeaving = Effect.fn("Sessions.updateLeaving")(function* (
+        id: Ulid,
+        change: SessionChange,
+        leavingId: Ulid,
+      ) {
+        const closing = (yield* polls.list({
+          where: { sessionId: leavingId, status: "active" },
+        })).map((poll) => poll.id);
+
+        yield* batch.run([
+          store.writes.update(leavingId, { featured: false, featuredQuestions: false }),
+          ...(closing.length === 0
+            ? []
+            : [yield* polls.writes.updateWhere({ id: closing }, { status: "closed" })]),
+          yield* hands.writes.removeWhere({ sessionId: leavingId }),
+          store.writes.update(id, change),
+        ]);
+
+        const session = yield* existingSession(store, id);
+
+        yield* changelog.drop({ type: "questions-opened", entityId: leavingId });
+        yield* Effect.forEach(
+          closing,
+          (pollId) => changelog.drop({ type: "poll-opened", entityId: pollId }),
+          { discard: true },
+        );
+        yield* Effect.forEach(
+          ["session", "polls", "hands"] as const,
+          (topic) => classroom.notify(leavingId, topic),
+          { discard: true },
+        );
+
+        return session;
+      });
+
       return Sessions.of({
         listVisible,
         getVisible: (id) => visibleSession(store, id).pipe(Effect.map(toStudentSession)),
@@ -150,7 +184,6 @@ export class Sessions extends Context.Service<
         }),
         update: Effect.fn("Sessions.update")(function* (id, change) {
           const previous = yield* existingSession(store, id);
-          const current = yield* featured();
           const isEnabledAfter = change.enabled ?? previous.enabled;
 
           if (change.featured === true && !isEnabledAfter) {
@@ -163,48 +196,16 @@ export class Sessions extends Context.Service<
             return yield* new NotFeatured();
           }
 
+          const current =
+            change.featured === true ? yield* featured() : Option.none<SessionSummary>();
+
           const leaving = leavingOf(previous, current, id, change);
 
-          const closing = Option.isSome(leaving)
-            ? (yield* polls.list({
-                where: { sessionId: leaving.value.id, status: "active" },
-              })).map((poll) => poll.id)
-            : [];
-
-          if (Option.isSome(leaving)) {
-            const leavingId = leaving.value.id;
-
-            yield* batch.run([
-              store.writes.update(leavingId, { featured: false, featuredQuestions: false }),
-              ...(closing.length === 0
-                ? []
-                : [yield* polls.writes.updateWhere({ id: closing }, { status: "closed" })]),
-              yield* hands.writes.removeWhere({ sessionId: leavingId }),
-              store.writes.update(id, change),
-            ]);
-          } else {
-            yield* store.update(id, change);
-          }
-
-          const session = yield* Effect.fromOption(yield* store.get(id)).pipe(
-            Effect.mapError(() => new SessionNotFound()),
-          );
-
-          if (Option.isSome(leaving)) {
-            const leavingId = leaving.value.id;
-
-            yield* changelog.drop({ type: "questions-opened", entityId: leavingId });
-            yield* Effect.forEach(
-              closing,
-              (pollId) => changelog.drop({ type: "poll-opened", entityId: pollId }),
-              { discard: true },
-            );
-            yield* Effect.forEach(
-              ["session", "polls", "hands"] as const,
-              (topic) => classroom.notify(leavingId, topic),
-              { discard: true },
-            );
-          }
+          const session = Option.isSome(leaving)
+            ? yield* updateLeaving(id, change, leaving.value)
+            : yield* Effect.fromOption(yield* store.update(id, change)).pipe(
+                Effect.mapError(() => new SessionNotFound()),
+              );
 
           yield* Effect.forEach(changedTopics(change), (topic) => classroom.notify(id, topic), {
             discard: true,
