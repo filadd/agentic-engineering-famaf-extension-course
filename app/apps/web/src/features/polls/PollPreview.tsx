@@ -1,5 +1,6 @@
 import type { AdminPoll } from "@kurasu/contract/polls";
 
+import { FeedbackScale } from "./FeedbackScale.tsx";
 import { scaleLabelsOf } from "./scale-labels.ts";
 
 interface Props {
@@ -43,6 +44,20 @@ export const PollPreview = ({ poll }: Props) => {
           <span>{minLabel}</span>
           <span>{maxLabel}</span>
         </div>
+      </div>
+    );
+  }
+
+  if (poll.type === "feedback") {
+    return (
+      <div>
+        <FeedbackScale value={null} onChange={() => undefined} disabled />
+        <textarea
+          disabled
+          placeholder="¿Qué te pareció la sesión? (opcional)"
+          aria-label="Comentario"
+          className="input-field mt-3 min-h-[74px] resize-none"
+        />
       </div>
     );
   }

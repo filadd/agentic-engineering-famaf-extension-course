@@ -6,6 +6,7 @@ import type { HttpHandler } from "msw";
 import { describe, expect, test } from "vitest";
 
 import {
+  adminFeedback,
   adminPoll,
   adminQuestion,
   choicePoll,
@@ -16,6 +17,7 @@ import {
   sessionDetail,
 } from "./fixtures/content.ts";
 import { otherStudent, student, teacher } from "./fixtures/people.ts";
+import { ulid } from "./fixtures/ids.ts";
 import { validSlides } from "./fixtures/slides.ts";
 import { apiError, getJson, noContent, readJson, url } from "./helpers/api.ts";
 import { heldResponse } from "./helpers/held-response.ts";
@@ -353,6 +355,76 @@ describe("session page: classroom panel and badges", () => {
     expect(within(card).getByRole("list", { name: "Resultados" })).toBeTruthy();
     expect(within(card).getByRole("button", { name: "Cerrar" })).toBeTruthy();
     expect(within(card).queryByRole("button", { name: "Borrar" })).toBeNull();
+  });
+
+  test("a feedback draft in the panel shows the emojis with their ends and the field, disabled, with Activar", async () => {
+    const draft = adminFeedback(planning.id, "draft", []);
+
+    await openPage("aula", { polls: [draft] });
+
+    const card = await within(await screen.findByRole("tabpanel")).findByRole("article", {
+      name: draft.prompt,
+    });
+
+    const faces = within(card).getAllByRole("radio");
+
+    expect(faces.map((face) => face.textContent)).toEqual(["😞", "😕", "😐", "🙂", "😄"]);
+
+    for (const face of faces) {
+      expect(face).toHaveProperty("disabled", true);
+    }
+
+    expect(within(card).getByText("No me gustó")).toBeTruthy();
+    expect(within(card).getByText("Me gustó")).toBeTruthy();
+    expect(within(card).getByLabelText("Comentario")).toHaveProperty("disabled", true);
+    expect(within(card).getByRole("button", { name: "Activar" })).toBeTruthy();
+  });
+
+  test("an active feedback in the panel shows its bars and Cerrar, without the list or names", async () => {
+    const active = adminFeedback(planning.id, "active", [
+      {
+        id: ulid("R", 1),
+        user: { id: otherStudent.id, name: otherStudent.name, avatar: otherStudent.avatar },
+        pick: 4,
+        text: "Buena",
+      },
+    ]);
+
+    await openPage("aula", { polls: [active] });
+
+    const card = await within(await screen.findByRole("tabpanel")).findByRole("article", {
+      name: active.prompt,
+    });
+
+    expect(
+      within(within(card).getByRole("list", { name: "Resultados" }))
+        .getAllByRole("listitem")
+        .map((bar) => bar.textContent),
+    ).toEqual(["0😞", "0😕", "0😐", "1🙂", "0😄"]);
+    expect(within(card).getByText("1 respuesta")).toBeTruthy();
+    expect(within(card).getByRole("button", { name: "Cerrar" })).toBeTruthy();
+    expect(within(card).queryByRole("button", { name: "Ver las respuestas" })).toBeNull();
+    expect(within(card).queryByText(otherStudent.name ?? "")).toBeNull();
+    expect(within(card).queryByText("Buena")).toBeNull();
+  });
+
+  test("a closed feedback in the panel folds at the end without actions and opens to its bars", async () => {
+    const done = adminFeedback(planning.id, "closed", []);
+
+    const { user } = await openPage("aula", { polls: [done] });
+
+    const panel = await screen.findByRole("tabpanel");
+
+    await user.click(await within(panel).findByRole("button", { name: "Cerradas (1)" }));
+
+    const card = within(panel).getByRole("article", { name: done.prompt });
+
+    expect(within(card).getAllByRole("button")).toHaveLength(1);
+
+    await user.click(within(card).getByRole("button", { expanded: false }));
+
+    expect(within(card).getByRole("list", { name: "Resultados" })).toBeTruthy();
+    expect(within(card).getAllByRole("button")).toHaveLength(1);
   });
 
   test("closed polls in the panel go folded at the end, without actions", async () => {

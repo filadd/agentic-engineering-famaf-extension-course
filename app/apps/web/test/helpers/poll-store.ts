@@ -15,12 +15,12 @@ export const pollStore = (initial: ReadonlyArray<AdminPoll>) => {
     http.post(url("/admin/polls"), async ({ request }) => {
       const draft = await readJson(request, PollDraft);
 
-      const created: AdminPoll = {
-        ...draft,
-        id: ulid("P", 700 + polls.length),
-        status: "draft",
-        results: { count: 0 },
-      };
+      const base = { ...draft, id: ulid("P", 700 + polls.length), status: "draft" } as const;
+
+      const created: AdminPoll =
+        draft.type === "feedback"
+          ? { ...base, results: { count: 0, feedback: [0, 0, 0, 0, 0] }, responses: [] }
+          : { ...base, results: { count: 0 } };
 
       writes.push({ method: "POST", body: draft });
       polls = [...polls, created];

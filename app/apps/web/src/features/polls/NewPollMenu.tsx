@@ -9,7 +9,7 @@ interface Props {
   onPick: (type: PollType) => void;
 }
 
-const types: ReadonlyArray<PollType> = ["choice", "words", "scale"];
+const types: ReadonlyArray<PollType> = ["choice", "words", "scale", "feedback"];
 
 export const NewPollMenu = ({ onPick }: Props) => {
   const [open, setOpen] = useState(false);

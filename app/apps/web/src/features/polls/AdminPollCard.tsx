@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import { Button } from "../../ui/Button.tsx";
 import { InlineError } from "../../ui/InlineError.tsx";
+import { FeedbackResponsesButton } from "./FeedbackResponsesButton.tsx";
 import { PollActions } from "./PollActions.tsx";
 import { PollCard } from "./PollCard.tsx";
 import { contentOf, fieldsOf, isComplete } from "./poll-content.ts";
@@ -55,6 +56,11 @@ export const AdminPollCard = ({ poll }: Props) => {
         <PollActions
           poll={poll}
           canActivate={!dirty}
+          leading={
+            poll.type === "feedback" && poll.status !== "draft" ? (
+              <FeedbackResponsesButton poll={poll} />
+            ) : null
+          }
           draftActions={
             poll.status === "draft" && dirty ? (
               <Button
