@@ -91,6 +91,7 @@
   .path { display: grid; grid-template-columns: 56px 1fr; column-gap: 16px; margin-top: 12px; }
   .rail { display: flex; flex-direction: column; align-items: center; }
   .node { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-family: 'Rubik', sans-serif; font-weight: 700; flex: none; }
+  .node.later { background: var(--line); }
   .node.done { background: var(--active); color: var(--active-ink); }
   .node.live { background: #E8505B; color: #fff; box-shadow: 0 0 0 6px color-mix(in srgb, #E8505B 25%, transparent); }
   .link { width: 4px; flex: 1; min-height: 14px; background: var(--line); border-radius: 2px; }
@@ -154,6 +155,11 @@
   .question .del:hover { color: #B5485A; background: #F2EDE9; }
   .yours { margin-left: 6px; font-size: 11px; background: #CCC4F0; border-radius: 999px; padding: 0 6px; white-space: nowrap; }
   .empty { color: var(--muted); font-size: 14px; padding: 6px 0; }
+  .qpanel { margin-top: 14px; }
+  .qpanel .ask input { border-color: #EADFD8; background: #fff; color: #1F1B18; }
+  .qpanel .ask { margin-top: 10px; }
+  .qpanel .question:last-of-type { margin-bottom: 0; }
+  .qpanel .empty { color: #8A7E75; }
 
   .field { display: block; font-size: 14px; font-weight: 700; margin-top: 10px; }
   .field input { display: block; width: 100%; margin-top: 6px; font: inherit; font-weight: 400; font-size: 15px; border: 1.5px solid var(--line); border-radius: 12px; padding: 9px 12px; background: var(--field); color: var(--ink); }
@@ -222,7 +228,7 @@
 <body>
 <div class="intro">
   <h1>Inicio del estudiante · celular y escritorio</h1>
-  <p>Cada estado se ve en un celular de 390 × 844 y en escritorio, con la misma data; lo que hacés en uno se refleja en el otro. En celular la card destacada ocupa el ancho, "Entrar al aula" va a lo ancho al pie de la card, el camino de "Sesiones anteriores" achica los nodos y el menú del avatar sigue siendo un desplegable. En el celular, todos los modales (Material, Encuestas, Preguntas y "Tu perfil") suben como una hoja desde abajo; en escritorio son el modal centrado ya decidido. Las sesiones no habilitadas no aparecen. Borrar una pregunta tuya pide confirmación. Votá, cambiá el voto, mandá palabras separadas por coma, abrí los links de la card o el menú del avatar.</p>
+  <p>Cada estado se ve en un celular de 390 × 844 y en escritorio, con la misma data; lo que hacés en uno se refleja en el otro. En celular la card destacada ocupa el ancho, "Entrar al aula" va a lo ancho al pie de la card, el camino de "Otras sesiones" achica los nodos y el menú del avatar sigue siendo un desplegable. En el celular, todos los modales (Material, Encuestas, Preguntas y "Tu perfil") suben como una hoja desde abajo; en escritorio son el modal centrado ya decidido. Las sesiones no habilitadas no aparecen. Borrar una pregunta tuya pide confirmación. Votá, cambiá el voto, mandá palabras separadas por coma, abrí los links de la card o el menú del avatar. La destacada es la que el profe marca, no siempre la última: con las preguntas destacadas prendidas, esa card muestra arriba de las encuestas activas el panel de preguntas, con el campo para preguntar, las tres más votadas y las tuyas, y "Mostrar N preguntas más" / "Mostrar menos" para desplegarla o plegarla. En "Otras sesiones" las anteriores a la destacada llevan check y las de después ni check ni número; sin destacada, el inicio muestra solo "Sesiones" y nadie entra a un aula.</p>
 </div>
 <div id="alts"></div>
 
@@ -266,7 +272,7 @@ const CLOSED_POOL = [
 // Answered questions are already gone: students never see them.
 const QUESTIONS = {
   1: [['¿El agente se acuerda de lo que le pedí ayer?', 12], ['¿Por qué rompió cosas que andaban?', 8], ['¿Conviene pedirle todo de una?', 5]],
-  2: [['¿Cuánto detalle tiene que tener un plan antes de pasárselo al agente?', 9], ['¿Conviene revisar el diff o correr los tests primero?', 6], ['¿Qué pasa si el plan está mal y el agente lo sigue igual?', 4, true], ['¿Hay plantillas de plan que recomiendes?', 2]],
+  2: [['¿Cuánto detalle tiene que tener un plan antes de pasárselo al agente?', 9], ['¿Conviene revisar el diff o correr los tests primero?', 6], ['¿El plan lo escribo yo o se lo pido al agente?', 5], ['¿Qué pasa si el plan está mal y el agente lo sigue igual?', 4], ['¿Hay plantillas de plan que recomiendes?', 2], ['¿Cada cuánto conviene parar y revisar?', 1, true], ['¿Sirve el plan para tareas chicas?', 0]],
   3: [['¿Las skills sirven con cualquier agente?', 6], ['¿Dónde se guardan las skills del proyecto?', 3]],
   4: [['¿Cómo sé cuánto contexto me queda?', 7]],
   5: [],
@@ -287,14 +293,19 @@ const ANIMALS = [
   ['🐜', 'hormiga'], ['🕷️', 'araña'], ['🦂', 'escorpión'], ['🪲', 'escarabajo'],
 ];
 
-// `enabled` is how many sessions the teacher has enabled; the last one is the highlighted one.
+// `enabled` is how many sessions the teacher has enabled (the first N, in the teacher's order); `highlighted` is the explicit mark, which can be any enabled session or none.
 const STATES = {
-  several: { label: 'Dos encuestas activas, una cerrada', enabled: 2, polls: { choice: 'active', cloud: 'active', scale: 'closed' } },
-  one: { label: 'Una activa, dos cerradas', enabled: 2, polls: { choice: 'active', cloud: 'closed', scale: 'closed' } },
-  closed: { label: 'Todas cerradas', enabled: 2, polls: { choice: 'closed', cloud: 'closed', scale: 'closed' } },
-  none: { label: 'Ninguna activada', enabled: 2, polls: { choice: 'draft', cloud: 'draft', scale: 'draft' } },
-  last: { label: 'Curso terminado', enabled: 6, polls: null },
-  empty: { label: 'Ninguna habilitada', enabled: 0, polls: null },
+  several: { label: 'Dos encuestas activas, una cerrada', enabled: 2, highlighted: 2, qmode: false, polls: { choice: 'active', cloud: 'active', scale: 'closed' } },
+  one: { label: 'Una activa, dos cerradas', enabled: 2, highlighted: 2, qmode: false, polls: { choice: 'active', cloud: 'closed', scale: 'closed' } },
+  closed: { label: 'Todas cerradas', enabled: 2, highlighted: 2, qmode: false, polls: { choice: 'closed', cloud: 'closed', scale: 'closed' } },
+  none: { label: 'Ninguna activada', enabled: 2, highlighted: 2, qmode: false, polls: { choice: 'draft', cloud: 'draft', scale: 'draft' } },
+  last: { label: 'Curso terminado', enabled: 6, highlighted: 6, qmode: false, polls: null },
+  empty: { label: 'Ninguna habilitada', enabled: 0, highlighted: null, qmode: false, polls: null },
+  onPolls: { label: 'Preguntas destacadas, dos encuestas activas', enabled: 2, highlighted: 2, qmode: true, polls: { choice: 'active', cloud: 'active', scale: 'closed' } },
+  onOnly: { label: 'Preguntas destacadas, sin encuestas activas', enabled: 2, highlighted: 2, qmode: true, polls: { choice: 'closed', cloud: 'closed', scale: 'closed' } },
+  onEmpty: { label: 'Preguntas destacadas, todavía sin preguntas', enabled: 2, highlighted: 2, qmode: true, noQuestions: true, polls: { choice: 'active', cloud: 'closed', scale: 'closed' } },
+  middle: { label: 'Preguntas destacadas, sesión destacada en el medio', enabled: 4, highlighted: 2, qmode: true, polls: { choice: 'active', cloud: 'active', scale: 'closed' } },
+  nofeat: { label: 'Preguntas destacadas, sin sesión destacada', enabled: 3, highlighted: null, qmode: true, polls: { choice: 'active', cloud: 'active', scale: 'closed' } },
 };
 
 const ALTS = {
@@ -303,10 +314,13 @@ const ALTS = {
 
 const freshVotes = () => Object.fromEntries(Object.keys(POLLS).map((k) => [k, { mine: null, previous: null, editing: false, word: '' }]));
 
-const freshQuestions = () => Object.fromEntries(Object.entries(QUESTIONS).map(([n, qs]) => [n, qs.map(([text, votes, mine], i) => ({ id: `${n}-${i}`, text, votes, mine: mine === true }))]));
+const freshQuestions = () => Object.fromEntries(Object.entries(QUESTIONS).map(([n, qs]) => [n, qs.map(([text, votes, mine], i) => ({ id: `${n}-${i}`, text, votes, mine: mine === true, added: false }))]));
+
+// The empty state hides the example questions but keeps the ones the reader adds.
+const questionsIn = (v, state, n) => v.questions[n].filter((q) => !(STATES[state].noQuestions && n === 2) || q.added);
 
 const fresh = () => ({
-  state: 'several', all: false, dark: false, open: {}, menu: false, modal: null, openPoll: null, out: false, confirm: null,
+  state: 'several', all: false, qOpen: false, cardDraft: '', dark: false, open: {}, menu: false, modal: null, openPoll: null, out: false, confirm: null,
   votes: freshVotes(), questions: freshQuestions(), upvoted: [], draft: '',
   profile: { name: 'Lucía', mail: 'lucia.fernandez@mi.unc.edu.ar', avatar: '🦊' }, editing: null, query: '',
 });
@@ -318,7 +332,7 @@ const pct = (n, of) => (of === 0 ? 0 : Math.round((n / of) * 100));
 const plain = (text) => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 const enabledIn = (state) => SESSIONS.slice(0, STATES[state].enabled);
-const highlightedIn = (state) => enabledIn(state).at(-1) ?? null;
+const highlightedIn = (state) => enabledIn(state).find((s) => s.n === STATES[state].highlighted) ?? null;
 
 const activeKeys = (state, n) => (n === 2 && STATES[state].polls != null ? Object.keys(POLLS).filter((k) => STATES[state].polls[k] === 'active') : []);
 
@@ -416,7 +430,7 @@ const tags = (v, state, s) => {
   return `<div class="tags">
     <button class="tag" data-open="material" data-n="${s.n}">${ic('download', 15)} Material (${s.material})</button>
     ${closed === 0 ? '' : `<button class="tag" data-open="polls" data-n="${s.n}">${ic('chart-bar', 15)} Encuestas (${closed})</button>`}
-    <button class="tag" data-open="questions" data-n="${s.n}">${ic('chat-messages', 15)} ${plural(v.questions[s.n].length, 'pregunta', 'preguntas')}</button>
+    <button class="tag" data-open="questions" data-n="${s.n}">${ic('chat-messages', 15)} ${plural(questionsIn(v, state, s.n).length, 'pregunta', 'preguntas')}</button>
   </div>`;
 };
 
@@ -428,18 +442,19 @@ const hero = (v, state, s) => {
       <h3>${s.title}</h3>
       ${tags(v, state, s)}
       <p>${s.summary}</p>
+      ${STATES[state].qmode ? questionsPanel(v, state, s) : ''}
       ${active.length === 0 ? '' : `<div class="polls">${active.map((k) => activePanel(v, k)).join('')}</div>`}
       <div class="foot"><button class="btn">Entrar al aula ${ic('arrow-right', 18)}</button></div>
     </div>`;
 };
 
-// Earlier sessions open one at a time and never get the button to the aula.
+// Only the highlighted session gets the button to the aula; the others open one at a time.
 const pathCard = (v, state, s, current) => (v.open[state] === s.n
   ? `<div class="card" style="background:${color(s.n)}">
       <div class="head" data-toggle="${s.n}"><h3>${s.title}</h3></div>
       ${tags(v, state, s)}
       <p>${s.summary}</p>
-      ${s.n === current.n ? `<div class="foot"><button class="btn">Entrar al aula ${ic('arrow-right', 18)}</button></div>` : ''}
+      ${s.n === current?.n ? `<div class="foot"><button class="btn">Entrar al aula ${ic('arrow-right', 18)}</button></div>` : ''}
     </div>`
   : `<div class="card closed" style="background:${color(s.n)}"><div class="head" data-toggle="${s.n}"><h3>${s.title}</h3></div></div>`);
 
@@ -453,6 +468,10 @@ const menu = (v) => (v.menu ? `
     <button class="mitem" data-logout>${ic('logout', 18)} Cerrar sesión</button>
   </div>` : '');
 
+// Before the highlighted one: done. The highlighted one: its number. After it, or with none highlighted: an empty node.
+const nodeKind = (s, current) => (current == null || s.n > current.n ? 'later' : s.n === current.n ? 'live' : 'done');
+const nodeLabel = (s, current) => (nodeKind(s, current) === 'done' ? ic('check', 20) : nodeKind(s, current) === 'live' ? s.n : '');
+
 const page = (v, state) => {
   const all = enabledIn(state);
   const current = highlightedIn(state);
@@ -463,12 +482,12 @@ const page = (v, state) => {
         <div class="hello">Hola, ${v.profile.name}</div>
         <div class="me"><button class="avatar" data-menu title="Tu cuenta">${v.profile.avatar}</button>${menu(v)}</div>
       </div>
-      ${current == null
+      ${all.length === 0
         ? '<div class="empty-note">Todavía no hay sesiones habilitadas. Cuando el profe habilite la primera, aparece acá arriba.</div>'
-        : `${hero(v, state, current)}
-          <div class="section-title">Sesiones anteriores</div>
+        : `${current == null ? '' : hero(v, state, current)}
+          <div class="section-title">${current == null ? 'Sesiones' : 'Otras sesiones'}</div>
           <div class="path">${all.map((s, i) => `
-            <div class="rail"><div class="node ${s.n === current.n ? 'live' : 'done'}">${s.n === current.n ? s.n : ic('check', 20)}</div>${i < all.length - 1 ? '<div class="link"></div>' : ''}</div>
+            <div class="rail"><div class="node ${nodeKind(s, current)}">${nodeLabel(s, current)}</div>${i < all.length - 1 ? '<div class="link"></div>' : ''}</div>
             <div class="step">${pathCard(v, state, s, current)}</div>`).join('')}</div>`}
     </div>`;
 };
@@ -486,17 +505,38 @@ const closedList = (v, state, s) => `<div class="closed-polls">${closedPolls(v, 
   </div>`).join('')}</div>`;
 
 // Only the highlighted session takes new questions and votes; earlier ones are read-only.
-const questions = (v, s, live) => {
-  const list = [...v.questions[s.n]].sort((a, b) => b.votes - a.votes);
+const sorted = (v, state, n) => [...questionsIn(v, state, n)].sort((a, b) => b.votes - a.votes);
+
+const questionRow = (v, q, live) => `
+  <div class="question">
+    <button class="vote ${v.upvoted.includes(q.id) ? 'on' : ''}" data-up="${q.id}" ${q.mine || !live ? 'disabled' : ''}>${ic('arrow-up', 14)}<span>${q.votes}</span></button>
+    <div class="qtext">${q.text}${q.mine ? '<span class="yours">Tuya</span>' : ''}</div>
+    ${q.mine && live ? `<button class="iconbtn del" data-del="${q.id}" title="Borrar tu pregunta">${ic('trash', 16)}</button>` : ''}
+  </div>`;
+
+const askField = (n, draftKey, value) => `<div class="ask"><input data-draft="${draftKey}" placeholder="Hacé una pregunta" value="${value}"><button class="iconbtn" data-ask="${draftKey}" data-n="${n}" title="Enviar">${ic('send', 18)}</button></div>`;
+
+const questions = (v, state, s, live) => {
+  const list = sorted(v, state, s.n);
 
   return `
-    ${live ? `<div class="ask"><input data-draft placeholder="Hacé una pregunta" value="${v.draft}"><button class="iconbtn" data-ask title="Enviar">${ic('send', 18)}</button></div>` : ''}
-    ${list.length === 0 ? '<div class="empty">Todavía no hay preguntas.</div>' : list.map((q) => `
-      <div class="question">
-        <button class="vote ${v.upvoted.includes(q.id) ? 'on' : ''}" data-up="${q.id}" ${q.mine || !live ? 'disabled' : ''}>${ic('arrow-up', 14)}<span>${q.votes}</span></button>
-        <div class="qtext">${q.text}${q.mine ? '<span class="yours">Tuya</span>' : ''}</div>
-        ${q.mine && live ? `<button class="iconbtn del" data-del="${q.id}" title="Borrar tu pregunta">${ic('trash', 16)}</button>` : ''}
-      </div>`).join('')}`;
+    ${live ? askField(s.n, 'modal', v.draft) : ''}
+    ${list.length === 0 ? '<div class="empty">Todavía no hay preguntas.</div>' : list.map((q) => questionRow(v, q, live)).join('')}`;
+};
+
+const questionsPanel = (v, state, s) => {
+  const list = sorted(v, state, s.n);
+  const head = `<div class="q">${ic('chat-messages', 18)}<span>Preguntas</span></div>`;
+  const empty = '<div class="empty">Todavía no hay preguntas. Hacé la primera.</div>';
+
+  const shown = v.qOpen ? list : list.filter((q, i) => i < 3 || q.mine);
+  const hidden = list.length - shown.length;
+  const toggle = v.qOpen
+    ? `<div class="edit"><button class="textlink" data-qtoggle>Mostrar menos</button></div>`
+    : hidden > 0 ? `<div class="edit"><button class="textlink" data-qtoggle>Mostrar ${plural(hidden, 'pregunta más', 'preguntas más')}</button></div>` : '';
+
+  return `<div class="panel qpanel">${head}<div class="meta">${plural(list.length, 'pregunta', 'preguntas')} · votá las que también querés que responda el profe</div>
+    ${askField(s.n, 'card', v.cardDraft)}${list.length === 0 ? empty : shown.map((q) => questionRow(v, q, true)).join('')}${toggle}</div>`;
 };
 
 const TITLES = { material: 'Material', polls: 'Encuestas cerradas', questions: 'Preguntas' };
@@ -546,12 +586,12 @@ const overlay = (v, state) => {
   }
 
   if (v.modal == null) {
-    return '';
+    return v.confirm == null ? '' : confirmDelete();
   }
 
   const s = SESSIONS[v.modal.n - 1];
   const live = s.n === highlightedIn(state)?.n;
-  const body = v.modal.kind === 'material' ? material(s) : v.modal.kind === 'polls' ? closedList(v, state, s) : questions(v, s, live);
+  const body = v.modal.kind === 'material' ? material(s) : v.modal.kind === 'polls' ? closedList(v, state, s) : questions(v, state, s, live);
 
   return `${shell(TITLES[v.modal.kind], body)}${v.confirm == null ? '' : confirmDelete()}`;
 };
@@ -635,7 +675,7 @@ Object.keys(ALTS).forEach((alt) => {
     if (t.matches('[data-word]')) {
       v.votes[t.dataset.poll].word = t.value;
     } else if (t.matches('[data-draft]')) {
-      v.draft = t.value;
+      v[t.dataset.draft === 'card' ? 'cardDraft' : 'draft'] = t.value;
     } else if (t.matches('[data-name]')) {
       v.editing.name = t.value;
       root.querySelectorAll('[data-name]').forEach((i) => { i.value = t.value; });
@@ -720,14 +760,17 @@ Object.keys(ALTS).forEach((alt) => {
       v.questions[n] = v.questions[n].filter((q) => q.id !== v.confirm);
       v.confirm = null;
     } else if (t.hasAttribute('data-ask')) {
-      const n = v.modal.n;
+      const n = Number(d.n);
+      const key = d.ask === 'card' ? 'cardDraft' : 'draft';
 
-      if (v.draft.trim() === '') {
+      if (v[key].trim() === '') {
         return;
       }
 
-      v.questions[n] = [...v.questions[n], { id: `${n}-${Date.now()}`, text: v.draft.trim(), votes: 0, mine: true }];
-      v.draft = '';
+      v.questions[n] = [...v.questions[n], { id: `${n}-${Date.now()}`, text: v[key].trim(), votes: 0, mine: true, added: true }];
+      v[key] = '';
+    } else if (t.hasAttribute('data-qtoggle')) {
+      v.qOpen = !v.qOpen;
     } else if (t.hasAttribute('data-edit')) {
       // Going back to vote withdraws the previous vote (not the words of a word cloud); "Cancelar" puts it back.
       if (poll.type === 'cloud') {

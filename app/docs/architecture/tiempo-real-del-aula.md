@@ -72,11 +72,18 @@ El aula sigue andando aunque el profe se desconecte: los estudiantes siguen vota
 
 ## 🖥️ Pantalla del aula
 
-El estudiante solo puede entrar al aula de la sesión destacada, esté el profe o no. Ve la slide actual al centro, con los controles de navegación de la web, y un panel con Encuestas, Preguntas y Material; en celular, la slide va arriba y el panel abajo. Seguir al profe aparece solo con el profe conectado (ver [API de las slides](api-de-las-slides.md)). En Presentes ve a cada conectado con su avatar, su nombre y su mano, y levanta y baja la suya. Las preguntas respondidas no se ven.
+El estudiante solo puede entrar al aula de la sesión destacada, esté el profe o no. Sin destacada, nadie entra a ningún aula. El aula del estudiante toma la destacada de la marca que trae la lista de sesiones.
+
+Cuando una sesión deja de ser la destacada (ver [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)), la API le manda a su aula el aviso `session`. La web de cada estudiante conectado vuelve a pedir la lista de sesiones, ve que esa sesión ya no es la destacada y lo lleva al inicio.
+
+> [!WARNING] El aula no corta las conexiones
+> Quien está conectado al aula de una sesión que deja de ser la destacada sigue conectado hasta que su web recibe el aviso y lo lleva al inicio. Si el aviso no llega, el estudiante sigue en el aula hasta que su web vuelve a pedir la lista de sesiones, y mientras tanto la API rechaza sus votos, sus preguntas y su mano.
+
+El estudiante ve la slide actual al centro, con los controles de navegación de la web, y un panel con Encuestas, Preguntas y Material; en celular, la slide va arriba y el panel abajo. Seguir al profe aparece solo con el profe conectado (ver [API de las slides](api-de-las-slides.md)). En Presentes ve a cada conectado con su avatar, su nombre y su mano, y levanta y baja la suya. Las preguntas respondidas no se ven.
 
 [Prototipo del aula del estudiante, en celular y escritorio](../prototipos/aula-responsive.html)
 
-El profe conduce el aula desde la pestaña Aula del admin de la sesión, con la slide grande y el mismo panel que el estudiante: cambia el estado de las encuestas, marca preguntas como respondidas y baja manos. En el panel, un borrador se ve como lo verá el estudiante, con el botón Activar. Una encuesta activa muestra sus resultados, con el botón Cerrar. Las encuestas cerradas quedan plegadas al final. El profe edita, borra y crea encuestas en la pestaña Encuestas (ver [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)). Cuando el profe está en otra pestaña de la sesión, la pestaña Aula muestra badges con las preguntas nuevas y las manos levantadas.
+El profe conduce el aula desde la pestaña Aula del admin de la sesión, con la slide grande y el mismo panel que el estudiante: cambia el estado de las encuestas, marca preguntas como respondidas y baja manos. En el panel, un borrador se ve como lo verá el estudiante, con el botón Activar, que aparece solo en la sesión destacada. Una encuesta activa muestra sus resultados, con el botón Cerrar. Las encuestas cerradas quedan plegadas al final. En la pestaña Preguntas del panel, arriba de la lista, el switch "Preguntas destacadas" muestra las preguntas en la card destacada del inicio, y fuera de la destacada está deshabilitado. El profe edita, borra y crea encuestas en la pestaña Encuestas (ver [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)). Cuando el profe está en otra pestaña de la sesión, la pestaña Aula muestra badges con las preguntas nuevas y las manos levantadas.
 
 En escritorio, Presentes ocupa siempre la mitad del alto del panel, en el aula del estudiante y en la del profe; plegado, queda abajo del panel. En celular, Presentes es una pestaña del panel y crece sin tope.
 

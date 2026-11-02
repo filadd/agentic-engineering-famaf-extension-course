@@ -79,11 +79,14 @@ Un store escribe su propia query cuando el repositorio no puede expresarla o la 
 | manos levantadas | las manos de una sesión con el nombre y el avatar de cada estudiante, ordenadas por nombre |
 | preguntas | la lista y una pregunta, cada una con sus votos y si el que pide la votó |
 | material | crear, marcar como slides y borrar; cuando cambian las slides de la sesión, el mismo batch desmarca las anteriores y vuelve la posición del profe a la primera slide |
-| sesiones | crear en la posición siguiente a la última, y reordenar todas las posiciones en un batch |
+| sesiones | crear en la posición siguiente a la última, reordenar todas las posiciones en un batch, y cambiar la destacada en un batch: desmarca la anterior, apaga sus preguntas destacadas, cierra sus encuestas activas, baja sus manos y marca la nueva, en ese orden |
 | códigos | asegurar el código de registro vigente |
 
 > [!NOTE] Por qué el código de registro vigente tiene su propia query
 > El código vigente es único por un índice parcial, que vale solo para los códigos de registro sin fecha de borrado. Un insertar o actualizar nombra las columnas del conflicto y no puede nombrar ese índice, así que el store inserta el candidato solo si no hay otro vigente.
+
+> [!NOTE] Por qué el cambio de destacada desmarca primero
+> Un índice único parcial deja una sola sesión con `featured` en verdadero entre las no borradas. El batch corre sus sentencias en orden, así que desmarca la anterior antes de marcar la nueva y el índice nunca ve dos destacadas. Sacarle la marca a la destacada y deshabilitarla corren el mismo batch sin la última sentencia.
 
 > [!TIP] Joins en el repositorio, considerados y no elegidos
 > El repositorio podría unir tablas con relaciones declaradas, pedidas en cada lectura. No se eligió porque el tipo del resultado depende de qué relaciones se piden, y cada store tendría que decodificar cada combinación. Las pocas lecturas que unen tablas son queries propias de su store.

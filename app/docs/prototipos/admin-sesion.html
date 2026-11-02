@@ -172,13 +172,21 @@
   .picks button.on { background: var(--ink); color: var(--window); }
   .check { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 14px; }
   .error { display: flex; gap: 8px; align-items: flex-start; margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: #F9DDE1; color: #8A2E3D; font-size: 14px; }
+  .warn { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: #F9DDE1; color: #8A2E3D; font-size: 14px; line-height: 1.45; }
+  .mfeat { margin-top: 14px; font-size: 14px; }
+  .qmode { background: #fff; color: #1F1B18; border-radius: 14px; padding: 10px 12px; margin-bottom: 10px; font-size: 14px; }
+  .qmode .grow { flex: 1; padding-right: 12px; text-align: left; }
+  .qmode small { display: block; color: #8A7E75; font-size: 12px; margin-top: 2px; }
+  .modal ul { margin: 10px 0 0; padding-left: 20px; line-height: 1.5; }
+  .switch:disabled { opacity: 0.45; cursor: default; }
+  .strip .sep { width: 1px; height: 20px; background: #cfc8c2; margin: 0 4px; }
   .tabmarks { display: inline-flex; align-items: center; gap: 4px; margin-left: 4px; }
 </style>
 </head>
 <body>
 <div class="intro">
   <h1>Admin de la sesión · profe</h1>
-  <p>Tres pestañas: Contenido, Encuestas y Aula. El switch de habilitar está en la card de la sesión. Subir un archivo abre un modal; si el archivo es HTML se puede marcar como slides del aula. Cada encuesta se expande con un click y las activas arrancan abiertas. La pestaña Aula es la slide grande con el panel del estudiante, que para el profe no se oculta, y las slides se abren en otra pestaña para presentar. Desde el panel del aula también se activan, cierran y borran encuestas; una encuesta se borra en cualquier estado, y borrar una encuesta o un material pide confirmación. El profe baja una mano tocándola y marca una pregunta como respondida. Fuera de la pestaña Aula, esa pestaña muestra los badges de preguntas nuevas y de manos levantadas. Si el HTML marcado como slides no respeta la API de las slides, el modal de subida muestra un error y el archivo no queda como slides. En Contenido, la columna de la derecha lista las novedades pendientes de la sesión, de la más vieja a la más nueva: cada una se elige con su checkbox para el anuncio o se descarta con su tacho, que pide confirmación. "Redactar anuncio" abre el modal del anuncio, que arranca vacío; enviar necesita un mensaje o al menos una novedad elegida, y al salir el modal se cierra, las novedades incluidas salen de la lista y aparece un toast de éxito. Si el envío falla, el error aparece en el modal, que queda abierto. Con la sesión deshabilitada no se puede redactar el anuncio. Habilitar la sesión, subir o borrar material, y activar, cerrar o borrar una encuesta agregan o sacan su novedad. La barra simula a un estudiante que levanta la mano o hace una pregunta, y un envío que falla.</p>
+  <p>Tres pestañas: Contenido, Encuestas y Aula. El switch de habilitar está en la card de la sesión. Subir un archivo abre un modal; si el archivo es HTML se puede marcar como slides del aula. Cada encuesta se expande con un click y las activas arrancan abiertas. La pestaña Aula es la slide grande con el panel del estudiante, que para el profe no se oculta, y las slides se abren en otra pestaña para presentar. Desde el panel del aula también se activan, cierran y borran encuestas; una encuesta se borra en cualquier estado, y borrar una encuesta o un material pide confirmación. El profe baja una mano tocándola y marca una pregunta como respondida. La sesión destacada es una marca aparte de habilitada: hay una sola, siempre está habilitada, y se marca con el switch que está debajo del de habilitar. Habilitar una sesión deshabilitada ofrece marcarla como destacada en el mismo paso; sacar la marca, destacar cuando otra ya lo es y deshabilitar la destacada piden confirmación, porque la sesión que deja de ser destacada cierra sus encuestas activas, baja sus manos y apaga sus preguntas destacadas, mientras que las preguntas sin responder y la slide quedan. El switch de preguntas destacadas, arriba de la lista de la pestaña Preguntas del aula, solo se prende en la destacada y crea la novedad "Preguntas abiertas". Las encuestas en borrador solo se activan en la sesión destacada. Fuera de la pestaña Aula, esa pestaña muestra los badges de preguntas nuevas y de manos levantadas. Si el HTML marcado como slides no respeta la API de las slides, el modal de subida muestra un error y el archivo no queda como slides. En Contenido, la columna de la derecha lista las novedades pendientes de la sesión, de la más vieja a la más nueva: cada una se elige con su checkbox para el anuncio o se descarta con su tacho, que pide confirmación. "Redactar anuncio" abre el modal del anuncio, que arranca vacío; enviar necesita un mensaje o al menos una novedad elegida, y al salir el modal se cierra, las novedades incluidas salen de la lista y aparece un toast de éxito. Si el envío falla, el error aparece en el modal, que queda abierto. Con la sesión deshabilitada no se puede redactar el anuncio. Habilitar la sesión, subir o borrar material, y activar, cerrar o borrar una encuesta agregan o sacan su novedad. La barra simula a un estudiante que levanta la mano o hace una pregunta, recorre los estados de la sesión destacada y hace fallar la próxima acción, que muestra el error dentro del diálogo abierto.</p>
 </div>
 <section class="alt" id="admin">
   <div class="strip"></div>
@@ -188,6 +196,7 @@
 <script>
 const ICONS = {"trash":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m18 9l-.84 8.398c-.127 1.273-.19 1.909-.48 2.39a2.5 2.5 0 0 1-1.075.973C15.098 21 14.46 21 13.18 21h-2.36c-1.279 0-1.918 0-2.425-.24a2.5 2.5 0 0 1-1.076-.973c-.288-.48-.352-1.116-.48-2.389L6 9m7.5 6.5v-5m-3 5v-5m-6-4h4.615m0 0l.386-2.672c.112-.486.516-.828.98-.828h3.038c.464 0 .867.342.98.828l.386 2.672m-5.77 0h5.77m0 0H19.5\"/></svg>","download":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4 16.004V17a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1M12 4.5v11m3.5-3.5L12 15.5L8.5 12\"/></svg>","upload":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4 16.004V17a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1m-8-.5v-11M15.5 8L12 4.5L8.5 8\"/></svg>","code":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m17.09 7.974l.23.23c1.789 1.79 2.684 2.684 2.684 3.796s-.895 2.006-2.684 3.796l-.23.23M13.876 5l-3.751 14M6.91 7.974l-.23.23C4.892 9.994 3.997 10.888 3.997 12s.895 2.006 2.685 3.796l.23.23\"/></svg>","file-text":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M9.478 3H7.25A2.25 2.25 0 0 0 5 5.25v13.5A2.25 2.25 0 0 0 7.25 21h9a2.25 2.25 0 0 0 2.25-2.25V12M9.478 3c1.243 0 2.272 1.007 2.272 2.25V7.5A2.25 2.25 0 0 0 14 9.75h2.25A2.25 2.25 0 0 1 18.5 12M9.478 3c3.69 0 9.022 5.36 9.022 9M9 16.5h6m-6-3h4\"/></svg>","x":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 6L6 18M6 6l12 12\"/></svg>","plus":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 12h-6m0 0H6m6 0V6m0 6v6\"/></svg>","chart-bar":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 21H9.4c-2.24 0-3.36 0-4.216-.436a4 4 0 0 1-1.748-1.748C3 17.96 3 16.84 3 14.6V3m4 13.5h5M7 12h10M7 7.5h7\"/></svg>","chevron-down":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m6 9l6 6l6-6\"/></svg>","hand":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\"><path d=\"M17.428 11.212v-4.5c0-2.213-3.572-2.35-3.572 0\"/><path d=\"M13.857 10V4.712c0-2.213-3.572-2.35-3.572 0v1.8m-.001 4.25v-4.05c0-2.213-3.747-2.35-3.747 0V13\"/><path d=\"M17.428 9.312c0-2.35 3.572-2.213 3.572 0v4.4c0 6.843-9.799 9.578-14.278 5.094l-3.215-3.24C2.018 13.904 4.044 10.5 6.537 13l1 1\"/></g></svg>","arrow-up":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M12 19.5v-15m6 5.625L12 4.5l-6 5.625\"/></svg>","check":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m6 13.626l1.606 1.722c.886.95 1.329 1.424 1.825 1.574c.436.131.9.096 1.315-.1c.473-.224.852-.761 1.612-1.836L18 7\"/></svg>","chat-messages":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M5 12a5 5 0 0 1 7 7m-7-7a5 5 0 0 0-2 4a5 5 0 0 0 .224 1.483c.272.88.076 1.86-.099 2.784a.468.468 0 0 0 .592.539c.848-.232 1.691-.43 2.557-.112A5 5 0 0 0 8 21a4.99 4.99 0 0 0 4-2m-7-7c0-4.685 2.875-9 8-9a8 8 0 0 1 7.532 10.7c-.476 1.326.037 3.102.337 4.568a.451.451 0 0 1-.584.526c-1.312-.41-2.852-.986-4.085-.466c-1.334.562-2.736.672-4.2.672\"/></svg>","users":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 19.75c0-2.09-1.67-5.068-4-5.727m-2 5.727c0-2.651-2.686-6-6-6s-6 3.349-6 6m9-12.5a3 3 0 1 1-6 0a3 3 0 0 1 6 0m3 3a3 3 0 1 0 0-6\"/></svg>","chevron-left":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m15 6l-6 6l6 6\"/></svg>","chevron-right":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m9 18l6-6l-6-6\"/></svg>","external-link":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 9.75V3h-6.75M21 3l-8.25 8.25M9.4 3c-2.24 0-3.36 0-4.216.436a4 4 0 0 0-1.748 1.748C3 6.04 3 7.16 3 9.4v5.2c0 2.24 0 3.36.436 4.216a4 4 0 0 0 1.748 1.748C6.04 21 7.16 21 9.4 21h5.2c2.24 0 3.36 0 4.216-.436a4 4 0 0 0 1.748-1.748C21 17.96 21 16.84 21 14.6v-1.1\"/></svg>","danger-circle":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 12a9 9 0 1 1-18 0a9 9 0 0 1 18 0m-9-4.373v5.5m0 3.246v-.5\"/></svg>","arrow-left":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M19.5 12h-15m5.625 6L4.5 12l5.625-6\"/></svg>","presentation":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M3 4h18m-1.9 0v9.778c0 .471-.19.923-.527 1.257c-.338.333-.796.52-1.273.52H6.7c-.477 0-.935-.187-1.273-.52a1.77 1.77 0 0 1-.527-1.257V4m2.6 16l4.5-4.444L16.5 20\"/></svg>"};
 Object.assign(ICONS, {
+  "chevron-up": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m18 15l-6-6l-6 6\"/></svg>",
   "mail": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m3.5 7l7.4 5.2c.66.46 1.54.46 2.2 0L20.5 7M6 19h12a3 3 0 0 0 3-3V8a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3\"/></svg>",
   "send": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M20.5 3.5L10 14m10.5-10.5l-6.6 17.2c-.2.5-.9.5-1.1 0L10 14m10.5-10.5L3.3 10.1c-.5.2-.5.9 0 1.1L10 14\"/></svg>",
   "bell": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M9.5 19.5a2.5 2.5 0 0 0 5 0M6 10a6 6 0 1 1 12 0v3.5l1.5 3H4.5l1.5-3z\"/></svg>",
@@ -211,32 +220,52 @@ const UPLOADABLE = [
   { name: 'ejercicio.zip', type: 'ZIP', size: '1,1 MB', label: 'Ejercicio' },
 ];
 
-const fresh = () => ({
-  tab: 'content', enabled: true, menu: false, dark: false, modal: false, pick: null, asSlides: false, fname: '', slidesError: false, confirm: null,
-  files: [
-    { name: 'Slides de la sesión', type: 'HTML', size: '84 KB', slides: true },
-    { name: 'Guía de planificación', type: 'PDF', size: '480 KB' },
-    { name: 'Ejercicio', type: 'ZIP', size: '1,1 MB' },
-    { name: 'Lectura: Plan, then code', type: 'PDF', size: '260 KB' },
-  ],
-  polls: [
-    { id: 'p1', type: 'choice', state: 'active', question: '¿Cuánto código de tu último proyecto escribió un agente?', options: ['Nada', 'Algo', 'La mitad', 'Casi todo'], results: [18, 41, 27, 14], total: 22 },
-    { id: 'p2', type: 'cloud', state: 'draft', question: 'Una palabra para trabajar con agentes', words: [] },
-    { id: 'p3', type: 'scale', state: 'draft', question: '¿Qué tan cómodo te sentís revisando código generado?', ends: ['Nada cómodo', 'Muy cómodo'] },
-    { id: 'p4', type: 'choice', state: 'closed', question: '¿Usaste un agente para planificar antes de esta clase?', options: ['Sí', 'No'], results: [38, 62], total: 21 },
-  ],
-  open: ['p1'],
-  slide: 1, side: true, sideTab: 'polls', peopleOpen: true, hands: [], questions: [['¿Cuánto detalle tiene que tener un plan antes de pasárselo al agente?', 9], ['¿Conviene revisar el diff o correr los tests primero?', 6]], closedOpen: false, unseenQ: 0,
-  // Pending news, oldest first; `entity` is what a later change uses to take its news item out.
-  news: [
-    { id: 1, kind: 'session', entity: 'session', name: 'Planificación y revisión', date: '14/10' },
-    { id: 2, kind: 'material', entity: 'Guía de planificación', name: 'Guía de planificación', date: '15/10' },
-    { id: 3, kind: 'material', entity: 'Lectura: Plan, then code', name: 'Lectura: Plan, then code', date: '16/10' },
-  ],
-  nextNews: 4, sel: [], msg: '', compose: false, sending: false, sendError: false, failNext: false, discarding: false, toast: null,
-});
+// The featured session is a mark on the session: at most one, and it must be enabled. `other` counts session 3's active polls and raised hands while it holds the mark.
+const STATES = {
+  main: { label: 'Sesión destacada', feat: 2 },
+  fq: { label: 'Destacada, preguntas destacadas prendidas', feat: 2, fq: true },
+  other: { label: 'Habilitada, la destacada es otra', feat: 3 },
+  off: { label: 'Deshabilitada', feat: 3, off: true },
+  none: { label: 'Ninguna destacada', feat: 0 },
+};
+
+const fresh = (k = 'main') => {
+  const st = STATES[k];
+  const featured = st.feat === 2;
+  const fq = featured && st.fq === true;
+
+  return {
+    tab: 'content', enabled: !st.off, featured, fq, menu: false, dark: false, modal: false, pick: null, asSlides: false, fname: '', slidesError: false, confirm: null, dialog: null,
+    other: st.feat === 3 ? { polls: 1, hands: 1 } : null,
+    files: [
+      { name: 'Slides de la sesión', type: 'HTML', size: '84 KB', slides: true },
+      { name: 'Guía de planificación', type: 'PDF', size: '480 KB' },
+      { name: 'Ejercicio', type: 'ZIP', size: '1,1 MB' },
+      { name: 'Lectura: Plan, then code', type: 'PDF', size: '260 KB' },
+    ],
+    polls: [
+      { id: 'p1', type: 'choice', state: featured ? 'active' : 'closed', question: '¿Cuánto código de tu último proyecto escribió un agente?', options: ['Nada', 'Algo', 'La mitad', 'Casi todo'], results: [18, 41, 27, 14], total: 22 },
+      { id: 'p2', type: 'cloud', state: 'draft', question: 'Una palabra para trabajar con agentes', words: [] },
+      { id: 'p3', type: 'scale', state: 'draft', question: '¿Qué tan cómodo te sentís revisando código generado?', ends: ['Nada cómodo', 'Muy cómodo'] },
+      { id: 'p4', type: 'choice', state: 'closed', question: '¿Usaste un agente para planificar antes de esta clase?', options: ['Sí', 'No'], results: [38, 62], total: 21 },
+    ],
+    open: featured ? ['p1'] : [],
+    slide: 1, side: true, sideTab: 'polls', peopleOpen: true, hands: [], questions: [['¿Cuánto detalle tiene que tener un plan antes de pasárselo al agente?', 9], ['¿Conviene revisar el diff o correr los tests primero?', 6]], closedOpen: false, unseenQ: 0,
+    // Pending news, oldest first; `entity` is what a later change uses to take its news item out.
+    news: [
+      ...(!st.off ? [{ id: 1, kind: 'session', entity: 'session', name: 'Planificación y revisión', date: '14/10' }] : []),
+      { id: 2, kind: 'material', entity: 'Guía de planificación', name: 'Guía de planificación', date: '15/10' },
+      { id: 3, kind: 'material', entity: 'Lectura: Plan, then code', name: 'Lectura: Plan, then code', date: '16/10' },
+      ...(fq ? [{ id: 4, kind: 'questions', entity: 'questions', name: 'Planificación y revisión', date: '21/10' }] : []),
+    ],
+    nextNews: fq ? 5 : 4, sel: [], msg: '', compose: false, sending: false, sendError: false, failNext: false, discarding: false, toast: null,
+  };
+};
 
 let v = fresh();
+
+const sig = (st) => `${st.featured}|${st.enabled}|${st.fq}|${st.other != null}`;
+const SIGNATURES = Object.fromEntries(Object.keys(STATES).map((k) => [sig(fresh(k)), k]));
 
 const TYPE = { choice: 'Opción múltiple', cloud: 'Word cloud', scale: 'Escala 1 a 5' };
 const STATE = { draft: 'Borrador', active: 'Activa', closed: 'Cerrada' };
@@ -251,6 +280,7 @@ const KIND = {
   session: { label: 'Sesión habilitada', color: '#B4E8CC', text: (n) => `Se habilitó la sesión "${n}".` },
   material: { label: 'Material nuevo', color: '#CCC4F0', text: (n) => `Se agregó el material "${n}".` },
   poll: { label: 'Encuesta abierta', color: '#F8D0A0', text: (n) => `Se abrió la encuesta "${n}".` },
+  questions: { label: 'Preguntas abiertas', color: '#F2B8C0', text: (n) => `Se abrieron las preguntas de la sesión "${n}".` },
 };
 
 const newsItem = (id) => v.news.find((n) => n.id === id);
@@ -266,6 +296,35 @@ const dropNews = (kind, entity) => {
 
   v.news = v.news.filter((n) => !gone.includes(n.id));
   v.sel = v.sel.filter((id) => !gone.includes(id));
+};
+
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+
+// What the session that stops being featured loses; the questions and the slide stay.
+const effectsList = (polls, hands, fq) => `<ul>${[
+  polls > 0 ? `Se cierra${polls === 1 ? '' : 'n'} ${plural(polls, 'encuesta activa', 'encuestas activas')}, el feedback incluido si está abierto.` : 'No hay encuestas activas que cerrar.',
+  hands > 0 ? `Se ${hands === 1 ? 'baja' : 'bajan'} ${plural(hands, 'mano levantada', 'manos levantadas')}.` : 'No hay manos levantadas.',
+  fq ? 'Se apaga el modo de preguntas destacadas.' : null,
+  'Las preguntas sin responder y la slide quedan como están.',
+].filter((l) => l != null).map((l) => `<li>${l}</li>`).join('')}</ul>`;
+
+const myEffects = () => effectsList(v.polls.filter((p) => p.state === 'active').length, v.hands.length, v.fq);
+
+const unfeature2 = () => {
+  const closing = v.polls.filter((p) => p.state === 'active').map((p) => p.id);
+
+  closing.forEach((id) => dropNews('poll', id));
+  v.polls = v.polls.map((p) => (closing.includes(p.id) ? { ...p, state: 'closed' } : p));
+  v.open = v.open.filter((x) => !closing.includes(x));
+  v.hands = [];
+  v.fq = false;
+  dropNews('questions', 'questions');
+  v.featured = false;
+};
+
+const feature2 = () => {
+  v.other = null;
+  v.featured = true;
 };
 
 const canSend = () => v.msg.trim() !== '' || v.sel.length > 0;
@@ -296,6 +355,8 @@ const content = () => `
       <label class="field">Título<input value="Planificación y revisión"></label>
       <label class="field">Resumen<textarea>Antes de escribir código: explorar, planificar y revisar lo que el agente produce.</textarea></label>
       <button class="switch enable" data-enable><span>${v.enabled ? 'Habilitada' : 'Deshabilitada'}</span><span class="knob ${v.enabled ? 'on' : ''}"></span></button>
+      <button class="switch enable" data-feat-toggle ${v.enabled ? '' : 'disabled'}><span>Destacada</span><span class="knob ${v.featured ? 'on' : ''}"></span></button>
+      ${v.enabled ? '' : '<div class="note">Habilitá la sesión para poder destacarla.</div>'}
       ${v.enabled ? '' : `<div class="actions"><button class="btn danger" data-delsession>${ic('trash', 16)} Borrar sesión</button></div>`}
     </div>
     <div class="box">
@@ -317,7 +378,7 @@ const pollBody = (p) => {
         ? `<div class="ends"><label>Qué significa el 1<input value="${p.ends[0]}"></label><label>Qué significa el 5<input value="${p.ends[1]}"></label></div>`
         : '';
 
-    return `<input value="${p.question}" placeholder="Pregunta">${extra}<div class="actions">${delPoll(p)}<button class="btn dark" data-activate="${p.id}">Activar</button></div>`;
+    return `<input value="${p.question}" placeholder="Pregunta">${extra}<div class="actions">${delPoll(p)}${v.featured ? `<button class="btn dark" data-activate="${p.id}">Activar</button>` : ''}</div>`;
   }
 
   const res = p.type === 'choice'
@@ -333,6 +394,15 @@ const pollCard = (p) => `
     ${v.open.includes(p.id) ? `<div class="poll-body">${pollBody(p)}</div>` : ''}
   </div>`;
 
+// Activar only exists in the featured session; every list with drafts and no featured session gets the note once, under the drafts.
+const pollList = (states) => {
+  const ordered = states.flatMap((s) => v.polls.filter((p) => p.state === s));
+  const lastDraft = ordered.map((p) => p.state).lastIndexOf('draft');
+  const note = !v.featured && lastDraft !== -1 ? '<div class="note" style="margin:-2px 0 10px">Solo se activan encuestas en la sesión destacada.</div>' : '';
+
+  return ordered.map((p, i) => pollCard(p) + (i === lastDraft ? note : '')).join('');
+};
+
 const pollsTab = () => `
   <div style="max-width: 760px">
     <div class="box-head"><h3>${ic('chart-bar', 18)} Encuestas</h3>
@@ -341,13 +411,22 @@ const pollsTab = () => `
         ${v.newMenu ? `<div class="dd-menu">${Object.entries(TYPE).map(([k, l]) => `<button data-new="${k}">${l}</button>`).join('')}</div>` : ''}
       </span>
     </div>
-    ${['active', 'draft', 'closed'].flatMap((s) => v.polls.filter((p) => p.state === s)).map(pollCard).join('')}
+    ${pollList(['active', 'draft', 'closed'])}
   </div>`;
 
 const people = () => `<div class="people">
   <div class="person"><span class="face">🦉</span><span>Agustín</span><span class="role">Vos</span></div>
   ${PEOPLE.map(([a, n]) => `<div class="person"><span class="face">${a}</span><span>${n}</span>${v.hands.includes(n) ? `<button class="raised" data-lower="${n}" title="Bajar la mano">${ic('hand', 16)}</button>` : ''}</div>`).join('')}
 </div>`;
+
+// The featured-questions switch sits above the question list; off the featured session it explains why it cannot turn on.
+const questionMode = () => {
+  const line = !v.featured
+    ? 'Solo la sesión destacada puede mostrar sus preguntas en el inicio.'
+    : v.fq ? 'Las preguntas aparecen en la card destacada del inicio.' : 'Apagado: las preguntas se ven solo en el aula.';
+
+  return `<div class="qmode"><button class="switch" data-fq ${v.featured ? '' : 'disabled'}><span class="grow"><b>Preguntas destacadas</b><small>${line}</small></span><span class="knob ${v.fq ? 'on' : ''}"></span></button></div>`;
+};
 
 // Answered questions drop to the bottom, dimmed, so the open ones stay on top.
 const questionsList = () => [...v.questions.map((q, i) => ({ q, i })).filter(({ q }) => !q[2]), ...v.questions.map((q, i) => ({ q, i })).filter(({ q }) => q[2])].map(({ q: [text, n, done], i }) => `
@@ -370,8 +449,8 @@ const side = () => `<div class="side">
         <button class="pt ${v.sideTab === 'qa' ? 'on' : ''}" data-sidetab="qa">${ic('chat-messages', 15)} Preguntas${v.unseenQ > 0 ? `<span class="badge">${v.unseenQ}</span>` : ''}</button>
       </div>
       <div class="side-scroll">${v.sideTab === 'polls'
-        ? `${['active', 'draft'].flatMap((s) => v.polls.filter((p) => p.state === s)).map(pollCard).join('') || '<div class="empty">No hay encuestas.</div>'}${closedSection()}`
-        : questionsList()}</div>
+        ? `${pollList(['active', 'draft']) || '<div class="empty">No hay encuestas.</div>'}${closedSection()}`
+        : `${questionMode()}${questionsList()}`}</div>
       <div class="room-wrap">
         <button class="fold" data-people>${ic('users', 18)} Presentes (${PEOPLE.length + 1})${!v.peopleOpen && v.hands.length > 0 ? `<span class="badge inline">${v.hands.length}</span>` : ''}<span class="chev">${ic(v.peopleOpen ? 'chevron-down' : 'chevron-up', 16)}</span></button>
         ${v.peopleOpen ? people() : ''}
@@ -393,6 +472,8 @@ const aula = () => `
     </div>
     ${side()}
   </div>`;
+
+const errorBox = (msg) => `<div class="error">${ic('danger-circle', 18)}<span>${msg}</span></div>`;
 
 const CONFIRM = {
   session: () => ['¿Borrar "Planificación y revisión"?', 'Se borran su material, sus encuestas y sus preguntas.'],
@@ -418,7 +499,74 @@ const confirmDelete = () => {
     <div class="modal" data-stay>
       <h3>${title}</h3>
       <p style="margin:10px 0 0">${text}</p>
+      ${v.confirm.error ? errorBox('No se pudo descartar la novedad. Probá de nuevo.') : ''}
       <div class="actions">${v.confirm.kind === 'news' ? discardActions() : '<button class="btn" data-nodel>Cancelar</button><button class="btn danger solid" data-yesdel>Borrar</button>'}</div>
+    </div>
+  </div>`;
+};
+
+// The featured dialogs: enabling offers the mark in the same step, and every way of taking it confirms what closes.
+const dialogActions = (cls, label, gerund) => v.dialog.busy
+  ? `<button class="btn" disabled>Cancelar</button><button class="btn ${cls} busy" disabled aria-busy="true"><span class="spin"></span>${gerund}</button>`
+  : `<button class="btn" data-dlg-cancel>Cancelar</button><button class="btn ${cls}" data-dlg-ok>${label}</button>`;
+
+const dialog = () => {
+  if (v.dialog == null) {
+    return '';
+  }
+
+  const d = v.dialog;
+  const err = d.error ? errorBox('No se pudo guardar el cambio. Probá de nuevo.') : '';
+  const scrim = d.busy ? 'data-stay' : 'data-dlg-cancel';
+
+  if (d.kind === 'enable') {
+    return `
+  <div class="scrim" ${scrim}>
+    <div class="modal" data-stay>
+      <h3>Habilitar "Planificación y revisión"</h3>
+      <p style="margin:10px 0 0">Los estudiantes van a ver la sesión en su inicio.</p>
+      <button class="switch mfeat" data-mfeat ${d.busy ? 'disabled' : ''}><span>Destacada</span><span class="knob ${d.feature ? 'on' : ''}"></span></button>
+      ${d.feature && v.other != null ? `<div class="warn">Hoy la destacada es la sesión 3 y deja de serlo: ${effectsList(v.other.polls, v.other.hands, false)}</div>` : ''}
+      ${err}
+      <div class="actions">${dialogActions('dark', 'Habilitar', 'Habilitando…')}</div>
+    </div>
+  </div>`;
+  }
+
+  if (d.kind === 'feature') {
+    return `
+  <div class="scrim" ${scrim}>
+    <div class="modal" data-stay>
+      <h3>¿Destacar "Planificación y revisión"?</h3>
+      <p style="margin:10px 0 0">La sesión 3 deja de ser la destacada:</p>
+      ${effectsList(v.other.polls, v.other.hands, false)}
+      ${err}
+      <div class="actions">${dialogActions('danger solid', 'Destacar', 'Destacando…')}</div>
+    </div>
+  </div>`;
+  }
+
+  if (d.kind === 'unfeature') {
+    return `
+  <div class="scrim" ${scrim}>
+    <div class="modal" data-stay>
+      <h3>¿Sacarle la marca de destacada a "Planificación y revisión"?</h3>
+      <p style="margin:10px 0 0">La sesión deja de ser la destacada y nadie entra a ningún aula hasta que destaques otra.</p>
+      ${myEffects()}
+      ${err}
+      <div class="actions">${dialogActions('danger solid', 'Sacar la marca', 'Sacando la marca…')}</div>
+    </div>
+  </div>`;
+  }
+
+  return `
+  <div class="scrim" ${scrim}>
+    <div class="modal" data-stay>
+      <h3>¿Deshabilitar "Planificación y revisión"?</h3>
+      <p style="margin:10px 0 0">Es la sesión destacada: al deshabilitarla deja de serlo, y nadie entra a ningún aula hasta que destaques otra.</p>
+      ${myEffects()}
+      ${err}
+      <div class="actions">${dialogActions('danger solid', 'Deshabilitar', 'Deshabilitando…')}</div>
     </div>
   </div>`;
 };
@@ -481,17 +629,26 @@ const app = () => `
     ${modal()}
     ${composeModal()}
     ${confirmDelete()}
+    ${dialog()}
     ${toastLayer()}
     ${v.deleted ? '<div class="scrim"><div class="modal"><h3>Sesión borrada</h3><div class="actions"><a class="btn dark" href="admin-sesiones.html" style="text-decoration:none">Volver a las sesiones</a></div></div></div>' : ''}
   </div>`;
 
 const render = () => {
   const root = document.getElementById('admin');
+  const cur = SIGNATURES[sig(v)];
 
   root.querySelector('.strip').innerHTML = `
+    ${Object.entries(STATES).map(([k, s]) => `<button data-state="${k}" class="${cur === k ? 'on' : ''}">${s.label}</button>`).join('')}
+    <span class="sep"></span>
+    <button data-open="enable" class="${v.dialog?.kind === 'enable' ? 'on' : ''}">Abrir el modal de habilitar</button>
+    <button data-open="unfeature" class="${v.dialog?.kind === 'unfeature' ? 'on' : ''}">Abrir confirmar sacar la marca</button>
+    <button data-open="feature" class="${v.dialog?.kind === 'feature' ? 'on' : ''}">Abrir confirmar destacar otra</button>
+    <button data-open="disable" class="${v.dialog?.kind === 'disable' ? 'on' : ''}">Abrir confirmar deshabilitar la destacada</button>
+    <span class="sep"></span>
     <button data-simhand class="${v.hands.includes('Tomás') ? 'on' : ''}">Tomás levanta la mano</button>
     <button data-simq>Llega una pregunta</button>
-    <button data-failnext class="${v.failNext ? 'on' : ''}">El próximo envío falla</button>
+    <button data-failnext class="${v.failNext ? 'on' : ''}">La próxima acción falla</button>
     <button data-reset>Reiniciar</button>`;
   root.querySelector('.stagewrap').innerHTML = app();
 
@@ -520,6 +677,31 @@ const send = () => {
   }, 1800);
 };
 
+// A dialog confirmation waits like the discard does: the button spins, cancel is off, and a failure stays inside the open dialog.
+const runAction = (apply) => {
+  const d = v.dialog;
+
+  d.busy = true;
+  d.error = false;
+  render();
+
+  setTimeout(() => {
+    if (v.dialog !== d) {
+      return;
+    }
+
+    if (v.failNext) {
+      d.busy = false;
+      d.error = true;
+    } else {
+      apply();
+      v.dialog = null;
+    }
+
+    render();
+  }, 1200);
+};
+
 const presentWindow = () => {
   const w = window.open('', '_blank');
 
@@ -534,7 +716,7 @@ const presentWindow = () => {
 };
 
 document.getElementById('admin').addEventListener('click', (e) => {
-  const t = e.target.closest('button, [data-sel], [data-shut], [data-uncompose], [data-nodel], [data-stay]');
+  const t = e.target.closest('button, [data-sel], [data-shut], [data-uncompose], [data-nodel], [data-dlg-cancel], [data-stay]');
 
   if (t == null || t.disabled || (t.hasAttribute('data-stay') && !t.matches('button'))) {
     return;
@@ -550,26 +732,100 @@ document.getElementById('admin').addEventListener('click', (e) => {
       v.unseenQ = 0;
     }
 
+  } else if (d.state != null) {
+    v = Object.assign(fresh(d.state), { tab: v.tab, sideTab: v.sideTab, peopleOpen: v.peopleOpen, dark: v.dark, failNext: v.failNext });
+  } else if (d.open != null) {
+    const keep = { tab: v.tab, sideTab: v.sideTab, peopleOpen: v.peopleOpen, dark: v.dark, failNext: v.failNext };
+
+    if (d.open === 'enable') {
+      if (v.enabled) {
+        v = Object.assign(fresh('off'), keep);
+      }
+
+      v.confirm = null;
+      v.dialog = { kind: 'enable', feature: true, busy: false, error: false };
+    } else if (d.open === 'unfeature') {
+      if (!v.featured) {
+        v = Object.assign(fresh('main'), keep);
+      }
+
+      v.confirm = null;
+      v.dialog = { kind: 'unfeature', busy: false, error: false };
+    } else if (d.open === 'feature') {
+      if (!v.enabled || v.featured || v.other == null) {
+        v = Object.assign(fresh('other'), keep);
+      }
+
+      v.confirm = null;
+      v.dialog = { kind: 'feature', busy: false, error: false };
+    } else {
+      if (!v.enabled || !v.featured) {
+        v = Object.assign(fresh('main'), keep);
+      }
+
+      v.confirm = null;
+      v.dialog = { kind: 'disable', busy: false, error: false };
+    }
   } else if (t.hasAttribute('data-menu')) {
     v.menu = !v.menu;
   } else if (t.hasAttribute('data-darkmode')) {
     v.dark = !v.dark;
   } else if (t.hasAttribute('data-delsession')) {
+    v.dialog = null;
     v.confirm = { kind: 'session' };
   } else if (t.hasAttribute('data-nodel')) {
     v.confirm = null;
+  } else if (t.hasAttribute('data-dlg-cancel')) {
+    v.dialog = null;
+  } else if (t.hasAttribute('data-mfeat')) {
+    v.dialog.feature = !v.dialog.feature;
+  } else if (t.hasAttribute('data-dlg-ok')) {
+    const kind = v.dialog.kind;
+
+    runAction(() => {
+      if (kind === 'enable') {
+        v.enabled = true;
+        addNews('session', 'session', 'Planificación y revisión');
+
+        if (v.dialog.feature) {
+          feature2();
+        }
+      } else if (kind === 'unfeature') {
+        unfeature2();
+      } else if (kind === 'disable') {
+        unfeature2();
+        v.enabled = false;
+        dropNews('session', 'session');
+      } else {
+        feature2();
+      }
+    });
   } else if (t.hasAttribute('data-yesdel')) {
     const { kind, id } = v.confirm;
 
     if (kind === 'news') {
       v.discarding = true;
+      render();
+
       setTimeout(() => {
-        v.news = v.news.filter((n) => n.id !== id);
-        v.sel = v.sel.filter((x) => x !== id);
-        Object.assign(v, { confirm: null, discarding: false });
+        if (v.confirm?.kind !== 'news' || v.confirm.id !== id) {
+          v.discarding = false;
+          render();
+
+          return;
+        }
+
+        if (v.failNext) {
+          v.confirm.error = true;
+        } else {
+          v.news = v.news.filter((n) => n.id !== id);
+          v.sel = v.sel.filter((x) => x !== id);
+          v.confirm = null;
+        }
+
+        v.discarding = false;
         render();
       }, 1200);
-      render();
 
       return;
     }
@@ -586,12 +842,33 @@ document.getElementById('admin').addEventListener('click', (e) => {
 
     v.confirm = null;
   } else if (t.hasAttribute('data-enable')) {
-    v.enabled = !v.enabled;
+    v.confirm = null;
 
-    if (v.enabled) {
-      addNews('session', 'session', 'Planificación y revisión');
+    if (!v.enabled) {
+      v.dialog = { kind: 'enable', feature: true, busy: false, error: false };
+    } else if (v.featured) {
+      v.dialog = { kind: 'disable', busy: false, error: false };
     } else {
+      v.enabled = false;
       dropNews('session', 'session');
+    }
+  } else if (t.hasAttribute('data-feat-toggle')) {
+    v.confirm = null;
+
+    if (v.featured) {
+      v.dialog = { kind: 'unfeature', busy: false, error: false };
+    } else if (v.other != null) {
+      v.dialog = { kind: 'feature', busy: false, error: false };
+    } else {
+      feature2();
+    }
+  } else if (t.hasAttribute('data-fq')) {
+    v.fq = !v.fq;
+
+    if (v.fq) {
+      addNews('questions', 'questions', 'Planificación y revisión');
+    } else {
+      dropNews('questions', 'questions');
     }
   } else if (d.sel != null) {
     const id = Number(d.sel);
