@@ -9,6 +9,7 @@ interface Props<Q extends Question | AdminQuestion> {
   renderVotes: (question: Q) => ReactNode;
   renderActions: (question: Q) => ReactNode;
   isDimmed?: (question: Q) => boolean;
+  emptyText?: string;
 }
 
 export const QuestionList = <Q extends Question | AdminQuestion>({
@@ -17,11 +18,12 @@ export const QuestionList = <Q extends Question | AdminQuestion>({
   renderVotes,
   renderActions,
   isDimmed,
+  emptyText = "Todavía no hay preguntas.",
 }: Props<Q>) => (
   <div>
     {header}
     {questions.length === 0 ? (
-      <div className="py-1.5 text-sm text-muted">Todavía no hay preguntas.</div>
+      <div className="py-1.5 text-sm text-muted">{emptyText}</div>
     ) : (
       <ul aria-label="Preguntas">
         {questions.map((question) => (
