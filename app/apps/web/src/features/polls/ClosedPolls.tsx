@@ -1,6 +1,7 @@
 import type { Poll } from "@kurasu/contract/polls";
 import { useState } from "react";
 
+import { FeedbackAnswer } from "./FeedbackAnswer.tsx";
 import { PollCard } from "./PollCard.tsx";
 import { pollMeta } from "./poll-meta.ts";
 
@@ -24,6 +25,16 @@ export const ClosedPolls = ({ polls }: Props) => {
           showResults
           mine={poll.myResponse}
           bordered
+          body={
+            poll.type === "feedback" ? (
+              <FeedbackAnswer
+                answer={
+                  poll.myResponse != null && "pick" in poll.myResponse ? poll.myResponse : null
+                }
+                closed
+              />
+            ) : undefined
+          }
           open={openId === poll.id}
           onToggle={() => setOpenId(openId === poll.id ? null : poll.id)}
         />

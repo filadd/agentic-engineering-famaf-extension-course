@@ -16,7 +16,7 @@ export const ActivePolls = ({ polls }: Props) => {
     <div className="mt-3.5 flex flex-col gap-3">
       {closedWhileVoting ? (
         <div role="status" className="paper px-[18px] py-3 text-sm">
-          El profe cerró esa encuesta antes de que votaras.
+          El profe cerró esa encuesta antes de que respondieras.
         </div>
       ) : null}
       {polls.map((poll) => (

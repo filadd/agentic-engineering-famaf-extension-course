@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button } from "../../ui/Button.tsx";
 import { InlineError } from "../../ui/InlineError.tsx";
 import { Spinner } from "../../ui/Spinner.tsx";
+import { FeedbackForm } from "./FeedbackForm.tsx";
 import { PollResults } from "./PollResults.tsx";
 import { scaleLabelsOf } from "./scale-labels.ts";
 import { useVote } from "./useVote.ts";
@@ -36,6 +37,10 @@ export const VoteForm = ({ poll, onClosed }: Props) => {
   const words = mine != null && "words" in mine ? mine.words : [];
   const send = (myResponse: ResponseValue) => vote.mutate({ pollId: poll.id, myResponse });
   const sending = vote.isPending ? vote.variables.myResponse : null;
+
+  if (poll.type === "feedback") {
+    return <FeedbackForm poll={poll} {...(onClosed == null ? {} : { onClosed })} />;
+  }
 
   if (poll.type === "words") {
     return (
