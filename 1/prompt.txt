@@ -1,0 +1,26 @@
+<skill name="explore-with-canvas" location="/home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--explore-with-canvas/SKILL.md">
+References are relative to /home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--explore-with-canvas.
+
+Load mahou:explore first, then mahou:canvas. Then read `.mahou/explore-with-canvas.md` if present.
+
+# Explore with canvas
+
+`explore` keeps its opening, how each question is answered and its decision rules.
+
+The document is `canvas/explore.tldr.json` in the change's scratch folder.
+
+## The canvas
+
+- **The opening** goes in an `area` labelled `Problem`: what the sources ask for, what the user decided that departs from them, and where they contradict each other or the user's direction.
+- **The decision log** is an `area` labelled `Decisions`, next to the problem. Add each decision the user settles as one line, in the order settled, and never move or rebuild the log, so the user can always go back to it.
+- **Lay the answers out freely on the canvas.** Draw related topics close together, and join them with an arrow when the relation needs saying. Give the answer first, then the facts that support it, then the decisions it raises. Write each decision as a violet card titled `❓ <title>`. Keep verified facts apart from what a source asserts.
+- **Draw diagrams with tldraw shapes**, which are easier to change when a later answer changes the diagram.
+- **A prototype, an architecture drawing or a spike result** goes next to the answer it is part of. Draw screens as mockups copied from the prototype, and architecture drawings with `architecture-exploration`'s rules on this same canvas.
+- **A moodboard**, when the user wants to explore the visual design and direction of something: load `references/moodboard.md` and run it on this same canvas.
+
+## Messages from the agent
+
+Everything you would say in the chat goes on the canvas, as an Agent note: a grey dashed rectangle labelled `Agent`, next to the answer or shape the note refers to. Replace the note's text when the message changes instead of adding another note.
+</skill>
+
+vamos a explorar lo que implica poder incluir el sistema de preguntas para que aparezca en la tarjeta de la sesión similar a las encuestas
