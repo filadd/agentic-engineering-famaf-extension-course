@@ -64,19 +64,19 @@ describe("loading a screen", () => {
     await waitFor(() => expect(title.textContent).toBe(`Hola, ${student.name}`));
     expect(screen.getByRole("link", { name: "Ir al inicio" }).textContent).toBe("🐦‍⬛");
 
-    const [highlighted = document.body, earlierCards = document.body] = skeletons();
-    const earlier = screen.getByRole("region", { name: "Todas las sesiones" });
+    const [featuredCard = document.body, allCards = document.body] = skeletons();
+    const allSessions = screen.getByRole("region", { name: "Todas las sesiones" });
 
-    expect(highlighted.hasAttribute("inert")).toBe(true);
-    expect(within(highlighted).getAllByRole("region", { hidden: true })).toHaveLength(1);
-    expect(within(earlier).getByRole("heading", { name: "Todas las sesiones" })).toBeTruthy();
-    expect(earlier.contains(earlierCards)).toBe(true);
-    expect(earlierCards.hasAttribute("inert")).toBe(true);
-    expect(within(earlierCards).getAllByRole("article", { hidden: true })).toHaveLength(2);
+    expect(featuredCard.hasAttribute("inert")).toBe(true);
+    expect(within(featuredCard).getAllByRole("region", { hidden: true })).toHaveLength(1);
+    expect(within(allSessions).getByRole("heading", { name: "Todas las sesiones" })).toBeTruthy();
+    expect(allSessions.contains(allCards)).toBe(true);
+    expect(allCards.hasAttribute("inert")).toBe(true);
+    expect(within(allCards).getAllByRole("article", { hidden: true })).toHaveLength(2);
     expect(
       [
-        ...within(highlighted).getAllByRole("region", { hidden: true }),
-        ...within(earlierCards).getAllByRole("article", { hidden: true }),
+        ...within(featuredCard).getAllByRole("region", { hidden: true }),
+        ...within(allCards).getAllByRole("article", { hidden: true }),
       ].every((card) => card.classList.contains("skeleton-block")),
     ).toBe(true);
     expect(screen.queryByRole("region", { name: vibeCoding.title })).toBeNull();
@@ -245,9 +245,9 @@ describe("loading a screen", () => {
 
     const { user } = await renderRoute("/");
 
-    const highlighted = await screen.findByRole("region", { name: planning.title });
+    const featuredCard = await screen.findByRole("region", { name: planning.title });
 
-    await user.click(within(highlighted).getByRole("button", { name: "Material" }));
+    await user.click(within(featuredCard).getByRole("button", { name: "Material" }));
     await retriesRunOut();
 
     expect(await errorScreen()).toBeTruthy();
