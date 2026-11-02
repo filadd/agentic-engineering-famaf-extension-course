@@ -136,7 +136,7 @@ La entidad `Question` guarda su texto en `body`, a su autor en `author_id` y si 
 
 ### ✋ Mano levantada
 
-La entidad `RaisedHand` une a un estudiante con una sesión. Cada estudiante tiene a lo sumo una por sesión, y la base lo garantiza con un índice único sobre la sesión y el estudiante. Existe hasta que alguien baja la mano, el estudiante o el profe, así que sigue levantada si el estudiante sale del aula y vuelve (ver [tiempo real del aula](tiempo-real-del-aula.md)).
+La entidad `RaisedHand` une a un estudiante con una sesión. Cada estudiante tiene a lo sumo una por sesión, y la base lo garantiza con un índice único sobre la sesión y el estudiante. Existe hasta que alguien baja la mano, el estudiante o el profe, o hasta que la sesión deja de ser la destacada (ver [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)), así que sigue levantada si el estudiante sale del aula y vuelve (ver [tiempo real del aula](tiempo-real-del-aula.md)).
 
 ### 🔔 Novedad
 

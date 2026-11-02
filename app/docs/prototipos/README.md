@@ -25,3 +25,5 @@ Esta carpeta guarda los prototipos HTML de las pantallas, que las notas de [arqu
 | [aviso-email.html](aviso-email.html) | Error de un campo con un email inválido, en la pantalla del email, en la hoja "Agregar por email" del profe y en un formulario de ejemplo con dos campos | [Login y acceso](../architecture/login-y-acceso.md), [Carga y acciones de la web](../architecture/carga-y-acciones-de-la-web.md) |
 | [feedback-sesion.html](feedback-sesion.html) | Tarjeta del feedback de una sesión, con sus seis estados: sin responder, enviando, respondido, editando, error al enviar y cerrada, en celular y escritorio | [Feedback de una sesión](../architecture/feedback-de-sesion.md) |
 | [admin-feedback.html](admin-feedback.html) | Tarjeta del feedback en la pestaña Encuestas del profe, con el reparto en barras, y el modal que lista las respuestas | [Feedback de una sesión](../architecture/feedback-de-sesion.md) |
+
+La lista de sesiones de `piezas.html` y `marca-cuervo.html` es de fondo y quedó como era antes de la sesión destacada como marca: numera los nodos y dice "Sesión N de M". La lista de hoy es la de `inicio-responsive.html` y `admin-sesiones.html`.

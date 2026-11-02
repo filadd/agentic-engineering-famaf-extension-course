@@ -97,7 +97,7 @@
   .link { width: 4px; flex: 1; min-height: 14px; background: var(--line); border-radius: 2px; }
   .step { padding-bottom: 12px; min-width: 0; }
 
-  /* Poll panels inside the highlighted card (encuesta.html, option B). */
+  /* Poll panels inside the featured card (encuesta.html, option B). */
   .polls { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
   .panel { background: #fff; border-radius: 18px; padding: 16px 18px; color: #1F1B18; }
   .q { font-family: 'Rubik', sans-serif; font-weight: 500; display: flex; gap: 8px; align-items: flex-start; }
@@ -294,19 +294,19 @@ const ANIMALS = [
   ['🐜', 'hormiga'], ['🕷️', 'araña'], ['🦂', 'escorpión'], ['🪲', 'escarabajo'],
 ];
 
-// `enabled` is how many sessions the teacher has enabled (the first N, in the teacher's order); `highlighted` is the explicit mark, which can be any enabled session or none.
+// `enabled` is how many sessions the teacher has enabled (the first N, in the teacher's order); `featured` is the explicit mark, which can be any enabled session or none.
 const STATES = {
-  several: { label: 'Dos encuestas activas, una cerrada', enabled: 2, highlighted: 2, qmode: false, polls: { choice: 'active', cloud: 'active', scale: 'closed' } },
-  one: { label: 'Una activa, dos cerradas', enabled: 2, highlighted: 2, qmode: false, polls: { choice: 'active', cloud: 'closed', scale: 'closed' } },
-  closed: { label: 'Todas cerradas', enabled: 2, highlighted: 2, qmode: false, polls: { choice: 'closed', cloud: 'closed', scale: 'closed' } },
-  none: { label: 'Ninguna activada', enabled: 2, highlighted: 2, qmode: false, polls: { choice: 'draft', cloud: 'draft', scale: 'draft' } },
-  last: { label: 'Curso terminado', enabled: 6, highlighted: 6, qmode: false, polls: null },
-  empty: { label: 'Ninguna habilitada', enabled: 0, highlighted: null, qmode: false, polls: null },
-  onPolls: { label: 'Preguntas destacadas, dos encuestas activas', enabled: 2, highlighted: 2, qmode: true, polls: { choice: 'active', cloud: 'active', scale: 'closed' } },
-  onOnly: { label: 'Preguntas destacadas, sin encuestas activas', enabled: 2, highlighted: 2, qmode: true, polls: { choice: 'closed', cloud: 'closed', scale: 'closed' } },
-  onEmpty: { label: 'Preguntas destacadas, todavía sin preguntas', enabled: 2, highlighted: 2, qmode: true, noQuestions: true, polls: { choice: 'active', cloud: 'closed', scale: 'closed' } },
-  middle: { label: 'Preguntas destacadas, sesión destacada en el medio', enabled: 4, highlighted: 2, qmode: true, polls: { choice: 'active', cloud: 'active', scale: 'closed' } },
-  nofeat: { label: 'Preguntas destacadas, sin sesión destacada', enabled: 3, highlighted: null, qmode: true, polls: { choice: 'active', cloud: 'active', scale: 'closed' } },
+  several: { label: 'Dos encuestas activas, una cerrada', enabled: 2, featured: 2, qmode: false, polls: { choice: 'active', cloud: 'active', scale: 'closed' } },
+  one: { label: 'Una activa, dos cerradas', enabled: 2, featured: 2, qmode: false, polls: { choice: 'active', cloud: 'closed', scale: 'closed' } },
+  closed: { label: 'Todas cerradas', enabled: 2, featured: 2, qmode: false, polls: { choice: 'closed', cloud: 'closed', scale: 'closed' } },
+  none: { label: 'Ninguna activada', enabled: 2, featured: 2, qmode: false, polls: { choice: 'draft', cloud: 'draft', scale: 'draft' } },
+  last: { label: 'Curso terminado', enabled: 6, featured: 6, qmode: false, polls: null },
+  empty: { label: 'Ninguna habilitada', enabled: 0, featured: null, qmode: false, polls: null },
+  onPolls: { label: 'Preguntas destacadas, dos encuestas activas', enabled: 2, featured: 2, qmode: true, polls: { choice: 'active', cloud: 'active', scale: 'closed' } },
+  onOnly: { label: 'Preguntas destacadas, sin encuestas activas', enabled: 2, featured: 2, qmode: true, polls: { choice: 'closed', cloud: 'closed', scale: 'closed' } },
+  onEmpty: { label: 'Preguntas destacadas, todavía sin preguntas', enabled: 2, featured: 2, qmode: true, noQuestions: true, polls: { choice: 'active', cloud: 'closed', scale: 'closed' } },
+  middle: { label: 'Preguntas destacadas, sesión destacada en el medio', enabled: 4, featured: 2, qmode: true, polls: { choice: 'active', cloud: 'active', scale: 'closed' } },
+  nofeat: { label: 'Preguntas destacadas, sin sesión destacada', enabled: 3, featured: null, qmode: true, polls: { choice: 'active', cloud: 'active', scale: 'closed' } },
 };
 
 const ALTS = {
@@ -333,7 +333,7 @@ const pct = (n, of) => (of === 0 ? 0 : Math.round((n / of) * 100));
 const plain = (text) => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 const enabledIn = (state) => SESSIONS.slice(0, STATES[state].enabled);
-const highlightedIn = (state) => enabledIn(state).find((s) => s.n === STATES[state].highlighted) ?? null;
+const featuredIn = (state) => enabledIn(state).find((s) => s.n === STATES[state].featured) ?? null;
 
 const activeKeys = (state, n) => (n === 2 && STATES[state].polls != null ? Object.keys(POLLS).filter((k) => STATES[state].polls[k] === 'active') : []);
 
@@ -449,7 +449,7 @@ const hero = (v, state, s) => {
     </div>`;
 };
 
-// Only the highlighted session gets the button to the aula; the others open one at a time.
+// Only the featured session gets the button to the aula; the others open one at a time.
 const pathCard = (v, state, s, current) => (v.open[state] === s.n
   ? `<div class="card" style="background:${color(s.n)}">
       <div class="head" data-toggle="${s.n}"><h3>${s.title}</h3></div>
@@ -469,13 +469,13 @@ const menu = (v) => (v.menu ? `
     <button class="mitem" data-logout>${ic('logout', 18)} Cerrar sesión</button>
   </div>` : '');
 
-// Before the highlighted one: done. The highlighted one: a star. After it, or with none highlighted: an empty node.
+// Before the featured one: done. The featured one: a star. After it, or with none featured: an empty node.
 const nodeKind = (s, current) => (current == null || s.n > current.n ? 'later' : s.n === current.n ? 'live' : 'done');
 const nodeLabel = (s, current) => (nodeKind(s, current) === 'done' ? ic('check', 20) : nodeKind(s, current) === 'live' ? ic('star-fill', 26) : '');
 
 const page = (v, state) => {
   const all = enabledIn(state);
-  const current = highlightedIn(state);
+  const current = featuredIn(state);
 
   return `
     <div class="window">
@@ -505,7 +505,7 @@ const closedList = (v, state, s) => `<div class="closed-polls">${closedPolls(v, 
     ${v.openPoll === i ? resultsOf(p, p.mine) : ''}
   </div>`).join('')}</div>`;
 
-// Only the highlighted session takes new questions and votes; earlier ones are read-only.
+// Only the featured session takes new questions and votes; every other session is read-only.
 const sorted = (v, state, n) => [...questionsIn(v, state, n)].sort((a, b) => b.votes - a.votes);
 
 const questionRow = (v, q, live) => `
@@ -591,7 +591,7 @@ const overlay = (v, state) => {
   }
 
   const s = SESSIONS[v.modal.n - 1];
-  const live = s.n === highlightedIn(state)?.n;
+  const live = s.n === featuredIn(state)?.n;
   const body = v.modal.kind === 'material' ? material(s) : v.modal.kind === 'polls' ? closedList(v, state, s) : questions(v, state, s, live);
 
   return `${shell(TITLES[v.modal.kind], body)}${v.confirm == null ? '' : confirmDelete()}`;
@@ -613,7 +613,7 @@ const app = (alt, v, state) => `
 /* ---------- Page chrome ---------- */
 
 const strip = (v) => {
-  const current = highlightedIn(v.state);
+  const current = featuredIn(v.state);
   const closed = current == null ? 0 : closedPolls(v, v.state, current.n).length;
   const isOpen = (kind) => v.modal?.kind === kind && v.modal.n === current?.n;
 
@@ -709,7 +709,7 @@ Object.keys(ALTS).forEach((alt) => {
       closeAll(v);
     } else if (d.stripOpen != null) {
       closeAll(v);
-      v.modal = { kind: d.stripOpen, n: highlightedIn(v.state).n };
+      v.modal = { kind: d.stripOpen, n: featuredIn(v.state).n };
     } else if (t.hasAttribute('data-strip-menu')) {
       const on = v.menu;
 

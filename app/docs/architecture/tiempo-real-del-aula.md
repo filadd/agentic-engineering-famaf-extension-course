@@ -66,7 +66,7 @@ Si la conexión se corta, la web se reconecta sola, y el aula del estudiante mue
 > [!NOTE] Por qué la web pide todo al reconectarse
 > Mientras la conexión está cortada, la web no recibe avisos. Al pedir todo lo del aula cuando se reconecta, no se pierde nada de lo que cambió mientras tanto. Si llega un aviso mientras ese pedido sigue en curso, la web no tiene que esperar a que el pedido termine: los datos que el aviso le hace pedir ya vienen en ese pedido.
 
-La mano levantada, una fila de `RaisedHand`, y la slide actual, en `current_slide` y `current_step` de la `Session`, viven en D1, no en la conexión, así que no se pierden con un corte ni con un deploy, que reinicia el aula y corta todas las conexiones. La mano sigue levantada si el estudiante sale y vuelve, hasta que alguien la baja.
+La mano levantada, una fila de `RaisedHand`, y la slide actual, en `current_slide` y `current_step` de la `Session`, viven en D1, no en la conexión, así que no se pierden con un corte ni con un deploy, que reinicia el aula y corta todas las conexiones. La mano sigue levantada si el estudiante sale y vuelve, hasta que alguien la baja o la sesión deja de ser la destacada.
 
 El aula sigue andando aunque el profe se desconecte: los estudiantes siguen votando, preguntando y levantando la mano. Solo desaparece seguir al profe, hasta que vuelve.
 

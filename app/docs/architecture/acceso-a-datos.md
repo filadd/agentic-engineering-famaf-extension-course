@@ -73,8 +73,8 @@ El batch del cambio de destacada lleva, en orden: desmarcar la anterior y apagar
 > [!TIP] El batch en el store de sesiones, considerado y no elegido
 > El store de sesiones podría escribir en las tablas de encuestas y manos dentro de su propio batch, como el de material escribe la posición de la sesión. No se eligió porque el cambio de destacada es una regla del core. El servicio decide qué se cierra y en qué orden, y cada store escribe solo en su tabla.
 
-> [!NOTE] Por qué una sentencia de batch no devuelve filas
-> D1 devuelve las filas de un batch tal como están en la tabla, con los nombres de las columnas y las fechas como números, sin pasar por el mapeo que hace el query builder. Para no devolver filas con una forma distinta de la que declara su tipo, una sentencia de batch no devuelve nada. Quien necesita la fila la lee después del batch.
+> [!NOTE] Por qué un batch no devuelve filas
+> D1 devuelve las filas de un batch tal como están en la tabla, con los nombres de las columnas y las fechas como números, sin pasar por el mapeo que hace el query builder. Para no devolver filas con una forma distinta de la que declara su tipo, el batch descarta lo que devuelven sus escrituras y no devuelve nada. Quien necesita la fila la lee después del batch.
 
 > [!NOTE] Por qué hay type guards en el repositorio
 > Sobre una tabla genérica, el query builder no puede tipar las filas que devuelve una escritura. Tampoco puede tipar el cambio de un borrado lógico ni el de un insertar o actualizar. El repositorio les da su tipo con type guards en lugar de aserciones. Los type guards comprueban la forma de lo que llega antes de usarlo: que sea una lista de filas y que las claves del cambio sean columnas de la tabla.
