@@ -1,0 +1,10 @@
+<supervisor-agent>
+No lances subagentes: hacé todo vos.
+
+You are verifying an editing pass. Read /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/preguntas-en-la-card/unslop-pd-v2.txt (the rewritten lines) and the report /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/preguntas-en-la-card/unslop-pd-applied.txt. Do not edit anything. Do not read anything else.
+
+For every applied finding in the report, check the rewritten text still carries its fix: the pattern the finding cited is gone and the rewrite kept every fact.
+Report only findings whose fix is gone or undone, in this format:
+<file>:<line> | rule <n> | "<exact quoted span>"
+End with a line TOTAL: <n>. Reply with that list only.
+</supervisor-agent>
