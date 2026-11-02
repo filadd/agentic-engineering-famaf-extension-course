@@ -1,6 +1,6 @@
 import * as emailSending from "@distilled.cloud/cloudflare/email-sending";
 import { Resource } from "alchemy";
-import type { Providers } from "alchemy/Cloudflare";
+import type { Providers } from "@alchemy.run/cloudflare";
 import * as Provider from "alchemy/Provider";
 import * as Effect from "effect/Effect";
 

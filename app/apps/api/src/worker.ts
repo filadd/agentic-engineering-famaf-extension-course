@@ -18,7 +18,7 @@ import { KurasuDatabase } from "@kurasu/database/resource";
 import { D1Responses } from "@kurasu/database/responses";
 import { D1Sessions } from "@kurasu/database/sessions";
 import { D1Users } from "@kurasu/database/users";
-import * as Cloudflare from "alchemy/Cloudflare";
+import * as Cloudflare from "@alchemy.run/cloudflare";
 import * as Config from "effect/Config";
 import * as Effect from "effect/Effect";
 import * as HttpRouter from "effect/http/HttpRouter";

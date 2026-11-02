@@ -1,6 +1,6 @@
 # Running an Alchemy 2 stack locally with Vite
 
-verified: 2026-10-22
+verified: 2026-11-02
 
 Answers how kurasu's stack runs under `alchemy dev` with Vite in front: which ports it uses, how Vite's proxy learns the API Worker's URL, how the classroom WebSocket reaches the API Worker, when the Worker's construction runs, what a Durable Object binding is called and what shape drizzle-kit gives the migrations. The facts come from kurasu's implementation on alchemy 2.0.0 beta.
 
@@ -18,5 +18,5 @@ Answers how kurasu's stack runs under `alchemy dev` with Vite in front: which po
 ## Sources
 
 - `app/apps/web/vite.config.ts`, `app/apps/infra/src/web.ts`, `app/apps/api/src/worker.ts`, `app/apps/api/src/classroom/aula.ts`, `app/packages/database/migrations/` (`0003_changelog_and_ids`), `app/packages/database/src/schema.ts`, `app/.env.schema`.
-- `alchemy` 2.0.0-beta.83: `src/Cloudflare/Workers/Sources/Vite.ts` (`viteDev`, `getDefine`) and `src/Cloudflare/Workers/LocalWorkerProvider.ts` (the dev URL comes from the bound proxy). Vite 8.3.4 `resolveConfig`: merges the inline config before `runConfigHook`.
+- `@alchemy.run/cloudflare` 2.0.0-beta.84 (Cloudflare moved out of `alchemy` into its own package in beta.84): `src/Workers/Sources/Vite.ts` (`viteDev`, `getDefine`) and `src/Workers/LocalWorkerProvider.ts` (the dev URL comes from the bound proxy). Vite 8.3.4 `resolveConfig`: merges the inline config before `runConfigHook`.
 - `.scratch/aula-virtual/implement/report-base.md` (T4), `.scratch/aula-virtual/tasks.md` (T20, T21, T26), `.scratch/aula-virtual/reports/validate/index.html` (F2).
