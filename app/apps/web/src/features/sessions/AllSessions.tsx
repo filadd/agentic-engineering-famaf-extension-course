@@ -1,13 +1,12 @@
 import type { SessionSummary } from "@kurasu/contract/sessions";
 import { useEffect, useRef, useState } from "react";
 
-import { Icon } from "../../ui/Icon.tsx";
 import { EnterClassroomButton } from "./EnterClassroomButton.tsx";
 import { railLook } from "./rail-look.ts";
-import { RailNode } from "./RailNode.tsx";
 import { SessionCard } from "./SessionCard.tsx";
 import { SessionLinks } from "./SessionLinks.tsx";
 import { SessionRail } from "./SessionRail.tsx";
+import { SessionRailNode } from "./SessionRailNode.tsx";
 
 interface Props {
   sessions: ReadonlyArray<SessionSummary>;
@@ -32,18 +31,7 @@ export const AllSessions = ({ sessions, featuredPosition, initialOpenId }: Props
       sessions={sessions}
       openId={openId}
       onOpen={setOpenId}
-      renderNode={(session) => {
-        const look = railLook(session, featuredPosition);
-
-        return (
-          <RailNode look={look}>
-            {look === "done" ? <Icon name="check" size={20} /> : null}
-            {look === "live" ? (
-              <Icon name="star" size={26} className="fill-current max-[600px]:size-5" />
-            ) : null}
-          </RailNode>
-        );
-      }}
+      renderNode={(session) => <SessionRailNode look={railLook(session, featuredPosition)} />}
       renderCard={(session, state) => (
         <SessionCard
           ref={session.id === initialOpenId ? linkedCard : undefined}

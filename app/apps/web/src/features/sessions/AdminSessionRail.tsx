@@ -1,16 +1,15 @@
 import type { SessionSummary } from "@kurasu/contract/sessions";
 import { useState } from "react";
 
-import { Icon } from "../../ui/Icon.tsx";
 import { DragHandle } from "./DragHandle.tsx";
 import { EnabledLabel } from "./EnabledLabel.tsx";
 import { moveTo } from "./move-to.ts";
 import { NewSessionCard } from "./NewSessionCard.tsx";
 import { OpenSessionLink } from "./OpenSessionLink.tsx";
 import { railLook } from "./rail-look.ts";
-import { RailNode } from "./RailNode.tsx";
 import { SessionCard } from "./SessionCard.tsx";
 import { SessionRail } from "./SessionRail.tsx";
+import { SessionRailNode } from "./SessionRailNode.tsx";
 import { useReorderSessions } from "./useReorderSessions.ts";
 
 interface Props {
@@ -35,18 +34,11 @@ export const AdminSessionRail = ({ sessions, featuredPosition }: Props) => {
       sessions={sessions}
       openId={openId}
       onOpen={setOpenId}
-      renderNode={(session) => {
-        const look = session.enabled === true ? railLook(session, featuredPosition) : "locked";
-
-        return (
-          <RailNode look={look}>
-            {look === "done" ? <Icon name="check" size={20} /> : null}
-            {look === "live" ? (
-              <Icon name="star" size={26} className="fill-current max-[600px]:size-5" />
-            ) : null}
-          </RailNode>
-        );
-      }}
+      renderNode={(session) => (
+        <SessionRailNode
+          look={session.enabled === true ? railLook(session, featuredPosition) : "locked"}
+        />
+      )}
       renderCard={(session, state) => (
         <div
           draggable
