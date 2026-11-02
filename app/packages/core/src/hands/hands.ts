@@ -13,7 +13,7 @@ import { existingSession, featuredSession, visibleSession } from "../sessions/vi
 import { HandsStore } from "./hands-store.ts";
 
 // The raised hands of the sessions. A student raises and lowers their own in
-// an enabled session; the teacher sees every hand with its name and avatar and
+// the featured session; the teacher sees every hand with its name and avatar and
 // lowers anyone's.
 export class Hands extends Context.Service<
   Hands,

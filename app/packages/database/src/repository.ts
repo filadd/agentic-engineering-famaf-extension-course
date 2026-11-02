@@ -1,3 +1,4 @@
+import type { Write } from "@kurasu/core/batch";
 import {
   maxPage,
   type ListOptions,
@@ -38,7 +39,7 @@ import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Option from "effect/Option";
 
-import { batch, Database, firstRow, now, type Statement } from "./database.ts";
+import { batch, Database, firstRow, now } from "./database.ts";
 
 export type Table = SQLiteTable & { readonly id: SQLiteColumn };
 
@@ -61,7 +62,7 @@ const decodeAll = <T extends Table, A>(
   decode: RepositoryOptions<T, A>["decode"],
 ) => Effect.forEach(rows, decode);
 
-type Write<R> = Statement & Effect.Effect<R, EffectDrizzleQueryError>;
+type PendingWrite<R> = Write & Effect.Effect<R, EffectDrizzleQueryError>;
 
 const rowsGuardOf =
   <T extends Table>() =>
@@ -206,7 +207,7 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
         : Effect.die(`${column.name} is not a column of the table`);
     };
 
-    const removing = (condition: SQL | undefined): Effect.Effect<Write<unknown>> =>
+    const removing = (condition: SQL | undefined): Effect.Effect<PendingWrite<unknown>> =>
       deletedAt == null
         ? Effect.succeed(db.delete(table).where(condition).returning())
         : Effect.map(deletion(deletedAt), (mark) =>
@@ -222,8 +223,7 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
           : yield* Effect.die("the removed rows did not come back");
       });
 
-    // A statement reads nothing after its write, so several can go in one D1
-    // batch.
+    // A write reads nothing after itself, so several can go in one D1 batch.
     const writes = {
       create: (row: New<T>) => db.insert(table).values(row),
       update: (id: Ulid, change: Change<T>) =>
@@ -272,7 +272,7 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
 
     return {
       writes,
-      batch: (statements: ReadonlyArray<Statement>) => batch(client, statements),
+      batch: (pending: ReadonlyArray<Write>) => batch(client, pending),
       get,
       getMany,
       find: (where: Where<A>): ReturnType<Shared["find"]> =>

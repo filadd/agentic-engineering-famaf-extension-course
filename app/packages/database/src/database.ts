@@ -1,3 +1,4 @@
+import type { Write } from "@kurasu/core/batch";
 import * as D1Client from "@effect/sql-d1/D1Client";
 import { sql } from "drizzle-orm";
 import * as SQLiteD1Drizzle from "drizzle-orm/effect-d1";
@@ -5,10 +6,6 @@ import type { EffectSQLiteD1Database } from "drizzle-orm/effect-d1";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
-
-export interface Statement {
-  readonly toSQL: () => { readonly sql: string; readonly params: ReadonlyArray<unknown> };
-}
 
 // The Drizzle database over the D1 binding, plus the D1 client underneath it:
 // Drizzle's effect-d1 driver has no batch, and D1 has no transactions, so writes
@@ -40,11 +37,11 @@ export class Database extends Context.Service<
 }
 
 /** Runs Drizzle queries as one atomic D1 batch, in order. */
-export const batch = (client: D1Client.D1Client, queries: ReadonlyArray<Statement>) =>
+export const batch = (client: D1Client.D1Client, writes: ReadonlyArray<Write>) =>
   client
     .batch(
-      queries.map((query) => {
-        const statement = query.toSQL();
+      writes.map((write) => {
+        const statement = write.toSQL();
 
         return client.unsafe(statement.sql, statement.params);
       }),
