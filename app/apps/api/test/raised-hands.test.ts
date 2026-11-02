@@ -154,8 +154,11 @@ test(
   Effect.scoped(
     Effect.gen(function* () {
       const { url } = yield* stack;
-      const socket = yield* openClassroom(url, featured, yield* cookieFor(teacher));
       const cookie = yield* cookieFor(ana);
+
+      yield* request(url, "POST", "/api/raised-hands", { cookie, body: { sessionId: featured } });
+
+      const socket = yield* openClassroom(url, featured, yield* cookieFor(teacher));
 
       const response = yield* request(url, "DELETE", `/api/raised-hands?sessionId=${featured}`, {
         cookie,
