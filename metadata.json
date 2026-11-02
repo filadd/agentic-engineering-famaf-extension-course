@@ -3,7 +3,7 @@
   "checkpoint_id": "01M6EMPK3X1GNADA42ZH40F43C",
   "strategy": "manual-commit",
   "branch": "feat/session-4-deck",
-  "checkpoints_count": 6,
+  "checkpoints_count": 7,
   "files_touched": [
     "app/apps/web/src/features/questions/FeaturedQuestions.tsx",
     "app/apps/web/src/features/questions/useQuestionsByVotes.ts",
@@ -56,14 +56,21 @@
       "compact_transcript": "/5/transcript.jsonl",
       "content_hash": "/5/content_hash.txt",
       "prompt": "/5/prompt.txt"
+    },
+    {
+      "metadata": "/6/metadata.json",
+      "transcript": "/6/full.jsonl",
+      "compact_transcript": "/6/transcript.jsonl",
+      "content_hash": "/6/content_hash.txt",
+      "prompt": "/6/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 370,
-    "cache_creation_tokens": 734584,
-    "cache_read_tokens": 49501309,
-    "output_tokens": 109080,
-    "api_call_count": 173
+    "input_tokens": 380,
+    "cache_creation_tokens": 765006,
+    "cache_read_tokens": 49702989,
+    "output_tokens": 111985,
+    "api_call_count": 178
   },
   "redaction": {
     "replacements": 1,
