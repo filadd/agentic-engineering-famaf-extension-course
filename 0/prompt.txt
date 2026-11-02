@@ -1,0 +1,21 @@
+<supervisor-agent>
+You are running the agentic review of the "preguntas en la card destacada" change in kurasu (`app/`). Your current directory is the git worktree on branch `feat/preguntas-en-la-card`, where the change is implemented, committed (ten commits, `613b8a6` to `19360f3`) and validated by hand; `pnpm run check` and `pnpm test` pass. Work with medium reasoning effort. Do not spawn subagents of your own beyond the reviewers the mahou:agentic-review skill dispatches.
+
+## Context
+
+Read the implementation brief at /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/preguntas-en-la-card/implement/brief.md in full. It carries the change, the design notes to read, the tasks, the test matrix rows and the repository rules. Everything in it applies to you, except that the implementation is done: you do not work the tasks again, and the tracker states section does not apply; do not touch the Entire trail. The manual validation passed every row, two after a fix (`19360f3` colours the enable dialog's warning as in the prototype; `ee83edd` moves the not-featured note under the last draft in the polls tab); its report is at /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/preguntas-en-la-card/reports/validate/index.html.
+
+## The job
+
+Load the mahou:agentic-review skill and run it on this repository's changeset: the branch `feat/preguntas-en-la-card` measured against local `main` at `d09d518`, the commit the branch forked from. It runs in rounds, each with fresh reviewers and the ledger of the earlier rounds' fixes and skips, and fixes inside its own bounds without changing how the change looks or behaves. Keep the ledger at /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/preguntas-en-la-card/reports/review/ledger.md unless the skill names another place.
+
+When the review ends, run `pnpm run check` and `pnpm test` in `app/`, then commit the fixes through mahou:commit-changes, committing the groups it proposes without asking the user to confirm them. Do not push.
+
+## Local leftovers
+
+Leave nothing running. Stop every process you start. Track every path you create outside the commits or that the tests write (`.alchemy/` stages, `.turbo/`, files in `/tmp`) and list them in the report. Do not delete the ledger. Avoid `rm -rf` when another way works.
+
+## How to answer
+
+Your final message is your report, and only that message is read. It has: the rounds run, every fix with its finding and its commit, every finding the review skipped with the problem the reviewer saw, why the reviewer proposed the change, and why the review skipped it, the ledger path, the tail of the check and test output, and the local leftovers. Do not send a shorter message after the report. A design ambiguity that changes the outcome is a question back to the supervisor: end your turn with it.
+</supervisor-agent>
