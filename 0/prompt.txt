@@ -1,0 +1,364 @@
+<skill name="implement" location="/home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--implement/SKILL.md">
+References are relative to /home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--implement.
+
+Load mahou:basics first. Then read `.mahou/implement.md` if present: it is where a project names its task tracker, the tool that reaches it and the states a task moves through. Follow the wiki indexes only far enough to know which entries exist; the subagents read the entries for the code they touch.
+
+# Implement
+
+Takes a change the user has designed and test-designed and gets it written, one repository at a time, by subagents that receive everything a person joining the work would need. It composes the briefs, dispatches, relays what comes back, and delegates the passes that follow the code: the agentic review, the manual validation and the consistency check, each to a subagent per repository.
+
+## Opening
+
+1. **Collect the inputs.** The tasks when the project tracks them, the design notes, the test-design trees with their matrices, the repositories the change touches, the branch name, and the subagent model and effort the user wants. Ask for whatever is missing in one round; do not start a subagent without the matrix rows for its repository.
+
+2. **Group the repositories.** One subagent per repository. A change ported from one surface to another, web to mobile for instance, goes to a single subagent that does the source repository first, because the port needs its context. Show the grouping and wait for the user's approval.
+
+## The brief
+
+Every subagent gets the same brief, filled for its repository. Nothing in it is optional, and the brief leaves the subagent nothing to look up.
+
+- **The change.** The design notes by path or URL, and a design summary in the brief itself: what changes, the shapes that cross systems, the rules the design settled, what is out of scope. Tell it to read the notes before touching code, with the reasoning effort the user named.
+- **The tasks.** The ones assigned to its repository, each with what it requires in one or two sentences and the order to work them in. Without a tracker, the list comes from the test-design trees and the user.
+- **The tests.** The matrix rows of the subagent's repository, verbatim, with each row's `★` mark, expected outcome and kind, plus any `Deleted:` lines under each branch, read from the change's scratch folder at `test-design/<repo>.md` when test-design wrote them there. On `test` rows (including `test + manual`), a `★` row is a new test the subagent writes, at the level the repository's conventions name and named after what the test proves; an unstarred row already exists in the suite and is kept as is or updated when the row's expected outcome changed; a test listed under `Deleted:` is removed from the suite. The rows carry ids for the matrix only: no row id, tracker id, or scratch path appears in a test name, comment, or docstring; the mapping stays in the scratch folder and out of the repository. The `manual` rows are for later; the subagent does not run them.
+- **Repository rules.** Fetch and pull the default branch as mahou:changeset resolves it, create the branch the user named from it; stop and ask when the working tree is dirty or the repository sits on another branch with unpushed work. Follow the project's `CLAUDE.md`, `.mahou/basics.md` when present, the wiki entries for the technologies it touches, and the user's own coding style file. Where a wiki entry defines a component or library for what you are building, use it instead of writing a custom equivalent; on frontend screens, start from the wiki's frontend entries. The prototype settles how the change looks and behaves, not how it is coded. Keep changes minimal and consistent with the surrounding code. Run linters and the full relevant suites; everything must pass. Commit on the branch through mahou:commit-changes, and commit the groups it proposes without asking the user to confirm them; do not push, do not open a pull request. Do not touch other repositories. Avoid `rm -rf` when another way works, such as `rm -r` on a named path or leaving temporary files in `/tmp`, because a permission rule can turn `rm -rf` into a dialog that blocks the subagent until the user answers.
+- **Tracker states**, only when the project tracks tasks: move each task to the tracker's in-progress state when it starts it and to its done state when its change is implemented, tested and committed, using the tool and the state names the project declares. The list stays current: work the tracker does not register becomes a new task, created and worked like the rest; a task that dissolves mid-work is closed with a line saying why. Each is named in the report. The tracker can be anything (Linear, Jira, Notion, GitHub issues, a beads database) and the brief names it concretely.
+- **How to answer.** A report in the shape mahou:report gives: the branch, the commits, a summary per change, the row-to-test mapping, the linter and test output tail, and what it could not resolve. The report is the whole of the subagent's final message, because the session that collects the result reads only that message. A shorter message sent after the report replaces it. Every later instruction to the subagent repeats this. A design ambiguity that changes the outcome is a question back through the subagent's question channel, not a guess. The subagent applies a fix the user decided exactly as the user decided it. When the subagent thinks another fix fits better, it asks through the same channel instead of applying its own.
+
+## Dispatch and collect
+
+Start the subagents together with the mechanism the session offers, the Agent tool or a delegation skill the user names. One task per repository, labelled by repository. Wait for each result without polling. Do not relay results to the user as they land. Record each one in `implementation-status.md` (below), and dispatch the next subagent. Every decision you record, whether a flag, a question or a departure from the design, carries enough context for the user to decide without asking back. Start with why the subagent raises the decision. Answer the subagent's questions with the user's decisions and no others. Release a subagent once its result is collected and nothing remains to ask it.
+
+When a subagent cannot continue without an answer, send the subagent's question to the user as soon as the question arrives, with that same context. Repeat it at the top of every later reply until the user answers it.
+
+The user asks for the state with mahou:implementation-status-report.
+
+### implementation-status.md
+
+Keep `implementation-status.md` in the change's scratch folder for the run. Create it when the first subagent starts and give it its line in `status.md`. Update it in place rather than appending to it:
+
+- **Blocking questions.** Each question a subagent is waiting on, until the user answers it.
+- **Shared.** A change, highlight or open item that applies to several repositories, described once with the repositories it covers.
+- **One section per repository**, with:
+  - **Status.** Its checkout and branch, the stage it is in (implementing, reviewing, fix round, validated), its commits, the checks' last result, and the subagent or check running on it. Rewrite it when any of these changes.
+  - **Highlights.** One line per event that the status does not show and that a later report must mention, such as a departure from the design or a fact that changed a plan. Remove a line once a report has carried it and the event no longer bears on anything open.
+  - **Open items.** Every decision waiting on the user, each with the full context the report needs. Remove an item when the user settles it, and record the settlement where `basics` says decisions live.
+
+A subagent kept for further work, such as the review, a fix round or the manual validation, carries every earlier task in its context. Check its context use whenever it finishes a task. When its context use nears half, have the subagent run `/compact` with a list of what to keep, such as the checkout it works in, the safety rules and where the briefs live, then send the next task. Compact only between tasks, never while the subagent is working on one.
+
+When the user steers mid-run, forward the steering to every subagent it concerns as a supervisor directive; a subagent that is mid-turn picks the directive up when it finishes the turn.
+
+## Agentic review
+
+As each implementation subagent reports, dispatch the agentic review for that repository without waiting for the others: a subagent invokes mahou:agentic-review on that repository's changeset, the branch measured against the default branch. When the repository's implementation subagent is still available, send it only this new instruction; when a new subagent is spawned, its brief carries the same change context, tasks and repository rules the implementation brief did, plus the instruction. The review fixes inside its own bounds and leaves its fixes uncommitted. When the review ends, the subagent that ran it commits the fixes on the branch through mahou:commit-changes. The subagent commits the groups that `commit-changes` proposes without asking the user to confirm them. Record the fixes and their commits in the repository's status.
+
+Then record every finding the review skipped as an open item of the repository: apply it or leave it. Give each finding with enough context to rule on it without asking back: the problem the reviewer saw and why the reviewer proposed the change, then why the review skipped the finding. A finding the user decides to apply becomes a task, which an implementation subagent works like the rest. Record each finding the user leaves as skipped in the change's scratch folder.
+
+Run the same review on every later batch of fixes a subagent makes on a repository, such as the consistency fixes or a round of review fixes, before you record the fixes as done. Record that review's skipped findings the same way.
+
+## Manual validation
+
+The manual rows run one repository at a time against the shared local system, from the repository the others depend on outward, so two subagents never mutate the same system at once. For each repository, one subagent gets the manual rows with their expected outcomes and setup, and the identities and inputs the user provides; the repository's implementation subagent, when still available, gets only that, and a newly spawned one gets the full implementation brief as well. It loads mahou:validate, runs the rows through it, and produces the report artifact `validate` requires. It fixes nothing during validation, and a failure comes back to the user as a decision. The next repository starts when the previous one has reported.
+
+## Design reconciliation
+
+The code that lands is what was actually built, and the notes drift from it the moment a child deviates, simplifies, or meets a platform fact. When the manual validation has reported, collect the drift: every flag a subagent raised about a design mismatch, every pointing callout in a touched note whose condition has now landed, and every diagram that renders a shape the change altered. Then dispatch a `mahou:consistency-checker` per repository with a summary of what the change replaced. It finds the leftovers and disagreements that no flag named. The user settles each item. An implementation subagent applies the agreed code fixes, and the agreed documentation updates run through mahou:write-documentation once, with the whole documentation in view.
+
+## Ending
+
+When every subagent is done, give the final report through mahou:implementation-status-report, then add per repository the manual rows with their results and the report artifact path. mahou:human-review follows when the user asks for it.
+
+## What this skill is not
+
+It does not write code, does not design tests, does not decide a design ambiguity on the subagents' behalf, and does not push or open pull requests.
+</skill>
+
+vamos a implementar a una nueva branch; usemos sonnet high para la implementación, opus medium para los reviews y validaciones manuales
+
+---
+
+<skill name="implement" location="/home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--implement/SKILL.md">
+References are relative to /home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--implement.
+
+Load mahou:basics first. Then read `.mahou/implement.md` if present: it is where a project names its task tracker, the tool that reaches it and the states a task moves through. Follow the wiki indexes only far enough to know which entries exist; the subagents read the entries for the code they touch.
+
+# Implement
+
+Takes a change the user has designed and test-designed and gets it written, one repository at a time, by subagents that receive everything a person joining the work would need. It composes the briefs, dispatches, relays what comes back, and delegates the passes that follow the code, in this order: the manual validation, which fixes what fails against previous decisions, the agentic review, and the consistency check, each to a subagent per repository.
+
+## Opening
+
+1. **Collect the inputs.** The tasks when the project tracks them, the design notes, the test-design trees with their matrices, the repositories the change touches, the branch name, and the subagent model and effort the user wants. Ask for whatever is missing in one round; do not start a subagent without the matrix rows for its repository.
+
+2. **Group the repositories.** One subagent per repository. A change ported from one surface to another, web to mobile for instance, goes to a single subagent that does the source repository first, because the port needs its context. Show the grouping and wait for the user's approval.
+
+## The brief
+
+Every subagent gets the same brief, filled for its repository. Nothing in it is optional, and the brief leaves the subagent nothing to look up.
+
+- **The change.** The design notes by path or URL, and a design summary in the brief itself: what changes, the shapes that cross systems, the rules the design settled, what is out of scope. Tell it to read the notes before touching code, with the reasoning effort the user named.
+- **The tasks.** The ones assigned to its repository, each with what it requires in one or two sentences and the order to work them in. Without a tracker, the list comes from the test-design trees and the user.
+- **The tests.** The matrix rows of the subagent's repository, verbatim, with each row's `★` mark, expected outcome and kind, plus any `Deleted:` lines under each branch, read from the change's scratch folder at `test-design/<repo>.md` when test-design wrote them there. On `test` rows (including `test + manual`), a `★` row is a new test the subagent writes, at the level the repository's conventions name and named after what the test proves; an unstarred row whose expected outcome is the one the suite already checks is a regression row, left untouched and still passing; an unstarred row whose expected outcome changed is updated to match it; a test listed under `Deleted:` is removed from the suite. The rows carry ids for the matrix only: no row id, tracker id, or scratch path appears in a test name, comment, or docstring; the mapping stays in the scratch folder and out of the repository. The `manual` rows are for later; the subagent does not run them.
+- **Repository rules.** Fetch and pull the default branch as mahou:changeset resolves it, create the branch the user named from it; stop and ask when the working tree is dirty or the repository sits on another branch with unpushed work. Follow the project's `CLAUDE.md`, `.mahou/basics.md` when present, the wiki entries for the technologies it touches, and the user's own coding style file. Where a wiki entry defines a component or library for what you are building, use it instead of writing a custom equivalent; on frontend screens, start from the wiki's frontend entries. The prototype settles how the change looks and behaves, not how it is coded. Keep changes minimal and consistent with the surrounding code. Run linters and the full relevant suites; everything must pass. Commit on the branch through mahou:commit-changes, and commit the groups it proposes without asking the user to confirm them; do not push, do not open a pull request. Do not touch other repositories. Avoid `rm -rf` when another way works, such as `rm -r` on a named path or leaving temporary files in `/tmp`, because a permission rule can turn `rm -rf` into a dialog that blocks the subagent until the user answers.
+- **Tracker states**, only when the project tracks tasks: move each task to the tracker's in-progress state when it starts it and to its done state when its change is implemented, tested and committed, using the tool and the state names the project declares. The list stays current: work the tracker does not register becomes a new task, created and worked like the rest; a task that dissolves mid-work is closed with a line saying why. Each is named in the report. The tracker can be anything (Linear, Jira, Notion, GitHub issues, a beads database) and the brief names it concretely.
+- **How to answer.** A report in the shape mahou:report gives: the branch, the commits, a summary per change, the row-to-test mapping, the linter and test output tail, and what it could not resolve. The report is the whole of the subagent's final message, because the session that collects the result reads only that message. A shorter message sent after the report replaces it. Every later instruction to the subagent repeats this. A design ambiguity that changes the outcome is a question back through the subagent's question channel, not a guess. The subagent applies a fix the user decided exactly as the user decided it. When the subagent thinks another fix fits better, it asks through the same channel instead of applying its own.
+
+## Dispatch and collect
+
+Start the subagents together with the mechanism the session offers, the Agent tool or a delegation skill the user names. One task per repository, labelled by repository. Wait for each result without polling. Do not relay results to the user as they land. Record each one in `implementation-status.md` (below), and dispatch the next subagent. Every decision you record, whether a flag, a question or a departure from the design, carries enough context for the user to decide without asking back. Start with why the subagent raises the decision. Answer the subagent's questions with the user's decisions and no others. Release a subagent once its result is collected and nothing remains to ask it.
+
+When a subagent cannot continue without an answer, send the subagent's question to the user as soon as the question arrives, with that same context. Repeat it at the top of every later reply until the user answers it.
+
+The user asks for the state with mahou:implementation-status-report.
+
+### implementation-status.md
+
+Keep `implementation-status.md` in the change's scratch folder for the run. Create it when the first subagent starts and give it its line in `status.md`. Update it in place rather than appending to it:
+
+- **Blocking questions.** Each question a subagent is waiting on, until the user answers it.
+- **Shared.** A change, highlight or open item that applies to several repositories, described once with the repositories it covers.
+- **One section per repository**, with:
+  - **Status.** Its checkout and branch, the stage it is in (implementing, validating, fixing blocked rows, validated, reviewing round n, reviewed, reconciling), its commits, the checks' last result, and the subagent or check running on it. Rewrite it when any of these changes.
+  - **Highlights.** One line per event that the status does not show and that a later report must mention, such as a departure from the design or a fact that changed a plan. Remove a line once a report has carried it and the event no longer bears on anything open.
+  - **Open items.** Every decision waiting on the user, each with the full context the report needs. Remove an item when the user settles it, and record the settlement where `basics` says decisions live.
+
+A subagent kept for further work, such as the manual validation, a fix or the review, carries every earlier task in its context. Check its context use whenever it finishes a task. When its context use nears half, have the subagent run `/compact` with a list of what to keep, such as the checkout it works in, the safety rules and where the briefs live, then send the next task. Compact only between tasks, never while the subagent is working on one.
+
+When the user steers mid-run, forward the steering to every subagent it concerns as a supervisor directive; a subagent that is mid-turn picks the directive up when it finishes the turn.
+
+## Manual validation
+
+Validation runs before the review, so the review runs once over the code that passes validation instead of after every batch of fixes.
+
+The manual rows run one repository at a time against the shared local system, from the repository the others depend on outward, so two subagents never mutate the same system at once. A repository's validation starts once its implementation subagent has reported and the repository before it has finished its validation run. For each repository, one subagent gets the manual rows with their expected outcomes and setup, and the identities and inputs the user provides; the repository's implementation subagent, when still available, gets only that, and a newly spawned one gets the full implementation brief as well. It loads mahou:validate, runs the rows through it, and produces the report artifact `validate` requires.
+
+### Fixing without asking
+
+The subagent fixes a failing row without asking, inside the bounds mahou:validate gives, and re-runs the rows until every row passes or is blocked. Every fix stays in the subagent's repository: when the cause sits in another repository, the row is blocked and the report names the cause and the repository. A bug the run finds that no row and no previous decision covers is reported, not fixed. The subagent commits its fixes through mahou:commit-changes without asking the user to confirm the groups, and reports the rows with their results, each fix with what failed, what the fix changed and its commit, each blocked row, and each bug it left unfixed.
+
+Record the fixes in the repository's status, each blocked row as a blocking question with the evidence and what each way out changes in the designed behaviour, and each unfixed bug as an open item. The next repository's validation starts without waiting for the user's answers.
+
+### Fixing what the user decides
+
+Once the user settles a blocked row, the repository's subagent applies the decision exactly as the user decided it, commits it, and re-runs the affected rows, plus any row the fix's code reaches. When the decision needs another repository, that repository's subagent applies it and the rows that depend on it re-run in both. A re-run waits for the system like any other run. Repeat until every row of every repository passes; the repository's stage is then validated.
+
+## Agentic review
+
+When every repository is validated, dispatch the agentic review for every repository at once: a subagent invokes mahou:agentic-review on that repository's changeset, the branch measured against the default branch. When the repository's implementation subagent is still available, send it only this new instruction; when a new subagent is spawned, its brief carries the same change context, tasks and repository rules the implementation brief did, plus the instruction. The review runs in rounds, each with fresh reviewers and the ledger of the earlier rounds' fixes and skips, so a fix is not undone in a later round. It fixes inside its own bounds and leaves its fixes uncommitted. The review does not change behaviour, so validation does not run again after it.
+
+The ledger of each repository's review is the round status the user reads mid-run; point to it from the repository's status. When the review ends, the subagent that ran it commits the fixes on the branch through mahou:commit-changes, committing the groups `commit-changes` proposes without asking the user to confirm them. Record the fixes and their commits in the repository's status.
+
+Then record every finding the review skipped as an open item of the repository: apply it or leave it. Give each finding with enough context to rule on it without asking back: the problem the reviewer saw and why the reviewer proposed the change, then why the review skipped the finding. A finding the user decides to apply is applied by an implementation subagent and committed; it gets no further review round, since mahou:human-review reads it next. Record each finding the user leaves as skipped in the change's scratch folder.
+
+## Design reconciliation
+
+The code that lands is what was actually built, and the notes drift from it the moment a child deviates, simplifies, or meets a platform fact. When every repository's review has ended and its skipped findings are settled, collect the drift: every flag a subagent raised about a design mismatch, every pointing callout in a touched note whose condition has now landed, and every diagram that renders a shape the change altered. Then dispatch a `mahou:consistency-checker` per repository with a summary of what the change replaced. It finds the leftovers and disagreements that no flag named. The user settles each item. An implementation subagent applies the agreed code fixes, re-runs the manual rows those fixes reach, and commits; the fixes get no review round, since mahou:human-review reads them next. The agreed documentation updates run through mahou:write-documentation once, with the whole documentation in view.
+
+## Ending
+
+When every subagent is done, give the final report through mahou:implementation-status-report, then add per repository the manual rows with their results, every failure validation fixed without asking (the row, what failed, what the fix changed and its commit), the report artifact path and the review ledger path. mahou:human-review follows when the user asks for it.
+
+## What this skill is not
+
+It does not write code, does not design tests, does not decide a design ambiguity on the subagents' behalf, and does not push or open pull requests.
+</skill>
+
+vamos a implementar a una nueva branch; usemos sonnet high para la implementación, opus medium para los reviews y validaciones manuales
+
+---
+
+de acuerdo con todo, trabajemos en un worktree para asegurarnos de no pisarnos con el otro subagente que está trabajando en el mismo repo
+
+---
+
+let's use a throwaway secret
+
+---
+
+let's make sure we clear any local stuff we create through alchemy and anything else by the subagents on the worktree once we're done
+
+---
+
+the subagent hasn't closed any subagents, not sure if on purpose or not
+
+---
+
+# Annotations on pi · last message
+
+## Annotation 1 (line 12)
+Comment on: "1. **La ronda 2 no siguió la skill.** En vez de lanzar revisores nuevos, como pide `agentic-review`, retomó a los 14 de la ronda 1, y los 14 devolvieron 0 hallazgos. La skill lo prohíbe porque un revisor retomado tiende a defender su propio reporte. ¿Corro una ronda 2 con revisores nuevos, o aceptás la que hubo?"
+> that's fine
+
+## Annotation 2 (line 15)
+Remove this:
+```
+   - **S1:** la fila de extremos ("No me gustó…") está duplicada en `FeedbackScale` y en `PollResults`. Se saltó porque unirla pide un componente nuevo y las dos copias tienen espaciados distintos.
+```
+> I don't want this.
+
+## Annotation 3 (line 16)
+Remove this:
+```
+   - **S2:** la cara y el "Sin comentario." están duplicados en `FeedbackAnswer` y en `FeedbackResponseRow`. Se saltó porque pide un componente nuevo y los tamaños difieren.
+```
+> I don't want this.
+
+## Annotation 4 (line 17)
+Remove this:
+```
+   - **S3:** `feedbackOf` no tiene tope ni paginación, y la wiki de arquitectura pide lecturas acotadas. Se saltó porque Q3 acepta la lista entera, que tiene como mucho una fila por alumno.
+```
+> I don't want this.
+
+## Annotation 5 (line 18)
+Remove this:
+```
+   - **S4:** cada pedido de la lista del profe trae los nombres y los textos. Se saltó porque contradice Q3, que aceptó ese costo.
+```
+> I don't want this.
+
+## Annotation 6 (line 19)
+Comment on: "- **S5:** `useVote` decide si mostrar el toast según la forma del valor, y el revisor propuso pasarle una opción. Se saltó porque el program design fija esa regla y el cambio tocaría el camino de la word cloud."
+> puedes darme mas detalle sobre esto? incluido código
+
+## Annotation 7 (line 20)
+Remove this:
+```
+   - **S6:** el slot `<leading>` de `PollActions` tiene un solo uso. Se saltó porque así lo eligieron el program design y la wiki.
+```
+> I don't want this.
+
+## Annotation 8 (line 21)
+Comment on: "- **S7:** "Cambiar mi respuesta" y "Cancelar" son `<button>` sueltos y no `ui/Button`. Se saltó porque `ui/Button` no tiene una variante con aspecto de link y `VoteForm` ya hace lo mismo."
+> hmm agreguemos una variante ghost que no tiene fondo (solo en hover) y la usemos en lugar de esto en todos los lugares, corrijamos los prototipos para que matcheen también
+
+## Annotation 9 (line 22)
+Comment on: "- **S8:** las clases del recuadro se repiten en dos componentes, y la wiki pide una clase en `@layer components`. Se saltó porque habría que tocar `styles.css` y los paddings difieren."
+> difieren a propósito o solo por el prototipo? si pueden ser los mismos lo hagamos
+
+## Annotation 10 (line 23)
+Comment on: "- **S9:** `pill-dark` se pisa con colores fijos. Se saltó porque sacarlo cambia cómo se ve en modo oscuro, y el prototipo pide el botón oscuro fijo."
+> mismo comentario de arriba, no importa tanto el prototipo sino que seamos consistentes
+
+## Annotation 11 (line 25)
+Comment on: "classroom-slides.test.tsx`, que el cambio no toca, falla en más o menos una de cada dos corridas forzadas. También falla con el árbol de antes de la review, y pasa cuando la web corre sola o con `--concurrency=1`."
+> arreglemos este problema definitivamente
+
+---
+
+# Annotations on pi · last message
+
+## Annotation 1 (line 48)
+Comment on: "¿Lo aplicamos o lo dejamos como está?"
+> apliquemos el cambio
+
+## Annotation 2 (lines 53–55)
+Looks good: "- `FeedbackForm`: "Cambiar mi respuesta" y "Cancelar". - `VoteForm`: "Cambiar mi voto", "Sumar más palabras" y "Cancelar". - `CheckMailNotice`: "Usar otro email". Este está en gris (`text-muted`) y no en el color del texto. ¿Lo incluimos igual?"
+
+## Annotation 3 (line 59)
+Comment on: "Propongo que `ghost` tenga la misma forma que `pill` (redondeado, mismo padding y tamaño de texto), sin borde y sin fondo, y que muestre el fondo `line` en hover, como `icon-button`. Si querés otra forma, decímelo."
+> lo llamemos pill-ghost entonces
+
+## Annotation 4 (lines 63–64)
+Looks good: "- **S8:** la diferencia es solo de los prototipos. `.mine` en `feedback-sesion.html` usa `10px 14px` y `.item` en `admin-feedback.html` usa `10px 12px`. El diseño no le da ningún motivo a esa diferencia. Va una clase compartida en `@layer components` con `px-3.5 py-2.5`, y los dos prototipos quedan con el mismo padding. - **S9:** `FeedbackResponsesButton` pasa a usar `pill-dark` sin colores propios, igual que los otros quince botones `pill-dark` de la web. En modo oscuro va a verse claro, como el resto. Corrijo también el `.btn.dark` de `admin-feedback.html`."
+
+## Annotation 5 (line 68)
+Looks good: "El test que falla es "entering with the teacher follows the teacher…" (`apps/web/test/classroom-slides.test.tsx:44`). Pasa cuando la web corre sola o con `--concurrency=1`, y falla cuando corre en paralelo con la suite de la API, así que el problema es la carga. La review también vio fallar alguna vez tests de `vote-card`, `classroom-presence` y `classroom-content`, con errores `onUnhandledFrame` de MSW. Propongo darle este arreglo a un subagente propio que encuentre la causa: un timeout de `waitFor` demasiado corto, un frame del WebSocket que llega antes de que haya un handler, o estado que se comparte entre tests. Se acepta solo si `turbo run test --force` pasa diez veces seguidas. Va en un commit aparte, porque no es parte del feedback."
+
+---
+
+let's do that and include the wkik changes for it
+
+---
+
+let's apply all of these
+
+---
+
+<skill name="human-review" location="/home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--human-review/SKILL.md">
+References are relative to /home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--human-review.
+
+Load mahou:basics first. Then read `.mahou/human-review.md` if present.
+
+# Human review
+
+Verifies the user's own reading of a change and settles it with them. Nothing is edited until they rule on it.
+
+When both review skills run, mahou:agentic-review goes first. It clears the mechanical findings so this pass spends attention on judgment instead.
+
+## Step 1: Establish the changeset
+
+Load mahou:changeset. It gives you the repository paths you dispatch against, and the rule that tells you whether what an annotation flags was introduced by this change or predates it.
+
+## Step 2: Collect the annotations
+
+Start one `plannotator review` per repository, backgrounded, all in a single message:
+
+```
+cd {absolute-repo-path} && plannotator review
+```
+
+Backgrounding is what keeps that `cd` safe, because it never changes the session's working directory. Address repositories everywhere else the way `changeset` says.
+
+When a review times out before the user submits, start it again with the same command and tell the user the review restarted.
+
+Keep a map of repository to task so every result is attributed. Never poll. Completions arrive on their own.
+
+## Step 3: Work each repository as its annotations land
+
+Handle a repository the moment its result arrives, start to finish, and never hold a finished one behind a slow one.
+
+### Verify
+
+Annotations are unverified input. They carry what the user wants, not always the full context.
+
+Read the flagged lines before responding. Establish whether the change introduced what is flagged or whether it predates the change, which `changeset` covers. Then give each annotation a verdict, either Confirmed, Partly, Not a bug, or Intended, with the lines that settle it quoted.
+
+Report the base `plannotator` used alongside the changeset base. They can differ, and when they do the annotations cover a smaller diff than the changeset does.
+
+### Present
+
+Not every annotation is a finding. Some approve, some remove, some ask a question. Answer the questions first, because an answer changes what gets applied.
+
+Change nothing yet. Never apply the obvious ones unasked. Never argue a finding down: if you believe it is wrong, say why in one line and let the user rule. A "Not a bug" verdict is your reading, not a decision. The user routinely overrides it, and that is the correct outcome.
+
+### Apply what the user approves
+
+Before writing code, read the project's `CLAUDE.md` and `.mahou/basics.md` when present, and read the wiki entries for the technologies the fix touches. Follow the conventions of the repository you are in.
+
+Run that repository's linters and tests afterwards, scoped to the files you touched rather than the whole tree. A blanket formatter run reformats unrelated files and drags them into the change.
+
+Commit the approved fixes through mahou:commit-changes. The user's approval of a fix is the consent to commit it, so commit the groups mahou:commit-changes proposes without asking for confirmation.
+</skill>
+
+---
+
+Plannotator: changes in agentic-engineering-famaf-extension-course-review (pn-98a712) — Changes requested · 1 comment.
+Target: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course-review
+
+Review directory: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course-review
+
+# Code Review Feedback
+
+**Diff:** All changes since `6933baf` (committed + uncommitted + untracked)
+
+## app/apps/web/src/features/polls/PollResults.tsx
+
+### File Comment
+we should split these into one component per type and use a switch instead
+
+
+
+Treat the findings above as unverified review input. Inspect every finding against the actual code; do not assume automated feedback is correct. For each finding, give a clear verdict (Confirmed / Partly / Not a bug / Intended) with concise code evidence. Say whether it was introduced by the current changes, was pre-existing, or reflects deliberate scope.
+
+Review only the incoming findings. Do not independently review the rest of the diff or search for issues that were not submitted.
+
+Do not change any code until we have discussed the verdicts and validated findings.
+
+---
+
+si a ambos; armemos un modulo para PollResults que solo exporte el componente principal (este patron debería estar en la wiki, sino lo agreguemos)
+
+---
+
+wiki global y local para que quede claro
+me gusta lo del lint
