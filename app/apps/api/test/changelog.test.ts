@@ -390,18 +390,3 @@ test(
     expect(failedWith(response, ChangelogEntryNotFound)).toBe(true);
   }),
 );
-
-// Featuring changes the featured session of the whole database, so it runs last.
-test(
-  "featuring a session records nothing",
-  Effect.gen(function* () {
-    const before = yield* entriesOf(session(22));
-
-    const response = yield* asTeacher("PATCH", `/api/admin/sessions/${session(22)}`, {
-      featured: true,
-    });
-
-    expect(response.status).toBe(200);
-    expect(yield* entriesOf(session(22))).toEqual(before);
-  }),
-);

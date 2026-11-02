@@ -25,6 +25,7 @@ const third = "01FSC000000000000000000000";
 const fourth = "01FSD000000000000000000000";
 
 const fifth = "01FSF000000000000000000000";
+const sixth = "01FSG000000000000000000000";
 
 const asTeacher = (method: "GET" | "PATCH", path: string, body?: SessionChange) =>
   Effect.gen(function* () {
@@ -275,5 +276,17 @@ test(
     expect(yield* activePollIds(third)).toEqual([]);
     expect(yield* handsOf(third)).toEqual([]);
     expect(yield* entryTypes(third)).not.toContain("session-enabled");
+  }),
+);
+
+test(
+  "featuring a session records nothing",
+  Effect.gen(function* () {
+    const before = yield* entriesOf(sixth);
+
+    const response = yield* patch(sixth, { featured: true });
+
+    expect(response.status).toBe(200);
+    expect(yield* entriesOf(sixth)).toEqual(before);
   }),
 );

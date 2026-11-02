@@ -8,7 +8,8 @@ INSERT INTO sessions (id, position, title, summary, enabled, featured, featured_
   ('01FSB000000000000000000000', 2, 'Segunda', 'Con encuestas y manos', 1, 0, 0),
   ('01FSC000000000000000000000', 3, 'Tercera', 'Habilitada que nunca se destaca', 1, 0, 0),
   ('01FSD000000000000000000000', 4, 'Cuarta', 'Deshabilitada con una encuesta', 0, 0, 0),
-  ('01FSF000000000000000000000', 5, 'Quinta', 'Deshabilitada que se habilita destacando', 0, 0, 0);
+  ('01FSF000000000000000000000', 5, 'Quinta', 'Deshabilitada que se habilita destacando', 0, 0, 0),
+  ('01FSG000000000000000000000', 6, 'Sexta', 'Habilitada sin novedades', 1, 0, 0);
 
 INSERT INTO polls (id, session_id, type, status, prompt, options, scale_min_label, scale_max_label) VALUES
   ('01FP1000000000000000000000', '01FSA000000000000000000000', 'choice', 'active', '¿Cuál preferís?', '["Uno","Dos"]', NULL, NULL),
