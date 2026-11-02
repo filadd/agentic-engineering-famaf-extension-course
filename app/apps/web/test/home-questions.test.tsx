@@ -1,5 +1,6 @@
 import type { Question } from "@kurasu/contract/questions";
 import { screen, waitFor, within } from "@testing-library/react";
+import { HttpResponse } from "msw";
 import { describe, expect, test } from "vitest";
 
 import { asFeatured, planning, question } from "./fixtures/content.ts";
@@ -51,6 +52,39 @@ describe("the questions panel of the featured card", () => {
     expect(within(card).queryByRole("heading", { name: "Preguntas" })).toBeNull();
     expect(within(card).queryByLabelText("Hacé una pregunta")).toBeNull();
     expect(within(card).getByRole("button", { name: "Preguntas" })).toBeTruthy();
+  });
+
+  test("the card is one skeleton until its polls and its questions arrive, and then appears whole", async () => {
+    const questions = heldResponse("get", "/questions");
+
+    server.use(
+      getJson("/me", student),
+      getJson("/sessions", [featured]),
+      getJson("/polls", []),
+      questions.handler,
+    );
+
+    await renderRoute("/");
+
+    const skeleton = await waitFor(() => {
+      const found = screen.getByRole("region", { name: planning.title, hidden: true });
+
+      expect(found.closest("[inert]")).not.toBeNull();
+
+      return found;
+    });
+
+    expect(screen.queryByRole("region", { name: planning.title })).toBeNull();
+    expect(
+      within(skeleton).getAllByRole("heading", { name: "Preguntas", hidden: true }),
+    ).toHaveLength(1);
+
+    questions.release(HttpResponse.json([question(1, planning.id, "Una")]));
+
+    const card = await screen.findByRole("region", { name: planning.title });
+
+    expect(within(card).getByRole("heading", { name: "Preguntas" })).toBeTruthy();
+    expect(within(card).getByRole("listitem", { name: "Una" })).toBeTruthy();
   });
 
   test("without questions it shows the field and invites to ask the first one", async () => {

@@ -1,18 +1,17 @@
 import type { Poll } from "@kurasu/contract/polls";
+import type { Question } from "@kurasu/contract/questions";
 import type { SessionSummary } from "@kurasu/contract/sessions";
-import type { ReactNode } from "react";
 
-import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 import { ActivePolls } from "../polls/ActivePolls.tsx";
-import { pollExamples } from "../polls/poll-examples.ts";
+import { FeaturedQuestionsCard } from "../questions/FeaturedQuestionsCard.tsx";
 import { EnterClassroomButton } from "./EnterClassroomButton.tsx";
 import { sessionColor } from "./session-color.ts";
 import { SessionLinks } from "./SessionLinks.tsx";
 
 interface Props {
   session: SessionSummary;
-  polls: ReadonlyArray<Poll> | undefined;
-  questions?: ReactNode;
+  polls: ReadonlyArray<Poll>;
+  questions?: ReadonlyArray<Question> | undefined;
 }
 
 export const FeaturedSession = ({ session, polls, questions }: Props) => (
@@ -23,14 +22,10 @@ export const FeaturedSession = ({ session, polls, questions }: Props) => (
     <h2 className="text-[30px] font-bold max-[600px]:text-2xl">{session.title}</h2>
     <SessionLinks sessionId={session.id} featured />
     <p className="mt-3 leading-[1.45]">{session.summary}</p>
-    {questions}
-    {polls == null ? (
-      <SkeletonOf>
-        <ActivePolls polls={[pollExamples[0]]} />
-      </SkeletonOf>
-    ) : (
-      <ActivePolls polls={polls} />
+    {questions == null ? null : (
+      <FeaturedQuestionsCard sessionId={session.id} questions={questions} />
     )}
+    <ActivePolls polls={polls} />
     <EnterClassroomButton />
   </section>
 );
