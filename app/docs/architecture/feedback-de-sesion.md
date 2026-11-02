@@ -119,7 +119,7 @@ stateDiagram-v2
 
 Sin responder, la tarjeta muestra los cinco emojis, el campo de texto y el botón de envío, que queda deshabilitado hasta que el alumno elige un emoji. Al enviar, el botón muestra que espera y los emojis se deshabilitan.
 
-Respondido, la tarjeta agradece el envío y muestra el emoji elegido y el texto debajo, con el enlace "Cambiar mi respuesta". Editando, vuelve el formulario con lo que había mandado y el botón dice "Modificar feedback". En el estado de error, la tarjeta muestra la alerta de error de la app y conserva lo que el alumno cargó.
+Respondido, la tarjeta agradece el envío y muestra el emoji elegido y el texto debajo, con el botón "Cambiar mi respuesta", un pill sin borde ni fondo (`pill-ghost`). Editando, vuelve el formulario con lo que había mandado y el botón dice "Modificar feedback". En el estado de error, la tarjeta muestra la alerta de error de la app y conserva lo que el alumno cargó.
 
 Cerrada, la tarjeta muestra solo la respuesta del alumno y ya no ofrece cambiarla.
 
