@@ -14,7 +14,7 @@ import * as Layer from "effect/Layer";
 
 import { Classroom } from "../classroom.ts";
 import { SessionsStore } from "../sessions/sessions-store.ts";
-import { existingSession, visibleSession } from "../sessions/visible-session.ts";
+import { existingSession, featuredSession, visibleSession } from "../sessions/visible-session.ts";
 import { QuestionVotesStore } from "./question-votes-store.ts";
 import { QuestionsStore, type StoredQuestion } from "./questions-store.ts";
 
@@ -33,8 +33,9 @@ const toAdminQuestion = (question: StoredQuestion): AdminQuestion => ({
 });
 
 // The questions of the sessions, never with their author. The student sees the
-// open questions of enabled sessions, most voted first, votes at most once
-// each and never their own, and deletes only their own. The teacher sees the
+// open questions of enabled sessions, most voted first, and asks, votes (at
+// most once each, never their own) and deletes their own only in the featured
+// session. The teacher sees the
 // answered ones too, at the end, and marks or reopens them.
 export class Questions extends Context.Service<
   Questions,
@@ -79,7 +80,7 @@ export class Questions extends Context.Service<
           Effect.fromOption(question).pipe(Effect.mapError(() => new QuestionNotFound())),
         );
 
-      // An open question of an enabled session: what the student can act on.
+      // An open question of the featured session: what the student can act on.
       const findOpenQuestion = (viewer: User, id: Ulid) =>
         Effect.gen(function* () {
           const question = yield* findQuestion(viewer, id);
@@ -88,7 +89,7 @@ export class Questions extends Context.Service<
             return yield* new QuestionNotFound();
           }
 
-          yield* visibleSession(sessions, question.sessionId).pipe(
+          yield* featuredSession(sessions, question.sessionId).pipe(
             Effect.mapError(() => new QuestionNotFound()),
           );
 
@@ -104,7 +105,7 @@ export class Questions extends Context.Service<
           return questions.filter((question) => !question.answered).map(toQuestion);
         }),
         ask: Effect.fn("Questions.ask")(function* (viewer, sessionId, body) {
-          yield* visibleSession(sessions, sessionId);
+          yield* featuredSession(sessions, sessionId);
 
           const id = yield* crypto.randomULID.pipe(Effect.orDie);
 

@@ -41,6 +41,7 @@ export const D1Hands = Layer.effect(
     return HandsStore.of({
       upsert: repository.upsert,
       removeWhere: repository.removeWhere,
+      writes: repository.writes,
       raisedIn: (sessionId) =>
         db
           .select({

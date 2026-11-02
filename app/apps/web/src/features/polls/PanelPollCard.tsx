@@ -10,12 +10,13 @@ import { PollStatusChip } from "./PollStatusChip.tsx";
 
 interface Props {
   poll: AdminPoll;
+  isFeatured: boolean;
 }
 
 // The classroom panel's card of a poll: it only activates and closes. A draft
 // shows as the students will see it; the rest show their results. Closed
 // polls start folded.
-export const PanelPollCard = ({ poll }: Props) => {
+export const PanelPollCard = ({ poll, isFeatured }: Props) => {
   const [open, setOpen] = useState(poll.status !== "closed");
 
   return (
@@ -37,7 +38,7 @@ export const PanelPollCard = ({ poll }: Props) => {
       actions={
         poll.status === "closed" ? null : (
           <div className="mt-3 flex justify-end gap-2">
-            <PollStateActions poll={poll} />
+            <PollStateActions poll={poll} isFeatured={isFeatured} />
           </div>
         )
       }

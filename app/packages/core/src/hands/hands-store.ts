@@ -3,7 +3,7 @@ import type { Ulid } from "@kurasu/contract/ulid";
 import * as Context from "effect/Context";
 import type * as Effect from "effect/Effect";
 
-import type { Repository } from "../repository.ts";
+import type { Repository, Writes } from "../repository.ts";
 
 export interface StoredHand {
   readonly id: Ulid;
@@ -19,6 +19,7 @@ export type NewHand = StoredHand;
 export class HandsStore extends Context.Service<
   HandsStore,
   Pick<Repository<StoredHand, NewHand, never>, "upsert" | "removeWhere"> & {
+    readonly writes: Pick<Writes<StoredHand, NewHand, never>, "removeWhere">;
     readonly raisedIn: (sessionId: Ulid) => Effect.Effect<ReadonlyArray<RaisedHand>>;
   }
 >()("kurasu/HandsStore") {}

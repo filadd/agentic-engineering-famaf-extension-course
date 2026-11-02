@@ -6,13 +6,13 @@ import type { QueryOptions } from "./api-error.ts";
 import { runApi } from "./run-api.ts";
 import type { KurasuClient } from "./run-api.ts";
 
-export interface ApiQuery<A, E> {
+export interface ApiQuery<A, E, D = A> {
   readonly queryKey: QueryKey;
   readonly call: (api: KurasuClient) => Effect.Effect<A, E>;
-  readonly options?: QueryOptions<A, E> | undefined;
+  readonly options?: QueryOptions<A, E, D> | undefined;
 }
 
-export const useApiQuery = <A, E>({ queryKey, call, options }: ApiQuery<A, E>) =>
+export const useApiQuery = <A, E, D = A>({ queryKey, call, options }: ApiQuery<A, E, D>) =>
   useQuery({
     queryKey,
     queryFn: () => runApi(call),

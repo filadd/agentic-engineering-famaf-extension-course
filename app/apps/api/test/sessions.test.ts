@@ -22,6 +22,7 @@ const disabled = "01SSB200000000000000000000";
 const deleted = "01SSC300000000000000000000";
 const toEdit = "01SSD400000000000000000000";
 const featured = "01SSE500000000000000000000";
+const toDisable = "01SSM100000000000000000000";
 const toMove = "01SSF600000000000000000000";
 const zeroPosition = "01SSG700000000000000000000";
 const toDelete = "01SSH800000000000000000000";
@@ -88,6 +89,8 @@ test(
       title: "Primera",
       summary: "La primera sesión",
       position: 1,
+      featured: false,
+      featuredQuestions: false,
       currentSlide: 3,
       currentStep: 2,
     });
@@ -198,39 +201,78 @@ test(
 );
 
 test(
-  "disabling a session hides it from the student and keeps its polls, hands and position",
+  "editing and moving the featured session keeps it featured with its polls and hands",
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+
+    const edited = yield* patch(url, featured, { title: "Destacada editada", summary: "Nuevo" });
+
+    expect(edited.status).toBe(200);
+    expect(yield* bodyOf(Session, edited)).toMatchObject({
+      featured: true,
+      title: "Destacada editada",
+    });
+
+    const moved = yield* patch(url, featured, { currentSlide: 6, currentStep: 1 });
+
+    expect(moved.status).toBe(200);
+    expect(yield* bodyOf(Session, moved)).toMatchObject({ featured: true, currentSlide: 6 });
+
+    const cookie = yield* cookieFor(student);
+
+    const polls = yield* request(url, "GET", `/api/polls?sessionId=${featured}&status=active`, {
+      cookie,
+    });
+
+    expect((yield* bodyOf(Schema.Array(Poll), polls)).map((poll) => poll.id)).toEqual([
+      "01SSPA00000000000000000000",
+    ]);
+
+    const hands = yield* request(url, "GET", `/api/raised-hands?sessionId=${featured}`, { cookie });
+
+    expect(yield* bodyOf(Schema.Array(RaisedHandSummary), hands)).toEqual([
+      { sessionId: featured, userId: student },
+    ]);
+  }),
+);
+
+test(
+  "disabling a session that is not the featured one hides it from the student and keeps its polls, hands and position, and the featured session does not change",
   Effect.scoped(
     Effect.gen(function* () {
       const { url } = yield* stack;
-      const socket = yield* openClassroom(url, featured, yield* cookieFor(student));
+      const socket = yield* openClassroom(url, toDisable, yield* cookieFor(teacher));
       const cookie = yield* cookieFor(student);
 
-      expect((yield* patch(url, featured, { enabled: false })).status).toBe(200);
+      expect((yield* patch(url, toDisable, { enabled: false })).status).toBe(200);
 
-      const hidden = yield* request(url, "GET", `/api/sessions/${featured}`, { cookie });
+      const hidden = yield* request(url, "GET", `/api/sessions/${toDisable}`, { cookie });
 
       expect(hidden.status).toBe(404);
-      expect((yield* patch(url, featured, { enabled: true })).status).toBe(200);
+      expect((yield* patch(url, toDisable, { enabled: true })).status).toBe(200);
 
-      const session = yield* request(url, "GET", `/api/sessions/${featured}`, { cookie });
+      const session = yield* request(url, "GET", `/api/sessions/${toDisable}`, { cookie });
 
-      expect(yield* bodyOf(Session, session)).toMatchObject({ currentSlide: 4, currentStep: 2 });
+      expect(yield* bodyOf(Session, session)).toMatchObject({ currentSlide: 3, currentStep: 1 });
 
-      const polls = yield* request(url, "GET", `/api/polls?sessionId=${featured}&status=active`, {
+      const polls = yield* request(url, "GET", `/api/polls?sessionId=${toDisable}&status=active`, {
         cookie,
       });
 
       expect((yield* bodyOf(Schema.Array(Poll), polls)).map((poll) => poll.id)).toEqual([
-        "01SSPA00000000000000000000",
+        "01SSPB00000000000000000000",
       ]);
 
-      const hands = yield* request(url, "GET", `/api/raised-hands?sessionId=${featured}`, {
+      const hands = yield* request(url, "GET", `/api/raised-hands?sessionId=${toDisable}`, {
         cookie,
       });
 
       expect(yield* bodyOf(Schema.Array(RaisedHandSummary), hands)).toEqual([
-        { sessionId: featured, userId: student },
+        { sessionId: toDisable, userId: student },
       ]);
+      expect(
+        (yield* studentList(url)).filter((each) => each.featured).map((each) => each.id),
+      ).toEqual([featured]);
 
       yield* socket.waitFor(isChanged("session"));
     }),
@@ -238,7 +280,7 @@ test(
 );
 
 test(
-  "enabling a session shows it to the student, as the featured one when it is the last",
+  "enabling a session shows it to the student without making it the featured one",
   Effect.gen(function* () {
     const { url } = yield* stack;
 
@@ -247,7 +289,7 @@ test(
     const sessions = yield* studentList(url);
 
     expect(sessions.map((session) => session.id)).toContain(toEnable);
-    expect(sessions.at(-1)?.id).toBe(toEnable);
+    expect(sessions.find((session) => session.id === toEnable)?.featured).toBe(false);
   }),
 );
 

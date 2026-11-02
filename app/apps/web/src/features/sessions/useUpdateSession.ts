@@ -5,37 +5,56 @@ import { optimisticPatch } from "../../api/optimistic-patch.ts";
 import { queryKeys } from "../../api/query-keys.ts";
 import { useApiMutation } from "../../api/useApiMutation.ts";
 
+export const updateErrorText = "No se pudo guardar el cambio. Probá de nuevo.";
+
 export interface SessionUpdate {
   readonly id: string;
   readonly change: SessionChange;
+  readonly errorText?: string;
 }
 
-const withEnabled = <S extends SessionSummary>(session: S, { id, change }: SessionUpdate): S =>
-  session.id !== id || change.enabled == null ? session : { ...session, enabled: change.enabled };
+// Only disabling a session that is not the featured one and the featured
+// questions apply at once. The rest waits for the API, because it changes
+// another session too: enabling, featuring and disabling the featured one.
+const withPatch = <S extends SessionSummary>(session: S, { id, change }: SessionUpdate): S => {
+  if (session.id !== id) {
+    return session;
+  }
 
-// Only the enabled switch is immediate; saving the title and summary waits for
-// the API in its own form.
+  const patched = {
+    ...session,
+    featuredQuestions: change.featuredQuestions ?? session.featuredQuestions,
+  };
+
+  const isDisabling = change.enabled === false && change.featured == null && !session.featured;
+
+  return isDisabling ? { ...patched, enabled: false } : patched;
+};
+
 export const useUpdateSession = (
   options?: MutationOptions<Session, SessionUpdate, EndpointError<"adminSessions", "update">>,
 ) =>
   useApiMutation({
     call: (api, input) =>
       api.adminSessions.update({ params: { id: input.id }, payload: input.change }),
-    invalidates: [queryKeys.sessions(), queryKeys.adminSessions(), queryKeys.allAdminChangelog()],
+    invalidates: [
+      queryKeys.sessions(),
+      queryKeys.adminSessions(),
+      queryKeys.allAdminChangelog(),
+      queryKeys.allAdminPolls(),
+      queryKeys.allAdminRaisedHands(),
+    ],
     optimistic: [
       optimisticPatch<ReadonlyArray<SessionSummary>, SessionUpdate>({
         key: () => queryKeys.adminSessions(),
         exact: true,
-        patch: (sessions, input) => sessions.map((session) => withEnabled(session, input)),
+        patch: (sessions, input) => sessions.map((session) => withPatch(session, input)),
       }),
       optimisticPatch<Session, SessionUpdate>({
         key: (input) => queryKeys.adminSession(input.id),
-        patch: withEnabled,
+        patch: withPatch,
       }),
     ],
-    errorToast: ({ change }) =>
-      change.enabled == null
-        ? undefined
-        : `No se pudo ${change.enabled ? "habilitar" : "deshabilitar"} la sesión.`,
+    errorToast: ({ errorText }) => errorText,
     options,
   });

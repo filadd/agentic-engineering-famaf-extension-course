@@ -9,11 +9,11 @@ import * as Layer from "effect/Layer";
 
 import { Classroom } from "../classroom.ts";
 import { SessionsStore } from "../sessions/sessions-store.ts";
-import { existingSession, visibleSession } from "../sessions/visible-session.ts";
+import { existingSession, featuredSession, visibleSession } from "../sessions/visible-session.ts";
 import { HandsStore } from "./hands-store.ts";
 
 // The raised hands of the sessions. A student raises and lowers their own in
-// an enabled session; the teacher sees every hand with its name and avatar and
+// the featured session; the teacher sees every hand with its name and avatar and
 // lowers anyone's.
 export class Hands extends Context.Service<
   Hands,
@@ -59,7 +59,7 @@ export class Hands extends Context.Service<
             return yield* new NotStudent();
           }
 
-          yield* visibleSession(sessions, sessionId);
+          yield* featuredSession(sessions, sessionId);
 
           const id = yield* crypto.randomULID.pipe(Effect.orDie);
           yield* store.upsert(
@@ -71,7 +71,7 @@ export class Hands extends Context.Service<
           return { sessionId, user: { id: viewer.id, name: viewer.name, avatar: viewer.avatar } };
         }),
         lowerOwn: Effect.fn("Hands.lowerOwn")(function* (viewer, sessionId) {
-          yield* visibleSession(sessions, sessionId);
+          yield* featuredSession(sessions, sessionId);
           yield* lower(sessionId, viewer.id);
         }),
         listForTeacher: Effect.fn("Hands.listForTeacher")(function* (sessionId) {

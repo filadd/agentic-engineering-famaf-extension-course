@@ -22,7 +22,7 @@ interface Options {
 export const slidesMaterial = (sessionId: string) =>
   material(10, sessionId, "Slides de la sesión.html", { isSlides: true, contentType: "text/html" });
 
-// Everything /aula asks for as it opens, for a student in the highlighted
+// Everything /aula asks for as it opens, for a student in the featured
 // session. Tests override what they change with server.use.
 export const studentClassroom = ({
   session,
@@ -32,7 +32,8 @@ export const studentClassroom = ({
   closedPolls = [],
   hands = [],
 }: Options) => {
-  const { currentSlide: _slide, currentStep: _step, ...summary } = session;
+  const { currentSlide: _slide, currentStep: _step, ...rest } = session;
+  const summary = { ...rest, featured: true };
   const slidesFile = slidesMaterial(session.id);
 
   return [

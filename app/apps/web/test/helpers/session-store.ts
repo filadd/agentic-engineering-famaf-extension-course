@@ -33,6 +33,8 @@ export const sessionStore = (initial: ReadonlyArray<Session>) => {
         ...input,
         position: sessions.length + 1,
         enabled: false,
+        featured: false,
+        featuredQuestions: false,
         currentSlide: 1,
         currentStep: 1,
       };
@@ -46,7 +48,19 @@ export const sessionStore = (initial: ReadonlyArray<Session>) => {
       const change = await readJson(request, SessionChange);
 
       writes.push({ method: "PATCH", body: change });
-      sessions = sessions.map((each) => (each.id === params["id"] ? { ...each, ...change } : each));
+      sessions = sessions.map((each) => {
+        if (each.id === params["id"]) {
+          const changed = { ...each, ...change };
+
+          return change.enabled === false
+            ? { ...changed, featured: false, featuredQuestions: false }
+            : changed;
+        }
+
+        return change.featured === true
+          ? { ...each, featured: false, featuredQuestions: false }
+          : each;
+      });
 
       return HttpResponse.json(sessions.find((each) => each.id === params["id"]));
     }),

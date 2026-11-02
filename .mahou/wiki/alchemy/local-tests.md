@@ -1,6 +1,6 @@
 # Testing against Alchemy's local stack
 
-verified: 2026-10-22
+verified: 2026-11-02
 
 Answers how integration tests run against a local Alchemy 2 stack: how much state a test file gets, how to start from a clean database with fixtures, how to read and fail the mail a Worker sends, and what cannot be made to fail. The facts come from the alchemy source at 2.0.0-beta.83 (commit 9e3c058) and its issues. kurasu's API suite applies them: it deploys one stage per file, loads the fixtures through `importFiles`, reads the mail from `text/*.txt` and the recipients from the stage's Worker log, makes sends fail with `allowedDestinationAddresses`, and sets `sequence.hooks: "list"`.
 
@@ -21,4 +21,5 @@ Answers how integration tests run against a local Alchemy 2 stack: how much stat
 
 - alchemy at 9e3c058: `packages/alchemy/src/Test/Vitest.ts`, `Test/Core.ts`, `Cloudflare/D1/Database.ts`, `Cloudflare/R2/Bucket.ts`, `packages/cloudflare-runtime/src/core/bindings/send-email/SendEmailBinding.worker.ts`, `packages/alchemy/test/Cloudflare/Email/SendEmail.local.test.ts`: https://github.com/alchemy-run/alchemy/tree/9e3c058
 - Issue #2118: https://github.com/alchemy-run/alchemy/issues/2118
+- Rechecked on `alchemy` and `@alchemy.run/cloudflare` 2.0.0-beta.84: `alchemy/Test/Vitest` stays in `alchemy`; the Cloudflare resources (`D1`, `R2`, `Email`) come from `@alchemy.run/cloudflare`.
 - kurasu: `app/apps/api/test/helpers/api-test.ts`, `app/apps/api/vitest.config.ts`, `.scratch/aula-virtual/implement/report-refactor.md`.

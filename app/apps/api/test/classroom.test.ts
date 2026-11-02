@@ -14,6 +14,7 @@ const beto = "01CSTB00000000000000000000";
 const carla = "01CSTC00000000000000000000";
 
 const earlier = "01CSA000000000000000000000";
+const later = "01CSF000000000000000000000";
 const featured = "01CSB000000000000000000000";
 const disabled = "01CSD000000000000000000000";
 const deleted = "01CSE000000000000000000000";
@@ -50,9 +51,10 @@ test(
 );
 
 test(
-  "a student cannot enter an earlier session",
+  "a student cannot enter an enabled session that is not the featured one",
   Effect.gen(function* () {
     expect(yield* statusFor(ana, earlier)).toBe(404);
+    expect(yield* statusFor(ana, later)).toBe(404);
   }),
 );
 

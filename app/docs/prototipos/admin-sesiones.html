@@ -60,6 +60,9 @@
   .state { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 3px 10px; font-size: 12px; background: var(--tag); color: #1F1B18; white-space: nowrap; }
   .state .dot { width: 8px; height: 8px; border-radius: 50%; background: #3F9E6E; }
   .state.off .dot { background: #B9ADA5; }
+  .chip.feat { display: inline-flex; align-items: center; gap: 5px; background: #1F1B18; color: #fff; font-size: 13px; padding: 4px 12px 4px 9px; white-space: nowrap; }
+  .chip.feat.sm { font-size: 11px; padding: 2px 9px 2px 6px; }
+  .state.off .dot { background: #B9ADA5; }
 
   .card { border-radius: 22px; padding: 20px 22px; color: var(--card-ink, var(--ink)); }
   .card .head { cursor: pointer; display: flex; align-items: center; gap: 10px; }
@@ -84,7 +87,8 @@
   .node { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-family: 'Rubik', sans-serif; font-weight: 700; flex: none; }
   .node.done { background: var(--active); color: var(--active-ink); }
   .node.live { background: #E8505B; color: #fff; box-shadow: 0 0 0 6px color-mix(in srgb, #E8505B 25%, transparent); }
-  .node.lock { background: var(--locked); color: var(--muted); }
+  .node.lock { background: transparent; border: 2px dashed var(--muted); }
+  .node.later { background: var(--locked); }
   .node.add { background: transparent; border: 2px dashed var(--muted); color: var(--muted); }
   .link { width: 4px; flex: 1; min-height: 14px; background: var(--line); border-radius: 2px; }
   .step { padding-bottom: 12px; }
@@ -121,13 +125,17 @@
 <body>
 <div class="intro">
   <h1>Sesiones del profe</h1>
-  <p>La misma página que ve el estudiante: la última sesión habilitada destacada arriba y, debajo, todas las sesiones en el camino colapsable. El profe ve todas, con su estado, y cada una abre su página de admin. "Nueva sesión" abre un modal y la suma al final, deshabilitada. La card "+ Nueva sesión" cierra el camino. Las sesiones se reordenan arrastrándolas desde el asa. "Usuarios" lleva a la página de usuarios, donde está el QR de registro.</p>
+  <p>La misma página que ve el estudiante: arriba va la sesión que el profe marcó como destacada, que en el camino es el nodo rojo con una estrella. Sin sesión destacada no hay card arriba y los estudiantes no entran a ningún aula. Debajo van todas las sesiones en el camino colapsable; ningún nodo lleva número: check antes de la destacada, vacío después y punteado en las deshabilitadas. El profe ve todas, con su estado, y cada una abre su página de admin. "Nueva sesión" abre un modal y la suma al final, deshabilitada. La card "+ Nueva sesión" cierra el camino. Las sesiones se reordenan arrastrándolas desde el asa. "Usuarios" lleva a la página de usuarios, donde está el QR de registro.</p>
 </div>
 <div id="alts"></div>
 
 <script>
 const ICONS = {"arrow-right":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4.5 12h15m-5.625 6l5.625-6l-5.625-6\"/></svg>","grip-vertical":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M9.667 12H9m6 0h-.667M9.667 7H9m6 0h-.667M9.667 17H9m6 0h-.667\"/></svg>","plus":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 12h-6m0 0H6m6 0V6m0 6v6\"/></svg>","x":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 6L6 18M6 6l12 12\"/></svg>","users":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 19.75c0-2.09-1.67-5.068-4-5.727m-2 5.727c0-2.651-2.686-6-6-6s-6 3.349-6 6m9-12.5a3 3 0 1 1-6 0a3 3 0 0 1 6 0m3 3a3 3 0 1 0 0-6\"/></svg>"};
+Object.assign(ICONS, {
+  "star-fill": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"currentColor\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M12 3.5l2.6 5.3l5.9.9l-4.25 4.15l1 5.85L12 16.9l-5.25 2.8l1-5.85L3.5 9.7l5.9-.9z\"/></svg>",
+});
 const ic = (n, s = 20) => `<span class="i" style="width:${s}px;height:${s}px">${ICONS[n]}</span>`;
+
 
 const BASE = [
   { title: 'La experiencia vibe coding', summary: 'Armamos una app entera pidiéndosela al agente y miramos qué salió bien y qué no.' },
@@ -138,10 +146,12 @@ const BASE = [
   { title: 'Modelos open source y CCAD', summary: 'Correr modelos propios en el cluster de la facultad.' },
 ];
 
-// How many of the course's sessions are enabled in each scenario; the last enabled one is the current one.
+// Each scenario sets which sessions are enabled and which one carries the featured mark; the featured session is the one students enter.
 const SCENARIOS = {
-  live: { label: 'Sesión 2 en curso', sessions: () => BASE.map((s, i) => ({ ...s, enabled: i < 2 })) },
-  none: { label: 'Ninguna habilitada', sessions: () => BASE.map((s) => ({ ...s, enabled: false })) },
+  live: { label: 'Sesión 2 en curso', sessions: () => BASE.map((s, i) => ({ ...s, enabled: i < 2, featured: i === 1 })) },
+  mid: { label: 'Destacada la 2, habilitadas hasta la 4', sessions: () => BASE.map((s, i) => ({ ...s, enabled: i < 4, featured: i === 1 })) },
+  hab: { label: 'Habilitadas, ninguna destacada', sessions: () => BASE.map((s, i) => ({ ...s, enabled: i < 2, featured: false })) },
+  none: { label: 'Ninguna habilitada', sessions: () => BASE.map((s) => ({ ...s, enabled: false, featured: false })) },
   empty: { label: 'Sin sesiones todavía', sessions: () => [] },
 };
 
@@ -157,33 +167,43 @@ const color = (n) => `var(--c${(n - 1) % 4})`;
 
 const stateTag = (s) => `<span class="state ${s.enabled ? '' : 'off'}"><span class="dot"></span>${s.enabled ? 'Habilitada' : 'Deshabilitada'}</span>`;
 
-const currentIndex = (v) => v.sessions.map((s) => s.enabled).lastIndexOf(true);
+const featuredIndex = (v) => v.sessions.findIndex((s) => s.featured);
 
 const nodeOf = (v, i) => {
   const s = v.sessions[i];
-  const current = currentIndex(v);
 
-  if (!s.enabled) {
-    return `<div class="node lock">${i + 1}</div>`;
+  if (s.featured) {
+    return `<div class="node live">${ic('star-fill', 26)}</div>`;
   }
 
-  return i === current ? `<div class="node live">${i + 1}</div>` : `<div class="node done">✓</div>`;
+  if (!s.enabled) {
+    return '<div class="node lock"></div>';
+  }
+
+  const featured = featuredIndex(v);
+
+  return featured === -1 || i > featured ? '<div class="node later"></div>' : '<div class="node done">✓</div>';
 };
 
 // The admin page of each session is prototypes/admin-sesion.html.
 const openBtn = () => `<a class="btn" href="admin-sesion.html" target="_blank">Abrir ${ic('arrow-right', 18)}</a>`;
 
 const hero = (v) => {
-  const i = currentIndex(v);
+  const i = featuredIndex(v);
 
   if (i === -1) {
-    return v.sessions.length === 0 ? '' : '<div class="empty-note">Todavía no habilitaste ninguna sesión: los estudiantes no ven nada.</div>';
+    if (v.sessions.length === 0) {
+      return '';
+    }
+
+    return v.sessions.some((s) => s.enabled)
+      ? '<div class="empty-note">Ninguna sesión destacada: los estudiantes no entran a ningún aula.</div>'
+      : '<div class="empty-note">Todavía no habilitaste ninguna sesión: los estudiantes no ven nada.</div>';
   }
 
   const s = v.sessions[i];
 
   return `<div class="card hero" style="background:${color(i + 1)}">
-    <div class="kicker">Sesión ${i + 1} de ${v.sessions.length} ${stateTag(s)}</div>
     <h3>${s.title}</h3>
     <p>${s.summary}</p>
     <div class="foot">${openBtn()}</div>
@@ -408,7 +428,7 @@ Object.keys(ALTS).forEach((alt) => {
         return;
       }
 
-      v.sessions = [...v.sessions, { title: v.title.trim(), summary: v.summary.trim(), enabled: false }];
+      v.sessions = [...v.sessions, { title: v.title.trim(), summary: v.summary.trim(), enabled: false, featured: false }];
       Object.assign(v, { modal: false, open: v.sessions.length - 1 });
     } else {
       return;

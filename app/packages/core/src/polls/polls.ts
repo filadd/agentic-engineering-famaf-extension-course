@@ -2,6 +2,7 @@ import {
   InvalidPollContent,
   InvalidResponse,
   InvalidTransition,
+  NotFeatured,
   NotStudent,
   PollNotActive,
   PollNotDraft,
@@ -28,7 +29,7 @@ import * as Layer from "effect/Layer";
 import { Changelog } from "../changelog/changelog.ts";
 import { Classroom } from "../classroom.ts";
 import { SessionsStore } from "../sessions/sessions-store.ts";
-import { existingSession, visibleSession } from "../sessions/visible-session.ts";
+import { existingSession, featuredSession, visibleSession } from "../sessions/visible-session.ts";
 import { fitsType } from "./fits-type.ts";
 import { PollsStore, type StoredPoll } from "./polls-store.ts";
 import { noResponses, type ResponseCounts, ResponsesStore } from "./responses-store.ts";
@@ -94,7 +95,7 @@ export class Polls extends Context.Service<
       change: PollChange,
     ) => Effect.Effect<
       AdminPoll,
-      PollNotFound | PollNotDraft | InvalidTransition | InvalidPollContent
+      PollNotFound | PollNotDraft | InvalidTransition | InvalidPollContent | NotFeatured
     >;
     readonly remove: (id: Ulid) => Effect.Effect<void, PollNotFound>;
   }
@@ -157,6 +158,9 @@ export class Polls extends Context.Service<
           Effect.fromOption(poll).pipe(Effect.mapError(() => new PollNotFound())),
         );
 
+      const isFeatured = (sessionId: Ulid) =>
+        Effect.isSuccess(featuredSession(sessions, sessionId));
+
       const notifyPolls = (poll: StoredPoll) => classroom.notify(poll.sessionId, "polls");
 
       return Polls.of({
@@ -182,7 +186,7 @@ export class Polls extends Context.Service<
 
           const poll = yield* findPoll(id);
 
-          yield* visibleSession(sessions, poll.sessionId).pipe(
+          yield* featuredSession(sessions, poll.sessionId).pipe(
             Effect.mapError(() => new PollNotFound()),
           );
 
@@ -201,7 +205,6 @@ export class Polls extends Context.Service<
             { target: ["pollId", "userId"], set: { value: response } },
           );
           yield* notifyPolls(poll);
-          yield* changelog.drop({ type: "poll-opened", entityId: poll.id });
 
           const [voted] = yield* forStudent(viewer, [poll]);
 
@@ -238,6 +241,10 @@ export class Polls extends Context.Service<
             !transitions.some(([from, to]) => from === poll.status && to === next)
           ) {
             return yield* new InvalidTransition();
+          }
+
+          if (next === "active" && !(yield* isFeatured(poll.sessionId))) {
+            return yield* new NotFeatured();
           }
 
           // The content a draft ends up with must still fit its type.

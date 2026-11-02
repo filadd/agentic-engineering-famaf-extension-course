@@ -6,6 +6,7 @@ import { Materials } from "@kurasu/core/materials/materials";
 import { Polls } from "@kurasu/core/polls/polls";
 import { Questions } from "@kurasu/core/questions/questions";
 import { Sessions } from "@kurasu/core/sessions/sessions";
+import { D1Batch } from "@kurasu/database/batch";
 import { D1Changelog } from "@kurasu/database/changelog";
 import { D1Codes } from "@kurasu/database/codes";
 import { Database } from "@kurasu/database/database";
@@ -18,7 +19,7 @@ import { KurasuDatabase } from "@kurasu/database/resource";
 import { D1Responses } from "@kurasu/database/responses";
 import { D1Sessions } from "@kurasu/database/sessions";
 import { D1Users } from "@kurasu/database/users";
-import * as Cloudflare from "alchemy/Cloudflare";
+import * as Cloudflare from "@alchemy.run/cloudflare";
 import * as Config from "effect/Config";
 import * as Effect from "effect/Effect";
 import * as HttpRouter from "effect/http/HttpRouter";
@@ -89,6 +90,7 @@ export default class Api extends Cloudflare.Worker<Api>()(
       D1QuestionVotes,
       D1Hands,
       D1Changelog,
+      D1Batch,
     ).pipe(Layer.provide(Database.layer(d1.raw)));
 
     const platform = Layer.mergeAll(

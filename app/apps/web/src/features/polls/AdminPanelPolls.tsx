@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { Icon } from "../../ui/Icon.tsx";
 import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
+import { NotFeaturedNote } from "./NotFeaturedNote.tsx";
 import { PanelPollCard } from "./PanelPollCard.tsx";
 import { adminPollExamples } from "./poll-examples.ts";
 import { byStatus } from "./poll-order.ts";
@@ -9,11 +10,12 @@ import { useAdminPolls } from "./useAdminPolls.ts";
 
 interface Props {
   sessionId: string;
+  isFeatured: boolean;
 }
 
 // The polls in the classroom's panel: the active and draft ones, and the
 // closed ones folded apart.
-export const AdminPanelPolls = ({ sessionId }: Props) => {
+export const AdminPanelPolls = ({ sessionId, isFeatured }: Props) => {
   const polls = useAdminPolls(sessionId);
 
   const [closedOpen, setClosedOpen] = useState(false);
@@ -23,7 +25,7 @@ export const AdminPanelPolls = ({ sessionId }: Props) => {
       <SkeletonOf>
         <div className="flex flex-col gap-2.5">
           {adminPollExamples.map((poll) => (
-            <PanelPollCard key={poll.id} poll={poll} />
+            <PanelPollCard key={poll.id} poll={poll} isFeatured />
           ))}
         </div>
       </SkeletonOf>
@@ -38,8 +40,9 @@ export const AdminPanelPolls = ({ sessionId }: Props) => {
     <div className="flex flex-col gap-2.5">
       {current.length === 0 ? <div className="text-sm text-muted">No hay encuestas.</div> : null}
       {current.map((poll) => (
-        <PanelPollCard key={poll.id} poll={poll} />
+        <PanelPollCard key={poll.id} poll={poll} isFeatured={isFeatured} />
       ))}
+      {isFeatured || !current.some((poll) => poll.status === "draft") ? null : <NotFeaturedNote />}
       {closed.length === 0 ? null : (
         <section aria-label="Cerradas">
           <button
@@ -54,7 +57,7 @@ export const AdminPanelPolls = ({ sessionId }: Props) => {
           {closedOpen ? (
             <div className="flex flex-col gap-2.5">
               {closed.map((poll) => (
-                <PanelPollCard key={poll.id} poll={poll} />
+                <PanelPollCard key={poll.id} poll={poll} isFeatured={isFeatured} />
               ))}
             </div>
           ) : null}

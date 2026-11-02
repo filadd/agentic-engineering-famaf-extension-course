@@ -4,8 +4,8 @@ import type { EndpointError, QueryOptions } from "../../api/api-error.ts";
 import { queryKeys } from "../../api/query-keys.ts";
 import { useApiQuery } from "../../api/useApiQuery.ts";
 
-export const useAdminSessions = (
-  options?: QueryOptions<ReadonlyArray<SessionSummary>, EndpointError<"adminSessions", "list">>,
+export const useAdminSessions = <D = ReadonlyArray<SessionSummary>>(
+  options?: QueryOptions<ReadonlyArray<SessionSummary>, EndpointError<"adminSessions", "list">, D>,
 ) =>
   useApiQuery({
     queryKey: queryKeys.adminSessions(),

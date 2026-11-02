@@ -3,6 +3,7 @@ import {
   InvalidPollContent,
   InvalidResponse,
   InvalidTransition,
+  NotFeatured,
   NotStudent,
   PollNotActive,
   PollNotDraft,
@@ -36,7 +37,7 @@ const withPolls = "01PSA000000000000000000000";
 const disabled = "01PSB000000000000000000000";
 const teachers = "01PSC000000000000000000000";
 const bigCloud = "01PSD000000000000000000000";
-const feedbackSession = "01PSF000000000000000000000";
+const featuredSession = "01PSF000000000000000000000";
 const beto = "01PVTB00000000000000000000";
 
 const activeUnvoted = "01PQ1000000000000000000000";
@@ -175,7 +176,7 @@ test(
   Effect.scoped(
     Effect.gen(function* () {
       const { url } = yield* stack;
-      const socket = yield* openClassroom(url, withPolls, yield* cookieFor(teacher));
+      const socket = yield* openClassroom(url, featuredSession, yield* cookieFor(teacher));
       const response = yield* vote(url, voter, "01PV1000000000000000000000", { choice: 1 });
 
       expect(response.status).toBe(200);
@@ -275,13 +276,27 @@ test(
   "voting on a closed poll or a draft answers PollNotActive",
   Effect.gen(function* () {
     const { url } = yield* stack;
-    const closed = yield* vote(url, voter, closedUnvoted, { choice: 0 });
-    const drafted = yield* vote(url, voter, draft, { choice: 0 });
+    const closed = yield* vote(url, voter, "01PV7000000000000000000000", { choice: 0 });
+    const drafted = yield* vote(url, voter, "01PV8000000000000000000000", { choice: 0 });
 
     expect(closed.status).toBe(409);
     expect(failedWith(closed, PollNotActive)).toBe(true);
     expect(drafted.status).toBe(409);
     expect(failedWith(drafted, PollNotActive)).toBe(true);
+  }),
+);
+
+test(
+  "voting on a poll of a session that is not the featured one answers PollNotFound and stores nothing",
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+    const response = yield* vote(url, voter, activeUnvoted, { choice: 0 });
+
+    expect(response.status).toBe(404);
+    expect(failedWith(response, PollNotFound)).toBe(true);
+    expect(
+      byId(yield* studentPolls(url, voter, `?sessionId=${withPolls}`), activeUnvoted)?.myResponse,
+    ).toBeNull();
   }),
 );
 
@@ -511,7 +526,7 @@ test(
   Effect.scoped(
     Effect.gen(function* () {
       const { url } = yield* stack;
-      const socket = yield* openClassroom(url, teachers, yield* cookieFor(teacher));
+      const socket = yield* openClassroom(url, featuredSession, yield* cookieFor(teacher));
       const id = "01PD3000000000000000000000";
       const response = yield* asTeacher("PATCH", `/api/admin/polls/${id}`, { status: "active" });
 
@@ -525,7 +540,21 @@ test(
 );
 
 test(
-  "closing an active poll answers it closed",
+  "activating a draft of a session that is not the featured one answers NotFeatured and leaves it a draft",
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+    const id = "01PD9000000000000000000000";
+    const response = yield* asTeacher("PATCH", `/api/admin/polls/${id}`, { status: "active" });
+
+    expect(response.status).toBe(409);
+    expect(failedWith(response, NotFeatured)).toBe(true);
+    expect(ids(yield* studentPolls(url, reader, "?status=active"))).not.toContain(id);
+    expect((yield* teacherPolls).find((poll) => poll.id === id)).toMatchObject({ status: "draft" });
+  }),
+);
+
+test(
+  "closing an active poll of a session that is not the featured one answers it closed",
   Effect.scoped(
     Effect.gen(function* () {
       const { url } = yield* stack;
@@ -586,7 +615,7 @@ test(
 
 const answers = (url: string, userId: string, id: string) =>
   Effect.gen(function* () {
-    const polls = yield* studentPolls(url, userId, `?sessionId=${feedbackSession}`);
+    const polls = yield* studentPolls(url, userId, `?sessionId=${featuredSession}`);
 
     return byId(polls, id)?.myResponse ?? null;
   });
@@ -596,7 +625,7 @@ const feedbackOfTeacher = (id: string) =>
     const { url } = yield* stack;
     const cookie = yield* cookieFor(teacher);
 
-    const response = yield* request(url, "GET", `/api/admin/polls?sessionId=${feedbackSession}`, {
+    const response = yield* request(url, "GET", `/api/admin/polls?sessionId=${featuredSession}`, {
       cookie,
     });
 
@@ -611,7 +640,7 @@ const sessionEntries = Effect.gen(function* () {
   const cookie = yield* cookieFor(teacher);
   const { url } = yield* stack;
 
-  const response = yield* request(url, "GET", `/api/admin/changelog?sessionId=${feedbackSession}`, {
+  const response = yield* request(url, "GET", `/api/admin/changelog?sessionId=${featuredSession}`, {
     cookie,
   });
 
@@ -619,11 +648,11 @@ const sessionEntries = Effect.gen(function* () {
 });
 
 test(
-  "a feedback answer keeps the text as written, shows no results and drops the opened news",
+  "a feedback answer keeps the text as written, shows no results and keeps the opened news",
   Effect.scoped(
     Effect.gen(function* () {
       const { url } = yield* stack;
-      const socket = yield* openClassroom(url, feedbackSession, yield* cookieFor(teacher));
+      const socket = yield* openClassroom(url, featuredSession, yield* cookieFor(teacher));
 
       expect((yield* sessionEntries).map((entry) => entry.entityId)).toContain(feedback(1));
 
@@ -634,7 +663,7 @@ test(
         myResponse: { pick: 4, text: "  Me sirvió  " },
         results: null,
       });
-      expect((yield* sessionEntries).map((entry) => entry.entityId)).not.toContain(feedback(1));
+      expect((yield* sessionEntries).map((entry) => entry.entityId)).toContain(feedback(1));
 
       yield* socket.waitFor(isChanged("polls"));
     }),
@@ -846,7 +875,7 @@ test(
   "an answered active feedback comes to the student with their answer and no results",
   Effect.gen(function* () {
     const { url } = yield* stack;
-    const polls = yield* studentPolls(url, voter, `?sessionId=${feedbackSession}&status=active`);
+    const polls = yield* studentPolls(url, voter, `?sessionId=${featuredSession}&status=active`);
 
     expect(byId(polls, feedback(9))).toMatchObject({
       myResponse: { pick: 4, text: "Muy buena" },
@@ -859,7 +888,7 @@ test(
   "a closed feedback the student did not answer comes with no answer and no results",
   Effect.gen(function* () {
     const { url } = yield* stack;
-    const polls = yield* studentPolls(url, voter, `?sessionId=${feedbackSession}&status=closed`);
+    const polls = yield* studentPolls(url, voter, `?sessionId=${featuredSession}&status=closed`);
 
     expect(byId(polls, feedback(12))).toMatchObject({ myResponse: null, results: null });
     expect(byId(polls, feedback(13))).toMatchObject({
@@ -934,7 +963,7 @@ test(
   Effect.scoped(
     Effect.gen(function* () {
       const { url } = yield* stack;
-      const socket = yield* openClassroom(url, feedbackSession, yield* cookieFor(teacher));
+      const socket = yield* openClassroom(url, featuredSession, yield* cookieFor(teacher));
 
       const response = yield* asTeacher("PATCH", `/api/admin/polls/${feedback(15)}`, {
         status: "closed",

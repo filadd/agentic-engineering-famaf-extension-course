@@ -5,7 +5,7 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 
-import { batch, Database } from "./database.ts";
+import { batch, Database, write } from "./database.ts";
 import { repositoryOf } from "./repository.ts";
 import { sessions } from "./schema.ts";
 
@@ -37,7 +37,14 @@ export const D1Sessions = Layer.effect(
           .list({ where: { enabled: true }, orderBy: { field: "position", direction: "asc" } })
           .pipe(
             Effect.map((enabled) =>
-              enabled.map(({ id, title, summary, position }) => ({ id, title, summary, position })),
+              enabled.map(({ id, title, summary, position, featured, featuredQuestions }) => ({
+                id,
+                title,
+                summary,
+                position,
+                featured,
+                featuredQuestions,
+              })),
             ),
           ),
       create: (session) =>
@@ -48,16 +55,20 @@ export const D1Sessions = Layer.effect(
       reorder: (ids) =>
         batch(client, [
           ...ids.map((id, index) =>
-            db
-              .update(sessions)
-              .set({ position: -(index + 1) })
-              .where(eq(sessions.id, id)),
+            write(
+              db
+                .update(sessions)
+                .set({ position: -(index + 1) })
+                .where(eq(sessions.id, id)),
+            ),
           ),
           ...ids.map((id, index) =>
-            db
-              .update(sessions)
-              .set({ position: index + 1 })
-              .where(eq(sessions.id, id)),
+            write(
+              db
+                .update(sessions)
+                .set({ position: index + 1 })
+                .where(eq(sessions.id, id)),
+            ),
           ),
         ]),
     });

@@ -1,62 +1,44 @@
 import type { SessionSummary } from "@kurasu/contract/sessions";
 import { useState } from "react";
 
-import { Icon } from "../../ui/Icon.tsx";
 import { DragHandle } from "./DragHandle.tsx";
 import { EnabledLabel } from "./EnabledLabel.tsx";
 import { moveTo } from "./move-to.ts";
 import { NewSessionCard } from "./NewSessionCard.tsx";
 import { OpenSessionLink } from "./OpenSessionLink.tsx";
-import { RailNode } from "./RailNode.tsx";
+import { railLook } from "./rail-look.ts";
 import { SessionCard } from "./SessionCard.tsx";
 import { SessionRail } from "./SessionRail.tsx";
+import { SessionRailNode } from "./SessionRailNode.tsx";
 import { useReorderSessions } from "./useReorderSessions.ts";
 
 interface Props {
   sessions: ReadonlyArray<SessionSummary>;
-  highlightedId: string | undefined;
+  featuredPosition: number | undefined;
 }
 
 // Every session of the course, in order, dragged to reorder. The open card
-// starts on the highlighted one.
-export const AdminSessionRail = ({ sessions, highlightedId }: Props) => {
-  const [openId, setOpenId] = useState<string | null>(highlightedId ?? null);
+// starts on the featured one.
+export const AdminSessionRail = ({ sessions, featuredPosition }: Props) => {
+  const [openId, setOpenId] = useState<string | null>(
+    sessions.find((session) => session.position === featuredPosition)?.id ?? null,
+  );
+
   const [dragged, setDragged] = useState<string | null>(null);
   const [over, setOver] = useState<string | null>(null);
 
   const reorder = useReorderSessions();
-
-  const highlightedIndex = sessions.findIndex((session) => session.id === highlightedId);
 
   return (
     <SessionRail
       sessions={sessions}
       openId={openId}
       onOpen={setOpenId}
-      renderNode={(session) => {
-        const index = sessions.indexOf(session);
-        const label = `Sesión ${index + 1}`;
-
-        if (session.enabled !== true) {
-          return (
-            <span aria-label={label}>
-              <RailNode look="locked">{index + 1}</RailNode>
-            </span>
-          );
-        }
-
-        return (
-          <span aria-label={label}>
-            {session.id === highlightedId ? (
-              <RailNode look="live">{index + 1}</RailNode>
-            ) : (
-              <RailNode look={index < highlightedIndex ? "done" : "locked"}>
-                <Icon name="check" size={20} />
-              </RailNode>
-            )}
-          </span>
-        );
-      }}
+      renderNode={(session) => (
+        <SessionRailNode
+          look={session.enabled === true ? railLook(session, featuredPosition) : "locked"}
+        />
+      )}
       renderCard={(session, state) => (
         <div
           draggable

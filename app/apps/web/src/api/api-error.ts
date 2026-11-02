@@ -11,6 +11,6 @@ export type EndpointError<
   N extends keyof KurasuClient[G],
 > = KurasuClient[G][N] extends (...args: never) => Effect.Effect<unknown, infer E> ? E : never;
 
-export type QueryOptions<A, E> = Omit<UseQueryOptions<A, E>, "queryKey" | "queryFn">;
+export type QueryOptions<A, E, D = A> = Omit<UseQueryOptions<A, E, D>, "queryKey" | "queryFn">;
 
 export type MutationOptions<A, I, E> = Omit<UseMutationOptions<A, E, I>, "mutationFn">;

@@ -58,14 +58,14 @@ sequenceDiagram
 
     A->>W: Elige un emoji y escribe
     W->>API: Manda el punto y el texto
-    API->>API: Valida rol, estado y valores
-    alt Encuesta abierta y valores válidos
+    API->>API: Valida rol, sesión destacada, estado y valores
+    alt Sesión destacada, encuesta abierta y valores válidos
         API->>DB: Guarda la respuesta del alumno
         API->>Au: Avisa del cambio en las encuestas
         Au-->>W: Aviso a las webs conectadas
         API-->>W: Devuelve la encuesta con su respuesta y sin resultados
         W-->>A: Estado de gracias
-    else Cerrada o valores inválidos
+    else Otra sesión, cerrada o valores inválidos
         API-->>W: Rechaza el envío
         W-->>A: Error en la tarjeta
     end
@@ -81,7 +81,9 @@ Del lado del profe, las respuestas llegan dentro de la encuesta: la misma lectur
 flowchart TD
     S[Envío del alumno] --> R{"Hay sesión y rol de estudiante?"}
     R -->|No| X((Rechazado))
-    R -->|Si| T{"Es una encuesta de feedback activa?"}
+    R -->|Si| D{"La encuesta es de la sesión destacada?"}
+    D -->|No| X
+    D -->|Si| T{"Es una encuesta de feedback activa?"}
     T -->|No| X
     T -->|Si| P{"El punto va de 1 a 5?"}
     P -->|No| X
@@ -89,9 +91,9 @@ flowchart TD
     G --> O((Respuesta guardada))
 ```
 
-La API acepta el envío solo de un estudiante, sobre una encuesta de tipo feedback y activa, con un punto entre 1 y 5. El texto es opcional y no tiene tope. Si no llega, la respuesta se guarda con el punto solo. Si llega en blanco, la API rechaza el envío; la web no lo manda: cuando el campo queda en blanco, envía el punto solo.
+La API acepta el envío solo de un estudiante, sobre una encuesta de tipo feedback y activa de la sesión destacada, con un punto entre 1 y 5. El texto es opcional y no tiene tope. Si no llega, la respuesta se guarda con el punto solo. Si llega en blanco, la API rechaza el envío; la web no lo manda: cuando el campo queda en blanco, envía el punto solo.
 
-Mientras la encuesta está abierta el alumno puede reemplazar su respuesta, y cuando el profe la cierra ya no. La web aplica las mismas reglas antes de mandar el pedido, y el backend manda. Un envío rechazado no guarda nada.
+Mientras la encuesta está abierta el alumno puede reemplazar su respuesta, y cuando se cierra ya no: la cierra el profe, o la API cuando la sesión deja de ser la destacada. La web aplica las mismas reglas antes de mandar el pedido, y el backend manda. Un envío rechazado no guarda nada.
 
 ## 🟢 Los estados de la tarjeta
 
@@ -113,7 +115,7 @@ stateDiagram-v2
     Respondido --> Editando: Cambiar mi respuesta
     Editando --> Enviando: Modificar feedback
     Editando --> Respondido: cancela
-    Respondido --> Cerrada: el profe cierra la encuesta
+    Respondido --> Cerrada: se cierra la encuesta
     Cerrada --> [*]
 ```
 
@@ -155,11 +157,10 @@ sequenceDiagram
     API->>DB: Guarda la respuesta
     API->>Au: Avisa del cambio en las encuestas
     Au-->>W: Aviso a las webs conectadas
-    API->>DB: Saca la novedad de la encuesta abierta
     W->>API: Vuelve a pedir las encuestas de la sesión
 ```
 
-Guardar una respuesta avisa al aula de la sesión, y las webs conectadas vuelven a pedir las encuestas. También saca la novedad pendiente de la encuesta abierta, así el profe no la anuncia después de que alguien respondió.
+Guardar una respuesta avisa al aula de la sesión, y las webs conectadas vuelven a pedir las encuestas. La novedad pendiente de la encuesta abierta queda como está, y sale cuando el profe la anuncia o la descarta, o cuando la encuesta se cierra o se borra (ver [novedades por mail](novedades-por-mail.md)).
 
 ---
 

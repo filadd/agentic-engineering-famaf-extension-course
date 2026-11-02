@@ -2,7 +2,7 @@ import { waitFor, screen } from "@testing-library/react";
 import { http } from "msw";
 import { describe, expect, test } from "vitest";
 
-import { planning, sessionDetail, tooling } from "./fixtures/content.ts";
+import { asFeatured, planning, sessionDetail, tooling, vibeCoding } from "./fixtures/content.ts";
 import { student, teacher } from "./fixtures/people.ts";
 import { apiError, getJson, url } from "./helpers/api.ts";
 import { classroomSocket } from "./helpers/classroom-socket.ts";
@@ -109,15 +109,17 @@ describe("/aula notices", () => {
     expect(screen.getByRole("button", { name: /Presentes \(2\)/ })).toBeTruthy();
   });
 
-  test("a socket that never opens asks for the sessions again and goes home when the session is no longer the highlighted one", async () => {
+  test("a socket that never opens asks for the sessions again and goes home when the session is no longer the featured one", async () => {
     const counter = requestCounter("/sessions");
-    let highlightedChanged = false;
+    let featuredChanged = false;
 
     server.use(
       http.get(url("/sessions"), () => {
-        const sessions = highlightedChanged ? [planning, tooling] : [planning];
+        const sessions = featuredChanged
+          ? [planning, asFeatured(tooling)]
+          : [asFeatured(planning), tooling];
 
-        highlightedChanged = true;
+        featuredChanged = true;
 
         return Response.json(sessions);
       }),
@@ -130,6 +132,30 @@ describe("/aula notices", () => {
     const { router } = await renderRoute("/aula");
 
     await waitFor(() => expect(counter.count("/sessions")).toBeGreaterThan(1));
+    await waitFor(() => expect(router.state.location.pathname).toBe("/"));
+  });
+
+  test("the classroom opens the session with the mark, not the last one", async () => {
+    server.use(
+      getJson("/sessions", [asFeatured(planning), tooling]),
+      ...studentClassroom({ session: sessionDetail(planning) }),
+      classroomSocket({ people: [teacher, student] }).handler,
+    );
+
+    const { router } = await renderRoute("/aula");
+
+    expect(await screen.findByRole("heading", { level: 1, name: planning.title })).toBeTruthy();
+    expect(router.state.location.pathname).toBe("/aula");
+  });
+
+  test("without a featured session the student goes home", async () => {
+    server.use(
+      getJson("/sessions", [vibeCoding, planning]),
+      ...studentClassroom({ session: sessionDetail(planning) }),
+    );
+
+    const { router } = await renderRoute("/aula");
+
     await waitFor(() => expect(router.state.location.pathname).toBe("/"));
   });
 });

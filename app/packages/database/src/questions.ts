@@ -6,7 +6,7 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 
-import { batch, Database, firstRow } from "./database.ts";
+import { batch, Database, firstRow, write } from "./database.ts";
 import { repositoryOf } from "./repository.ts";
 import { questions, questionVotes } from "./schema.ts";
 
@@ -76,8 +76,8 @@ export const D1Questions = Layer.effect(
           ),
       remove: (id) =>
         batch(client, [
-          db.delete(questionVotes).where(eq(questionVotes.questionId, id)),
-          db.delete(questions).where(eq(questions.id, id)),
+          write(db.delete(questionVotes).where(eq(questionVotes.questionId, id))),
+          write(db.delete(questions).where(eq(questions.id, id))),
         ]),
     });
   }),

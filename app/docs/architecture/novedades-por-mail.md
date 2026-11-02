@@ -8,7 +8,7 @@ created: "2026-10-21"
 
 ## 🔭 Resumen
 
-Una novedad es algo nuevo de una sesión que el profe todavía no anunció: la sesión se habilitó, se subió un material o se activó una encuesta. La API registra cada novedad después de guardar el cambio que la origina, y la saca cuando un cambio posterior la deshace. El profe ve las novedades pendientes en la pestaña Contenido del admin de la sesión, elige cuáles incluir, escribe un mensaje si quiere y manda un anuncio por mail a los usuarios con acceso. La API borra las novedades anunciadas o descartadas, y no guarda el mensaje, que va solo en el mail.
+Una novedad es algo nuevo de una sesión que el profe todavía no anunció: la sesión se habilitó, se subió un material, se activó una encuesta o se abrieron las preguntas de la sesión. La API registra cada novedad después de guardar el cambio que la origina, y la saca cuando un cambio posterior la deshace. El profe ve las novedades pendientes en la pestaña Contenido del admin de la sesión, elige cuáles incluir, escribe un mensaje si quiere y manda un anuncio por mail a los usuarios con acceso. La API borra las novedades anunciadas o descartadas, y no guarda el mensaje, que va solo en el mail.
 
 ## 💽 Qué guarda una novedad
 
@@ -22,11 +22,13 @@ flowchart TD
     C -->|"habilitar sesión"| S1["El servicio de novedades crea 'sesión habilitada'<br/>en esa sesión"]
     C -->|"subir material"| S2["El servicio crea 'material nuevo'"]
     C -->|"activar encuesta"| S3["El servicio crea 'encuesta abierta'"]
-    C -->|"deshabilitar sesión, borrar material,<br/>primera respuesta, cerrar o borrar encuesta"| R["El servicio saca la novedad<br/>de esa entidad"]
+    C -->|"prender las preguntas destacadas"| S4["El servicio crea 'preguntas abiertas'"]
+    C -->|"deshabilitar sesión, borrar material,<br/>cerrar o borrar encuesta,<br/>apagar las preguntas destacadas"| R["El servicio saca la novedad<br/>de esa entidad"]
     C -->|"otro cambio"| N((Nada))
     S1 --> F{"¿Falló el servicio?"}
     S2 --> F
     S3 --> F
+    S4 --> F
     R --> F
     F -->|"no"| OK((Novedades al día))
     F -->|"sí"| X(("El cambio queda<br/>sin su novedad"))
@@ -37,16 +39,16 @@ flowchart TD
     classDef grey fill:#f3f4f6,stroke:#4b5563,color:#1f2937
     class A green
     class C,F blue
-    class S1,S2,S3 orange
+    class S1,S2,S3,S4 orange
     class R,X red
     class N,OK grey
 ```
 
 Un servicio de novedades dentro de la API crea y saca las novedades. Cada pedido que hace uno de estos cambios guarda primero el cambio y después le pide al servicio que cree o saque la novedad.
 
-Crean una novedad: habilitar una sesión, subir un material y activar una encuesta. Una encuesta se crea en borrador y recién es novedad al activarla (ver [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)). Sacan la novedad de su entidad: deshabilitar la sesión, borrar el material, y en una encuesta la primera respuesta, cerrarla o borrarla. Editar una sesión, un material o una encuesta, y cualquier otro cambio, no tocan las novedades. Hay como mucho una novedad por tipo e id (ver [modelo de datos](modelo-de-datos.md)). Si un cambio crea la novedad de una entidad que ya tiene una, la que ya estaba queda como está. Sacar la novedad de una entidad saca esa única novedad, y sacar una que no existe no hace nada.
+Crean una novedad: habilitar una sesión, subir un material, activar una encuesta y prender las preguntas destacadas de la sesión. Una encuesta se crea en borrador y recién es novedad al activarla (ver [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)). Sacan la novedad de su entidad: deshabilitar la sesión, borrar el material, cerrar o borrar una encuesta, y apagar las preguntas destacadas. Una respuesta de un estudiante o una pregunta no deshacen el cambio, así que la novedad queda pendiente hasta que el profe la anuncia o la descarta. Destacar una sesión no crea ninguna novedad. Dejar de ser la destacada apaga las preguntas destacadas de la sesión y cierra sus encuestas activas, que sacan sus novedades (ver [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)). Editar una sesión, un material o una encuesta, y cualquier otro cambio, no tocan las novedades. Hay como mucho una novedad por tipo e id (ver [modelo de datos](modelo-de-datos.md)). Si un cambio crea la novedad de una entidad que ya tiene una, la que ya estaba queda como está. Sacar la novedad de una entidad saca esa única novedad, y sacar una que no existe no hace nada.
 
-Una sesión deshabilitada sigue acumulando novedades de sus materiales y encuestas. Borrar una sesión no toca sus novedades: la sesión queda guardada con la fecha en `deleted_at`, y sus novedades pendientes quedan guardadas con ella.
+Una sesión deshabilitada sigue acumulando novedades de sus materiales. Borrar una sesión no toca sus novedades: la sesión queda guardada con la fecha en `deleted_at`, y sus novedades pendientes quedan guardadas con ella.
 
 > [!WARNING] El cambio y su novedad no se guardan juntos
 > El servicio de novedades corre después de que el cambio se guardó, no en la misma operación. Si falla, el cambio queda guardado y la lista no lo refleja: falta la novedad que tenía que crearse, o sigue la que tenía que salir. La API registra la falla en su log y responde el pedido igual que si la novedad se hubiera guardado. No avisa al profe ni corrige la diferencia.
@@ -64,7 +66,7 @@ Con la sesión deshabilitada, "Redactar anuncio" queda deshabilitado y la column
 > [!NOTE] Por qué solo se anuncia una sesión habilitada
 > El único link del mail lleva a la sesión, en el inicio del estudiante, y un estudiante no puede entrar a una sesión deshabilitada. La API hace el mismo control al recibir el envío.
 
-La web vuelve a pedir las novedades después de cada acción del profe que las afecta: habilitar o deshabilitar la sesión, subir o borrar material, y activar, cerrar o borrar una encuesta. Cuando una encuesta recibe su primera respuesta, la API saca su novedad sin que el profe haga nada, y la lista lo muestra la próxima vez que la web pide los datos de la sesión, cada cinco minutos (ver [componentes](componentes.md)).
+La web vuelve a pedir las novedades después de cada acción del profe que las afecta: habilitar o deshabilitar la sesión, sacarle la marca de destacada, subir o borrar material, activar, cerrar o borrar una encuesta, y prender o apagar las preguntas destacadas.
 
 [Prototipo del admin de una sesión, con las novedades pendientes y el modal del anuncio en la pestaña Contenido](../prototipos/admin-sesion.html)
 
@@ -103,7 +105,7 @@ sequenceDiagram
     W-->>P: Toast de éxito, o error en el modal
 ```
 
-El profe envía el anuncio (1) y la web le manda a la API el mensaje y las novedades elegidas (2). La API lee la sesión (3) y, si está deshabilitada, rechaza el pedido sin mandar nada (4). Si está habilitada, lee a la vez las novedades elegidas, los usuarios con acceso y cuál es la sesión destacada, que decide el link del mail (5). Después controla que haya mensaje o novedades. Una novedad elegida puede ya no estar pendiente porque la sacó un cambio o salió en otro anuncio. Esa novedad queda afuera del mail sin error, y el control cuenta solo las que siguen pendientes. Si no queda ni mensaje ni novedad, la API rechaza el pedido sin mandar nada (6). La API rechaza un anuncio con más de 50 novedades elegidas, las que entran en la columna.
+El profe envía el anuncio (1) y la web le manda a la API el mensaje y las novedades elegidas (2). La API lee la sesión (3) y, si está deshabilitada, rechaza el pedido sin mandar nada (4). Si está habilitada, lee a la vez las novedades elegidas, los usuarios con acceso y cuál es la sesión destacada, por su marca, que decide el link del mail (5). Después controla que haya mensaje o novedades. Una novedad elegida puede ya no estar pendiente porque la sacó un cambio o salió en otro anuncio. Esa novedad queda afuera del mail sin error, y el control cuenta solo las que siguen pendientes. Si no queda ni mensaje ni novedad, la API rechaza el pedido sin mandar nada (6). La API rechaza un anuncio con más de 50 novedades elegidas, las que entran en la columna.
 
 > [!NOTE] Por qué la API vuelve a controlar lo que la pantalla ya controló
 > El backend controla siempre las reglas de negocio. La pantalla las controla para que el profe no intente un envío que no corresponde; la que decide si el anuncio sale es la API.
@@ -155,11 +157,12 @@ Una dirección con formato inválido no llega a una tanda, porque no puede entra
 | Sesión habilitada | el título de la sesión | `Se habilitó la sesión "<título>".` |
 | Material nuevo | el nombre del material | `Se agregó el material "<nombre>".` |
 | Encuesta abierta | la consigna de la encuesta | `Se abrió la encuesta "<consigna>".` |
+| Preguntas abiertas | el título de la sesión | `Se abrieron las preguntas de la sesión "<título>".` |
 
-El asunto no lleva el número de la sesión, que el estudiante no ve. El cuerpo lleva, en este orden, el mensaje del profe tal como lo escribió, las novedades incluidas y el link a la sesión. Sin mensaje, el cuerpo empieza por las novedades. Sin novedades, lleva el mensaje y el link. Las novedades no llevan link propio: el único link del mail es el de la sesión. Si la sesión es la destacada en el momento del envío, el link lleva a la home, donde la destacada está arriba. Si no, lleva a la home con `?sesion=<id>`, y la home abre esa sesión entre las anteriores y la deja en el centro de la pantalla (ver [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)). El mail no saluda al estudiante por su nombre y no tiene pie, link para darse de baja ni texto legal.
+El asunto no lleva el número de la sesión, que el estudiante no ve. El cuerpo lleva, en este orden, el mensaje del profe tal como lo escribió, las novedades incluidas y el link a la sesión. Sin mensaje, el cuerpo empieza por las novedades. Sin novedades, lleva el mensaje y el link. Las novedades no llevan link propio: el único link del mail es el de la sesión. Si la sesión es la destacada en el momento del envío, el link lleva a la home, donde la destacada está arriba. Si no, lleva a la home con `?sesion=<id>`, y la home despliega esa sesión en la lista y la deja en el centro de la pantalla (ver [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)). El mail no saluda al estudiante por su nombre y no tiene pie, link para darse de baja ni texto legal.
 
 > [!WARNING] El link de un mail viejo a la destacada
-> La API decide si la sesión es la destacada en el momento del envío. Si después el profe habilita una sesión que está más adelante en la lista, un mail viejo con el link a la home lleva a una home con la nueva destacada arriba, y la sesión del anuncio queda plegada entre las anteriores. Al revés, si una sesión anunciada con `?sesion=<id>` pasa a ser la destacada, el link lleva a la home y no abre nada más, porque la destacada ya está arriba.
+> La API decide si la sesión es la destacada en el momento del envío. Después de un cambio de destacada, un mail viejo con el link a la home lleva a una home con otra destacada arriba, o sin destacada, y la sesión del anuncio queda plegada en la lista. Al revés, si una sesión anunciada con `?sesion=<id>` es la destacada cuando el estudiante abre el link, el link despliega su card en la lista, y la misma sesión aparece también arriba, como destacada.
 
 El mail tiene la marca de la app: una card con el cuervo y "kurasu" arriba, el mensaje como párrafo, las novedades en un bloque con el título "Novedades", y el botón "Ir a la sesión" alineado a la derecha. Sale con una parte HTML y una parte de texto plano con el mismo contenido: el mensaje, "Novedades" con una línea por novedad, y "Ir a la sesión:" con la URL.
 

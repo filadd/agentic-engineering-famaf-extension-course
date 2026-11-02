@@ -35,7 +35,7 @@ const reorder = (url: string, ids: ReadonlyArray<string>) =>
   });
 
 test(
-  "reordering puts both lists in the new order and the last enabled one becomes the featured",
+  "reordering puts both lists in the new order and keeps the same featured session",
   Effect.gen(function* () {
     const { url } = yield* stack;
     const response = yield* reorder(url, [c, a, b]);
@@ -43,10 +43,18 @@ test(
     expect(response.status).toBe(204);
     expect(yield* listIds(url, teacher, "/api/admin/sessions")).toEqual([c, a, b]);
 
-    const studentIds = yield* listIds(url, student, "/api/sessions");
+    expect(yield* listIds(url, student, "/api/sessions")).toEqual([c, a, b]);
 
-    expect(studentIds).toEqual([c, a, b]);
-    expect(studentIds.at(-1)).toBe(b);
+    const cookie = yield* cookieFor(teacher);
+
+    const sessions = yield* bodyOf(
+      Schema.Array(SessionSummary),
+      yield* request(url, "GET", "/api/admin/sessions", { cookie }),
+    );
+
+    expect(sessions.filter((session) => session.featured).map((session) => session.id)).toEqual([
+      c,
+    ]);
   }),
 );
 

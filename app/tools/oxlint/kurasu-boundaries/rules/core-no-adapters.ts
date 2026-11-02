@@ -5,6 +5,7 @@ import { importVisitors, matchesPackage } from "../../shared/module-sources.ts";
 const adapterSources = [
   "cloudflare:",
   "alchemy",
+  "@alchemy.run/",
   "drizzle-orm",
   "jose",
   "@cloudflare/",

@@ -37,7 +37,11 @@ const openSession = async (
 ) => {
   const materials = materialStore([material(1, planning.id, "Apunte.pdf")]);
   const pollsStore = pollStore(polls);
-  const page = teacherSession({ sessions: [{ ...sessionDetail(planning), enabled }], changelog });
+
+  const page = teacherSession({
+    sessions: [{ ...sessionDetail(planning), enabled, featured: enabled }],
+    changelog,
+  });
 
   server.use(...materials.handlers, ...pollsStore.handlers, ...page.handlers);
   server.use(...overrides);
@@ -270,6 +274,7 @@ describe("session page: the changelog list after other actions", () => {
     const counter = countChangelogReads();
 
     await user.click(screen.getByRole("switch", { name: "Deshabilitada" }));
+    await user.click(screen.getByRole("button", { name: "Habilitar" }));
 
     await waitFor(() => expect(counter.count(changelogPath)).toBeGreaterThan(0));
   });

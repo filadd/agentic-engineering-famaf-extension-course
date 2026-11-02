@@ -4,12 +4,12 @@ INSERT INTO users (id, email, name, avatar, role, has_access) VALUES
   ('01PVTA00000000000000000000', 'ana@encuestas.kurasu.test', 'Ana', 'panda', 'student', 1),
   ('01PVTB00000000000000000000', 'beto@encuestas.kurasu.test', 'Beto', 'frog', 'student', 1);
 
-INSERT INTO sessions (id, position, title, summary, enabled) VALUES
-  ('01PSA000000000000000000000', 1, 'Con encuestas', 'Resumen', 1),
-  ('01PSB000000000000000000000', 2, 'Deshabilitada', 'Resumen', 0),
-  ('01PSC000000000000000000000', 3, 'Del profe', 'Resumen', 1),
-  ('01PSD000000000000000000000', 4, 'Nube grande', 'Resumen', 1),
-  ('01PSF000000000000000000000', 5, 'De feedback', 'Resumen', 1);
+INSERT INTO sessions (id, position, title, summary, enabled, featured) VALUES
+  ('01PSA000000000000000000000', 1, 'Con encuestas', 'Resumen', 1, 0),
+  ('01PSB000000000000000000000', 2, 'Deshabilitada', 'Resumen', 0, 0),
+  ('01PSC000000000000000000000', 3, 'Del profe', 'Resumen', 1, 0),
+  ('01PSD000000000000000000000', 4, 'Nube grande', 'Resumen', 1, 0),
+  ('01PSF000000000000000000000', 5, 'Destacada', 'Resumen', 1, 1);
 
 INSERT INTO polls (id, session_id, type, status, prompt, options, scale_min_label, scale_max_label, deleted_at) VALUES
   ('01PQ1000000000000000000000', '01PSA000000000000000000000', 'choice', 'active', '¿Cuál preferís?', '["Uno","Dos","Tres"]', NULL, NULL, NULL),
@@ -19,19 +19,22 @@ INSERT INTO polls (id, session_id, type, status, prompt, options, scale_min_labe
   ('01PQ5000000000000000000000', '01PSA000000000000000000000', 'choice', 'draft', 'Borrador', '["Sí","No"]', NULL, NULL, NULL),
   ('01PQ6000000000000000000000', '01PSA000000000000000000000', 'words', 'active', 'Borrada', NULL, NULL, NULL, 1790000000000),
   ('01PQ7000000000000000000000', '01PSB000000000000000000000', 'choice', 'active', 'De una deshabilitada', '["Sí","No"]', NULL, NULL, NULL),
-  ('01PV1000000000000000000000', '01PSA000000000000000000000', 'choice', 'active', 'Opción múltiple', '["Rojo","Verde","Azul"]', NULL, NULL, NULL),
-  ('01PV2000000000000000000000', '01PSA000000000000000000000', 'scale', 'active', 'Escala', NULL, 'Poco', 'Mucho', NULL),
-  ('01PV3000000000000000000000', '01PSA000000000000000000000', 'words', 'active', 'Nube', NULL, NULL, NULL, NULL),
-  ('01PV4000000000000000000000', '01PSA000000000000000000000', 'choice', 'active', 'Tres opciones', '["A","B","C"]', NULL, NULL, NULL),
-  ('01PV5000000000000000000000', '01PSA000000000000000000000', 'scale', 'active', 'Otra escala', NULL, NULL, NULL, NULL),
-  ('01PV6000000000000000000000', '01PSA000000000000000000000', 'words', 'active', 'Otra nube', NULL, NULL, NULL, NULL),
+  ('01PV1000000000000000000000', '01PSF000000000000000000000', 'choice', 'active', 'Opción múltiple', '["Rojo","Verde","Azul"]', NULL, NULL, NULL),
+  ('01PV2000000000000000000000', '01PSF000000000000000000000', 'scale', 'active', 'Escala', NULL, 'Poco', 'Mucho', NULL),
+  ('01PV3000000000000000000000', '01PSF000000000000000000000', 'words', 'active', 'Nube', NULL, NULL, NULL, NULL),
+  ('01PV4000000000000000000000', '01PSF000000000000000000000', 'choice', 'active', 'Tres opciones', '["A","B","C"]', NULL, NULL, NULL),
+  ('01PV5000000000000000000000', '01PSF000000000000000000000', 'scale', 'active', 'Otra escala', NULL, NULL, NULL, NULL),
+  ('01PV6000000000000000000000', '01PSF000000000000000000000', 'words', 'active', 'Otra nube', NULL, NULL, NULL, NULL),
   ('01PD1000000000000000000000', '01PSC000000000000000000000', 'choice', 'draft', 'Para editar', '["Sí","No"]', NULL, NULL, NULL),
   ('01PD2000000000000000000000', '01PSC000000000000000000000', 'choice', 'active', 'Activa', '["Sí","No"]', NULL, NULL, NULL),
-  ('01PD3000000000000000000000', '01PSC000000000000000000000', 'scale', 'draft', 'Para activar', NULL, NULL, NULL, NULL),
+  ('01PD3000000000000000000000', '01PSF000000000000000000000', 'scale', 'draft', 'Para activar', NULL, NULL, NULL, NULL),
   ('01PD4000000000000000000000', '01PSC000000000000000000000', 'words', 'active', 'Para cerrar', NULL, NULL, NULL, NULL),
   ('01PD5000000000000000000000', '01PSC000000000000000000000', 'choice', 'closed', 'Cerrada', '["Sí","No"]', NULL, NULL, NULL),
   ('01PD6000000000000000000000', '01PSC000000000000000000000', 'scale', 'draft', 'Borrador que no cierra', NULL, NULL, NULL, NULL),
   ('01PD7000000000000000000000', '01PSC000000000000000000000', 'choice', 'active', 'Para borrar', '["Sí","No"]', NULL, NULL, NULL),
+  ('01PV7000000000000000000000', '01PSF000000000000000000000', 'choice', 'closed', 'Cerrada de la destacada', '["Sí","No"]', NULL, NULL, NULL),
+  ('01PV8000000000000000000000', '01PSF000000000000000000000', 'choice', 'draft', 'Borrador de la destacada', '["Sí","No"]', NULL, NULL, NULL),
+  ('01PD9000000000000000000000', '01PSC000000000000000000000', 'choice', 'draft', 'Para activar fuera de la destacada', '["Sí","No"]', NULL, NULL, NULL),
   ('01PD8000000000000000000000', '01PSC000000000000000000000', 'scale', 'draft', 'Escala sin opciones', NULL, 'Poco', 'Mucho', NULL),
   ('01PW1000000000000000000000', '01PSD000000000000000000000', 'words', 'closed', 'Muchas palabras', NULL, NULL, NULL, NULL);
 

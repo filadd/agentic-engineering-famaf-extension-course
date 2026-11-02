@@ -1,5 +1,11 @@
 import type { ClassroomTopic } from "@kurasu/contract/classroom";
-import { OrderMismatch, SessionEnabled, SessionNotFound } from "@kurasu/contract/errors";
+import {
+  NotFeatured,
+  OrderMismatch,
+  SessionDisabled,
+  SessionEnabled,
+  SessionNotFound,
+} from "@kurasu/contract/errors";
 import type {
   Session,
   SessionChange,
@@ -14,8 +20,11 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 
+import { Batch } from "../batch.ts";
 import { Changelog } from "../changelog/changelog.ts";
 import { Classroom } from "../classroom.ts";
+import { HandsStore } from "../hands/hands-store.ts";
+import { PollsStore } from "../polls/polls-store.ts";
 import { SessionsStore, type StoredSession } from "./sessions-store.ts";
 import { existingSession, visibleSession } from "./visible-session.ts";
 
@@ -25,6 +34,8 @@ const toSummary = (session: StoredSession): SessionSummary => ({
   summary: session.summary,
   position: session.position,
   enabled: session.enabled,
+  featured: session.featured,
+  featuredQuestions: session.featuredQuestions,
 });
 
 const toStudentSession = (session: StoredSession): Session => ({
@@ -32,25 +43,51 @@ const toStudentSession = (session: StoredSession): Session => ({
   title: session.title,
   summary: session.summary,
   position: session.position,
+  featured: session.featured,
+  featuredQuestions: session.featuredQuestions,
   currentSlide: session.currentSlide,
   currentStep: session.currentStep,
 });
+
+const leavingOf = (
+  previous: StoredSession,
+  current: Option.Option<SessionSummary>,
+  id: Ulid,
+  change: SessionChange,
+) => {
+  if (change.featured === true && Option.isSome(current) && current.value.id !== id) {
+    return Option.some(current.value.id);
+  }
+
+  return previous.featured && (change.featured === false || change.enabled === false)
+    ? Option.some(previous.id)
+    : Option.none();
+};
 
 // The topics a change to a session tells the classroom about: the teacher's
 // position is `slide`; the rest of the session, enabling it included, is
 // `session`.
 const changedTopics = (change: SessionChange): ReadonlyArray<ClassroomTopic> => {
   const moved = change.currentSlide != null || change.currentStep != null;
-  const edited = change.title != null || change.summary != null || change.enabled != null;
+
+  const edited =
+    change.title != null ||
+    change.summary != null ||
+    change.enabled != null ||
+    change.featured != null ||
+    change.featuredQuestions != null;
 
   return [...(edited ? ["session" as const] : []), ...(moved ? ["slide" as const] : [])];
 };
 
 // The sessions as each side sees them. The student sees only enabled sessions,
-// without `enabled`; the featured one is the last of them. The teacher sees
-// every session not deleted. A session is deleted only while disabled, and a
-// reorder lists every session not deleted. A student enters only the classroom
-// of the featured session; the teacher, that of any session not deleted.
+// without `enabled`; the featured one is the one the teacher marked, if any.
+// The teacher sees every session not deleted. A session is deleted only while
+// disabled, and a reorder lists every session not deleted. A student enters
+// only the classroom of the featured session; the teacher, that of any session
+// not deleted. A session that stops being featured, because another one is
+// featured, the mark is removed or it is disabled, loses its active polls, its
+// raised hands and its featured questions in the same batch as the change.
 export class Sessions extends Context.Service<
   Sessions,
   {
@@ -61,7 +98,10 @@ export class Sessions extends Context.Service<
     readonly listAll: () => Effect.Effect<ReadonlyArray<SessionSummary>>;
     readonly get: (id: Ulid) => Effect.Effect<Session, SessionNotFound>;
     readonly create: (input: SessionInput) => Effect.Effect<Session>;
-    readonly update: (id: Ulid, change: SessionChange) => Effect.Effect<Session, SessionNotFound>;
+    readonly update: (
+      id: Ulid,
+      change: SessionChange,
+    ) => Effect.Effect<Session, SessionNotFound | SessionDisabled | NotFeatured>;
     readonly remove: (id: Ulid) => Effect.Effect<void, SessionNotFound | SessionEnabled>;
     readonly reorder: (ids: ReadonlyArray<Ulid>) => Effect.Effect<void, OrderMismatch>;
   }
@@ -73,20 +113,51 @@ export class Sessions extends Context.Service<
       const classroom = yield* Classroom;
       const changelog = yield* Changelog;
       const crypto = yield* Crypto.Crypto;
+      const polls = yield* PollsStore;
+      const hands = yield* HandsStore;
+      const batch = yield* Batch;
 
       const listVisible = () => store.listEnabled();
 
       const listAll = () => store.list({ orderBy: { field: "position", direction: "asc" } });
 
       const featured = () =>
-        Effect.map(
-          store.list({
-            where: { enabled: true },
-            orderBy: { field: "position", direction: "desc" },
-            limit: 1,
-          }),
-          (sessions) => Option.map(Option.fromNullishOr(sessions[0]), toSummary),
+        Effect.map(store.find({ enabled: true, featured: true }), Option.map(toSummary));
+
+      const updateLeaving = Effect.fn("Sessions.updateLeaving")(function* (
+        id: Ulid,
+        change: SessionChange,
+        leavingId: Ulid,
+      ) {
+        const closing = (yield* polls.list({
+          where: { sessionId: leavingId, status: "active" },
+        })).map((poll) => poll.id);
+
+        yield* batch.run([
+          store.writes.update(leavingId, { featured: false, featuredQuestions: false }),
+          ...(closing.length === 0
+            ? []
+            : [yield* polls.writes.updateWhere({ id: closing }, { status: "closed" })]),
+          yield* hands.writes.removeWhere({ sessionId: leavingId }),
+          store.writes.update(id, change),
+        ]);
+
+        const session = yield* existingSession(store, id);
+
+        yield* changelog.drop({ type: "questions-opened", entityId: leavingId });
+        yield* Effect.forEach(
+          closing,
+          (pollId) => changelog.drop({ type: "poll-opened", entityId: pollId }),
+          { discard: true },
         );
+        yield* Effect.forEach(
+          ["session", "polls", "hands"] as const,
+          (topic) => classroom.notify(leavingId, topic),
+          { discard: true },
+        );
+
+        return session;
+      });
 
       return Sessions.of({
         listVisible,
@@ -113,10 +184,28 @@ export class Sessions extends Context.Service<
         }),
         update: Effect.fn("Sessions.update")(function* (id, change) {
           const previous = yield* existingSession(store, id);
+          const isEnabledAfter = change.enabled ?? previous.enabled;
 
-          const session = yield* Effect.fromOption(yield* store.update(id, change)).pipe(
-            Effect.mapError(() => new SessionNotFound()),
-          );
+          if (change.featured === true && !isEnabledAfter) {
+            return yield* new SessionDisabled();
+          }
+
+          const isFeaturedAfter = isEnabledAfter && (change.featured ?? previous.featured);
+
+          if (change.featuredQuestions === true && !isFeaturedAfter) {
+            return yield* new NotFeatured();
+          }
+
+          const current =
+            change.featured === true ? yield* featured() : Option.none<SessionSummary>();
+
+          const leaving = leavingOf(previous, current, id, change);
+
+          const session = Option.isSome(leaving)
+            ? yield* updateLeaving(id, change, leaving.value)
+            : yield* Effect.fromOption(yield* store.update(id, change)).pipe(
+                Effect.mapError(() => new SessionNotFound()),
+              );
 
           yield* Effect.forEach(changedTopics(change), (topic) => classroom.notify(id, topic), {
             discard: true,
@@ -133,6 +222,19 @@ export class Sessions extends Context.Service<
 
           if (previous.enabled && !session.enabled) {
             yield* changelog.drop({ type: "session-enabled", entityId: id });
+          }
+
+          if (change.featuredQuestions === true && !previous.featuredQuestions) {
+            yield* changelog.record({
+              sessionId: id,
+              type: "questions-opened",
+              entityId: id,
+              name: session.title,
+            });
+          }
+
+          if (change.featuredQuestions === false) {
+            yield* changelog.drop({ type: "questions-opened", entityId: id });
           }
 
           return session;

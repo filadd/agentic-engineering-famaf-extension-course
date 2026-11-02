@@ -63,15 +63,25 @@ Crear y actualizar escriben y después vuelven a leer la fila, para devolverla d
 
 Cada escritura existe también como sentencia sin ejecutar. Varias sentencias, de una tabla o de varias, corren juntas y en orden en un batch de D1. Si una falla, D1 no aplica ninguna. Por ejemplo, regenerar el código de registro marca el código vigente como borrado y crea el nuevo en un batch, así que nunca queda la app sin código vigente.
 
-> [!NOTE] Por qué una sentencia de batch no devuelve filas
-> D1 devuelve las filas de un batch tal como están en la tabla, con los nombres de las columnas y las fechas como números, sin pasar por el mapeo que hace el query builder. Para no devolver filas con una forma distinta de la que declara su tipo, una sentencia de batch no devuelve nada. Quien necesita la fila la lee después del batch.
+Un batch que cruza varios stores lo arma el servicio. Cada puerto que lo necesita ofrece sus escrituras sin ejecutar, y el core las recibe sin ver la sentencia de adentro. Un puerto propio del batch las corre juntas en D1, en el orden en que el servicio las pasa. Así, cambiar la destacada lo arma el servicio de sesiones con escrituras de los stores de sesiones, encuestas y manos levantadas.
+
+El batch del cambio de destacada lleva, en orden: desmarcar la anterior y apagar sus preguntas destacadas, cerrar sus encuestas activas, bajar sus manos y aplicar el cambio pedido a la sesión. El servicio lee antes las encuestas activas de la anterior, y el batch cierra solo esas, por id.
+
+> [!NOTE] Por qué el cambio de destacada desmarca primero
+> Un índice único parcial deja una sola sesión con `featured` en verdadero entre las no borradas. El batch corre sus escrituras en orden, así que desmarca la anterior antes de marcar la nueva y el índice nunca ve dos destacadas. Cuando la sesión que deja de ser la destacada es la misma del pedido, como al sacarle la marca o deshabilitarla, la última escritura cambia una fila ya desmarcada.
+
+> [!TIP] El batch en el store de sesiones, considerado y no elegido
+> El store de sesiones podría escribir en las tablas de encuestas y manos dentro de su propio batch, como el de material escribe la posición de la sesión. No se eligió porque el cambio de destacada es una regla del core. El servicio decide qué se cierra y en qué orden, y cada store escribe solo en su tabla.
+
+> [!NOTE] Por qué un batch no devuelve filas
+> D1 devuelve las filas de un batch tal como están en la tabla, con los nombres de las columnas y las fechas como números, sin pasar por el mapeo que hace el query builder. Para no devolver filas con una forma distinta de la que declara su tipo, el batch descarta lo que devuelven sus escrituras y no devuelve nada. Quien necesita la fila la lee después del batch.
 
 > [!NOTE] Por qué hay type guards en el repositorio
 > Sobre una tabla genérica, el query builder no puede tipar las filas que devuelve una escritura. Tampoco puede tipar el cambio de un borrado lógico ni el de un insertar o actualizar. El repositorio les da su tipo con type guards en lugar de aserciones. Los type guards comprueban la forma de lo que llega antes de usarlo: que sea una lista de filas y que las claves del cambio sean columnas de la tabla.
 
 ## 🧩 Queries propias
 
-Un store escribe su propia query cuando el repositorio no puede expresarla o la resolvería con más idas a la base. El repositorio lee una sola tabla por vez y corre una operación por sentencia, así que las lecturas que unen tablas o cuentan, y las escrituras que tienen que caer juntas, quedan en su store:
+Un store escribe su propia query cuando el repositorio no puede expresarla o la resolvería con más idas a la base. El repositorio lee una sola tabla por vez y corre una operación por sentencia, así que las lecturas que unen tablas o cuentan, y las escrituras de un store que tienen que caer juntas, quedan en su store:
 
 | Store | Query propia |
 |---|---|
@@ -79,7 +89,7 @@ Un store escribe su propia query cuando el repositorio no puede expresarla o la 
 | manos levantadas | las manos de una sesión con el nombre y el avatar de cada estudiante, ordenadas por nombre |
 | preguntas | la lista y una pregunta, cada una con sus votos y si el que pide la votó |
 | material | crear, marcar como slides y borrar; cuando cambian las slides de la sesión, el mismo batch desmarca las anteriores y vuelve la posición del profe a la primera slide |
-| sesiones | crear en la posición siguiente a la última, y reordenar todas las posiciones en un batch |
+| sesiones | crear en la posición siguiente a la última y reordenar todas las posiciones en un batch |
 | códigos | asegurar el código de registro vigente |
 
 > [!NOTE] Por qué el código de registro vigente tiene su propia query

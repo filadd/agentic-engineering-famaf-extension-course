@@ -6,6 +6,7 @@ import { describe, expect, test } from "vitest";
 import {
   choicePoll,
   feedbackPoll,
+  asFeatured,
   planning,
   scalePoll,
   voted,
@@ -31,7 +32,11 @@ const openHome = async (poll: Poll) => {
 };
 
 const withPolls = (...polls: ReadonlyArray<Poll>) =>
-  server.use(getJson("/me", student), getJson("/sessions", [planning]), getJson("/polls", polls));
+  server.use(
+    getJson("/me", student),
+    getJson("/sessions", [asFeatured(planning)]),
+    getJson("/polls", polls),
+  );
 
 describe("voting on the highlighted card", () => {
   test("a choice poll takes one option and then shows the percentages and the count", async () => {
@@ -198,7 +203,7 @@ describe("voting on the highlighted card", () => {
 
     server.use(
       getJson("/me", student),
-      getJson("/sessions", [planning]),
+      getJson("/sessions", [asFeatured(planning)]),
       http.get(url("/polls"), () => {
         pollRequests += 1;
 
@@ -384,7 +389,7 @@ describe("answering a feedback on the highlighted card", () => {
 
     server.use(
       getJson("/me", student),
-      getJson("/sessions", [planning]),
+      getJson("/sessions", [asFeatured(planning)]),
       http.get(url("/polls"), () => {
         pollRequests += 1;
 

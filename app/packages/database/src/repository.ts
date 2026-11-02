@@ -1,3 +1,4 @@
+import type { Write } from "@kurasu/core/batch";
 import {
   maxPage,
   type ListOptions,
@@ -38,7 +39,7 @@ import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Option from "effect/Option";
 
-import { batch, Database, firstRow, now, type Statement } from "./database.ts";
+import { batch, Database, firstRow, now, type Statement, write } from "./database.ts";
 
 export type Table = SQLiteTable & { readonly id: SQLiteColumn };
 
@@ -61,7 +62,7 @@ const decodeAll = <T extends Table, A>(
   decode: RepositoryOptions<T, A>["decode"],
 ) => Effect.forEach(rows, decode);
 
-type Write<R> = Statement & Effect.Effect<R, EffectDrizzleQueryError>;
+type PendingStatement<R> = Statement & Effect.Effect<R, EffectDrizzleQueryError>;
 
 const rowsGuardOf =
   <T extends Table>() =>
@@ -206,7 +207,7 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
         : Effect.die(`${column.name} is not a column of the table`);
     };
 
-    const removing = (condition: SQL | undefined): Effect.Effect<Write<unknown>> =>
+    const removing = (condition: SQL | undefined): Effect.Effect<PendingStatement<unknown>> =>
       deletedAt == null
         ? Effect.succeed(db.delete(table).where(condition).returning())
         : Effect.map(deletion(deletedAt), (mark) =>
@@ -222,8 +223,6 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
           : yield* Effect.die("the removed rows did not come back");
       });
 
-    // A statement reads nothing after its write, so several can go in one D1
-    // batch.
     const statements = {
       create: (row: New<T>) => db.insert(table).values(row),
       update: (id: Ulid, change: Change<T>) =>
@@ -249,6 +248,18 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
       removeWhere: (where: Where<A>) => Effect.flatMap(conditionOf(where), removing),
     };
 
+    // A write reads nothing after itself, so several can go in one D1 batch.
+    const writes = {
+      create: (row: New<T>) => write(statements.create(row)),
+      update: (id: Ulid, change: Change<T>) => write(statements.update(id, change)),
+      updateWhere: (where: Where<A>, change: Change<T>) =>
+        Effect.map(statements.updateWhere(where, change), write),
+      upsert: (row: New<T>, options: UpsertOptions<keyof New<T> & string, Change<T>>) =>
+        Effect.map(statements.upsert(row, options), write),
+      remove: (id: Ulid) => Effect.map(statements.remove(id), write),
+      removeWhere: (where: Where<A>) => Effect.map(statements.removeWhere(where), write),
+    };
+
     function removeWhere(where: Where<A>): Effect.Effect<number>;
     function removeWhere(where: Where<A>, options: RemoveOptions): Effect.Effect<ReadonlyArray<A>>;
     function removeWhere(
@@ -271,8 +282,8 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
     type Shared = Repository<A, New<T>, Change<T>>;
 
     return {
-      statements,
-      batch: (writes: ReadonlyArray<Statement>) => batch(client, writes),
+      writes,
+      batch: (pending: ReadonlyArray<Write>) => batch(client, pending),
       get,
       getMany,
       find: (where: Where<A>): ReturnType<Shared["find"]> =>

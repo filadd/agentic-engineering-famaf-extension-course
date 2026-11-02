@@ -17,9 +17,12 @@ import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
 import { teacherSession } from "./helpers/teacher-session.ts";
 
-const openPolls = async (polls: ReadonlyArray<AdminPoll> = []) => {
+const openPolls = async (polls: ReadonlyArray<AdminPoll> = [], isFeatured = true) => {
   const store = pollStore(polls);
-  const page = teacherSession({ sessions: [{ ...sessionDetail(planning), enabled: true }] });
+
+  const page = teacherSession({
+    sessions: [{ ...sessionDetail(planning), enabled: true, featured: isFeatured }],
+  });
 
   server.use(...store.handlers, ...page.handlers);
 
@@ -40,6 +43,65 @@ const startNew = async (user: Awaited<ReturnType<typeof renderRoute>>["user"], t
 const draftChoice = adminPoll(choicePoll(planning.id), "draft", { count: 0 });
 
 describe("session page: polls", () => {
+  test("a draft of the featured session has Activar", async () => {
+    const { user } = await openPolls([draftChoice]);
+
+    const draft = await screen.findByRole("article", { name: draftChoice.prompt });
+
+    await user.click(within(draft).getByRole("button", { expanded: false }));
+
+    expect(within(draft).getByRole("button", { name: "Activar" })).toBeTruthy();
+    expect(screen.queryByText("Solo se activan encuestas en la sesión destacada.")).toBeNull();
+  });
+
+  test("a draft of a session that is not the featured one has no Activar and the tab explains why", async () => {
+    const { user } = await openPolls([draftChoice], false);
+
+    const draft = await screen.findByRole("article", { name: draftChoice.prompt });
+
+    await user.click(within(draft).getByRole("button", { expanded: false }));
+
+    expect(within(draft).getByRole("button", { name: "Borrar" })).toBeTruthy();
+    expect(within(draft).queryByRole("button", { name: "Activar" })).toBeNull();
+    expect(screen.getByText("Solo se activan encuestas en la sesión destacada.")).toBeTruthy();
+  });
+
+  test("a draft of the featured session has Activar", async () => {
+    const { user } = await openPolls([draftChoice]);
+
+    const draft = await screen.findByRole("article", { name: draftChoice.prompt });
+
+    await user.click(within(draft).getByRole("button", { expanded: false }));
+
+    expect(within(draft).getByRole("button", { name: "Activar" })).toBeTruthy();
+    expect(screen.queryByText("Solo se activan encuestas en la sesión destacada.")).toBeNull();
+  });
+
+  test("a draft of a session that is not the featured one has no Activar and the tab explains why", async () => {
+    const { user } = await openPolls([draftChoice], false);
+
+    const draft = await screen.findByRole("article", { name: draftChoice.prompt });
+
+    await user.click(within(draft).getByRole("button", { expanded: false }));
+
+    expect(within(draft).getByRole("button", { name: "Borrar" })).toBeTruthy();
+    expect(within(draft).queryByRole("button", { name: "Activar" })).toBeNull();
+    expect(screen.getByText("Solo se activan encuestas en la sesión destacada.")).toBeTruthy();
+  });
+
+  test("outside the featured session the note sits under the last draft, above the closed polls", async () => {
+    const closedWords = adminPoll(wordsPoll(planning.id), "closed", { count: 0, words: [] });
+
+    await openPolls([closedWords, draftChoice], false);
+
+    const draft = await screen.findByRole("article", { name: draftChoice.prompt });
+    const note = screen.getByText("Solo se activan encuestas en la sesión destacada.");
+    const closed = screen.getByRole("article", { name: closedWords.prompt });
+
+    expect(draft.nextElementSibling).toBe(note);
+    expect(note.nextElementSibling).toBe(closed);
+  });
+
   test("without polls the tab says so under the creator", async () => {
     await openPolls([]);
 

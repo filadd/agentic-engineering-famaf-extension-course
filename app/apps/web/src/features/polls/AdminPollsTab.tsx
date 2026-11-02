@@ -1,10 +1,11 @@
 import type { PollType } from "@kurasu/contract/polls";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 import { Icon } from "../../ui/Icon.tsx";
 import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 import { AdminPollCard } from "./AdminPollCard.tsx";
 import { NewPollCard } from "./NewPollCard.tsx";
+import { NotFeaturedNote } from "./NotFeaturedNote.tsx";
 import { NewPollMenu } from "./NewPollMenu.tsx";
 import { adminPollExamples } from "./poll-examples.ts";
 import { byStatus } from "./poll-order.ts";
@@ -12,12 +13,16 @@ import { useAdminPolls } from "./useAdminPolls.ts";
 
 interface Props {
   sessionId: string;
+  isFeatured: boolean;
 }
 
-export const AdminPollsTab = ({ sessionId }: Props) => {
+export const AdminPollsTab = ({ sessionId, isFeatured }: Props) => {
   const polls = useAdminPolls(sessionId);
 
   const [creating, setCreating] = useState<PollType | null>(null);
+
+  const ordered = polls.data == null ? [] : byStatus(polls.data);
+  const noteAfter = isFeatured ? -1 : ordered.findLastIndex((poll) => poll.status === "draft");
 
   return (
     <div className="max-w-[760px]">
@@ -40,7 +45,7 @@ export const AdminPollsTab = ({ sessionId }: Props) => {
         {polls.data == null ? (
           <SkeletonOf>
             {adminPollExamples.map((poll) => (
-              <AdminPollCard key={poll.id} poll={poll} />
+              <AdminPollCard key={poll.id} poll={poll} isFeatured />
             ))}
           </SkeletonOf>
         ) : (
@@ -48,8 +53,11 @@ export const AdminPollsTab = ({ sessionId }: Props) => {
             {polls.data.length === 0 ? (
               <div className="text-sm text-muted">Todavía no hay encuestas.</div>
             ) : null}
-            {byStatus(polls.data).map((poll) => (
-              <AdminPollCard key={poll.id} poll={poll} />
+            {ordered.map((poll, index) => (
+              <Fragment key={poll.id}>
+                <AdminPollCard poll={poll} isFeatured={isFeatured} />
+                {index === noteAfter ? <NotFeaturedNote /> : null}
+              </Fragment>
             ))}
           </>
         )}

@@ -9,6 +9,7 @@ export const changelogEntryTypes = {
   sessionEnabled: "session-enabled",
   materialAdded: "material-added",
   pollOpened: "poll-opened",
+  questionsOpened: "questions-opened",
 } as const;
 
 export const ChangelogEntryType = Schema.Literals(Object.values(changelogEntryTypes));
@@ -35,12 +36,14 @@ export const changelogTypeLabels: Record<ChangelogEntryType, string> = {
   "session-enabled": "Sesión habilitada",
   "material-added": "Material nuevo",
   "poll-opened": "Encuesta abierta",
+  "questions-opened": "Preguntas abiertas",
 };
 
 const linePrefixes: Record<ChangelogEntryType, string> = {
   "session-enabled": "Se habilitó la sesión",
   "material-added": "Se agregó el material",
   "poll-opened": "Se abrió la encuesta",
+  "questions-opened": "Se abrieron las preguntas de la sesión",
 };
 
 // The line the admin column and the announcement mail show for an entry.

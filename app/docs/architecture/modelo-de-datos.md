@@ -41,6 +41,8 @@ erDiagram
         string title
         text summary
         bool enabled
+        bool featured "unique among non-deleted sessions where true"
+        bool featured_questions
         int current_slide
         int current_step
         datetime deleted_at "nullable"
@@ -89,7 +91,7 @@ erDiagram
     CHANGELOG_ENTRY {
         ulid id PK
         ulid session_id FK
-        enum type "session-enabled, material-added or poll-opened"
+        enum type "session-enabled, material-added, poll-opened or questions-opened"
         ulid entity_id "not a FK, unique with type"
         string name
         datetime created_at
@@ -111,7 +113,7 @@ El campo `role` vale `teacher` para el profe o `student` para el estudiante. Con
 
 ### 📚 Sesión
 
-La entidad `Session` tiene `title`, `summary`, `position`, su lugar en la lista del profe, y `enabled`, que dice si está habilitada. El estudiante ve solo las habilitadas, en el orden de esa lista, y la destacada es la habilitada que está más adelante en ella. Cómo una sesión pasa de deshabilitada a habilitada o borrada está en [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md).
+La entidad `Session` tiene `title`, `summary`, `position`, su lugar en la lista del profe, y `enabled`, que dice si está habilitada. El estudiante ve solo las habilitadas, en el orden de esa lista. `featured` dice si la sesión es la destacada, y `featured_questions` si muestra sus preguntas en la card destacada del inicio. Los dos son booleanos no nulos y valen falso en una sesión nueva. Hay a lo sumo una destacada, y la base lo garantiza con un índice único parcial que cubre solo las sesiones con `featured` en verdadero y sin borrar, igual que el índice del código de registro vigente. Solo una sesión habilitada es la destacada, y solo la destacada tiene `featured_questions` en verdadero; las dos reglas las controla la API. Cómo una sesión pasa de deshabilitada a habilitada o borrada está en [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md).
 
 La sesión guarda también la posición actual del profe en las slides: una slide y un paso dentro de ella, en `current_slide` y `current_step`, una sola por sesión (ver [la API de las slides](api-de-las-slides.md)). Borrar una sesión la deja guardada, con todo lo que cuelga de ella, y le pone la fecha en `deleted_at`.
 
@@ -134,11 +136,11 @@ La entidad `Question` guarda su texto en `body`, a su autor en `author_id` y si 
 
 ### ✋ Mano levantada
 
-La entidad `RaisedHand` une a un estudiante con una sesión. Cada estudiante tiene a lo sumo una por sesión, y la base lo garantiza con un índice único sobre la sesión y el estudiante. Existe hasta que alguien baja la mano, el estudiante o el profe, así que sigue levantada si el estudiante sale del aula y vuelve (ver [tiempo real del aula](tiempo-real-del-aula.md)).
+La entidad `RaisedHand` une a un estudiante con una sesión. Cada estudiante tiene a lo sumo una por sesión, y la base lo garantiza con un índice único sobre la sesión y el estudiante. Existe hasta que alguien baja la mano, el estudiante o el profe, o hasta que la sesión deja de ser la destacada (ver [estados de encuestas y sesiones](estados-de-encuestas-y-sesiones.md)), así que sigue levantada si el estudiante sale del aula y vuelve (ver [tiempo real del aula](tiempo-real-del-aula.md)).
 
 ### 🔔 Novedad
 
-La entidad `ChangelogEntry` es una novedad: algo nuevo de una sesión que el profe todavía no anunció por mail. Pertenece a una sesión, en `session_id`, y guarda su `type`: `session-enabled` para la sesión habilitada, `material-added` para un material nuevo o `poll-opened` para una encuesta abierta. Guarda también el id de la entidad que la originó en `entity_id`, su nombre en `name` y la fecha del cambio que la registró en `created_at`. El nombre es el título de la sesión, el nombre del material o la consigna de la encuesta. Ningún campo queda vacío. La novedad no guarda texto ni link. La web y el mail arman el texto con su tipo y su nombre. Hay a lo sumo una novedad por tipo y entidad, y la base lo garantiza con un índice único sobre `type` y `entity_id`.
+La entidad `ChangelogEntry` es una novedad: algo nuevo de una sesión que el profe todavía no anunció por mail. Pertenece a una sesión, en `session_id`, y guarda su `type`: `session-enabled` para la sesión habilitada, `material-added` para un material nuevo, `poll-opened` para una encuesta abierta o `questions-opened` para las preguntas abiertas de la sesión. Guarda también el id de la entidad que la originó en `entity_id`, su nombre en `name` y la fecha del cambio que la registró en `created_at`. El nombre es el título de la sesión, el nombre del material o la consigna de la encuesta. En `session-enabled` y en `questions-opened`, `entity_id` es el id de la sesión y el nombre es su título. Ningún campo queda vacío. La novedad no guarda texto ni link. La web y el mail arman el texto con su tipo y su nombre. Hay a lo sumo una novedad por tipo y entidad, y la base lo garantiza con un índice único sobre `type` y `entity_id`.
 
 > [!NOTE] Por qué `entity_id` no es una clave foránea
 > Según el tipo, apunta a una sesión, a un material o a una encuesta, así que no puede ser una clave foránea a una sola tabla.

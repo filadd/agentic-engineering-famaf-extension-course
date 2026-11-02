@@ -24,3 +24,15 @@ export const visibleSession = (
     (session) => session.enabled,
     () => new SessionNotFound(),
   );
+
+// What the student may write to: the visible session that is the featured one.
+// Any other session is the same 404 as a disabled or unknown one.
+export const featuredSession = (
+  sessions: SessionsStore["Service"],
+  id: Ulid,
+): Effect.Effect<StoredSession, SessionNotFound> =>
+  Effect.filterOrFail(
+    visibleSession(sessions, id),
+    (session) => session.featured,
+    () => new SessionNotFound(),
+  );

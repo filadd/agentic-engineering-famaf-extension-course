@@ -1,7 +1,13 @@
 import * as Schema from "effect/Schema";
 import { HttpApiEndpoint, HttpApiGroup, HttpApiSchema } from "effect/http-api";
 
-import { OrderMismatch, SessionEnabled, SessionNotFound } from "./errors.ts";
+import {
+  NotFeatured,
+  OrderMismatch,
+  SessionDisabled,
+  SessionEnabled,
+  SessionNotFound,
+} from "./errors.ts";
 import { CurrentUserMiddleware } from "./middleware.ts";
 import { Ulid } from "./ulid.ts";
 
@@ -15,6 +21,8 @@ export const SessionSummary = Schema.Struct({
   summary: Schema.String,
   position: Schema.Int,
   enabled: Schema.optionalKey(Schema.Boolean),
+  featured: Schema.Boolean,
+  featuredQuestions: Schema.Boolean,
 });
 
 export type SessionSummary = typeof SessionSummary.Type;
@@ -38,6 +46,8 @@ export const SessionChange = Schema.Struct({
   title: Schema.optionalKey(Schema.String.check(Schema.isMinLength(1))),
   summary: Schema.optionalKey(Schema.String),
   enabled: Schema.optionalKey(Schema.Boolean),
+  featured: Schema.optionalKey(Schema.Boolean),
+  featuredQuestions: Schema.optionalKey(Schema.Boolean),
   currentSlide: Schema.optionalKey(Position),
   currentStep: Schema.optionalKey(Position),
 });
@@ -71,7 +81,7 @@ export class AdminSessionsGroup extends HttpApiGroup.make("adminSessions")
       params: { id: Ulid },
       payload: SessionChange,
       success: Session,
-      error: SessionNotFound,
+      error: [SessionNotFound, SessionDisabled, NotFeatured],
     }),
     HttpApiEndpoint.delete("delete", "/admin/sessions/:id", {
       params: { id: Ulid },

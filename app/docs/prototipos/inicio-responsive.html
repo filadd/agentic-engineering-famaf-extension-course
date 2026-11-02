@@ -91,12 +91,13 @@
   .path { display: grid; grid-template-columns: 56px 1fr; column-gap: 16px; margin-top: 12px; }
   .rail { display: flex; flex-direction: column; align-items: center; }
   .node { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-family: 'Rubik', sans-serif; font-weight: 700; flex: none; }
+  .node.later { background: var(--line); }
   .node.done { background: var(--active); color: var(--active-ink); }
   .node.live { background: #E8505B; color: #fff; box-shadow: 0 0 0 6px color-mix(in srgb, #E8505B 25%, transparent); }
   .link { width: 4px; flex: 1; min-height: 14px; background: var(--line); border-radius: 2px; }
   .step { padding-bottom: 12px; min-width: 0; }
 
-  /* Poll panels inside the highlighted card (encuesta.html, option B). */
+  /* Poll panels inside the featured card (encuesta.html, option B). */
   .polls { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
   .panel { background: #fff; border-radius: 18px; padding: 16px 18px; color: #1F1B18; }
   .q { font-family: 'Rubik', sans-serif; font-weight: 500; display: flex; gap: 8px; align-items: flex-start; }
@@ -154,6 +155,11 @@
   .question .del:hover { color: #B5485A; background: #F2EDE9; }
   .yours { margin-left: 6px; font-size: 11px; background: #CCC4F0; border-radius: 999px; padding: 0 6px; white-space: nowrap; }
   .empty { color: var(--muted); font-size: 14px; padding: 6px 0; }
+  .qpanel { margin-top: 14px; }
+  .qpanel .ask input { border-color: #EADFD8; background: #fff; color: #1F1B18; }
+  .qpanel .ask { margin-top: 10px; }
+  .qpanel .question:last-of-type { margin-bottom: 0; }
+  .qpanel .empty { color: #8A7E75; }
 
   .field { display: block; font-size: 14px; font-weight: 700; margin-top: 10px; }
   .field input { display: block; width: 100%; margin-top: 6px; font: inherit; font-weight: 400; font-size: 15px; border: 1.5px solid var(--line); border-radius: 12px; padding: 9px 12px; background: var(--field); color: var(--ink); }
@@ -200,6 +206,7 @@
     .node { width: 32px; height: 32px; font-size: 14px; }
     .node.live { box-shadow: 0 0 0 4px color-mix(in srgb, #E8505B 25%, transparent); }
     .node.done .i { width: 16px !important; height: 16px !important; }
+    .node.live .i { width: 20px !important; height: 20px !important; }
 
     .panel { padding: 14px; border-radius: 16px; }
     .row { padding: 10px 12px; }
@@ -222,12 +229,12 @@
 <body>
 <div class="intro">
   <h1>Inicio del estudiante · celular y escritorio</h1>
-  <p>Cada estado se ve en un celular de 390 × 844 y en escritorio, con la misma data; lo que hacés en uno se refleja en el otro. En celular la card destacada ocupa el ancho, "Entrar al aula" va a lo ancho al pie de la card, el camino de "Sesiones anteriores" achica los nodos y el menú del avatar sigue siendo un desplegable. En el celular, todos los modales (Material, Encuestas, Preguntas y "Tu perfil") suben como una hoja desde abajo; en escritorio son el modal centrado ya decidido. Las sesiones no habilitadas no aparecen. Borrar una pregunta tuya pide confirmación. Votá, cambiá el voto, mandá palabras separadas por coma, abrí los links de la card o el menú del avatar.</p>
+  <p>Cada estado se ve en un celular de 390 × 844 y en escritorio, con la misma data; lo que hacés en uno se refleja en el otro. En celular la card destacada ocupa el ancho, "Entrar al aula" va a lo ancho al pie de la card, el camino de "Todas las sesiones" achica los nodos y el menú del avatar sigue siendo un desplegable. En el celular, todos los modales (Material, Encuestas, Preguntas y "Tu perfil") suben como una hoja desde abajo; en escritorio son el modal centrado ya decidido. Las sesiones no habilitadas no aparecen. Borrar una pregunta tuya pide confirmación. Votá, cambiá el voto, mandá palabras separadas por coma, abrí los links de la card o el menú del avatar. La destacada es la que el profe marca, no siempre la última: con las preguntas destacadas prendidas, esa card muestra arriba de las encuestas activas el panel de preguntas, con el campo para preguntar, las tres más votadas y las tuyas, y "Mostrar N preguntas más" / "Mostrar menos" para desplegarla o plegarla. En "Todas las sesiones", que incluye a la destacada, las anteriores a la destacada llevan check, la destacada una estrella sobre rojo y las de después un nodo vacío; ningún nodo lleva número. Sin destacada, la lista se llama igual, no hay estrella y nadie entra a un aula.</p>
 </div>
 <div id="alts"></div>
 
 <script>
-const ICONS = {"chart-bar":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 21H9.4c-2.24 0-3.36 0-4.216-.436a4 4 0 0 1-1.748-1.748C3 17.96 3 16.84 3 14.6V3m4 13.5h5M7 12h10M7 7.5h7\"/></svg>","download":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4 16.004V17a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1M12 4.5v11m3.5-3.5L12 15.5L8.5 12\"/></svg>","chat-messages":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M5 12a5 5 0 0 1 7 7m-7-7a5 5 0 0 0-2 4a5 5 0 0 0 .224 1.483c.272.88.076 1.86-.099 2.784a.468.468 0 0 0 .592.539c.848-.232 1.691-.43 2.557-.112A5 5 0 0 0 8 21a4.99 4.99 0 0 0 4-2m-7-7c0-4.685 2.875-9 8-9a8 8 0 0 1 7.532 10.7c-.476 1.326.037 3.102.337 4.568a.451.451 0 0 1-.584.526c-1.312-.41-2.852-.986-4.085-.466c-1.334.562-2.736.672-4.2.672\"/></svg>","arrow-right":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4.5 12h15m-5.625 6l5.625-6l-5.625-6\"/></svg>","pencil":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18.774 10.221L8.801 20.2a2.73 2.73 0 0 1-1.933.8H3v-3.844c0-.724.288-1.419.8-1.931m5 4.974l-5-4.974m0 0l9.983-9.995m0 0l1.426-1.428a2.733 2.733 0 0 1 3.867-.001l1.126 1.127a2.733 2.733 0 0 1 0 3.865l-1.428 1.428M13.783 5.23l4.991 4.991\"/></svg>","moon":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 12.808c-.5 5.347-5.849 9.14-11.107 7.983C-.078 18.6 1.15 3.909 11.11 3C6.395 9.296 14.619 17.462 21 12.808\"/></svg>","logout":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M13.496 21H6.5c-1.105 0-2-1.151-2-2.571V5.57c0-1.419.895-2.57 2-2.57h7M16 15.5l3.5-3.5L16 8.5m-6.5 3.496h10\"/></svg>","check":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m6 13.626l1.606 1.722c.886.95 1.329 1.424 1.825 1.574c.436.131.9.096 1.315-.1c.473-.224.852-.761 1.612-1.836L18 7\"/></svg>","chevron-up":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m18 15l-6-6l-6 6\"/></svg>","chevron-down":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m6 9l6 6l6-6\"/></svg>","send":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m14 10l-3 3m9.288-9.969a.535.535 0 0 1 .68.681l-5.924 16.93a.535.535 0 0 1-.994.04l-3.219-7.242a.54.54 0 0 0-.271-.271l-7.242-3.22a.535.535 0 0 1 .04-.993z\"/></svg>","arrow-up":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M12 19.5v-15m6 5.625L12 4.5l-6 5.625\"/></svg>","trash":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m18 9l-.84 8.398c-.127 1.273-.19 1.909-.48 2.39a2.5 2.5 0 0 1-1.075.973C15.098 21 14.46 21 13.18 21h-2.36c-1.279 0-1.918 0-2.425-.24a2.5 2.5 0 0 1-1.076-.973c-.288-.48-.352-1.116-.48-2.389L6 9m7.5 6.5v-5m-3 5v-5m-6-4h4.615m0 0l.386-2.672c.112-.486.516-.828.98-.828h3.038c.464 0 .867.342.98.828l.386 2.672m-5.77 0h5.77m0 0H19.5\"/></svg>","x":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 6L6 18M6 6l12 12\"/></svg>","lock":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M8 10V8c0-2.761 1.239-5 4-5s4 2.239 4 5v2M3.5 17.8v-4.6c0-1.12 0-1.68.218-2.107a2 2 0 0 1 .874-.875c.428-.217.988-.217 2.108-.217h10.6c1.12 0 1.68 0 2.108.217a2 2 0 0 1 .874.874c.218.428.218.988.218 2.108v4.6c0 1.12 0 1.68-.218 2.108a2 2 0 0 1-.874.874C18.98 21 18.42 21 17.3 21H6.7c-1.12 0-1.68 0-2.108-.218a2 2 0 0 1-.874-.874C3.5 19.481 3.5 18.921 3.5 17.8\"/></svg>","search":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M19 11.5a7.5 7.5 0 1 1-15 0a7.5 7.5 0 0 1 15 0m-2.107 5.42l3.08 3.08\"/></svg>","mail":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m2.357 7.714l6.98 4.654c.963.641 1.444.962 1.964 1.087c.46.11.939.11 1.398 0c.52-.125 1.001-.446 1.964-1.087l6.98-4.654M7.157 19.5h9.686c1.68 0 2.52 0 3.162-.327a3 3 0 0 0 1.31-1.311c.328-.642.328-1.482.328-3.162V9.3c0-1.68 0-2.52-.327-3.162a3 3 0 0 0-1.311-1.311c-.642-.327-1.482-.327-3.162-.327H7.157c-1.68 0-2.52 0-3.162.327a3 3 0 0 0-1.31 1.311c-.328.642-.328 1.482-.328 3.162v5.4c0 1.68 0 2.52.327 3.162a3 3 0 0 0 1.311 1.311c.642.327 1.482.327 3.162.327\"/></svg>"};
+const ICONS = {"star-fill":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"currentColor\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M12 3.5l2.6 5.3l5.9.9l-4.25 4.15l1 5.85L12 16.9l-5.25 2.8l1-5.85L3.5 9.7l5.9-.9z\"/></svg>","chart-bar":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 21H9.4c-2.24 0-3.36 0-4.216-.436a4 4 0 0 1-1.748-1.748C3 17.96 3 16.84 3 14.6V3m4 13.5h5M7 12h10M7 7.5h7\"/></svg>","download":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4 16.004V17a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1M12 4.5v11m3.5-3.5L12 15.5L8.5 12\"/></svg>","chat-messages":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M5 12a5 5 0 0 1 7 7m-7-7a5 5 0 0 0-2 4a5 5 0 0 0 .224 1.483c.272.88.076 1.86-.099 2.784a.468.468 0 0 0 .592.539c.848-.232 1.691-.43 2.557-.112A5 5 0 0 0 8 21a4.99 4.99 0 0 0 4-2m-7-7c0-4.685 2.875-9 8-9a8 8 0 0 1 7.532 10.7c-.476 1.326.037 3.102.337 4.568a.451.451 0 0 1-.584.526c-1.312-.41-2.852-.986-4.085-.466c-1.334.562-2.736.672-4.2.672\"/></svg>","arrow-right":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4.5 12h15m-5.625 6l5.625-6l-5.625-6\"/></svg>","pencil":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18.774 10.221L8.801 20.2a2.73 2.73 0 0 1-1.933.8H3v-3.844c0-.724.288-1.419.8-1.931m5 4.974l-5-4.974m0 0l9.983-9.995m0 0l1.426-1.428a2.733 2.733 0 0 1 3.867-.001l1.126 1.127a2.733 2.733 0 0 1 0 3.865l-1.428 1.428M13.783 5.23l4.991 4.991\"/></svg>","moon":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M21 12.808c-.5 5.347-5.849 9.14-11.107 7.983C-.078 18.6 1.15 3.909 11.11 3C6.395 9.296 14.619 17.462 21 12.808\"/></svg>","logout":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M13.496 21H6.5c-1.105 0-2-1.151-2-2.571V5.57c0-1.419.895-2.57 2-2.57h7M16 15.5l3.5-3.5L16 8.5m-6.5 3.496h10\"/></svg>","check":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m6 13.626l1.606 1.722c.886.95 1.329 1.424 1.825 1.574c.436.131.9.096 1.315-.1c.473-.224.852-.761 1.612-1.836L18 7\"/></svg>","chevron-up":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m18 15l-6-6l-6 6\"/></svg>","chevron-down":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m6 9l6 6l6-6\"/></svg>","send":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m14 10l-3 3m9.288-9.969a.535.535 0 0 1 .68.681l-5.924 16.93a.535.535 0 0 1-.994.04l-3.219-7.242a.54.54 0 0 0-.271-.271l-7.242-3.22a.535.535 0 0 1 .04-.993z\"/></svg>","arrow-up":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M12 19.5v-15m6 5.625L12 4.5l-6 5.625\"/></svg>","trash":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m18 9l-.84 8.398c-.127 1.273-.19 1.909-.48 2.39a2.5 2.5 0 0 1-1.075.973C15.098 21 14.46 21 13.18 21h-2.36c-1.279 0-1.918 0-2.425-.24a2.5 2.5 0 0 1-1.076-.973c-.288-.48-.352-1.116-.48-2.389L6 9m7.5 6.5v-5m-3 5v-5m-6-4h4.615m0 0l.386-2.672c.112-.486.516-.828.98-.828h3.038c.464 0 .867.342.98.828l.386 2.672m-5.77 0h5.77m0 0H19.5\"/></svg>","x":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M18 6L6 18M6 6l12 12\"/></svg>","lock":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M8 10V8c0-2.761 1.239-5 4-5s4 2.239 4 5v2M3.5 17.8v-4.6c0-1.12 0-1.68.218-2.107a2 2 0 0 1 .874-.875c.428-.217.988-.217 2.108-.217h10.6c1.12 0 1.68 0 2.108.217a2 2 0 0 1 .874.874c.218.428.218.988.218 2.108v4.6c0 1.12 0 1.68-.218 2.108a2 2 0 0 1-.874.874C18.98 21 18.42 21 17.3 21H6.7c-1.12 0-1.68 0-2.108-.218a2 2 0 0 1-.874-.874C3.5 19.481 3.5 18.921 3.5 17.8\"/></svg>","search":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M19 11.5a7.5 7.5 0 1 1-15 0a7.5 7.5 0 0 1 15 0m-2.107 5.42l3.08 3.08\"/></svg>","mail":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m2.357 7.714l6.98 4.654c.963.641 1.444.962 1.964 1.087c.46.11.939.11 1.398 0c.52-.125 1.001-.446 1.964-1.087l6.98-4.654M7.157 19.5h9.686c1.68 0 2.52 0 3.162-.327a3 3 0 0 0 1.31-1.311c.328-.642.328-1.482.328-3.162V9.3c0-1.68 0-2.52-.327-3.162a3 3 0 0 0-1.311-1.311c-.642-.327-1.482-.327-3.162-.327H7.157c-1.68 0-2.52 0-3.162.327a3 3 0 0 0-1.31 1.311c-.328.642-.328 1.482-.328 3.162v5.4c0 1.68 0 2.52.327 3.162a3 3 0 0 0 1.311 1.311c.642.327 1.482.327 3.162.327\"/></svg>"};
 const ic = (n, s = 20) => `<span class="i" style="width:${s}px;height:${s}px">${ICONS[n]}</span>`;
 
 const SESSIONS = [
@@ -266,7 +273,7 @@ const CLOSED_POOL = [
 // Answered questions are already gone: students never see them.
 const QUESTIONS = {
   1: [['¿El agente se acuerda de lo que le pedí ayer?', 12], ['¿Por qué rompió cosas que andaban?', 8], ['¿Conviene pedirle todo de una?', 5]],
-  2: [['¿Cuánto detalle tiene que tener un plan antes de pasárselo al agente?', 9], ['¿Conviene revisar el diff o correr los tests primero?', 6], ['¿Qué pasa si el plan está mal y el agente lo sigue igual?', 4, true], ['¿Hay plantillas de plan que recomiendes?', 2]],
+  2: [['¿Cuánto detalle tiene que tener un plan antes de pasárselo al agente?', 9], ['¿Conviene revisar el diff o correr los tests primero?', 6], ['¿El plan lo escribo yo o se lo pido al agente?', 5], ['¿Qué pasa si el plan está mal y el agente lo sigue igual?', 4], ['¿Hay plantillas de plan que recomiendes?', 2], ['¿Cada cuánto conviene parar y revisar?', 1, true], ['¿Sirve el plan para tareas chicas?', 0]],
   3: [['¿Las skills sirven con cualquier agente?', 6], ['¿Dónde se guardan las skills del proyecto?', 3]],
   4: [['¿Cómo sé cuánto contexto me queda?', 7]],
   5: [],
@@ -287,14 +294,19 @@ const ANIMALS = [
   ['🐜', 'hormiga'], ['🕷️', 'araña'], ['🦂', 'escorpión'], ['🪲', 'escarabajo'],
 ];
 
-// `enabled` is how many sessions the teacher has enabled; the last one is the highlighted one.
+// `enabled` is how many sessions the teacher has enabled (the first N, in the teacher's order); `featured` is the explicit mark, which can be any enabled session or none.
 const STATES = {
-  several: { label: 'Dos encuestas activas, una cerrada', enabled: 2, polls: { choice: 'active', cloud: 'active', scale: 'closed' } },
-  one: { label: 'Una activa, dos cerradas', enabled: 2, polls: { choice: 'active', cloud: 'closed', scale: 'closed' } },
-  closed: { label: 'Todas cerradas', enabled: 2, polls: { choice: 'closed', cloud: 'closed', scale: 'closed' } },
-  none: { label: 'Ninguna activada', enabled: 2, polls: { choice: 'draft', cloud: 'draft', scale: 'draft' } },
-  last: { label: 'Curso terminado', enabled: 6, polls: null },
-  empty: { label: 'Ninguna habilitada', enabled: 0, polls: null },
+  several: { label: 'Dos encuestas activas, una cerrada', enabled: 2, featured: 2, qmode: false, polls: { choice: 'active', cloud: 'active', scale: 'closed' } },
+  one: { label: 'Una activa, dos cerradas', enabled: 2, featured: 2, qmode: false, polls: { choice: 'active', cloud: 'closed', scale: 'closed' } },
+  closed: { label: 'Todas cerradas', enabled: 2, featured: 2, qmode: false, polls: { choice: 'closed', cloud: 'closed', scale: 'closed' } },
+  none: { label: 'Ninguna activada', enabled: 2, featured: 2, qmode: false, polls: { choice: 'draft', cloud: 'draft', scale: 'draft' } },
+  last: { label: 'Curso terminado', enabled: 6, featured: 6, qmode: false, polls: null },
+  empty: { label: 'Ninguna habilitada', enabled: 0, featured: null, qmode: false, polls: null },
+  onPolls: { label: 'Preguntas destacadas, dos encuestas activas', enabled: 2, featured: 2, qmode: true, polls: { choice: 'active', cloud: 'active', scale: 'closed' } },
+  onOnly: { label: 'Preguntas destacadas, sin encuestas activas', enabled: 2, featured: 2, qmode: true, polls: { choice: 'closed', cloud: 'closed', scale: 'closed' } },
+  onEmpty: { label: 'Preguntas destacadas, todavía sin preguntas', enabled: 2, featured: 2, qmode: true, noQuestions: true, polls: { choice: 'active', cloud: 'closed', scale: 'closed' } },
+  middle: { label: 'Preguntas destacadas, sesión destacada en el medio', enabled: 4, featured: 2, qmode: true, polls: { choice: 'active', cloud: 'active', scale: 'closed' } },
+  nofeat: { label: 'Preguntas destacadas, sin sesión destacada', enabled: 3, featured: null, qmode: true, polls: { choice: 'active', cloud: 'active', scale: 'closed' } },
 };
 
 const ALTS = {
@@ -303,10 +315,13 @@ const ALTS = {
 
 const freshVotes = () => Object.fromEntries(Object.keys(POLLS).map((k) => [k, { mine: null, previous: null, editing: false, word: '' }]));
 
-const freshQuestions = () => Object.fromEntries(Object.entries(QUESTIONS).map(([n, qs]) => [n, qs.map(([text, votes, mine], i) => ({ id: `${n}-${i}`, text, votes, mine: mine === true }))]));
+const freshQuestions = () => Object.fromEntries(Object.entries(QUESTIONS).map(([n, qs]) => [n, qs.map(([text, votes, mine], i) => ({ id: `${n}-${i}`, text, votes, mine: mine === true, added: false }))]));
+
+// The empty state hides the example questions but keeps the ones the reader adds.
+const questionsIn = (v, state, n) => v.questions[n].filter((q) => !(STATES[state].noQuestions && n === 2) || q.added);
 
 const fresh = () => ({
-  state: 'several', all: false, dark: false, open: {}, menu: false, modal: null, openPoll: null, out: false, confirm: null,
+  state: 'several', all: false, qOpen: false, cardDraft: '', dark: false, open: {}, menu: false, modal: null, openPoll: null, out: false, confirm: null,
   votes: freshVotes(), questions: freshQuestions(), upvoted: [], draft: '',
   profile: { name: 'Lucía', mail: 'lucia.fernandez@mi.unc.edu.ar', avatar: '🦊' }, editing: null, query: '',
 });
@@ -318,7 +333,7 @@ const pct = (n, of) => (of === 0 ? 0 : Math.round((n / of) * 100));
 const plain = (text) => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 const enabledIn = (state) => SESSIONS.slice(0, STATES[state].enabled);
-const highlightedIn = (state) => enabledIn(state).at(-1) ?? null;
+const featuredIn = (state) => enabledIn(state).find((s) => s.n === STATES[state].featured) ?? null;
 
 const activeKeys = (state, n) => (n === 2 && STATES[state].polls != null ? Object.keys(POLLS).filter((k) => STATES[state].polls[k] === 'active') : []);
 
@@ -416,7 +431,7 @@ const tags = (v, state, s) => {
   return `<div class="tags">
     <button class="tag" data-open="material" data-n="${s.n}">${ic('download', 15)} Material (${s.material})</button>
     ${closed === 0 ? '' : `<button class="tag" data-open="polls" data-n="${s.n}">${ic('chart-bar', 15)} Encuestas (${closed})</button>`}
-    <button class="tag" data-open="questions" data-n="${s.n}">${ic('chat-messages', 15)} ${plural(v.questions[s.n].length, 'pregunta', 'preguntas')}</button>
+    <button class="tag" data-open="questions" data-n="${s.n}">${ic('chat-messages', 15)} ${plural(questionsIn(v, state, s.n).length, 'pregunta', 'preguntas')}</button>
   </div>`;
 };
 
@@ -428,18 +443,19 @@ const hero = (v, state, s) => {
       <h3>${s.title}</h3>
       ${tags(v, state, s)}
       <p>${s.summary}</p>
+      ${STATES[state].qmode ? questionsPanel(v, state, s) : ''}
       ${active.length === 0 ? '' : `<div class="polls">${active.map((k) => activePanel(v, k)).join('')}</div>`}
       <div class="foot"><button class="btn">Entrar al aula ${ic('arrow-right', 18)}</button></div>
     </div>`;
 };
 
-// Earlier sessions open one at a time and never get the button to the aula.
+// Only the featured session gets the button to the aula; the others open one at a time.
 const pathCard = (v, state, s, current) => (v.open[state] === s.n
   ? `<div class="card" style="background:${color(s.n)}">
       <div class="head" data-toggle="${s.n}"><h3>${s.title}</h3></div>
       ${tags(v, state, s)}
       <p>${s.summary}</p>
-      ${s.n === current.n ? `<div class="foot"><button class="btn">Entrar al aula ${ic('arrow-right', 18)}</button></div>` : ''}
+      ${s.n === current?.n ? `<div class="foot"><button class="btn">Entrar al aula ${ic('arrow-right', 18)}</button></div>` : ''}
     </div>`
   : `<div class="card closed" style="background:${color(s.n)}"><div class="head" data-toggle="${s.n}"><h3>${s.title}</h3></div></div>`);
 
@@ -453,9 +469,13 @@ const menu = (v) => (v.menu ? `
     <button class="mitem" data-logout>${ic('logout', 18)} Cerrar sesión</button>
   </div>` : '');
 
+// Before the featured one: done. The featured one: a star. After it, or with none featured: an empty node.
+const nodeKind = (s, current) => (current == null || s.n > current.n ? 'later' : s.n === current.n ? 'live' : 'done');
+const nodeLabel = (s, current) => (nodeKind(s, current) === 'done' ? ic('check', 20) : nodeKind(s, current) === 'live' ? ic('star-fill', 26) : '');
+
 const page = (v, state) => {
   const all = enabledIn(state);
-  const current = highlightedIn(state);
+  const current = featuredIn(state);
 
   return `
     <div class="window">
@@ -463,12 +483,12 @@ const page = (v, state) => {
         <div class="hello">Hola, ${v.profile.name}</div>
         <div class="me"><button class="avatar" data-menu title="Tu cuenta">${v.profile.avatar}</button>${menu(v)}</div>
       </div>
-      ${current == null
+      ${all.length === 0
         ? '<div class="empty-note">Todavía no hay sesiones habilitadas. Cuando el profe habilite la primera, aparece acá arriba.</div>'
-        : `${hero(v, state, current)}
-          <div class="section-title">Sesiones anteriores</div>
+        : `${current == null ? '' : hero(v, state, current)}
+          <div class="section-title">Todas las sesiones</div>
           <div class="path">${all.map((s, i) => `
-            <div class="rail"><div class="node ${s.n === current.n ? 'live' : 'done'}">${s.n === current.n ? s.n : ic('check', 20)}</div>${i < all.length - 1 ? '<div class="link"></div>' : ''}</div>
+            <div class="rail"><div class="node ${nodeKind(s, current)}">${nodeLabel(s, current)}</div>${i < all.length - 1 ? '<div class="link"></div>' : ''}</div>
             <div class="step">${pathCard(v, state, s, current)}</div>`).join('')}</div>`}
     </div>`;
 };
@@ -485,18 +505,39 @@ const closedList = (v, state, s) => `<div class="closed-polls">${closedPolls(v, 
     ${v.openPoll === i ? resultsOf(p, p.mine) : ''}
   </div>`).join('')}</div>`;
 
-// Only the highlighted session takes new questions and votes; earlier ones are read-only.
-const questions = (v, s, live) => {
-  const list = [...v.questions[s.n]].sort((a, b) => b.votes - a.votes);
+// Only the featured session takes new questions and votes; every other session is read-only.
+const sorted = (v, state, n) => [...questionsIn(v, state, n)].sort((a, b) => b.votes - a.votes);
+
+const questionRow = (v, q, live) => `
+  <div class="question">
+    <button class="vote ${v.upvoted.includes(q.id) ? 'on' : ''}" data-up="${q.id}" ${q.mine || !live ? 'disabled' : ''}>${ic('arrow-up', 14)}<span>${q.votes}</span></button>
+    <div class="qtext">${q.text}${q.mine ? '<span class="yours">Tuya</span>' : ''}</div>
+    ${q.mine && live ? `<button class="iconbtn del" data-del="${q.id}" title="Borrar tu pregunta">${ic('trash', 16)}</button>` : ''}
+  </div>`;
+
+const askField = (n, draftKey, value) => `<div class="ask"><input data-draft="${draftKey}" placeholder="Hacé una pregunta" value="${value}"><button class="iconbtn" data-ask="${draftKey}" data-n="${n}" title="Enviar">${ic('send', 18)}</button></div>`;
+
+const questions = (v, state, s, live) => {
+  const list = sorted(v, state, s.n);
 
   return `
-    ${live ? `<div class="ask"><input data-draft placeholder="Hacé una pregunta" value="${v.draft}"><button class="iconbtn" data-ask title="Enviar">${ic('send', 18)}</button></div>` : ''}
-    ${list.length === 0 ? '<div class="empty">Todavía no hay preguntas.</div>' : list.map((q) => `
-      <div class="question">
-        <button class="vote ${v.upvoted.includes(q.id) ? 'on' : ''}" data-up="${q.id}" ${q.mine || !live ? 'disabled' : ''}>${ic('arrow-up', 14)}<span>${q.votes}</span></button>
-        <div class="qtext">${q.text}${q.mine ? '<span class="yours">Tuya</span>' : ''}</div>
-        ${q.mine && live ? `<button class="iconbtn del" data-del="${q.id}" title="Borrar tu pregunta">${ic('trash', 16)}</button>` : ''}
-      </div>`).join('')}`;
+    ${live ? askField(s.n, 'modal', v.draft) : ''}
+    ${list.length === 0 ? '<div class="empty">Todavía no hay preguntas.</div>' : list.map((q) => questionRow(v, q, live)).join('')}`;
+};
+
+const questionsPanel = (v, state, s) => {
+  const list = sorted(v, state, s.n);
+  const head = `<div class="q">${ic('chat-messages', 18)}<span>Preguntas</span></div>`;
+  const empty = '<div class="empty">Todavía no hay preguntas. Hacé la primera.</div>';
+
+  const shown = v.qOpen ? list : list.filter((q, i) => i < 3 || q.mine);
+  const hidden = list.length - shown.length;
+  const toggle = v.qOpen
+    ? `<div class="edit"><button class="textlink" data-qtoggle>Mostrar menos</button></div>`
+    : hidden > 0 ? `<div class="edit"><button class="textlink" data-qtoggle>Mostrar ${plural(hidden, 'pregunta más', 'preguntas más')}</button></div>` : '';
+
+  return `<div class="panel qpanel">${head}<div class="meta">${plural(list.length, 'pregunta', 'preguntas')} · votá las que también querés que responda el profe</div>
+    ${askField(s.n, 'card', v.cardDraft)}${list.length === 0 ? empty : shown.map((q) => questionRow(v, q, true)).join('')}${toggle}</div>`;
 };
 
 const TITLES = { material: 'Material', polls: 'Encuestas cerradas', questions: 'Preguntas' };
@@ -546,12 +587,12 @@ const overlay = (v, state) => {
   }
 
   if (v.modal == null) {
-    return '';
+    return v.confirm == null ? '' : confirmDelete();
   }
 
   const s = SESSIONS[v.modal.n - 1];
-  const live = s.n === highlightedIn(state)?.n;
-  const body = v.modal.kind === 'material' ? material(s) : v.modal.kind === 'polls' ? closedList(v, state, s) : questions(v, s, live);
+  const live = s.n === featuredIn(state)?.n;
+  const body = v.modal.kind === 'material' ? material(s) : v.modal.kind === 'polls' ? closedList(v, state, s) : questions(v, state, s, live);
 
   return `${shell(TITLES[v.modal.kind], body)}${v.confirm == null ? '' : confirmDelete()}`;
 };
@@ -572,7 +613,7 @@ const app = (alt, v, state) => `
 /* ---------- Page chrome ---------- */
 
 const strip = (v) => {
-  const current = highlightedIn(v.state);
+  const current = featuredIn(v.state);
   const closed = current == null ? 0 : closedPolls(v, v.state, current.n).length;
   const isOpen = (kind) => v.modal?.kind === kind && v.modal.n === current?.n;
 
@@ -635,7 +676,7 @@ Object.keys(ALTS).forEach((alt) => {
     if (t.matches('[data-word]')) {
       v.votes[t.dataset.poll].word = t.value;
     } else if (t.matches('[data-draft]')) {
-      v.draft = t.value;
+      v[t.dataset.draft === 'card' ? 'cardDraft' : 'draft'] = t.value;
     } else if (t.matches('[data-name]')) {
       v.editing.name = t.value;
       root.querySelectorAll('[data-name]').forEach((i) => { i.value = t.value; });
@@ -668,7 +709,7 @@ Object.keys(ALTS).forEach((alt) => {
       closeAll(v);
     } else if (d.stripOpen != null) {
       closeAll(v);
-      v.modal = { kind: d.stripOpen, n: highlightedIn(v.state).n };
+      v.modal = { kind: d.stripOpen, n: featuredIn(v.state).n };
     } else if (t.hasAttribute('data-strip-menu')) {
       const on = v.menu;
 
@@ -720,14 +761,17 @@ Object.keys(ALTS).forEach((alt) => {
       v.questions[n] = v.questions[n].filter((q) => q.id !== v.confirm);
       v.confirm = null;
     } else if (t.hasAttribute('data-ask')) {
-      const n = v.modal.n;
+      const n = Number(d.n);
+      const key = d.ask === 'card' ? 'cardDraft' : 'draft';
 
-      if (v.draft.trim() === '') {
+      if (v[key].trim() === '') {
         return;
       }
 
-      v.questions[n] = [...v.questions[n], { id: `${n}-${Date.now()}`, text: v.draft.trim(), votes: 0, mine: true }];
-      v.draft = '';
+      v.questions[n] = [...v.questions[n], { id: `${n}-${Date.now()}`, text: v[key].trim(), votes: 0, mine: true, added: true }];
+      v[key] = '';
+    } else if (t.hasAttribute('data-qtoggle')) {
+      v.qOpen = !v.qOpen;
     } else if (t.hasAttribute('data-edit')) {
       // Going back to vote withdraws the previous vote (not the words of a word cloud); "Cancelar" puts it back.
       if (poll.type === 'cloud') {

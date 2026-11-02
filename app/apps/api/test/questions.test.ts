@@ -163,6 +163,49 @@ test(
 );
 
 test(
+  "asking in an enabled session that is not the featured one answers SessionNotFound and stores nothing",
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+
+    const response = yield* asAna("POST", "/api/questions", {
+      sessionId: listed,
+      body: "¿Se puede preguntar acá?",
+    });
+
+    expect(response.status).toBe(404);
+    expect(failedWith(response, SessionNotFound)).toBe(true);
+    expect((yield* studentQuestions(url, listed)).map((question) => question.body)).not.toContain(
+      "¿Se puede preguntar acá?",
+    );
+  }),
+);
+
+test(
+  "voting a question of a session that is not the featured one answers QuestionNotFound",
+  Effect.gen(function* () {
+    const response = yield* asAna("PATCH", "/api/questions/01QQ3000000000000000000000", {
+      myVote: true,
+    });
+
+    expect(response.status).toBe(404);
+    expect(failedWith(response, QuestionNotFound)).toBe(true);
+  }),
+);
+
+test(
+  "deleting one's own question of a session that is not the featured one answers QuestionNotFound and keeps it",
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+    const id = "01QQ1000000000000000000000";
+    const response = yield* asAna("DELETE", `/api/questions/${id}`);
+
+    expect(response.status).toBe(404);
+    expect(failedWith(response, QuestionNotFound)).toBe(true);
+    expect((yield* studentQuestions(url, listed)).map((question) => question.id)).toContain(id);
+  }),
+);
+
+test(
   "voting someone else's question adds one vote, and voting again adds none",
   Effect.scoped(
     Effect.gen(function* () {

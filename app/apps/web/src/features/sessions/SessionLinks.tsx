@@ -8,7 +8,7 @@ import { QuestionsSheet } from "../questions/QuestionsSheet.tsx";
 
 interface Props {
   sessionId: string;
-  highlighted: boolean;
+  featured: boolean;
 }
 
 type Link = "material" | "polls" | "questions";
@@ -20,7 +20,7 @@ const links: ReadonlyArray<{ id: Link; label: string; icon: IconName }> = [
 ];
 
 // The lists of a session are asked for only when their sheet opens.
-export const SessionLinks = ({ sessionId, highlighted }: Props) => {
+export const SessionLinks = ({ sessionId, featured }: Props) => {
   const [open, setOpen] = useState<Link | null>(null);
 
   const close = () => setOpen(null);
@@ -41,7 +41,7 @@ export const SessionLinks = ({ sessionId, highlighted }: Props) => {
       {open === "material" ? <MaterialSheet sessionId={sessionId} onClose={close} /> : null}
       {open === "polls" ? <ClosedPollsSheet sessionId={sessionId} onClose={close} /> : null}
       {open === "questions" ? (
-        <QuestionsSheet sessionId={sessionId} readOnly={!highlighted} onClose={close} />
+        <QuestionsSheet sessionId={sessionId} readOnly={!featured} onClose={close} />
       ) : null}
     </div>
   );
