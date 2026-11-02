@@ -91,6 +91,53 @@ describe("session page: classroom slides", () => {
     response.resolve(HttpResponse.json({ ...sessionDetail(planning, 2, 3), enabled: true }));
   });
 
+  test("moving several times while a move saves keeps the last position and saves only it next", async () => {
+    const first = Promise.withResolvers<Response>();
+    const moves = recorder<unknown>();
+
+    const { user } = await openPage("aula");
+
+    server.use(
+      http.patch(url(`/admin/sessions/${planning.id}`), async ({ request }) => {
+        const body = await readJson(
+          request,
+          Schema.Struct({ currentSlide: Schema.Finite, currentStep: Schema.Finite }),
+        );
+
+        moves.record(body);
+
+        return moves.calls.length === 1
+          ? first.promise
+          : HttpResponse.json({
+              ...sessionDetail(planning, body.currentSlide, body.currentStep),
+              enabled: true,
+            });
+      }),
+    );
+
+    const frame = await slidesFrame();
+
+    await frame.announce();
+    await waitFor(() => expect(frame.lastGo()).toEqual({ slide: 2, step: 2 }));
+
+    await user.click(screen.getByRole("button", { name: "Siguiente" }));
+    await user.click(screen.getByRole("button", { name: "Siguiente" }));
+    await user.click(screen.getByRole("button", { name: "Anterior" }));
+
+    await waitFor(() => expect(frame.lastGo()).toEqual({ slide: 2, step: 1 }));
+    expect(moves.calls).toEqual([{ currentSlide: 2, currentStep: 3 }]);
+
+    first.resolve(HttpResponse.json({ ...sessionDetail(planning, 2, 3), enabled: true }));
+
+    await waitFor(() =>
+      expect(moves.calls).toEqual([
+        { currentSlide: 2, currentStep: 3 },
+        { currentSlide: 2, currentStep: 1 },
+      ]),
+    );
+    expect(frame.goes.slice(-1)).toEqual([{ slide: 2, step: 1 }]);
+  });
+
   test("a failed move goes back to the previous position", async () => {
     const response = Promise.withResolvers<Response>();
 

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { HandButton } from "../hands/HandButton.tsx";
 import { useMaterials } from "../materials/useMaterials.ts";
 import { useSlidesMaterial } from "../materials/useSlidesMaterial.ts";
+import { positionOf } from "./position-of.ts";
 import { SlideStage } from "./SlideStage.tsx";
 import { SlideStageSkeleton } from "./SlideStageSkeleton.tsx";
 import { StudentSlideControls } from "./StudentSlideControls.tsx";
@@ -30,7 +31,7 @@ export const StudentSlides = ({ session, teacherPresent }: Props) => {
   const [following, setFollowing] = useState(true);
   const [own, setOwn] = useState<Own | null>(null);
 
-  const teacherPosition = { slide: session.currentSlide, step: session.currentStep };
+  const teacherPosition = positionOf(session);
   const ownPosition = own != null && own.slidesId === slides?.id ? own.position : teacherPosition;
   const position = teacherPresent && following ? teacherPosition : ownPosition;
 
