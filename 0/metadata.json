@@ -1,0 +1,199 @@
+{
+  "cli_version": "0.12.2",
+  "checkpoint_id": "01M6D52F2CHNEHVQ8TV52ZPESS",
+  "session_id": "01a1759b-8b25-728d-8785-fff64651883f",
+  "strategy": "manual-commit",
+  "created_at": "2026-11-02T03:32:58.652618336Z",
+  "branch": "feat/feedback-de-sesion",
+  "checkpoints_count": 22,
+  "files_touched": [
+    ".mahou/wiki/web.md"
+  ],
+  "agent": "Pi",
+  "model": "claude-opus-5-5",
+  "turn_id": "4796b82e021f",
+  "checkpoint_transcript_start": 2383,
+  "transcript_lines_at_start": 2383,
+  "compact_transcript_start": 742,
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 0,
+    "api_call_count": 0
+  },
+  "redaction": {
+    "replacements": 4,
+    "layers": {
+      "betterleaks": 0,
+      "connection_string": 0,
+      "credential_key": 0,
+      "credential_value": 0,
+      "credentialed_uri": 0,
+      "entropy": 4,
+      "key_context": 0,
+      "provider_token": 0,
+      "shell_stdin": 0
+    }
+  },
+  "skill_events_version": 1,
+  "skill_events": [
+    {
+      "id": "pi-skill-program-design-with-canvas-2026-11-01T20:10:21.137Z-0",
+      "event_type": "prompt_invocation",
+      "skill": {
+        "name": "program-design-with-canvas"
+      },
+      "source": {
+        "agent": "pi",
+        "signal": "input_slash_command",
+        "confidence": "explicit"
+      },
+      "turn_id": "eaab8f945e7b",
+      "timestamp": "2026-11-01T20:10:21.137Z",
+      "native": {
+        "command": "/skill:program-design-with-canvas"
+      },
+      "collapse": {
+        "target": "user_message",
+        "label": "/skill:program-design-with-canvas",
+        "default_collapsed": true
+      }
+    },
+    {
+      "id": "pi-skill-learn-2026-11-01T22:28:05.650Z-0",
+      "event_type": "prompt_invocation",
+      "skill": {
+        "name": "learn"
+      },
+      "source": {
+        "agent": "pi",
+        "signal": "input_slash_command",
+        "confidence": "explicit"
+      },
+      "turn_id": "619c58308410",
+      "timestamp": "2026-11-01T22:28:05.650Z",
+      "native": {
+        "command": "/skill:learn"
+      },
+      "collapse": {
+        "target": "user_message",
+        "label": "/skill:learn",
+        "default_collapsed": true
+      }
+    },
+    {
+      "id": "pi-skill-tasks-2026-11-01T23:19:39.692Z-0",
+      "event_type": "prompt_invocation",
+      "skill": {
+        "name": "tasks"
+      },
+      "source": {
+        "agent": "pi",
+        "signal": "input_slash_command",
+        "confidence": "explicit"
+      },
+      "turn_id": "255bae61e6a9",
+      "timestamp": "2026-11-01T23:19:39.692Z",
+      "native": {
+        "command": "/skill:tasks"
+      },
+      "collapse": {
+        "target": "user_message",
+        "label": "/skill:tasks",
+        "default_collapsed": true
+      }
+    },
+    {
+      "id": "pi-skill-commit-changes-2026-11-01T23:33:37.588Z-0",
+      "event_type": "prompt_invocation",
+      "skill": {
+        "name": "commit-changes"
+      },
+      "source": {
+        "agent": "pi",
+        "signal": "input_slash_command",
+        "confidence": "explicit"
+      },
+      "turn_id": "35daa6c4d7f2",
+      "timestamp": "2026-11-01T23:33:37.588Z",
+      "native": {
+        "command": "/skill:commit-changes"
+      },
+      "collapse": {
+        "target": "user_message",
+        "label": "/skill:commit-changes",
+        "default_collapsed": true
+      }
+    },
+    {
+      "id": "pi-skill-implement-2026-11-01T23:35:40.899Z-0",
+      "event_type": "prompt_invocation",
+      "skill": {
+        "name": "implement"
+      },
+      "source": {
+        "agent": "pi",
+        "signal": "input_slash_command",
+        "confidence": "explicit"
+      },
+      "turn_id": "877882334ef3",
+      "timestamp": "2026-11-01T23:35:40.899Z",
+      "native": {
+        "command": "/skill:implement"
+      },
+      "collapse": {
+        "target": "user_message",
+        "label": "/skill:implement",
+        "default_collapsed": true
+      }
+    },
+    {
+      "id": "pi-skill-implement-2026-11-02T00:21:49.657Z-0",
+      "event_type": "prompt_invocation",
+      "skill": {
+        "name": "implement"
+      },
+      "source": {
+        "agent": "pi",
+        "signal": "input_slash_command",
+        "confidence": "explicit"
+      },
+      "turn_id": "c2f1b2fbe4dd",
+      "timestamp": "2026-11-02T00:21:49.657Z",
+      "native": {
+        "command": "/skill:implement"
+      },
+      "collapse": {
+        "target": "user_message",
+        "label": "/skill:implement",
+        "default_collapsed": true
+      }
+    },
+    {
+      "id": "pi-skill-human-review-2026-11-02T03:18:53.049Z-0",
+      "event_type": "prompt_invocation",
+      "skill": {
+        "name": "human-review"
+      },
+      "source": {
+        "agent": "pi",
+        "signal": "input_slash_command",
+        "confidence": "explicit"
+      },
+      "turn_id": "6d518da21245",
+      "timestamp": "2026-11-02T03:18:53.049Z",
+      "native": {
+        "command": "/skill:human-review"
+      },
+      "collapse": {
+        "target": "user_message",
+        "label": "/skill:human-review",
+        "default_collapsed": true
+      }
+    }
+  ],
+  "session_metrics": {
+    "turn_count": 56
+  }
+}
