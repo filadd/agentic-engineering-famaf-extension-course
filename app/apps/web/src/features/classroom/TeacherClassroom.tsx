@@ -2,12 +2,14 @@ import type { Person } from "@kurasu/contract/classroom";
 import type { Session } from "@kurasu/contract/sessions";
 
 import { Badge } from "../../ui/Badge.tsx";
+import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 import { LowerHandButton } from "../hands/LowerHandButton.tsx";
 import { useAdminRaisedHands } from "../hands/useAdminRaisedHands.ts";
 import { useMe } from "../me/useMe.ts";
 import { AdminPanelPolls } from "../polls/AdminPanelPolls.tsx";
 import { AdminQuestions } from "../questions/AdminQuestions.tsx";
 import { FeaturedQuestionsSwitch } from "../questions/FeaturedQuestionsSwitch.tsx";
+import { sessionExamples } from "../sessions/session-examples.ts";
 import { ClassroomPanel } from "./ClassroomPanel.tsx";
 import { PresentButton } from "./PresentButton.tsx";
 import { SlideStageSkeleton } from "./SlideStageSkeleton.tsx";
@@ -63,7 +65,15 @@ export const TeacherClassroom = ({ sessionId, session, people, newQuestions }: P
             badge: <Badge count={newQuestions} label={`${newQuestions} preguntas nuevas`} />,
             content: (
               <>
-                {session == null ? null : <FeaturedQuestionsSwitch session={session} />}
+                {session == null ? (
+                  <SkeletonOf>
+                    <FeaturedQuestionsSwitch
+                      session={{ ...sessionExamples[0], featured: true, featuredQuestions: true }}
+                    />
+                  </SkeletonOf>
+                ) : (
+                  <FeaturedQuestionsSwitch session={session} />
+                )}
                 <AdminQuestions sessionId={sessionId} />
               </>
             ),

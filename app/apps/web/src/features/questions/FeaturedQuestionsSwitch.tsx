@@ -31,7 +31,7 @@ export const FeaturedQuestionsSwitch = ({ session }: Props) => {
           errorText: "No se pudo cambiar las preguntas destacadas.",
         })
       }
-      className="mb-3 flex w-full items-center justify-between gap-3 rounded-[14px] border-[1.5px] border-sand px-3 py-2.5 text-left text-coal disabled:opacity-50"
+      className="skeleton-block mb-3 flex w-full items-center justify-between gap-3 rounded-[14px] border-[1.5px] border-line px-3 py-2.5 text-left text-ink disabled:opacity-50"
     >
       <span className="min-w-0 flex-1">
         <b className="block text-sm">Preguntas destacadas</b>
