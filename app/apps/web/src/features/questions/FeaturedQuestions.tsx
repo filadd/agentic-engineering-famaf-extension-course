@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { Button } from "../../ui/Button.tsx";
 import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
+import { countLabel } from "../../ui/count-label.ts";
 import { Icon } from "../../ui/Icon.tsx";
 import { DeleteOwnQuestion } from "./DeleteOwnQuestion.tsx";
 import { questionExamples } from "./question-examples.ts";
@@ -16,10 +17,6 @@ interface Props {
 
 const visibleCount = 3;
 
-const countLabel = (count: number) => `${count} ${count === 1 ? "pregunta" : "preguntas"}`;
-
-// The questions panel of the featured card: the three most voted and the
-// student's own, unfolded to all with a toggle.
 export const FeaturedQuestions = ({ sessionId }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -33,6 +30,10 @@ export const FeaturedQuestions = ({ sessionId }: Props) => {
 
   const hidden = (sorted?.length ?? 0) - (shown?.length ?? 0);
 
+  const toggleLabel = isOpen
+    ? "Mostrar menos"
+    : `Mostrar ${countLabel(hidden, "pregunta más", "preguntas más")}`;
+
   return (
     <div className="paper mt-3.5 px-[18px] py-4 text-coal max-[600px]:p-3.5">
       <div className="flex items-start gap-2 font-display font-medium">
@@ -40,8 +41,8 @@ export const FeaturedQuestions = ({ sessionId }: Props) => {
         <h3>Preguntas</h3>
       </div>
       <div className="mt-0.5 text-[13px] opacity-70">
-        {sorted == null ? "Votá" : `${countLabel(sorted.length)} · votá`} las que también querés que
-        responda el profe
+        {sorted == null ? "Votá" : `${countLabel(sorted.length, "pregunta", "preguntas")} · votá`}{" "}
+        las que también querés que responda el profe
       </div>
       <QuestionForm sessionId={sessionId} />
       {shown == null ? (
@@ -65,9 +66,7 @@ export const FeaturedQuestions = ({ sessionId }: Props) => {
       {isOpen || hidden > 0 ? (
         <div className="mt-1 flex justify-end">
           <Button variant="pill-ghost" onClick={() => setIsOpen(!isOpen)}>
-            {isOpen
-              ? "Mostrar menos"
-              : `Mostrar ${hidden} ${hidden === 1 ? "pregunta más" : "preguntas más"}`}
+            {toggleLabel}
           </Button>
         </div>
       ) : null}

@@ -1,6 +1,8 @@
 import type { Poll } from "@kurasu/contract/polls";
 
-export const answers = (count: number) => `${count} ${count === 1 ? "respuesta" : "respuestas"}`;
+import { countLabel } from "../../ui/count-label.ts";
+
+export const answers = (count: number) => countLabel(count, "respuesta", "respuestas");
 
 export const pollMeta = (poll: Poll) => {
   if (poll.type === "feedback") {
