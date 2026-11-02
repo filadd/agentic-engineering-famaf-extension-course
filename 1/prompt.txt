@@ -1,0 +1,60 @@
+# Actualizar tres prototipos con lo que decidió el program design
+
+No lances subagentes: hacé todo vos.
+
+## Qué hacer
+
+Copiá estos tres prototipos de `app/docs/prototipos/` a `.scratch/preguntas-en-la-card/docs-draft-pd/prototipos/`, editá solo las copias y no toques `app/docs/`:
+
+- `inicio-responsive.html`
+- `admin-sesiones.html`
+- `admin-sesion.html`
+
+Las rutas son relativas a `/home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/`. En cada archivo, cambiá solo lo que dice abajo. Los estados, los controles y el resto quedan como están.
+
+## Cambios
+
+### `inicio-responsive.html` (inicio del estudiante)
+
+1. La lista de abajo se titula "Todas las sesiones" siempre, haya destacada o no. Desaparecen los títulos "Otras sesiones" y "Sesiones". La lista ya incluye a la destacada, así que el contenido de la lista no cambia.
+2. El nodo de la destacada en el camino (el nodo `live`, hoy rojo con el número) lleva una estrella en vez del número, sobre el mismo rojo. Ningún nodo lleva número.
+   - La estrella tiene que llenar casi todo el círculo: unos 26 px en el nodo de 44 px, y unos 20 px en el de 32 px del celular. El check es de 20 px, así que la estrella queda más grande.
+   - Usá la estrella rellena que ya define `admin-sesiones.html` (`star-fill`, un path SVG). Copiala al mapa de íconos del inicio si no está.
+3. Si un link `?sesion=<id>` apunta a la destacada, el prototipo despliega su card en la lista como con cualquier otra sesión. Si el prototipo trata ese caso, ajustalo; si no lo trata, no agregues nada.
+4. Actualizá la descripción del prototipo (el párrafo de ayuda arriba) donde mencione "Otras sesiones", "Sesiones" o el número de la destacada.
+
+### `admin-sesiones.html` (lista de sesiones del profe)
+
+1. Sacá el chip "Destacada" (`featChip`) de la card de arriba y de la card de la lista.
+2. Ningún nodo del camino lleva número:
+   - la destacada (`live`) lleva la estrella sobre el rojo, con el mismo tamaño que en el inicio;
+   - una deshabilitada (`lock`) lleva el nodo punteado vacío, sin número;
+   - el resto queda igual: check antes de la destacada y vacío después.
+3. La card de arriba (hero) pierde la línea "Sesión N de M", el chip y la etiqueta "Habilitada". Queda el título, el resumen y Abrir.
+4. Actualizá la descripción del prototipo donde mencione el chip o los números.
+
+### `admin-sesion.html` (admin de una sesión)
+
+1. La card de Contenido pierde el kicker "Sesión 2 de 6". Revisá también el encabezado o los títulos de pantalla que repitan "Sesión 2 de 6" (por ejemplo, la línea 207, `text: 'Sesión 2 de 6'`), y sacá ese texto donde aparezca a la vista.
+2. Los diálogos nombran a la otra destacada por su título, no por "la sesión 3":
+   - el aviso del modal Habilitar dice `Hoy la destacada es "Tooling y skills" y deja de serlo:`;
+   - la confirmación de destacar dice `"Tooling y skills" deja de ser la destacada:`.
+3. Actualizá la descripción del prototipo si menciona el número.
+
+## Cómo verificarlo
+
+Abrí cada copia con `agent-browser` y recorré los estados que tocaste:
+
+- inicio: un estado con destacada, uno sin destacada y la vista de celular;
+- lista: "Destacada la 2, habilitadas hasta la 4" y "Habilitadas, ninguna destacada";
+- admin de una sesión: Contenido, el modal Habilitar con otra destacada y la confirmación de destacar.
+
+Sacá un screenshot de cada uno, cada vez con un nombre de archivo nuevo, en `.scratch/preguntas-en-la-card/docs-draft-pd/shots/`. Mirá cada screenshot y corregí lo que no coincida con los cambios de arriba. Revisá también la consola por errores de JS. Al terminar, cerrá la pestaña de agent-browser.
+
+## Informe
+
+Respondé con:
+
+- una línea por archivo con lo que cambiaste;
+- lo que no pudiste hacer;
+- las rutas de los screenshots.
