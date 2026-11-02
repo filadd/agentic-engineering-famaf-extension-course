@@ -1,5 +1,5 @@
 import type { PollType } from "@kurasu/contract/polls";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 import { Icon } from "../../ui/Icon.tsx";
 import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
@@ -20,6 +20,9 @@ export const AdminPollsTab = ({ sessionId, isFeatured }: Props) => {
   const polls = useAdminPolls(sessionId);
 
   const [creating, setCreating] = useState<PollType | null>(null);
+
+  const ordered = polls.data == null ? [] : byStatus(polls.data);
+  const noteAfter = isFeatured ? -1 : ordered.findLastIndex((poll) => poll.status === "draft");
 
   return (
     <div className="max-w-[760px]">
@@ -50,12 +53,12 @@ export const AdminPollsTab = ({ sessionId, isFeatured }: Props) => {
             {polls.data.length === 0 ? (
               <div className="text-sm text-muted">Todavía no hay encuestas.</div>
             ) : null}
-            {byStatus(polls.data).map((poll) => (
-              <AdminPollCard key={poll.id} poll={poll} isFeatured={isFeatured} />
+            {ordered.map((poll, index) => (
+              <Fragment key={poll.id}>
+                <AdminPollCard poll={poll} isFeatured={isFeatured} />
+                {index === noteAfter ? <NotFeaturedNote /> : null}
+              </Fragment>
             ))}
-            {isFeatured || !polls.data.some((poll) => poll.status === "draft") ? null : (
-              <NotFeaturedNote />
-            )}
           </>
         )}
       </div>

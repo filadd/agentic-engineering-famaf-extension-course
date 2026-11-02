@@ -89,6 +89,19 @@ describe("session page: polls", () => {
     expect(screen.getByText("Solo se activan encuestas en la sesión destacada.")).toBeTruthy();
   });
 
+  test("outside the featured session the note sits under the last draft, above the closed polls", async () => {
+    const closedWords = adminPoll(wordsPoll(planning.id), "closed", { count: 0, words: [] });
+
+    await openPolls([closedWords, draftChoice], false);
+
+    const draft = await screen.findByRole("article", { name: draftChoice.prompt });
+    const note = screen.getByText("Solo se activan encuestas en la sesión destacada.");
+    const closed = screen.getByRole("article", { name: closedWords.prompt });
+
+    expect(draft.nextElementSibling).toBe(note);
+    expect(note.nextElementSibling).toBe(closed);
+  });
+
   test("without polls the tab says so under the creator", async () => {
     await openPolls([]);
 
