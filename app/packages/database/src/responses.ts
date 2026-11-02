@@ -1,4 +1,4 @@
-import { FeedbackResponse, ResponseValue } from "@kurasu/contract/polls";
+import { FeedbackResponse, FeedbackValue, ResponseValue } from "@kurasu/contract/polls";
 import { Ulid } from "@kurasu/contract/ulid";
 import { ResponsesStore } from "@kurasu/core/polls/responses-store";
 import { asc, eq, inArray, sql } from "drizzle-orm";
@@ -15,9 +15,8 @@ const decodeResponse = Schema.decodeUnknownEffect(
 );
 
 // A row of the counts: a choice, scale or feedback vote with how many sent it
-// (`value`, a feedback vote as its pick alone),
-// the votes of a words poll (neither), or a word with how many students sent it
-// (`word`).
+// (`value`, a feedback vote as its pick alone), the votes of a words poll
+// (neither), or a word with how many students sent it (`word`).
 const decodeCountRows = Schema.decodeUnknownEffect(
   Schema.Array(
     Schema.Struct({
@@ -29,14 +28,16 @@ const decodeCountRows = Schema.decodeUnknownEffect(
   ),
 );
 
-const decodeFeedbackValue = Schema.decodeUnknownEffect(
-  Schema.Struct({
-    pick: Schema.Int,
-    text: Schema.optionalKey(Schema.String),
-  }),
+const decodeFeedbackRows = Schema.decodeUnknownEffect(
+  Schema.Array(
+    Schema.Struct({
+      id: Ulid,
+      pollId: Ulid,
+      user: FeedbackResponse.fields.user,
+      value: FeedbackValue,
+    }),
+  ),
 );
-
-const decodeFeedbackResponse = Schema.decodeUnknownEffect(FeedbackResponse);
 
 export const D1Responses = Layer.effect(
   ResponsesStore,
@@ -86,38 +87,19 @@ export const D1Responses = Layer.effect(
             .select({
               id: responses.id,
               pollId: responses.pollId,
-              userId: users.id,
-              name: users.name,
-              avatar: users.avatar,
+              user: { id: users.id, name: users.name, avatar: users.avatar },
               value: responses.value,
             })
             .from(responses)
             .innerJoin(users, eq(users.id, responses.userId))
             .where(inArray(responses.pollId, [...pollIds]))
             .orderBy(asc(responses.id))
-            .pipe(Effect.orDie);
-
-          const feedback = yield* Effect.forEach(rows, (row) =>
-            Effect.gen(function* () {
-              const { pick, text } = yield* decodeFeedbackValue(row.value);
-
-              const fields = {
-                id: row.id,
-                user: { id: row.userId, name: row.name, avatar: row.avatar },
-                pick,
-              };
-
-              return [
-                row.pollId,
-                yield* decodeFeedbackResponse(text == null ? fields : { ...fields, text }),
-              ] as const;
-            }).pipe(Effect.orDie),
-          );
+            .pipe(Effect.flatMap(decodeFeedbackRows), Effect.orDie);
 
           return new Map(
-            [...Map.groupBy(feedback, ([pollId]) => pollId)].map(([pollId, pairs]) => [
+            [...Map.groupBy(rows, (row) => row.pollId)].map(([pollId, pollRows]) => [
               pollId,
-              pairs.map(([, response]) => response),
+              pollRows.map(({ id, user, value }) => ({ id, user, ...value })),
             ]),
           );
         }),

@@ -67,9 +67,10 @@ const adminPoll = (
 
 // The polls as each side sees them. The student sees the active and closed
 // polls of enabled sessions, with their own vote, and the results once they
-// voted or the poll closed; a feedback poll never shows results to them. The teacher sees every poll not deleted with its
-// results, and moves a poll only from draft to active and from active to
-// closed; only a draft's content changes.
+// voted or the poll closed; a feedback poll never shows results to them. The
+// teacher sees every poll not deleted with its results, and moves a poll only
+// from draft to active and from active to closed; only a draft's content
+// changes.
 export class Polls extends Context.Service<
   Polls,
   {
@@ -136,10 +137,14 @@ export class Polls extends Context.Service<
 
       const forTeacher = (polls: ReadonlyArray<StoredPoll>) =>
         Effect.gen(function* () {
-          const counts = yield* responses.counts(polls.map((poll) => poll.id));
-
-          const feedback = yield* responses.feedbackOf(
-            polls.flatMap((poll) => (poll.type === "feedback" ? [poll.id] : [])),
+          const [counts, feedback] = yield* Effect.all(
+            [
+              responses.counts(polls.map((poll) => poll.id)),
+              responses.feedbackOf(
+                polls.flatMap((poll) => (poll.type === "feedback" ? [poll.id] : [])),
+              ),
+            ],
+            { concurrency: "unbounded" },
           );
 
           return polls.map((poll) =>

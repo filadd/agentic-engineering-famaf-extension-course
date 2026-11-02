@@ -61,18 +61,24 @@ export const PollChange = Schema.Struct({
 
 export type PollChange = typeof PollChange.Type;
 
+const oneToFive = Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: 5 }));
+
+export const FeedbackValue = Schema.Struct({
+  pick: oneToFive,
+  text: Schema.optionalKey(Schema.String.check(Schema.isPattern(/\S/))),
+});
+
+export type FeedbackValue = typeof FeedbackValue.Type;
+
 export const ResponseValue = Schema.Union([
   Schema.Struct({ choice: Schema.Int.check(Schema.isGreaterThanOrEqualTo(0)) }),
-  Schema.Struct({ scale: Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: 5 })) }),
+  Schema.Struct({ scale: oneToFive }),
   Schema.Struct({
     words: Schema.Array(
       Schema.String.check(Schema.isMinLength(1), Schema.isMaxLength(maxWordLength)),
     ).check(Schema.isMinLength(1), Schema.isMaxLength(maxWords)),
   }),
-  Schema.Struct({
-    pick: Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: 5 })),
-    text: Schema.optionalKey(Schema.String.check(Schema.isPattern(/\S/))),
-  }),
+  FeedbackValue,
 ]);
 
 export type ResponseValue = typeof ResponseValue.Type;
@@ -110,7 +116,7 @@ export const FeedbackResponse = Schema.Struct({
     name: Schema.NullOr(Schema.String),
     avatar: Schema.NullOr(Animal),
   }),
-  pick: Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: 5 })),
+  pick: oneToFive,
   text: Schema.optionalKey(Schema.String),
 });
 
