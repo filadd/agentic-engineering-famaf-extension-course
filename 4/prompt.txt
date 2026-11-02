@@ -1,0 +1,14 @@
+<supervisor-agent>
+No lances subagentes: hacé todo vos.
+
+Revisá contra las reglas del proyecto los cambios de un borrador. Las copias completas, con los cambios aplicados, están en `/home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/preguntas-en-la-card/docs-draft-pd/`: estados-de-encuestas-y-sesiones.md, novedades-por-mail.md, acceso-a-datos.md y prototipos-README.md (copia del índice de prototipos).
+
+- Charter: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/app/docs/README.md.
+- README de la carpeta: app/docs/architecture/README.md.
+- Plantilla: app/docs/_templates/note.md.
+- Originales: app/docs/architecture/ y app/docs/prototipos/README.md. Compará cada copia con su original (diff) y revisá solo lo que cambió.
+
+Además de tu lista, revisá que el texto cambiado describa el presente, sin "ya no", "pasa a", "antes" ni "reemplaza", y que no nombre componentes, librerías ni paquetes del código.
+
+No edites nada. Escribí el informe en `/home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/preguntas-en-la-card/docs-draft-pd/review.md`, una línea por hallazgo: `<archivo>:<línea> | <regla> | "<texto citado>" | <arreglo propuesto>`. Al final, una línea con lo que el borrador hace bien. Después respondé solo con la cantidad de hallazgos.
+</supervisor-agent>
