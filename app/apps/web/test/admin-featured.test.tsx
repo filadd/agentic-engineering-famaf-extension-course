@@ -32,19 +32,19 @@ const detail = (summary: typeof planning, fields: Partial<Session> = {}): Sessio
 interface Options {
   planningFields?: Partial<Session>;
   otherIsFeatured?: boolean;
-  otherQuestions?: boolean;
+  isOtherFeaturedQuestions?: boolean;
 }
 
 const open = async ({
   planningFields = {},
   otherIsFeatured = false,
-  otherQuestions = false,
+  isOtherFeaturedQuestions = false,
 }: Options = {}) => {
   const page = teacherSession({
     sessions: [
       detail(vibeCoding),
       detail(planning, planningFields),
-      detail(tooling, { featured: otherIsFeatured, featuredQuestions: otherQuestions }),
+      detail(tooling, { featured: otherIsFeatured, featuredQuestions: isOtherFeaturedQuestions }),
     ],
     polls: [adminPoll(choicePoll(tooling.id), "active", { count: 0, choice: [0, 0, 0, 0] })],
     hands: [hand],

@@ -17,11 +17,11 @@ import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
 import { teacherSession } from "./helpers/teacher-session.ts";
 
-const openPolls = async (polls: ReadonlyArray<AdminPoll> = [], featured = true) => {
+const openPolls = async (polls: ReadonlyArray<AdminPoll> = [], isFeatured = true) => {
   const store = pollStore(polls);
 
   const page = teacherSession({
-    sessions: [{ ...sessionDetail(planning), enabled: true, featured }],
+    sessions: [{ ...sessionDetail(planning), enabled: true, featured: isFeatured }],
   });
 
   server.use(...store.handlers, ...page.handlers);

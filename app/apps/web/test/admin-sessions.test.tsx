@@ -12,10 +12,10 @@ import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
 import { sessionStore } from "./helpers/session-store.ts";
 
-const enabled = (summary: typeof vibeCoding, on: boolean, featured = false) => ({
+const enabled = (summary: typeof vibeCoding, on: boolean, isFeatured = false) => ({
   ...sessionDetail(summary),
   enabled: on,
-  featured,
+  featured: isFeatured,
 });
 
 const course = () => [

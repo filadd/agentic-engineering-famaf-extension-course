@@ -13,12 +13,12 @@ import { server } from "./helpers/server.ts";
 
 const featured = { ...asFeatured(planning), featuredQuestions: true };
 
-const open = async (questions: ReadonlyArray<Question>, withQuestions = true) => {
+const open = async (questions: ReadonlyArray<Question>, isWithQuestions = true) => {
   const store = questionStore(questions);
 
   server.use(
     getJson("/me", student),
-    getJson("/sessions", [withQuestions ? featured : asFeatured(planning)]),
+    getJson("/sessions", [isWithQuestions ? featured : asFeatured(planning)]),
     getJson("/polls", []),
     ...store.handlers,
   );
