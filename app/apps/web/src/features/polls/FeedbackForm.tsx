@@ -9,8 +9,6 @@ import { FeedbackScale } from "./FeedbackScale.tsx";
 import { feedbackAnswerOf } from "./feedback-faces.ts";
 import { useVote } from "./useVote.ts";
 
-const textLink = "text-sm text-coal underline";
-
 interface Props {
   poll: Poll;
   onClosed?: () => void;
@@ -24,6 +22,7 @@ export const FeedbackForm = ({ poll, onClosed }: Props) => {
   const [text, setText] = useState(mine?.text ?? "");
 
   const vote = useVote({
+    inlineError: true,
     onSuccess: () => setIsEditing(false),
     onError: (error) => (Predicate.isTagged(error, "PollNotActive") ? onClosed?.() : undefined),
   });
@@ -34,9 +33,9 @@ export const FeedbackForm = ({ poll, onClosed }: Props) => {
         answer={mine}
         isClosed={false}
         action={
-          <button type="button" className={textLink} onClick={() => setIsEditing(true)}>
+          <Button variant="pill-ghost" onClick={() => setIsEditing(true)}>
             Cambiar mi respuesta
-          </button>
+          </Button>
         }
       />
     );
@@ -58,14 +57,13 @@ export const FeedbackForm = ({ poll, onClosed }: Props) => {
       ) : null}
       <div className="mt-3 flex items-center justify-end gap-3">
         {mine == null ? null : (
-          <button
-            type="button"
-            className={textLink}
+          <Button
+            variant="pill-ghost"
             disabled={vote.isPending}
             onClick={() => setIsEditing(false)}
           >
             Cancelar
-          </button>
+          </Button>
         )}
         <Button
           variant="main"

@@ -10,18 +10,17 @@ export interface VoteInput {
   readonly myResponse: ResponseValue;
 }
 
-export const useVote = (
-  options?: MutationOptions<Poll, VoteInput, EndpointError<"polls", "vote">>,
-) => {
+export type VoteOptions = MutationOptions<Poll, VoteInput, EndpointError<"polls", "vote">> & {
+  readonly inlineError?: boolean;
+};
+
+export const useVote = ({ inlineError = false, ...options }: VoteOptions = {}) => {
   const queryClient = useQueryClient();
 
   return useApiMutation({
     call: (api, input) =>
       api.polls.vote({ params: { id: input.pollId }, payload: { myResponse: input.myResponse } }),
-    errorToast: (input) =>
-      "words" in input.myResponse || "pick" in input.myResponse
-        ? undefined
-        : "No se pudo registrar tu voto. Probá de nuevo.",
+    errorToast: () => (inlineError ? undefined : "No se pudo registrar tu voto. Probá de nuevo."),
     onSuccess: (poll) =>
       queryClient.setQueriesData<ReadonlyArray<Poll>>({ queryKey: queryKeys.allPolls() }, (polls) =>
         polls?.map((each) => (each.id === poll.id ? poll : each)),

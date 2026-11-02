@@ -94,6 +94,10 @@
     @apply inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-line bg-transparent px-3.5 py-[7px] text-sm text-ink disabled:opacity-35;
   }
 
+  .pill-ghost {
+    @apply border-transparent hover:bg-line;
+  }
+
   .pill-dark {
     @apply border-active bg-active text-active-ink;
   }

@@ -18,13 +18,12 @@ interface Props {
 
 const scaleValues = [1, 2, 3, 4, 5];
 
-const textLink = "text-sm text-coal underline";
-
 export const VoteForm = ({ poll, onClosed }: Props) => {
   const [changing, setChanging] = useState(false);
   const [draft, setDraft] = useState("");
 
   const vote = useVote({
+    inlineError: poll.type === "words",
     onSuccess: () => {
       setChanging(false);
       setDraft("");
@@ -90,14 +89,13 @@ export const VoteForm = ({ poll, onClosed }: Props) => {
         )}
         {mine == null ? null : (
           <div className="mt-2.5 flex justify-end">
-            <button
-              type="button"
-              className={textLink}
+            <Button
+              variant="pill-ghost"
               disabled={vote.isPending}
               onClick={() => setChanging(!changing)}
             >
               {changing ? "Cancelar" : "Sumar más palabras"}
-            </button>
+            </Button>
           </div>
         )}
       </div>
@@ -117,9 +115,9 @@ export const VoteForm = ({ poll, onClosed }: Props) => {
           />
         )}
         <div className="mt-2.5 flex justify-end">
-          <button type="button" className={textLink} onClick={() => setChanging(true)}>
+          <Button variant="pill-ghost" onClick={() => setChanging(true)}>
             Cambiar mi voto
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -186,14 +184,9 @@ export const VoteForm = ({ poll, onClosed }: Props) => {
       )}
       {mine == null ? null : (
         <div className="mt-2.5 flex justify-end">
-          <button
-            type="button"
-            className={textLink}
-            disabled={vote.isPending}
-            onClick={() => setChanging(false)}
-          >
+          <Button variant="pill-ghost" disabled={vote.isPending} onClick={() => setChanging(false)}>
             Cancelar
-          </button>
+          </Button>
         </div>
       )}
     </div>
