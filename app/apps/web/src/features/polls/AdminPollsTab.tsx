@@ -5,6 +5,7 @@ import { Icon } from "../../ui/Icon.tsx";
 import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 import { AdminPollCard } from "./AdminPollCard.tsx";
 import { NewPollCard } from "./NewPollCard.tsx";
+import { NotFeaturedNote } from "./NotFeaturedNote.tsx";
 import { NewPollMenu } from "./NewPollMenu.tsx";
 import { adminPollExamples } from "./poll-examples.ts";
 import { byStatus } from "./poll-order.ts";
@@ -12,9 +13,10 @@ import { useAdminPolls } from "./useAdminPolls.ts";
 
 interface Props {
   sessionId: string;
+  isFeatured: boolean;
 }
 
-export const AdminPollsTab = ({ sessionId }: Props) => {
+export const AdminPollsTab = ({ sessionId, isFeatured }: Props) => {
   const polls = useAdminPolls(sessionId);
 
   const [creating, setCreating] = useState<PollType | null>(null);
@@ -40,7 +42,7 @@ export const AdminPollsTab = ({ sessionId }: Props) => {
         {polls.data == null ? (
           <SkeletonOf>
             {adminPollExamples.map((poll) => (
-              <AdminPollCard key={poll.id} poll={poll} />
+              <AdminPollCard key={poll.id} poll={poll} isFeatured />
             ))}
           </SkeletonOf>
         ) : (
@@ -49,8 +51,11 @@ export const AdminPollsTab = ({ sessionId }: Props) => {
               <div className="text-sm text-muted">Todavía no hay encuestas.</div>
             ) : null}
             {byStatus(polls.data).map((poll) => (
-              <AdminPollCard key={poll.id} poll={poll} />
+              <AdminPollCard key={poll.id} poll={poll} isFeatured={isFeatured} />
             ))}
+            {isFeatured || !polls.data.some((poll) => poll.status === "draft") ? null : (
+              <NotFeaturedNote />
+            )}
           </>
         )}
       </div>

@@ -15,13 +15,14 @@ import { useUpdatePoll } from "./useUpdatePoll.ts";
 
 interface Props {
   poll: AdminPoll;
+  isFeatured: boolean;
 }
 
 // The teacher's card of a poll. A draft is edited in place and saved before
 // it can be activated; active and closed polls show their results, without
 // who voted what (a feedback poll is the exception: its responses list each
 // student). Active ones start open.
-export const AdminPollCard = ({ poll }: Props) => {
+export const AdminPollCard = ({ poll, isFeatured }: Props) => {
   const [open, setOpen] = useState(poll.status === "active");
   const [draft, setDraft] = useState(contentOf(poll));
 
@@ -56,6 +57,7 @@ export const AdminPollCard = ({ poll }: Props) => {
         <PollActions
           poll={poll}
           canActivate={!dirty}
+          isFeatured={isFeatured}
           leading={
             poll.type === "feedback" && poll.status !== "draft" ? (
               <FeedbackResponsesButton poll={poll} />

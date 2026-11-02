@@ -20,6 +20,7 @@ import { otherStudent, student, teacher } from "./fixtures/people.ts";
 import { ulid } from "./fixtures/ids.ts";
 import { validSlides } from "./fixtures/slides.ts";
 import { apiError, getJson, noContent, readJson, url } from "./helpers/api.ts";
+import { failingRoute } from "./helpers/failing-route.ts";
 import { heldResponse } from "./helpers/held-response.ts";
 import { pollStore } from "./helpers/poll-store.ts";
 import { recorder } from "./helpers/recorder.ts";
@@ -40,7 +41,7 @@ const openPage = async (
   overrides: ReadonlyArray<HttpHandler> = [],
 ) => {
   const page = teacherSession({
-    sessions: [{ ...sessionDetail(planning, 2, 2), enabled: true }],
+    sessions: [{ ...sessionDetail(planning, 2, 2), enabled: true, featured: true }],
     materials: [slides],
     files: { [slides.id]: validSlides },
     people: [teacher, student, otherStudent],
@@ -343,6 +344,23 @@ describe("session page: classroom panel and badges", () => {
     expect(within(card).queryByLabelText("Pregunta")).toBeNull();
   });
 
+  test("the panel of a session that is not the featured one has no Activar and says why", async () => {
+    const draft = adminPoll(choicePoll(planning.id), "draft", { count: 0 });
+
+    await openPage("aula", {
+      polls: [draft],
+      sessions: [{ ...sessionDetail(planning, 2, 2), enabled: true, featured: false }],
+    });
+
+    const panel = await screen.findByRole("tabpanel");
+    const card = await within(panel).findByRole("article", { name: draft.prompt });
+
+    expect(within(card).queryByRole("button", { name: "Activar" })).toBeNull();
+    expect(
+      within(panel).getByText("Solo se activan encuestas en la sesión destacada."),
+    ).toBeTruthy();
+  });
+
   test("an active poll in the panel shows its results and Cerrar, without Borrar", async () => {
     const active = adminPoll(choicePoll(planning.id), "active", { count: 2, choice: [1, 1, 0, 0] });
 
@@ -582,5 +600,72 @@ describe("/admin/presentar/$id", () => {
     await renderRoute(`/admin/presentar/${planning.id}`);
 
     expect(await screen.findByText("Esta sesión todavía no tiene slides.")).toBeTruthy();
+  });
+});
+
+const openQuestions = async (fields: { featured: boolean; featuredQuestions?: boolean }) => {
+  const rendered = await openPage("aula", {
+    sessions: [
+      {
+        ...sessionDetail(planning, 2, 2),
+        enabled: true,
+        featuredQuestions: false,
+        ...fields,
+      },
+    ],
+  });
+
+  await rendered.user.click(await screen.findByRole("tab", { name: /Preguntas/ }));
+
+  return {
+    ...rendered,
+    switchEl: await screen.findByRole("switch", { name: /Preguntas destacadas/ }),
+  };
+};
+
+describe("session page: featured questions switch", () => {
+  test("in the featured session it turns on at once and sends featuredQuestions", async () => {
+    const { user, switchEl, store } = await openQuestions({ featured: true });
+    const held = heldResponse("patch", `/admin/sessions/${planning.id}`);
+
+    server.use(held.handler);
+
+    expect(
+      within(switchEl).getByText("Apagado: las preguntas se ven solo en el aula."),
+    ).toBeTruthy();
+
+    await user.click(switchEl);
+
+    await waitFor(() => expect(switchEl.getAttribute("aria-checked")).toBe("true"));
+    expect(
+      within(switchEl).getByText("Las preguntas aparecen en la card destacada del inicio."),
+    ).toBeTruthy();
+
+    held.release();
+
+    await waitFor(() =>
+      expect(store.writes).toEqual([{ method: "PATCH", body: { featuredQuestions: true } }]),
+    );
+  });
+
+  test("in a session that is not the featured one it is disabled and says why", async () => {
+    const { switchEl } = await openQuestions({ featured: false });
+
+    expect(switchEl).toHaveProperty("disabled", true);
+    expect(
+      within(switchEl).getByText(
+        "Solo la sesión destacada puede mostrar sus preguntas en el inicio.",
+      ),
+    ).toBeTruthy();
+  });
+
+  test("a failed change goes back and shows a toast", async () => {
+    const { user, switchEl } = await openQuestions({ featured: true });
+
+    server.use(failingRoute("patch", `/admin/sessions/${planning.id}`));
+    await user.click(switchEl);
+
+    expect(await screen.findByText("No se pudo cambiar las preguntas destacadas.")).toBeTruthy();
+    await waitFor(() => expect(switchEl.getAttribute("aria-checked")).toBe("false"));
   });
 });

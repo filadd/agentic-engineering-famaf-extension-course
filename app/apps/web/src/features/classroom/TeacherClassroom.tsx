@@ -7,6 +7,7 @@ import { useAdminRaisedHands } from "../hands/useAdminRaisedHands.ts";
 import { useMe } from "../me/useMe.ts";
 import { AdminPanelPolls } from "../polls/AdminPanelPolls.tsx";
 import { AdminQuestions } from "../questions/AdminQuestions.tsx";
+import { FeaturedQuestionsSwitch } from "../questions/FeaturedQuestionsSwitch.tsx";
 import { ClassroomPanel } from "./ClassroomPanel.tsx";
 import { PresentButton } from "./PresentButton.tsx";
 import { SlideStageSkeleton } from "./SlideStageSkeleton.tsx";
@@ -51,14 +52,21 @@ export const TeacherClassroom = ({ sessionId, session, people, newQuestions }: P
             id: "polls",
             label: "Encuestas",
             icon: "chart-bar",
-            content: <AdminPanelPolls sessionId={sessionId} />,
+            content: (
+              <AdminPanelPolls sessionId={sessionId} isFeatured={session?.featured === true} />
+            ),
           },
           {
             id: "questions",
             label: "Preguntas",
             icon: "chat-messages",
             badge: <Badge count={newQuestions} label={`${newQuestions} preguntas nuevas`} />,
-            content: <AdminQuestions sessionId={sessionId} />,
+            content: (
+              <>
+                {session == null ? null : <FeaturedQuestionsSwitch session={session} />}
+                <AdminQuestions sessionId={sessionId} />
+              </>
+            ),
           },
         ]}
       />

@@ -6,14 +6,15 @@ import { useUpdatePoll } from "./useUpdatePoll.ts";
 interface Props {
   poll: AdminPoll;
   canActivate?: boolean;
+  isFeatured: boolean;
 }
 
 // The transitions only go forward: draft → active → closed.
-export const PollStateActions = ({ poll, canActivate = true }: Props) => {
+export const PollStateActions = ({ poll, canActivate = true, isFeatured }: Props) => {
   const transition = useUpdatePoll();
 
   if (poll.status === "draft") {
-    return (
+    return isFeatured ? (
       <Button
         variant="pill-dark"
         className="border-coal bg-coal text-white"
@@ -22,7 +23,7 @@ export const PollStateActions = ({ poll, canActivate = true }: Props) => {
       >
         Activar
       </Button>
-    );
+    ) : null;
   }
 
   return poll.status === "active" ? (

@@ -69,7 +69,7 @@ const AdminSessionRoute = () => {
             {tab === "contenido" ? (
               <ContentTab sessionId={id} session={session.data} />
             ) : (
-              <AdminPollsTab sessionId={id} />
+              <AdminPollsTab sessionId={id} isFeatured={session.data?.featured === true} />
             )}
           </div>
         )}
