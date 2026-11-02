@@ -42,7 +42,7 @@ export const EnableSessionDialog = ({ session, featured, onClose }: Props) => {
         <Switch on={isFeaturing} />
       </button>
       {isFeaturing && featured != null ? (
-        <div className="mt-3 rounded-[14px] bg-peach px-3.5 py-3 text-sm text-coal">
+        <div className="mt-3 rounded-[14px] bg-[#f9dde1] px-3.5 py-3 text-sm text-[#8a2e3d]">
           <p>{`Hoy la destacada es "${featured.title}" y deja de serlo:`}</p>
           <FeaturedEffects session={featured} />
         </div>
