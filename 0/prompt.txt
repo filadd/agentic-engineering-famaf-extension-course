@@ -1,0 +1,55 @@
+<skill name="human-review" location="/home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--human-review/SKILL.md">
+References are relative to /home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--human-review.
+
+Load mahou:basics first. Then read `.mahou/human-review.md` if present.
+
+# Human review
+
+Verifies the user's own reading of a change and settles it with them. Nothing is edited until they rule on it.
+
+When both review skills run, mahou:agentic-review goes first. It clears the mechanical findings so this pass spends attention on judgment instead.
+
+## Step 1: Establish the changeset
+
+Load mahou:changeset. It gives you the repository paths you dispatch against, and the rule that tells you whether what an annotation flags was introduced by this change or predates it.
+
+## Step 2: Collect the annotations
+
+Start one `plannotator review` per repository, backgrounded, all in a single message:
+
+```
+cd {absolute-repo-path} && plannotator review
+```
+
+Backgrounding is what keeps that `cd` safe, because it never changes the session's working directory. Address repositories everywhere else the way `changeset` says.
+
+When a review times out before the user submits, start it again with the same command and tell the user the review restarted.
+
+Keep a map of repository to task so every result is attributed. Never poll. Completions arrive on their own.
+
+## Step 3: Work each repository as its annotations land
+
+Handle a repository the moment its result arrives, start to finish, and never hold a finished one behind a slow one.
+
+### Verify
+
+Annotations are unverified input. They carry what the user wants, not always the full context.
+
+Read the flagged lines before responding. Establish whether the change introduced what is flagged or whether it predates the change, which `changeset` covers. Then give each annotation a verdict, either Confirmed, Partly, Not a bug, or Intended, with the lines that settle it quoted.
+
+Report the base `plannotator` used alongside the changeset base. They can differ, and when they do the annotations cover a smaller diff than the changeset does.
+
+### Present
+
+Not every annotation is a finding. Some approve, some remove, some ask a question. Answer the questions first, because an answer changes what gets applied.
+
+Change nothing yet. Never apply the obvious ones unasked. Never argue a finding down: if you believe it is wrong, say why in one line and let the user rule. A "Not a bug" verdict is your reading, not a decision. The user routinely overrides it, and that is the correct outcome.
+
+### Apply what the user approves
+
+Before writing code, read the project's `CLAUDE.md` and `.mahou/basics.md` when present, and read the wiki entries for the technologies the fix touches. Follow the conventions of the repository you are in.
+
+Run that repository's linters and tests afterwards, scoped to the files you touched rather than the whole tree. A blanket formatter run reformats unrelated files and drags them into the change.
+
+Commit the approved fixes through mahou:commit-changes. The user's approval of a fix is the consent to commit it, so commit the groups mahou:commit-changes proposes without asking for confirmation.
+</skill>
