@@ -12,7 +12,7 @@ interface Props {
 }
 
 // The student's questions of a session, the most voted first. Only the
-// highlighted session takes new questions and votes.
+// featured session takes new questions and votes.
 export const StudentQuestions = ({ sessionId, readOnly }: Props) => {
   const questions = useQuestions(sessionId);
 
