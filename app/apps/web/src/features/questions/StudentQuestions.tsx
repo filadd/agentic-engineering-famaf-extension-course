@@ -1,10 +1,8 @@
 import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
-import { DeleteOwnQuestion } from "./DeleteOwnQuestion.tsx";
 import { questionExamples } from "./question-examples.ts";
 import { QuestionForm } from "./QuestionForm.tsx";
-import { QuestionList } from "./QuestionList.tsx";
-import { useQuestions } from "./useQuestions.ts";
-import { VoteToggle } from "./VoteToggle.tsx";
+import { StudentQuestionList } from "./StudentQuestionList.tsx";
+import { useQuestionsByVotes } from "./useQuestionsByVotes.ts";
 
 interface Props {
   sessionId: string;
@@ -14,7 +12,7 @@ interface Props {
 // The student's questions of a session, the most voted first. Only the
 // featured session takes new questions and votes.
 export const StudentQuestions = ({ sessionId, readOnly }: Props) => {
-  const questions = useQuestions(sessionId);
+  const questions = useQuestionsByVotes(sessionId);
 
   const form = readOnly ? null : <QuestionForm sessionId={sessionId} />;
 
@@ -22,21 +20,10 @@ export const StudentQuestions = ({ sessionId, readOnly }: Props) => {
     <div>
       {form}
       <SkeletonOf>
-        <QuestionList
-          questions={questionExamples}
-          renderVotes={(question) => <VoteToggle question={question} readOnly />}
-          renderActions={() => null}
-        />
+        <StudentQuestionList questions={questionExamples} readOnly />
       </SkeletonOf>
     </div>
   ) : (
-    <QuestionList
-      questions={questions.data.toSorted((a, b) => b.votes - a.votes)}
-      header={form}
-      renderVotes={(question) => <VoteToggle question={question} readOnly={readOnly} />}
-      renderActions={(question) =>
-        question.mine && !readOnly ? <DeleteOwnQuestion question={question} /> : null
-      }
-    />
+    <StudentQuestionList questions={questions.data} readOnly={readOnly} header={form} />
   );
 };

@@ -95,7 +95,8 @@ describe("the questions panel of the featured card", () => {
   test("asking from the card posts the question and shows it as the student's own", async () => {
     const { card, user, store } = await open([question(1, planning.id, "Una", { votes: 2 })]);
 
-    await user.type(await within(card).findByLabelText("Hacé una pregunta"), "¿Cómo seguimos?");
+    await panelOf(card);
+    await user.type(within(card).getByLabelText("Hacé una pregunta"), "¿Cómo seguimos?");
     await user.click(within(card).getByRole("button", { name: "Enviar" }));
 
     const asked = await within(card).findByRole("listitem", { name: "¿Cómo seguimos?" });
@@ -109,7 +110,9 @@ describe("the questions panel of the featured card", () => {
 
     server.use(failingRoute("post", "/questions"));
 
-    const field = await within(card).findByLabelText("Hacé una pregunta");
+    await panelOf(card);
+
+    const field = within(card).getByLabelText("Hacé una pregunta");
 
     await user.type(field, "No sale");
     await user.click(within(card).getByRole("button", { name: "Enviar" }));
