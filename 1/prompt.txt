@@ -1,0 +1,23 @@
+<supervisor-agent>
+You are applying the code fixes of the design reconciliation of the "preguntas en la card destacada" change in kurasu (`app/`). Your current directory is the git worktree on branch `feat/preguntas-en-la-card`, where the change is implemented, validated and reviewed (18 commits on `d09d518`); `pnpm run check` and `pnpm test` pass. Work with high reasoning effort. Do not spawn subagents.
+
+## Context
+
+Read the implementation brief at /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/preguntas-en-la-card/implement/brief.md for the change and the repository rules; they all apply, except the tracker states section (do not touch the Entire trail). The consistency checker's findings are at /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/preguntas-en-la-card/reports/reconcile/consistency.md. Apply exactly the items below, and nothing else; do not touch `app/docs/` or `.mahou/` (the documentation changes are drafted separately).
+
+## The fixes
+
+1. **Docs vs code 1: featuring with no other featured session fails silently.** `carga-y-acciones-de-la-web.md` says a waiting action with no form or modal shows its error in a toast. Featuring a session when none is featured has no dialog (program design: "destaca la sesión sin diálogo y en espera, con el switch deshabilitado hasta que responde"), so its failure shows a toast with the text "No se pudo destacar la sesión.". Make `toastOf` in `useUpdateSession` (or the instant caller's `onError`, whichever keeps the rule that the dialog paths show no toast) give that toast for this path only. Add a web test in `apps/web/test/admin-featured.test.tsx`: featuring with no other featured session, the PATCH fails, the toast appears and the switch goes back off.
+2. **Docs vs code 2: disabling the featured session shows its error twice.** The confirmed path (disabling the featured session, through its dialog) must show its error only inside the dialog, which stays open. Disabling a session that is not the featured one is instant and keeps its toast. Pick the smallest change that tells the two apart (for example, move the toast to the instant caller's `onError`, or pass whether the session is featured). Add or update the web test so a failed disable of the featured session shows the error in the dialog and no toast.
+3. **Code vs code 1.** `apps/web/test/helpers/session-store.ts` sets `featuredQuestions: false` wherever it sets `featured: false` on the session that leaves, as the API does.
+4. **Leftovers 1.** `RailLook` in `apps/web/src/features/sessions/rail-look.ts`: drop the `export` (or inline the return type), since nothing imports it.
+5. **Leftovers 2 and Vocabulary 1.** One name for the deferred write: type `batch` in `packages/database/src/database.ts` and the repository's writes with the core's `Write`, delete `Statement`, rename the `batch` parameter to `writes`, and reword the comment above `const writes` in `repository.ts` ("A write reads nothing after itself, so several can go in one D1 batch." or similar).
+6. **Vocabulary 2 and 3.** The comments in `packages/core/src/hands/hands.ts` (raise and lower in the featured session) and `packages/core/src/questions/questions.ts` (`findOpenQuestion` is about the featured session; the service comment says students read questions of enabled sessions and ask, vote and delete only in the featured one).
+7. **Vocabulary 5.** In `apps/web/test/loading.test.tsx`, rename `highlighted`, `earlier` and `earlierCards` to `featuredCard`, `allSessions` and `allCards`.
+
+Run `pnpm run check` and `pnpm test` in `app/`; everything must pass. Commit through mahou:commit-changes, committing the groups it proposes without asking. Do not push. Leave nothing running; list anything you leave outside the worktree.
+
+## How to answer
+
+Your final message is your report, and only that message is read: the commits (hash and message), what each fix changed, the new or updated tests with their names, the tail of `pnpm run check` and `pnpm test`, and what you left outside the worktree. Do not send a shorter message after the report. If a fix needs a decision the items above do not settle, end your turn with the question.
+</supervisor-agent>
