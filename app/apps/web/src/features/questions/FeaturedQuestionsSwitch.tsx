@@ -25,7 +25,11 @@ export const FeaturedQuestionsSwitch = ({ session }: Props) => {
       isOn={session.featuredQuestions}
       disabled={!session.featured}
       onClick={() =>
-        update.mutate({ id: session.id, change: { featuredQuestions: !session.featuredQuestions } })
+        update.mutate({
+          id: session.id,
+          change: { featuredQuestions: !session.featuredQuestions },
+          errorText: "No se pudo cambiar las preguntas destacadas.",
+        })
       }
       className="mb-3 flex w-full items-center justify-between gap-3 rounded-[14px] border-[1.5px] border-sand px-3 py-2.5 text-left text-coal disabled:opacity-50"
     >

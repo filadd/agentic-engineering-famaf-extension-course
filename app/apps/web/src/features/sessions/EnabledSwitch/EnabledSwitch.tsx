@@ -58,6 +58,12 @@ export const EnabledSwitch = ({ session, featured }: Props) => {
       onConfirm={() => update.mutateAsync({ id: session.id, change: { enabled: false } })}
     />
   ) : (
-    toggle(() => update.mutate({ id: session.id, change: { enabled: false } }))
+    toggle(() =>
+      update.mutate({
+        id: session.id,
+        change: { enabled: false },
+        errorText: "No se pudo deshabilitar la sesión.",
+      }),
+    )
   );
 };

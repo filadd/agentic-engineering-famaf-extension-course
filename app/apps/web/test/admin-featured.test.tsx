@@ -279,6 +279,37 @@ describe("session page: enabling and featuring", () => {
     expect(screen.getAllByRole("alert")).toHaveLength(1);
   });
 
+  test("a failed featuring with no other featured session shows a toast and the switch goes back off", async () => {
+    const { user, card } = await open();
+
+    server.use(failingRoute("patch", patchPath));
+    await user.click(within(card).getByRole("switch", { name: "Destacada" }));
+
+    expect(await screen.findByText("No se pudo destacar la sesión.")).toBeTruthy();
+    await waitFor(() =>
+      expect(
+        within(card).getByRole("switch", { name: "Destacada" }).getAttribute("aria-checked"),
+      ).toBe("false"),
+    );
+  });
+
+  test("a failed disable of the featured session shows the error inside the dialog and no toast", async () => {
+    const { user, card } = await open({ planningFields: { featured: true } });
+
+    server.use(failingRoute("patch", patchPath));
+    await user.click(within(card).getByRole("switch", { name: "Habilitada" }));
+
+    const confirm = screen.getByRole("alertdialog", { name: `¿Deshabilitar "${planning.title}"?` });
+
+    await user.click(within(confirm).getByRole("button", { name: "Deshabilitar" }));
+
+    expect(
+      await within(confirm).findByText("No se pudo guardar el cambio. Probá de nuevo."),
+    ).toBeTruthy();
+    expect(screen.queryByText("No se pudo deshabilitar la sesión.")).toBeNull();
+    expect(screen.getAllByRole("alert")).toHaveLength(1);
+  });
+
   test("a disabled session cannot be featured and says to enable it first", async () => {
     const { card } = await open({ planningFields: { enabled: false } });
 

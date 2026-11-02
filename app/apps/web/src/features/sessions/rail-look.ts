@@ -2,7 +2,7 @@ import type { SessionSummary } from "@kurasu/contract/sessions";
 
 import type { RailNodeLook } from "./RailNode.tsx";
 
-export type RailLook = Exclude<RailNodeLook, "locked" | "new">;
+type RailLook = Exclude<RailNodeLook, "locked" | "new">;
 
 export const railLook = (
   session: Pick<SessionSummary, "position">,

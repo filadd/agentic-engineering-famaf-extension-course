@@ -10,6 +10,7 @@ export const updateErrorText = "No se pudo guardar el cambio. Probá de nuevo.";
 export interface SessionUpdate {
   readonly id: string;
   readonly change: SessionChange;
+  readonly errorText?: string;
 }
 
 // Only disabling a session that is not the featured one and the featured
@@ -28,16 +29,6 @@ const withPatch = <S extends SessionSummary>(session: S, { id, change }: Session
   const isDisabling = change.enabled === false && change.featured == null && !session.featured;
 
   return isDisabling ? { ...patched, enabled: false } : patched;
-};
-
-const toastOf = ({ change }: SessionUpdate) => {
-  if (change.featuredQuestions != null) {
-    return "No se pudo cambiar las preguntas destacadas.";
-  }
-
-  return change.enabled === false && change.featured == null
-    ? "No se pudo deshabilitar la sesión."
-    : undefined;
 };
 
 export const useUpdateSession = (
@@ -64,6 +55,6 @@ export const useUpdateSession = (
         patch: withPatch,
       }),
     ],
-    errorToast: toastOf,
+    errorToast: ({ errorText }) => errorText,
     options,
   });

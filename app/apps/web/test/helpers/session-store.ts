@@ -52,10 +52,14 @@ export const sessionStore = (initial: ReadonlyArray<Session>) => {
         if (each.id === params["id"]) {
           const changed = { ...each, ...change };
 
-          return change.enabled === false ? { ...changed, featured: false } : changed;
+          return change.enabled === false
+            ? { ...changed, featured: false, featuredQuestions: false }
+            : changed;
         }
 
-        return change.featured === true ? { ...each, featured: false } : each;
+        return change.featured === true
+          ? { ...each, featured: false, featuredQuestions: false }
+          : each;
       });
 
       return HttpResponse.json(sessions.find((each) => each.id === params["id"]));

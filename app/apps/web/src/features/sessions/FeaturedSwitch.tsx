@@ -55,7 +55,12 @@ export const FeaturedSwitch = ({ session, featured }: Props) => {
     <>
       {confirmation == null ? (
         toggle(
-          () => update.mutate({ id: session.id, change: { featured: true } }),
+          () =>
+            update.mutate({
+              id: session.id,
+              change: { featured: true },
+              errorText: "No se pudo destacar la sesión.",
+            }),
           update.isPending,
         )
       ) : (
