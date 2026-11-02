@@ -206,7 +206,9 @@ describe("loading a screen", () => {
   test("a load that keeps failing shows the error screen, and once the API answers Volver al inicio takes the teacher to their admin", async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
 
-    const page = teacherSession({ sessions: [{ ...sessionDetail(planning), enabled: true }] });
+    const page = teacherSession({
+      sessions: [{ ...sessionDetail(planning), enabled: true, featured: true }],
+    });
 
     server.use(
       failingRoute("get", "/admin/sessions"),
@@ -260,7 +262,9 @@ describe("loading a screen", () => {
       JSON.stringify({ panelHidden: false, presenceCollapsed: false, tab: "questions" }),
     );
 
-    const page = teacherSession({ sessions: [{ ...sessionDetail(planning), enabled: true }] });
+    const page = teacherSession({
+      sessions: [{ ...sessionDetail(planning), enabled: true, featured: true }],
+    });
 
     server.use(failingRoute("get", "/admin/questions"), ...page.handlers);
 

@@ -3,6 +3,7 @@ import { http, HttpResponse } from "msw";
 import { describe, expect, test } from "vitest";
 
 import { planning, sessionDetail, tooling, vibeCoding } from "./fixtures/content.ts";
+import { icons } from "../src/ui/icons.ts";
 import { teacher } from "./fixtures/people.ts";
 import { getJson, url } from "./helpers/api.ts";
 import { failingRoute } from "./helpers/failing-route.ts";
@@ -11,12 +12,17 @@ import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
 import { sessionStore } from "./helpers/session-store.ts";
 
-const enabled = (summary: typeof vibeCoding, on: boolean) => ({
+const enabled = (summary: typeof vibeCoding, on: boolean, featured = false) => ({
   ...sessionDetail(summary),
   enabled: on,
+  featured,
 });
 
-const course = () => [enabled(vibeCoding, true), enabled(planning, true), enabled(tooling, false)];
+const course = () => [
+  enabled(vibeCoding, true),
+  enabled(planning, true, true),
+  enabled(tooling, false),
+];
 
 const openAdmin = async (store = sessionStore(course())) => {
   server.use(getJson("/me", teacher), ...store.handlers);
@@ -35,21 +41,62 @@ const titlesIn = (rail: HTMLElement) =>
     .map((card) => card.getAttribute("aria-label"));
 
 describe("/admin", () => {
-  test("the list shows each card with its number and whether it is enabled, and the new session card last", async () => {
+  test("the list shows the featured card on top and each card with whether it is enabled, and the new session card last", async () => {
     const { rail } = await openAdmin();
 
     expect(titlesIn(rail)).toEqual([vibeCoding.title, planning.title, tooling.title]);
-    expect(within(rail).getByLabelText("Sesión 1")).toBeTruthy();
-    expect(within(rail).getByLabelText("Sesión 3").textContent).toBe("3");
     expect(
       within(rail)
         .getAllByRole("article")
         .map((card) => within(card).getByText(/abilitada$/).textContent),
     ).toEqual(["Habilitada", "Habilitada", "Deshabilitada"]);
 
+    const featured = screen.getByRole("region", { name: planning.title });
+
+    expect(within(featured).getByText(planning.summary)).toBeTruthy();
+    expect(within(featured).getByRole("link", { name: `Abrir ${planning.title}` })).toBeTruthy();
+    expect(screen.queryByText("Destacada")).toBeNull();
+
     const buttons = within(rail).getAllByRole("button");
 
     expect(buttons.at(-1)?.textContent).toBe("Nueva sesión");
+  });
+
+  test("the path has a check before the featured session, a star on it and an empty node after, dashed for a disabled one, and no numbers", async () => {
+    const { rail } = await openAdmin();
+
+    const nodes = [...rail.querySelectorAll("div.rounded-full")];
+
+    expect(
+      nodes.slice(0, 3).map((node) => node.querySelector("path")?.getAttribute("d") ?? null),
+    ).toEqual([icons.check[0], icons.star[0], null]);
+    expect(nodes[2]?.className).toContain("border-dashed");
+    expect(within(rail).queryByText(/^[123]$/)).toBeNull();
+    expect(within(rail).queryByLabelText(/^Sesión \d/)).toBeNull();
+    expect(screen.queryByText(/Sesión \d+ de \d+/)).toBeNull();
+  });
+
+  test("an enabled session after the featured one has an empty node that is not dashed", async () => {
+    const { rail } = await openAdmin(
+      sessionStore([enabled(vibeCoding, true, true), enabled(planning, true)]),
+    );
+
+    const nodes = [...rail.querySelectorAll("div.rounded-full")];
+
+    expect(nodes[1]?.className).not.toContain("border-dashed");
+    expect(nodes[1]?.querySelector("path")).toBeNull();
+  });
+
+  test("without a featured session the page says so and the path has no check", async () => {
+    const { rail } = await openAdmin(
+      sessionStore([enabled(vibeCoding, true), enabled(planning, true)]),
+    );
+
+    expect(
+      screen.getByText("Ninguna sesión destacada: los estudiantes no entran a ningún aula."),
+    ).toBeTruthy();
+    expect(screen.queryByRole("region", { name: planning.title })).toBeNull();
+    expect(rail.querySelector("path")?.getAttribute("d")).not.toBe(icons.check[0]);
   });
 
   test("creating a session asks for a title and a summary and adds it last, disabled", async () => {
