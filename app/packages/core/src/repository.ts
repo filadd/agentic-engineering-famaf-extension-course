@@ -2,6 +2,8 @@ import type { Ulid } from "@kurasu/contract/ulid";
 import type * as Effect from "effect/Effect";
 import type * as Option from "effect/Option";
 
+import type { Write } from "./batch.ts";
+
 // A filter by field: a value matches with `=`, an array with `in` and null with
 // `is null`; the fields combine with `and`.
 export type Where<A> = {
@@ -43,6 +45,20 @@ export const maxPage = 100;
 // exposes and adds its own. An `upsert` without `set` leaves the row it
 // conflicts with as it was. A store with logical deletion leaves the deleted
 // rows out of every read, and its `remove` marks the row instead of deleting it.
+// The methods that write, without running them: each gives back a `Write` to
+// run with `Batch`, inside an Effect when building it reads something.
+export interface Writes<A, New, Change> {
+  readonly create: (row: New) => Write;
+  readonly update: (id: Ulid, change: Change) => Write;
+  readonly updateWhere: (where: Where<A>, change: Change) => Effect.Effect<Write>;
+  readonly upsert: (
+    row: New,
+    options: UpsertOptions<keyof New & string, Change>,
+  ) => Effect.Effect<Write>;
+  readonly remove: (id: Ulid) => Effect.Effect<Write>;
+  readonly removeWhere: (where: Where<A>) => Effect.Effect<Write>;
+}
+
 export interface Repository<A, New, Change> {
   readonly get: (id: Ulid) => Effect.Effect<Option.Option<A>>;
   readonly getMany: (ids: ReadonlyArray<Ulid>) => Effect.Effect<ReadonlyArray<A>>;
@@ -62,4 +78,5 @@ export interface Repository<A, New, Change> {
     (where: Where<A>): Effect.Effect<number>;
     (where: Where<A>, options: RemoveOptions): Effect.Effect<ReadonlyArray<A>>;
   };
+  readonly writes: Writes<A, New, Change>;
 }

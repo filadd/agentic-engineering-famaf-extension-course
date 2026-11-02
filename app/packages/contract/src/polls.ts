@@ -5,6 +5,7 @@ import {
   InvalidPollContent,
   InvalidResponse,
   InvalidTransition,
+  NotFeatured,
   NotStudent,
   PollNotActive,
   PollNotDraft,
@@ -167,7 +168,7 @@ export class AdminPollsGroup extends HttpApiGroup.make("adminPolls")
       params: { id: Ulid },
       payload: PollChange,
       success: AdminPoll,
-      error: [PollNotFound, PollNotDraft, InvalidTransition, InvalidPollContent],
+      error: [PollNotFound, PollNotDraft, InvalidTransition, InvalidPollContent, NotFeatured],
     }),
     HttpApiEndpoint.delete("delete", "/admin/polls/:id", {
       params: { id: Ulid },

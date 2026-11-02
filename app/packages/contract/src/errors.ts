@@ -102,6 +102,12 @@ export class SessionDisabled extends Schema.TaggedError<SessionDisabled>()(
   { httpApiStatus: 409 },
 ) {}
 
+export class NotFeatured extends Schema.TaggedError<NotFeatured>()(
+  "NotFeatured",
+  {},
+  { httpApiStatus: 409 },
+) {}
+
 export class OrderMismatch extends Schema.TaggedError<OrderMismatch>()(
   "OrderMismatch",
   {},

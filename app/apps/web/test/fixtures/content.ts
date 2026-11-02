@@ -10,6 +10,8 @@ export const sessionSummary = (n: number, title: string): SessionSummary => ({
   title,
   summary: `Resumen de ${title}.`,
   position: n,
+  featured: false,
+  featuredQuestions: false,
 });
 
 export const sessionDetail = (summary: SessionSummary, slide = 1, step = 1): Session => ({

@@ -272,6 +272,7 @@ export const repositoryOf = <T extends Table, A extends { readonly id: Ulid }>(
 
     return {
       statements,
+      writes: statements,
       batch: (writes: ReadonlyArray<Statement>) => batch(client, writes),
       get,
       getMany,

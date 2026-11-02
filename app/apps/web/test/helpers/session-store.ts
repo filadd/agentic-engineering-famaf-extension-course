@@ -33,6 +33,8 @@ export const sessionStore = (initial: ReadonlyArray<Session>) => {
         ...input,
         position: sessions.length + 1,
         enabled: false,
+        featured: false,
+        featuredQuestions: false,
         currentSlide: 1,
         currentStep: 1,
       };

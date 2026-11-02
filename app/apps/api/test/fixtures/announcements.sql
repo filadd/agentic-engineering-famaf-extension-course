@@ -5,18 +5,19 @@ INSERT INTO users (id, email, name, avatar, role, has_access) VALUES
   ('01AST300000000000000000000', 'caro@anuncios.kurasu.test', 'Caro', 'panda', 'student', 1),
   ('01AST400000000000000000000', 'dani@anuncios.kurasu.test', 'Dani', 'koala', 'student', 0);
 
-INSERT INTO sessions (id, position, title, summary, enabled) VALUES
-  ('01AS0100000000000000000000', 1, 'Anuncio completo', 'Resumen', 1),
-  ('01AS0200000000000000000000', 2, 'Solo mensaje', 'Resumen', 1),
-  ('01AS0300000000000000000000', 3, 'Solo novedades', 'Resumen', 1),
-  ('01AS0400000000000000000000', 4, 'Mensaje vacío', 'Resumen', 1),
-  ('01AS0500000000000000000000', 5, 'Ids descartados', 'Resumen', 1),
-  ('01AS0600000000000000000000', 6, 'Otra sesión', 'Resumen', 1),
-  ('01AS0700000000000000000000', 7, 'Ids que no están', 'Resumen', 1),
-  ('01AS0800000000000000000000', 8, 'Deshabilitada', 'Resumen', 0),
-  ('01AS0900000000000000000000', 9, 'Mensaje con HTML', 'Resumen', 1),
-  ('01AS1000000000000000000000', 10, 'Destacada', 'Resumen', 1),
-  ('01AS1100000000000000000000', 0, 'Demasiadas novedades', 'Resumen', 1);
+INSERT INTO sessions (id, position, title, summary, enabled, featured) VALUES
+  ('01AS0100000000000000000000', 1, 'Anuncio completo', 'Resumen', 1, 0),
+  ('01AS0200000000000000000000', 2, 'Solo mensaje', 'Resumen', 1, 0),
+  ('01AS0300000000000000000000', 3, 'Solo novedades', 'Resumen', 1, 0),
+  ('01AS0400000000000000000000', 4, 'Mensaje vacío', 'Resumen', 1, 0),
+  ('01AS0500000000000000000000', 5, 'Ids descartados', 'Resumen', 1, 0),
+  ('01AS0600000000000000000000', 6, 'Otra sesión', 'Resumen', 1, 0),
+  ('01AS0700000000000000000000', 7, 'Ids que no están', 'Resumen', 1, 0),
+  ('01AS0800000000000000000000', 8, 'Deshabilitada', 'Resumen', 0, 0),
+  ('01AS0900000000000000000000', 9, 'Mensaje con HTML', 'Resumen', 1, 0),
+  ('01AS1000000000000000000000', 10, 'Destacada', 'Resumen', 1, 1),
+  ('01AS1100000000000000000000', 0, 'Demasiadas novedades', 'Resumen', 1, 0),
+  ('01AS1200000000000000000000', 12, 'Preguntas abiertas', 'Resumen', 1, 0);
 
 INSERT INTO changelog_entries (id, session_id, type, entity_id, name, created_at) VALUES
   ('01AE1A00000000000000000000', '01AS0100000000000000000000', 'session-enabled', '01AS0100000000000000000000', 'Anuncio completo', 1790000000000),
@@ -27,4 +28,5 @@ INSERT INTO changelog_entries (id, session_id, type, entity_id, name, created_at
   ('01AE0500000000000000000000', '01AS0500000000000000000000', 'material-added', '01AM0500000000000000000000', 'Apunte pendiente', 1790000000000),
   ('01AE0600000000000000000000', '01AS0600000000000000000000', 'material-added', '01AM0600000000000000000000', 'Apunte de otra sesión', 1790000000000),
   ('01AE0800000000000000000000', '01AS0800000000000000000000', 'material-added', '01AM0800000000000000000000', 'Apunte oculto', 1790000000000),
+  ('01AE1200000000000000000000', '01AS1200000000000000000000', 'questions-opened', '01AS1200000000000000000000', 'Preguntas abiertas', 1790000000000),
   ('01AE1100000000000000000000', '01AS1100000000000000000000', 'material-added', '01AM1100000000000000000000', 'Apunte de más', 1790000000000);

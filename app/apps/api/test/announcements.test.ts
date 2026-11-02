@@ -197,6 +197,25 @@ test(
 );
 
 test(
+  "the announcement of an opened questions entry names the session",
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+
+    const response = yield* announce(url, teacher, {
+      sessionId: session(12),
+      message: "",
+      entryIds: ["01AE1200000000000000000000"],
+    });
+
+    expect(response.status).toBe(204);
+
+    const [mail] = yield* mailsWithSubject(stage, subjectOf("Preguntas abiertas"), 1);
+
+    expect(mail?.text).toContain('- Se abrieron las preguntas de la sesión "Preguntas abiertas".');
+  }),
+);
+
+test(
   "the announcement of a disabled session answers SessionDisabled and sends nothing",
   Effect.gen(function* () {
     const { url } = yield* stack;

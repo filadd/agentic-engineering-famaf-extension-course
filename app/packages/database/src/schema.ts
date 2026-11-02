@@ -33,7 +33,7 @@ export const codes = sqliteTable(
 );
 
 // Positions are unique among the sessions not deleted: a deleted session keeps
-// its row and its old position.
+// its row and its old position. At most one session not deleted is featured.
 export const sessions = sqliteTable(
   "sessions",
   {
@@ -42,6 +42,8 @@ export const sessions = sqliteTable(
     title: text("title").notNull(),
     summary: text("summary").notNull(),
     enabled: integer("enabled", { mode: "boolean" }).notNull().default(false),
+    featured: integer("featured", { mode: "boolean" }).notNull().default(false),
+    featuredQuestions: integer("featured_questions", { mode: "boolean" }).notNull().default(false),
     currentSlide: integer("current_slide").notNull().default(1),
     currentStep: integer("current_step").notNull().default(1),
     deletedAt: integer("deleted_at", { mode: "timestamp_ms" }),
@@ -50,6 +52,9 @@ export const sessions = sqliteTable(
     uniqueIndex("sessions_position_unique")
       .on(table.position)
       .where(sql`${table.deletedAt} is null`),
+    uniqueIndex("sessions_featured_unique")
+      .on(table.featured)
+      .where(sql`${table.featured} = 1 and ${table.deletedAt} is null`),
   ],
 );
 
@@ -167,7 +172,9 @@ export const changelogEntries = sqliteTable(
     sessionId: text("session_id")
       .notNull()
       .references(() => sessions.id),
-    type: text("type", { enum: ["session-enabled", "material-added", "poll-opened"] }).notNull(),
+    type: text("type", {
+      enum: ["session-enabled", "material-added", "poll-opened", "questions-opened"],
+    }).notNull(),
     entityId: text("entity_id").notNull(),
     name: text("name").notNull(),
     createdAt: integer("created_at", { mode: "timestamp_ms" })

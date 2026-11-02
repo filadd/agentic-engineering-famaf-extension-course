@@ -37,7 +37,14 @@ export const D1Sessions = Layer.effect(
           .list({ where: { enabled: true }, orderBy: { field: "position", direction: "asc" } })
           .pipe(
             Effect.map((enabled) =>
-              enabled.map(({ id, title, summary, position }) => ({ id, title, summary, position })),
+              enabled.map(({ id, title, summary, position, featured, featuredQuestions }) => ({
+                id,
+                title,
+                summary,
+                position,
+                featured,
+                featuredQuestions,
+              })),
             ),
           ),
       create: (session) =>

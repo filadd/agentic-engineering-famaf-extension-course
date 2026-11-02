@@ -20,7 +20,6 @@ const { test, stack } = apiTest({ name: "changelog", allowedEmails: [] });
 
 const teacher = "01CTCH00000000000000000000";
 const ana = "01CSTA00000000000000000000";
-const beto = "01CSTB00000000000000000000";
 
 const session = (n: number) => `01CS${String(n).padStart(2, "0")}`.padEnd(26, "0");
 const poll = (n: number) => `01CP${String(n).padStart(2, "0")}`.padEnd(26, "0");
@@ -225,21 +224,22 @@ test(
     });
 
     expect(response.status).toBe(200);
-    expect(kinds(yield* entriesOf(session(11)))).toEqual([
-      ["poll-opened", "Consigna para activar"],
+    expect(kinds(yield* entriesOf(session(18)))).toContainEqual([
+      "poll-opened",
+      "Consigna para activar",
     ]);
   }),
 );
 
 test(
-  "activating a draft of a disabled session records it too",
+  "activating a draft of a session that is not the featured one records nothing",
   Effect.gen(function* () {
     const response = yield* asTeacher("PATCH", `/api/admin/polls/${poll(12)}`, {
       status: "active",
     });
 
-    expect(response.status).toBe(200);
-    expect(kinds(yield* entriesOf(session(12)))).toEqual([["poll-opened", "Borrador oculto"]]);
+    expect(response.status).toBe(409);
+    expect(yield* entriesOf(session(12))).toEqual([]);
   }),
 );
 
@@ -256,7 +256,7 @@ test(
 );
 
 test(
-  "closing a poll whose entry left with its first vote answers 200",
+  "closing a poll that was voted drops its entry",
   Effect.gen(function* () {
     const response = yield* asTeacher("PATCH", `/api/admin/polls/${poll(14)}`, {
       status: "closed",
@@ -300,22 +300,15 @@ test(
 );
 
 test(
-  "the first vote on a poll drops its entry",
+  "the first vote on a poll keeps its entry",
   Effect.gen(function* () {
-    const response = yield* vote(ana, poll(18));
+    const response = yield* vote(ana, poll(19));
 
     expect(response.status).toBe(200);
-    expect(yield* entriesOf(session(18))).toEqual([]);
-  }),
-);
-
-test(
-  "a later vote on a poll answers 200 and records nothing",
-  Effect.gen(function* () {
-    const response = yield* vote(beto, poll(19));
-
-    expect(response.status).toBe(200);
-    expect(yield* entriesOf(session(19))).toEqual([]);
+    expect(kinds(yield* entriesOf(session(18)))).toContainEqual([
+      "poll-opened",
+      "Encuesta con un voto",
+    ]);
   }),
 );
 
@@ -395,5 +388,20 @@ test(
 
     expect(response.status).toBe(404);
     expect(failedWith(response, ChangelogEntryNotFound)).toBe(true);
+  }),
+);
+
+// Featuring changes the featured session of the whole database, so it runs last.
+test(
+  "featuring a session records nothing",
+  Effect.gen(function* () {
+    const before = yield* entriesOf(session(22));
+
+    const response = yield* asTeacher("PATCH", `/api/admin/sessions/${session(22)}`, {
+      featured: true,
+    });
+
+    expect(response.status).toBe(200);
+    expect(yield* entriesOf(session(22))).toEqual(before);
   }),
 );

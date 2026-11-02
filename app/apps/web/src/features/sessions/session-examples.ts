@@ -6,6 +6,8 @@ const session = (n: number, title: string, summary: string): Session => ({
   summary,
   position: n,
   enabled: true,
+  featured: false,
+  featuredQuestions: false,
   currentSlide: 1,
   currentStep: 1,
 });

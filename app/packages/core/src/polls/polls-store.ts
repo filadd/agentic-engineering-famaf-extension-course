@@ -1,7 +1,7 @@
 import type { AdminPoll, PollChange } from "@kurasu/contract/polls";
 import * as Context from "effect/Context";
 
-import type { Repository } from "../repository.ts";
+import type { Repository, Writes } from "../repository.ts";
 
 export type StoredPoll = Omit<AdminPoll, "results" | "responses">;
 
@@ -12,5 +12,7 @@ export class PollsStore extends Context.Service<
   Pick<
     Repository<StoredPoll, StoredPoll, PollChange>,
     "get" | "list" | "create" | "update" | "remove"
-  >
+  > & {
+    readonly writes: Pick<Writes<StoredPoll, StoredPoll, PollChange>, "updateWhere">;
+  }
 >()("kurasu/PollsStore") {}
