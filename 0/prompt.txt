@@ -1,0 +1,34 @@
+<supervisor-agent>
+You are running the manual validation of the "preguntas en la card destacada" change in kurasu (`app/`). Your current directory is the git worktree on branch `feat/preguntas-en-la-card`, where the change is already implemented and committed (`613b8a6` to `5f0b8e9`, eight commits on `main` at `d09d518`); `pnpm run check` and `pnpm test` pass. Work with medium reasoning effort. Do not spawn subagents of your own.
+
+## Context
+
+Read the implementation brief at /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/preguntas-en-la-card/implement/brief.md in full. It carries the change, the design notes to read, the tasks, the test matrix rows and the repository rules. Everything in it applies to you, except that the implementation is done: you do not work the tasks again and you do not write the `★` tests. The tracker states section does not apply to you either; do not touch the Entire trail.
+
+The implementer reported these departures, which are already in the code: `useApiQuery` and `useAdminSessions` gained a third type parameter so `select` types; the web test helper `studentClassroom` marks its session as featured; the web test helper `sessionStore` mimics the API on feature and disable.
+
+## The job
+
+Load the mahou:validate skill and run, through it, the rows of the matrix in the implementation brief whose kind is `test + manual` or `manual`:
+
+- API (`apps/api/`), over HTTP against the local stack, checking the response and the state it leaves (the lists it changes, the classroom notices where you can observe them, the changelog, the mails the local binding writes): A1, A2, A3, A5, A8, A10, A14, A17, A18, A27, A28, A35, and A45 (apply the migrations to a local database that already holds sessions from before `0004_featured_session`, then check the two columns are false everywhere and the index rejects a second featured session).
+- Web (`apps/web/`), through a browser with agent-browser against the local stack (`alchemy dev` and Vite), headless: B2, B5, B12, B13, B15, B21, B23, B24, B29, B31, B33, B36, B39, B41. Compare the screens with the prototypes `app/docs/prototipos/inicio-responsive.html`, `admin-sesion.html` and `admin-sesiones.html` for how they look and behave, and look at each screenshot you take yourself: check that it shows the part the row is about, not only that it was taken.
+
+Run the API rows first, then the web rows. Each row's expected outcome and setup are in its matrix row. Read `/home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.mahou/test-design.md` for how manual checks run in kurasu, and the local wiki entries `/home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.mahou/wiki/alchemy/local-dev.md` and `fence.md` for the local stack (ports, the Vite proxy, the local mail binding that writes login links).
+
+Identities and inputs: use the users, sessions and polls of the local database and its seed; create the teacher, students, sessions, polls, questions and raised hands a row needs through the app or the API as a teacher or student would. The local stack runs with a throwaway `JWT_SECRET` set only in the environment of the `pnpm dev` (or `alchemy dev`) process, with no file (the user's decision): sessions from the main checkout do not work there. `app/.env.local` is not in this worktree (it holds secrets and was not copied); development defaults come from `app/.env.schema`. If the stack does not start without another value from it, stop and ask instead of creating the file.
+
+The user is asleep and nobody else runs a stack right now, but the API falls back to the next free port when 1337 is taken; read the real URLs from the stack's output instead of assuming the ports. Run the stack with the process tool, and stop it when you finish.
+
+## Fixing
+
+Fix a failing row without asking, within the bounds mahou:validate gives: only when the fix makes the code do what the design, the program design or the matrix already settled. Every fix stays in `app/` of this worktree. A row whose cause needs a decision the design did not make is blocked: report the evidence and what each way out changes in the designed behaviour, and keep going with the other rows. A bug you find that no row and no previous decision covers is reported, not fixed. Re-run the rows until each passes or is blocked. After any fix, run `pnpm run check` and the affected suites, and add or update the automated test the fix concerns when the row is a `test + manual` row. Commit your fixes through mahou:commit-changes, committing the groups it proposes without asking the user to confirm them. Do not push.
+
+Write the report artifact mahou:validate requires inside the change's scratch folder, under /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/preguntas-en-la-card/reports/validate/.
+
+Avoid `rm -rf` when another way works. List in your report every file outside the worktree, every agent-browser session and every process you leave behind.
+
+## How to answer
+
+Your final message is your report, and only that message is read. It has: every manual row with its result (pass, fixed, blocked), each fix with what failed, what the fix changed and its commit, each blocked row with its evidence and the ways out, each bug left unfixed, the path of the report artifact, what you left outside the worktree, and the tail of the check and test output after any fix. Do not send a shorter message after the report. A design ambiguity that changes the outcome is a question back to the supervisor: end your turn with it.
+</supervisor-agent>
