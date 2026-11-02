@@ -5,7 +5,7 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 
-import { Database } from "./database.ts";
+import { Database, write } from "./database.ts";
 import { repositoryOf } from "./repository.ts";
 import { codes, users } from "./schema.ts";
 
@@ -48,9 +48,11 @@ export const D1Users = Layer.effect(
 
           yield* repository.batch([
             repository.writes.create(newStudent(user.id, user.email)),
-            db
-              .insert(codes)
-              .values({ id: code.id, type: "user", code: code.code, userId: user.id }),
+            write(
+              db
+                .insert(codes)
+                .values({ id: code.id, type: "user", code: code.code, userId: user.id }),
+            ),
           ]);
 
           return yield* toUser(newStudent(user.id, user.email));

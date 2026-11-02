@@ -6,7 +6,7 @@ import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 
-import { Database } from "./database.ts";
+import { Database, write } from "./database.ts";
 import { repositoryOf } from "./repository.ts";
 import { materials, sessions } from "./schema.ts";
 
@@ -24,22 +24,26 @@ export const D1Materials = Layer.effect(
     const { get } = repository;
 
     const unmarkOtherSlides = (sessionId: string, keepId: string) =>
-      db
-        .update(materials)
-        .set({ isSlides: false })
-        .where(
-          and(
-            eq(materials.sessionId, sessionId),
-            eq(materials.isSlides, true),
-            ne(materials.id, keepId),
+      write(
+        db
+          .update(materials)
+          .set({ isSlides: false })
+          .where(
+            and(
+              eq(materials.sessionId, sessionId),
+              eq(materials.isSlides, true),
+              ne(materials.id, keepId),
+            ),
           ),
-        );
+      );
 
     const resetPosition = (sessionId: string) =>
-      db
-        .update(sessions)
-        .set({ currentSlide: 1, currentStep: 1 })
-        .where(eq(sessions.id, sessionId));
+      write(
+        db
+          .update(sessions)
+          .set({ currentSlide: 1, currentStep: 1 })
+          .where(eq(sessions.id, sessionId)),
+      );
 
     return MaterialsStore.of({
       ...repository,

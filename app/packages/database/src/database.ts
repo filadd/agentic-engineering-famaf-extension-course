@@ -1,4 +1,4 @@
-import type { Write } from "@kurasu/core/batch";
+import { type Write, WriteTypeId } from "@kurasu/core/batch";
 import * as D1Client from "@effect/sql-d1/D1Client";
 import { sql } from "drizzle-orm";
 import * as SQLiteD1Drizzle from "drizzle-orm/effect-d1";
@@ -36,17 +36,42 @@ export class Database extends Context.Service<
     );
 }
 
-/** Runs Drizzle queries as one atomic D1 batch, in order. */
-export const batch = (client: D1Client.D1Client, writes: ReadonlyArray<Write>) =>
-  client
-    .batch(
-      writes.map((write) => {
-        const statement = write.toSQL();
+export interface Statement {
+  readonly toSQL: () => { readonly sql: string; readonly params: ReadonlyArray<unknown> };
+}
 
-        return client.unsafe(statement.sql, statement.params);
-      }),
-    )
-    .pipe(Effect.orDie, Effect.asVoid);
+// The core's `Write` is opaque; here each one stands for a Drizzle statement.
+const statementOf = new WeakMap<Write, Statement>();
+
+export const write = (statement: Statement): Write => {
+  const pending: Write = { [WriteTypeId]: WriteTypeId };
+
+  statementOf.set(pending, statement);
+
+  return pending;
+};
+
+const unwrap = (pending: Write) => {
+  const statement = statementOf.get(pending);
+
+  return statement == null
+    ? Effect.die("the write was not built by this adapter")
+    : Effect.succeed(statement);
+};
+
+/** Runs Drizzle statements as one atomic D1 batch, in order. */
+export const batch = (client: D1Client.D1Client, writes: ReadonlyArray<Write>) =>
+  Effect.forEach(writes, (pending) =>
+    Effect.map(unwrap(pending), (statement) => {
+      const query = statement.toSQL();
+
+      return client.unsafe(query.sql, query.params);
+    }),
+  ).pipe(
+    Effect.flatMap((statements) => client.batch(statements)),
+    Effect.orDie,
+    Effect.asVoid,
+  );
 
 export const firstRow =
   <Row, A>(decode: (row: Row) => Effect.Effect<A>) =>

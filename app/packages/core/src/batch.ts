@@ -1,10 +1,13 @@
 import * as Context from "effect/Context";
 import type * as Effect from "effect/Effect";
 
-// A write that has not run yet. The core only passes it to `Batch.run`; the
-// adapter that builds it is the one that knows how to run it.
+export const WriteTypeId: unique symbol = Symbol("kurasu/Write");
+
+// A write that has not run yet. The core cannot look inside it and only passes
+// it to `Batch.run`; the adapter that builds it is the one that knows how to
+// run it.
 export interface Write {
-  readonly toSQL: () => { readonly sql: string; readonly params: ReadonlyArray<unknown> };
+  readonly [WriteTypeId]: typeof WriteTypeId;
 }
 
 // Runs writes of several stores as one atomic batch, in order. A failure is a
