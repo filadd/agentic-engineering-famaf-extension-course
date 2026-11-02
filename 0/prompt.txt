@@ -1,0 +1,18 @@
+<supervisor-agent>
+Run as the consistency checker on one repository. Your current directory is a git worktree on branch `feat/preguntas-en-la-card` of the course repository; kurasu lives in `app/`. Use that directory as the repository path. Edit nothing, start no servers or processes. Do not spawn subagents of your own.
+
+The change, measured against `d09d518` (`git diff d09d518...HEAD`), turns kurasu's featured session from a derived one (the last enabled session) into an explicit mark (`sessions.featured`, `sessions.featured_questions`), restricts student writes to the featured session, closes polls / lowers hands / turns off featured questions in one D1 batch when a session stops being featured, adds a questions panel to the featured card on the student home, and reworks the admin (Destacada switch, enable modal, confirmations, star on the rail, no session numbers). The design is recorded in `app/docs/architecture/estados-de-encuestas-y-sesiones.md` and the notes it links: `modelo-de-datos.md`, `invariantes.md`, `acceso-a-datos.md`, `tiempo-real-del-aula.md`, `novedades-por-mail.md`, `carga-y-acciones-de-la-web.md`, `feedback-de-sesion.md`, `README.md`. The prototypes are `app/docs/prototipos/inicio-responsive.html`, `admin-sesion.html`, `admin-sesiones.html` and their `README.md`.
+
+What the implementation, validation and review did that the docs and the wiki may not follow yet:
+- `repositoryOf` returns only `writes` (no `statements` any more); `codes`, `materials` and `users` use `writes`. The core has `Write` and the `Batch` port (`core/src/batch.ts`), `D1Batch` in `database/src/batch.ts`. `Write` is shaped by Drizzle's `toSQL`.
+- `Sessions.update` runs the leaving of the featured session in an `updateLeaving` helper; `leavingOf` returns only an id; `featured()` is read only when `change.featured === true`.
+- `polls.isFeatured` is built on `featuredSession`, which replaces `visibleSession` in student writes.
+- Web: `SessionRailNode` draws the node of both rails, `RailNodeLook` lists the looks; `ui/SwitchButton` is shared by the session switches; `ui/count-label.ts` builds count labels; `findFeatured` is one helper used by `useFeaturedSession` and three routes; `EnabledSwitch/` is a module folder with `EnableSessionDialog`; new theme colours `blush` and `wine`; a `switch-row` class; `updateErrorText`.
+- `useApiQuery` and `useAdminSessions` gained a third type parameter for `select`.
+- The not-featured note "Solo se activan encuestas en la sesión destacada." sits under the last draft in the polls tab and in the classroom panel.
+- Web test helpers: `studentClassroom` marks its session featured; `sessionStore` mimics the API on feature and disable. The raised-hands API fixture no longer seeds Ana's hand.
+
+Besides `app/docs/`, check the local wiki at `.mahou/wiki/` of this worktree (especially `web.md`, `fence.md`, `architecture.md`, `api.md`, `alchemy/local-tests.md`) and `app/AGENTS.md` against the code: a wiki line that states something the change made false is a "Docs vs code" finding. Also look for leftovers of the old derived featured session (the "last enabled" rule, `HighlightedSession`, `EarlierSessions`, `AdminHighlighted`, `FeaturedLabel`, `highlighted` props, "Sesión N de M", "Otras sesiones", `visibleSession` where a student writes) anywhere in `app/`.
+
+Load mahou:docs, follow the consistency-checker instructions you were given, and write the findings to /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/preguntas-en-la-card/reports/reconcile/consistency.md. Your final message is the path and the count per section, and only that message is read.
+</supervisor-agent>
