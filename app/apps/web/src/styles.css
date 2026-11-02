@@ -94,8 +94,13 @@
     @apply inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-line bg-transparent px-3.5 py-[7px] text-sm text-ink disabled:opacity-35;
   }
 
+  /* Inherits its colour because it sits on cards that stay light in dark mode and on the themed page alike. */
   .pill-ghost {
-    @apply border-transparent hover:bg-line;
+    @apply border-transparent text-[inherit];
+
+    &:hover:not(:disabled) {
+      background-color: color-mix(in srgb, currentColor 12%, transparent);
+    }
   }
 
   .pill-dark {

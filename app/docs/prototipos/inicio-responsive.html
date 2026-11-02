@@ -118,8 +118,8 @@
   .bar.mine { background: #1F1B18; color: #fff; }
   .ends { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; opacity: 0.7; margin-top: 4px; }
   .edit { display: flex; justify-content: flex-end; margin-top: 10px; }
-  .textlink { font: inherit; font-size: 14px; background: none; border: 1.5px solid transparent; border-radius: 999px; padding: 7px 14px; cursor: pointer; color: var(--ink); }
-  .textlink:hover { background: var(--line); }
+  .textlink { font: inherit; font-size: 14px; background: none; border: 1.5px solid transparent; border-radius: 999px; padding: 7px 14px; cursor: pointer; color: inherit; }
+  .textlink:hover { background: color-mix(in srgb, currentColor 12%, transparent); }
   .textlink:disabled { opacity: 0.35; cursor: default; }
 
   /* Overlays: the modals of the links and of "Tu perfil" (links.html, menu-usuario.html B). */
