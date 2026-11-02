@@ -5,8 +5,8 @@ import { StudentClassroom } from "../../features/classroom/StudentClassroom.tsx"
 import { StudentClassroomSkeleton } from "../../features/classroom/StudentClassroomSkeleton.tsx";
 import { useSessions } from "../../features/sessions/useSessions.ts";
 
-// The student only enters the classroom of the highlighted session. The
-// session entered stays fixed: if another one becomes the highlighted one, or
+// The student only enters the classroom of the featured session. The
+// session entered stays fixed: if another one becomes the featured one, or
 // none is left, the student goes back home. Until the list arrives, the
 // classroom shows in skeleton.
 const ClassroomRoute = () => {
@@ -15,17 +15,17 @@ const ClassroomRoute = () => {
 
   const [entered, setEntered] = useState<string>();
 
-  const highlighted = sessions.data?.at(-1)?.id;
+  const featured = sessions.data?.find((session) => session.featured)?.id;
 
-  if (entered == null && highlighted != null) {
-    setEntered(highlighted);
+  if (entered == null && featured != null) {
+    setEntered(featured);
   }
 
   useEffect(() => {
-    if (sessions.data != null && (highlighted == null || highlighted !== entered)) {
+    if (sessions.data != null && (featured == null || featured !== entered)) {
       void navigate({ to: "/" });
     }
-  }, [entered, highlighted, navigate, sessions.data]);
+  }, [entered, featured, navigate, sessions.data]);
 
   return entered == null ? (
     <StudentClassroomSkeleton />

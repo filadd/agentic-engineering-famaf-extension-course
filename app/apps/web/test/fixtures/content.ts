@@ -14,6 +14,16 @@ export const sessionSummary = (n: number, title: string): SessionSummary => ({
   featuredQuestions: false,
 });
 
+export const asFeatured = (session: SessionSummary): SessionSummary => ({
+  ...session,
+  featured: true,
+});
+
+export const lastFeatured = (
+  sessions: ReadonlyArray<SessionSummary>,
+): ReadonlyArray<SessionSummary> =>
+  sessions.map((session, index) => (index === sessions.length - 1 ? asFeatured(session) : session));
+
 export const sessionDetail = (summary: SessionSummary, slide = 1, step = 1): Session => ({
   ...summary,
   currentSlide: slide,

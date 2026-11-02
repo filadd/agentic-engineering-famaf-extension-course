@@ -1,3 +1,4 @@
+import type { SessionSummary } from "@kurasu/contract/sessions";
 import { screen, waitFor, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { describe, expect, test } from "vitest";
@@ -7,6 +8,8 @@ import {
   closed,
   feedbackPoll,
   material,
+  asFeatured,
+  lastFeatured,
   planning,
   question,
   scalePoll,
@@ -18,8 +21,12 @@ import { questionStore } from "./helpers/question-store.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
 
-const home = (...sessions: Parameters<typeof getJson>[1][]) =>
-  server.use(getJson("/me", student), getJson("/sessions", sessions), getJson("/polls", []));
+const home = (...sessions: SessionSummary[]) =>
+  server.use(
+    getJson("/me", student),
+    getJson("/sessions", lastFeatured(sessions)),
+    getJson("/polls", []),
+  );
 
 const openLink = async (session: string, link: string, sheet: string) => {
   const { user } = await renderRoute("/");
@@ -93,7 +100,7 @@ describe("closed polls from the card", () => {
 
     server.use(
       getJson("/me", student),
-      getJson("/sessions", [planning]),
+      getJson("/sessions", [asFeatured(planning)]),
       http.get(url("/polls"), ({ request }) => {
         const query = new URL(request.url).searchParams;
 
@@ -141,7 +148,7 @@ describe("closed polls from the card", () => {
 
     server.use(
       getJson("/me", student),
-      getJson("/sessions", [planning]),
+      getJson("/sessions", [asFeatured(planning)]),
       http.get(url("/polls"), ({ request }) =>
         HttpResponse.json(
           new URL(request.url).searchParams.get("status") === "closed" ? [answered] : [],
@@ -170,7 +177,7 @@ describe("closed polls from the card", () => {
 
     server.use(
       getJson("/me", student),
-      getJson("/sessions", [planning]),
+      getJson("/sessions", [asFeatured(planning)]),
       http.get(url("/polls"), ({ request }) =>
         HttpResponse.json(
           new URL(request.url).searchParams.get("status") === "closed" ? [unanswered] : [],
@@ -315,7 +322,7 @@ describe("questions from the card", () => {
     expect(screen.queryByRole("dialog", { name: "Preguntas" })).toBeNull();
   });
 
-  test("an earlier session is read-only: no form, no voting, no deleting", async () => {
+  test("a session that is not the featured one is read-only: no form, no voting, no deleting", async () => {
     const store = questionStore([
       question(1, vibeCoding.id, "¿El agente se acuerda de lo de ayer?", { votes: 4 }),
       question(2, vibeCoding.id, "¿Conviene pedirle todo de una?", { mine: true }),
@@ -328,7 +335,7 @@ describe("questions from the card", () => {
 
     await screen.findByRole("article", { name: vibeCoding.title });
 
-    const rail = screen.getByRole("region", { name: "Sesiones anteriores" });
+    const rail = screen.getByRole("region", { name: "Todas las sesiones" });
 
     await user.click(within(rail).getByRole("button", { name: vibeCoding.title }));
     await user.click(within(rail).getByRole("button", { name: "Preguntas" }));

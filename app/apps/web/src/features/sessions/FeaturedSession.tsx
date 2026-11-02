@@ -1,5 +1,6 @@
 import type { Poll } from "@kurasu/contract/polls";
 import type { SessionSummary } from "@kurasu/contract/sessions";
+import type { ReactNode } from "react";
 
 import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 import { ActivePolls } from "../polls/ActivePolls.tsx";
@@ -11,16 +12,18 @@ import { SessionLinks } from "./SessionLinks.tsx";
 interface Props {
   session: SessionSummary;
   polls: ReadonlyArray<Poll> | undefined;
+  questions?: ReactNode;
 }
 
-export const HighlightedSession = ({ session, polls }: Props) => (
+export const FeaturedSession = ({ session, polls, questions }: Props) => (
   <section
     aria-label={session.title}
     className={`skeleton-block mt-6 rounded-[22px] p-[26px] text-card-ink max-[600px]:mt-[18px] max-[600px]:p-[18px] ${sessionColor(session.position)}`}
   >
     <h2 className="text-[30px] font-bold max-[600px]:text-2xl">{session.title}</h2>
-    <SessionLinks sessionId={session.id} highlighted />
+    <SessionLinks sessionId={session.id} featured />
     <p className="mt-3 leading-[1.45]">{session.summary}</p>
+    {questions}
     {polls == null ? (
       <SkeletonOf>
         <ActivePolls polls={[pollExamples[0]]} />

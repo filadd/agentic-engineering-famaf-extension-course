@@ -2,7 +2,14 @@ import { screen, waitFor, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { afterEach, describe, expect, test, vi } from "vitest";
 
-import { planning, sessionDetail, tooling, vibeCoding } from "./fixtures/content.ts";
+import {
+  asFeatured,
+  lastFeatured,
+  planning,
+  sessionDetail,
+  tooling,
+  vibeCoding,
+} from "./fixtures/content.ts";
 import { student, teacher } from "./fixtures/people.ts";
 import { getJson, url } from "./helpers/api.ts";
 import { classroomSocket } from "./helpers/classroom-socket.ts";
@@ -45,7 +52,7 @@ afterEach(() => {
 });
 
 describe("loading a screen", () => {
-  test("the home draws its fixed parts at once, Sesiones anteriores among them, and each card as one skeleton block while the API has not answered", async () => {
+  test("the home draws its fixed parts at once, Todas las sesiones among them, and each card as one skeleton block while the API has not answered", async () => {
     const sessions = heldResponse("get", "/sessions");
 
     server.use(sessions.handler, getJson("/me", student), getJson("/polls", []));
@@ -58,11 +65,11 @@ describe("loading a screen", () => {
     expect(screen.getByRole("link", { name: "Ir al inicio" }).textContent).toBe("🐦‍⬛");
 
     const [highlighted = document.body, earlierCards = document.body] = skeletons();
-    const earlier = screen.getByRole("region", { name: "Sesiones anteriores" });
+    const earlier = screen.getByRole("region", { name: "Todas las sesiones" });
 
     expect(highlighted.hasAttribute("inert")).toBe(true);
     expect(within(highlighted).getAllByRole("region", { hidden: true })).toHaveLength(1);
-    expect(within(earlier).getByRole("heading", { name: "Sesiones anteriores" })).toBeTruthy();
+    expect(within(earlier).getByRole("heading", { name: "Todas las sesiones" })).toBeTruthy();
     expect(earlier.contains(earlierCards)).toBe(true);
     expect(earlierCards.hasAttribute("inert")).toBe(true);
     expect(within(earlierCards).getAllByRole("article", { hidden: true })).toHaveLength(2);
@@ -74,7 +81,7 @@ describe("loading a screen", () => {
     ).toBe(true);
     expect(screen.queryByRole("region", { name: vibeCoding.title })).toBeNull();
 
-    sessions.release(HttpResponse.json([vibeCoding, planning, tooling]));
+    sessions.release(HttpResponse.json(lastFeatured([vibeCoding, planning, tooling])));
   });
 
   test("the users page draws the search, its buttons and the filters without counts at once and the list as skeleton rows", async () => {
@@ -125,7 +132,7 @@ describe("loading a screen", () => {
 
     const { currentSlide: _slide, currentStep: _step, ...summary } = session;
 
-    sessions.release(HttpResponse.json([summary]));
+    sessions.release(HttpResponse.json([asFeatured(summary)]));
 
     expect(await realClassroom(planning)).toBeTruthy();
     expect(await screen.findByTitle("Slides")).toBeTruthy();
@@ -162,11 +169,11 @@ describe("loading a screen", () => {
 
     await waitFor(() => expect(skeletons()).not.toHaveLength(0));
 
-    sessions.release(HttpResponse.json([vibeCoding, planning]));
+    sessions.release(HttpResponse.json(lastFeatured([vibeCoding, planning])));
 
     expect(await screen.findByRole("region", { name: planning.title })).toBeTruthy();
     expect(screen.getByRole("article", { name: vibeCoding.title })).toBeTruthy();
-    expect(skeletons()).toHaveLength(0);
+    await waitFor(() => expect(skeletons()).toHaveLength(0));
   });
 
   test("asking again after five minutes keeps the cards on screen, without skeletons", async () => {
@@ -174,7 +181,11 @@ describe("loading a screen", () => {
 
     const again = heldResponse("get", "/sessions");
 
-    server.use(getJson("/me", student), getJson("/sessions", [planning]), getJson("/polls", []));
+    server.use(
+      getJson("/me", student),
+      getJson("/sessions", [asFeatured(planning)]),
+      getJson("/polls", []),
+    );
 
     await renderRoute("/");
 
@@ -187,7 +198,7 @@ describe("loading a screen", () => {
     expect(screen.getByRole("region", { name: planning.title })).toBeTruthy();
     expect(skeletons()).toHaveLength(0);
 
-    again.release(HttpResponse.json([vibeCoding, planning]));
+    again.release(HttpResponse.json(lastFeatured([vibeCoding, planning])));
 
     expect(await screen.findByRole("article", { name: vibeCoding.title })).toBeTruthy();
   });
@@ -225,7 +236,7 @@ describe("loading a screen", () => {
 
     server.use(
       getJson("/me", student),
-      getJson("/sessions", [planning]),
+      getJson("/sessions", [asFeatured(planning)]),
       getJson("/polls", []),
       failingRoute("get", "/materials"),
     );
@@ -264,7 +275,11 @@ describe("loading a screen", () => {
   test("asking again with data on screen that fails keeps the data and no error screen", async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
 
-    server.use(getJson("/me", student), getJson("/sessions", [planning]), getJson("/polls", []));
+    server.use(
+      getJson("/me", student),
+      getJson("/sessions", [asFeatured(planning)]),
+      getJson("/polls", []),
+    );
 
     await renderRoute("/");
 
@@ -284,7 +299,7 @@ describe("the login check", () => {
   test("the page draws while /api/me has not answered, with the name and the avatar in skeleton", async () => {
     const me = heldResponse("get", "/me");
 
-    server.use(me.handler, getJson("/sessions", [planning]), getJson("/polls", []));
+    server.use(me.handler, getJson("/sessions", [asFeatured(planning)]), getJson("/polls", []));
 
     await renderRoute("/");
 
