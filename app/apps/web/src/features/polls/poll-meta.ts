@@ -1,8 +1,14 @@
 import type { Poll } from "@kurasu/contract/polls";
 
-const answers = (count: number) => `${count} ${count === 1 ? "respuesta" : "respuestas"}`;
+export const answers = (count: number) => `${count} ${count === 1 ? "respuesta" : "respuestas"}`;
 
 export const pollMeta = (poll: Poll) => {
+  if (poll.type === "feedback") {
+    return poll.status === "closed"
+      ? "Encuesta de feedback · cerrada"
+      : "Encuesta de feedback · se puede cambiar";
+  }
+
   if (poll.status === "closed") {
     return `Cerrada · ${answers(poll.results?.count ?? 0)}`;
   }

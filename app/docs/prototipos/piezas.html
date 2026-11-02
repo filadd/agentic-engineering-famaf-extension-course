@@ -62,9 +62,11 @@
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-family: 'Rubik', sans-serif; font-weight: 500; border: 0; border-radius: 999px; padding: 10px 20px; cursor: pointer; background: #1F1B18; color: #fff; text-decoration: none; }
   .btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); padding: 9px 16px; }
 
-  /* The app's pill-button, pill-dark and pill-danger. */
+  /* The app's pill-button, pill-dark, pill-danger and pill-ghost. */
   .pill { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 14px; border-radius: 999px; border: 1.5px solid var(--line); background: transparent; color: var(--ink); padding: 7px 14px; cursor: pointer; white-space: nowrap; }
   .pill.dark { background: var(--active); color: var(--active-ink); border-color: var(--active); }
+  .pill.ghost { border-color: transparent; color: inherit; }
+  .pill.ghost:hover { background: color-mix(in srgb, currentColor 12%, transparent); }
   .pill.danger { background: var(--danger); color: #fff; border-color: var(--danger); }
   .pill:disabled, .iconbtn:disabled { opacity: 0.35; cursor: default; }
   .pill.busy:disabled { opacity: 1; cursor: progress; }

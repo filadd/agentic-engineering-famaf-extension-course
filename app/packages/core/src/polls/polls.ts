@@ -10,6 +10,7 @@ import {
 } from "@kurasu/contract/errors";
 import {
   type AdminPoll,
+  type FeedbackResponse,
   type Poll,
   type PollChange,
   type PollDraft,
@@ -30,7 +31,7 @@ import { SessionsStore } from "../sessions/sessions-store.ts";
 import { existingSession, visibleSession } from "../sessions/visible-session.ts";
 import { fitsType } from "./fits-type.ts";
 import { PollsStore, type StoredPoll } from "./polls-store.ts";
-import { noResponses, ResponsesStore } from "./responses-store.ts";
+import { noResponses, type ResponseCounts, ResponsesStore } from "./responses-store.ts";
 import { fitsPoll, tally } from "./tally.ts";
 
 export interface StudentPollFilter {
@@ -54,11 +55,22 @@ const isContentChange = (change: PollChange) =>
 const visibleStatus = (status: PollStatus): VisiblePollStatus =>
   status === "closed" ? "closed" : "active";
 
+// Only a feedback poll carries its responses.
+const adminPoll = (
+  poll: StoredPoll,
+  counts: ResponseCounts,
+  responses: ReadonlyArray<FeedbackResponse>,
+): AdminPoll =>
+  poll.type === "feedback"
+    ? { ...poll, results: tally(poll, counts), responses }
+    : { ...poll, results: tally(poll, counts) };
+
 // The polls as each side sees them. The student sees the active and closed
 // polls of enabled sessions, with their own vote, and the results once they
-// voted or the poll closed. The teacher sees every poll not deleted with its
-// results, and moves a poll only from draft to active and from active to
-// closed; only a draft's content changes.
+// voted or the poll closed; a feedback poll never shows results to them. The
+// teacher sees every poll not deleted with its results, and moves a poll only
+// from draft to active and from active to closed; only a draft's content
+// changes.
 export class Polls extends Context.Service<
   Polls,
   {
@@ -106,7 +118,9 @@ export class Polls extends Context.Service<
           );
 
           const shown = polls.flatMap((poll) =>
-            poll.status === "closed" || mine.has(poll.id) ? [poll.id] : [],
+            poll.type !== "feedback" && (poll.status === "closed" || mine.has(poll.id))
+              ? [poll.id]
+              : [],
           );
 
           const counts = yield* responses.counts(shown);
@@ -122,12 +136,21 @@ export class Polls extends Context.Service<
         });
 
       const forTeacher = (polls: ReadonlyArray<StoredPoll>) =>
-        Effect.map(responses.counts(polls.map((poll) => poll.id)), (counts) =>
-          polls.map((poll): AdminPoll => ({
-            ...poll,
-            results: tally(poll, counts.get(poll.id) ?? noResponses),
-          })),
-        );
+        Effect.gen(function* () {
+          const [counts, feedback] = yield* Effect.all(
+            [
+              responses.counts(polls.map((poll) => poll.id)),
+              responses.feedbackOf(
+                polls.flatMap((poll) => (poll.type === "feedback" ? [poll.id] : [])),
+              ),
+            ],
+            { concurrency: "unbounded" },
+          );
+
+          return polls.map((poll) =>
+            adminPoll(poll, counts.get(poll.id) ?? noResponses, feedback.get(poll.id) ?? []),
+          );
+        });
 
       const findPoll = (id: Ulid) =>
         Effect.flatMap(store.get(id), (poll) =>
@@ -199,7 +222,7 @@ export class Polls extends Context.Service<
           const id = yield* crypto.randomULID.pipe(Effect.orDie);
           const poll = yield* store.create({ ...draft, id, status: "draft" });
 
-          return { ...poll, results: tally(poll, noResponses) };
+          return adminPoll(poll, noResponses, []);
         }),
         update: Effect.fn("Polls.update")(function* (id, change) {
           const poll = yield* findPoll(id);

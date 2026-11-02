@@ -5,6 +5,7 @@ import { describe, expect, test } from "vitest";
 import {
   choicePoll,
   closed,
+  feedbackPoll,
   material,
   planning,
   question,
@@ -133,6 +134,61 @@ describe("closed polls from the card", () => {
         .getAllByRole("listitem")
         .some((bar) => bar.getAttribute("aria-current") === "true"),
     ).toBe(false);
+  });
+
+  test("a closed feedback the student answered shows the emoji and the text, without bars", async () => {
+    const answered = closed(feedbackPoll(planning.id), { pick: 3, text: "Regular" }, null);
+
+    server.use(
+      getJson("/me", student),
+      getJson("/sessions", [planning]),
+      http.get(url("/polls"), ({ request }) =>
+        HttpResponse.json(
+          new URL(request.url).searchParams.get("status") === "closed" ? [answered] : [],
+        ),
+      ),
+    );
+
+    const { user } = await renderRoute("/");
+    const card = await screen.findByRole("region", { name: planning.title });
+
+    await user.click(within(card).getByRole("button", { name: "Encuestas" }));
+
+    const sheet = screen.getByRole("dialog", { name: "Encuestas cerradas" });
+    const poll = await within(sheet).findByRole("article", { name: answered.prompt });
+
+    await user.click(within(poll).getByRole("button", { expanded: false }));
+
+    expect(within(poll).getByText("😐")).toBeTruthy();
+    expect(within(poll).getByText("Regular")).toBeTruthy();
+    expect(within(poll).getByText("La encuesta se cerró.")).toBeTruthy();
+    expect(within(poll).queryByRole("list", { name: "Resultados" })).toBeNull();
+  });
+
+  test("a closed feedback the student did not answer says so", async () => {
+    const unanswered = closed(feedbackPoll(planning.id), null, null);
+
+    server.use(
+      getJson("/me", student),
+      getJson("/sessions", [planning]),
+      http.get(url("/polls"), ({ request }) =>
+        HttpResponse.json(
+          new URL(request.url).searchParams.get("status") === "closed" ? [unanswered] : [],
+        ),
+      ),
+    );
+
+    const { user } = await renderRoute("/");
+    const card = await screen.findByRole("region", { name: planning.title });
+
+    await user.click(within(card).getByRole("button", { name: "Encuestas" }));
+
+    const sheet = screen.getByRole("dialog", { name: "Encuestas cerradas" });
+    const poll = await within(sheet).findByRole("article", { name: unanswered.prompt });
+
+    await user.click(within(poll).getByRole("button", { expanded: false }));
+
+    expect(within(poll).getByText("No respondiste esta encuesta.")).toBeTruthy();
   });
 
   test("a session without closed polls shows an empty list", async () => {

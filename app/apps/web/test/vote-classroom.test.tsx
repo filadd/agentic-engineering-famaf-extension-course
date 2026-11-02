@@ -6,6 +6,7 @@ import { describe, expect, test } from "vitest";
 import {
   choicePoll,
   closed,
+  feedbackPoll,
   planning,
   scalePoll,
   sessionDetail,
@@ -346,5 +347,107 @@ describe("voting in the classroom's Encuestas tab", () => {
     await user.click(within(card).getByRole("button", { expanded: false }));
 
     expect(within(card).getByText("✓ Algo")).toBeTruthy();
+  });
+});
+
+describe("answering a feedback in the classroom's Encuestas tab", () => {
+  const feedback = feedbackPoll(planning.id);
+
+  test("answering thanks with the emoji and the text", async () => {
+    const vote = voteHandler((myResponse) => ({ ...feedback, myResponse }));
+
+    server.use(vote.handler);
+
+    const { user, panel } = await enter([feedback]);
+    const card = await cardIn(panel, feedback);
+
+    await user.click(within(card).getByRole("radio", { name: "4 de 5" }));
+    await user.type(within(card).getByLabelText("Comentario"), "Muy bueno");
+    await user.click(within(card).getByRole("button", { name: "Enviar feedback" }));
+
+    expect(await within(card).findByText("Gracias, ya nos llegó tu feedback.")).toBeTruthy();
+    expect(vote.votes).toEqual([{ pick: 4, text: "Muy bueno" }]);
+    expect(within(card).getByText("🙂")).toBeTruthy();
+    expect(within(card).getByText("Muy bueno")).toBeTruthy();
+  });
+
+  test("a failed send shows the error in the card and no toast", async () => {
+    const { user, panel } = await enter([feedback]);
+    const card = await cardIn(panel, feedback);
+
+    server.use(failingRoute("patch", `/polls/${feedback.id}`));
+    await user.click(within(card).getByRole("radio", { name: "2 de 5" }));
+    await user.click(within(card).getByRole("button", { name: "Enviar feedback" }));
+
+    expect((await within(card).findByRole("alert")).textContent).toBe(
+      "No se pudo enviar tu feedback. Probá de nuevo.",
+    );
+    expect(screen.queryByText("No se pudo registrar tu voto. Probá de nuevo.")).toBeNull();
+    expect(screen.getAllByRole("alert")).toHaveLength(1);
+  });
+
+  test("a closed feedback folds in Cerradas and shows the own answer without bars or a way to change it", async () => {
+    const answered = closed(feedback, { pick: 5, text: "Excelente" }, null);
+
+    const unanswered = closed(
+      { ...feedbackPoll(planning.id, 5), prompt: "¿Qué cambiarías de la sesión?" },
+      null,
+      null,
+    );
+
+    const { user, panel } = await enter([], [answered, unanswered]);
+
+    const closedSection = within(panel).getByRole("region", { name: "Cerradas" });
+    const first = await within(closedSection).findByRole("article", { name: answered.prompt });
+    const second = within(closedSection).getByRole("article", { name: unanswered.prompt });
+
+    expect(within(first).queryByText("Excelente")).toBeNull();
+
+    await user.click(within(first).getByRole("button", { expanded: false }));
+
+    expect(within(first).getByText("😄")).toBeTruthy();
+    expect(within(first).getByText("Excelente")).toBeTruthy();
+    expect(within(first).getByText("La encuesta se cerró.")).toBeTruthy();
+    expect(within(first).queryByRole("list", { name: "Resultados" })).toBeNull();
+    expect(within(first).queryByRole("button", { name: "Cambiar mi respuesta" })).toBeNull();
+
+    await user.click(within(second).getByRole("button", { expanded: false }));
+
+    expect(within(second).getByText("No respondiste esta encuesta.")).toBeTruthy();
+  });
+
+  test("a feedback closed while answering moves to Cerradas", async () => {
+    let isClosedNow = false;
+
+    const { user, panel } = await enter([feedback]);
+
+    server.use(
+      http.patch(url("/polls/:id"), () => {
+        isClosedNow = true;
+
+        return apiError("PollNotActive");
+      }),
+      http.get(url("/polls"), ({ request }) => {
+        const status = new URL(request.url).searchParams.get("status");
+
+        if (status === "closed") {
+          return HttpResponse.json(isClosedNow ? [closed(feedback, null, null)] : []);
+        }
+
+        return HttpResponse.json(isClosedNow ? [] : [feedback]);
+      }),
+    );
+
+    const card = await cardIn(panel, feedback);
+
+    await user.click(within(card).getByRole("radio", { name: "3 de 5" }));
+    await user.click(within(card).getByRole("button", { name: "Enviar feedback" }));
+
+    const closedSection = within(panel).getByRole("region", { name: "Cerradas" });
+
+    expect(
+      await within(closedSection).findByRole("article", { name: feedback.prompt }),
+    ).toBeTruthy();
+    expect(within(panel).getByText("No hay encuestas activas.")).toBeTruthy();
   });
 });

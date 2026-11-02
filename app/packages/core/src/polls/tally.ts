@@ -14,8 +14,8 @@ const countsOf = (size: number, votes: ReadonlyArray<readonly [number, number]>)
 };
 
 // The results of a poll from its counted votes, without saying who voted what:
-// a count per option, per point of the scale (1 to 5) or per word, the most
-// sent words first.
+// a count per option, per point of the scale or of the feedback (1 to 5) or per
+// word, the most sent words first.
 export const tally = (poll: StoredPoll, counts: ResponseCounts): PollResults => {
   const { count, values } = counts;
 
@@ -35,6 +35,14 @@ export const tally = (poll: StoredPoll, counts: ResponseCounts): PollResults => 
     return { count, scale: countsOf(5, votes) };
   }
 
+  if (poll.type === "feedback") {
+    const votes = values.flatMap(({ value, count: sent }) =>
+      "pick" in value ? [[value.pick - 1, sent] as const] : [],
+    );
+
+    return { count, feedback: countsOf(5, votes) };
+  }
+
   return {
     count,
     words: counts.words.toSorted((a, b) => b.count - a.count || a.word.localeCompare(b.word)),
@@ -45,6 +53,10 @@ export const tally = (poll: StoredPoll, counts: ResponseCounts): PollResults => 
 export const fitsPoll = (poll: StoredPoll, value: ResponseValue) => {
   if (poll.type === "choice") {
     return "choice" in value && value.choice < (poll.options?.length ?? 0);
+  }
+
+  if (poll.type === "feedback") {
+    return "pick" in value;
   }
 
   return poll.type === "scale" ? "scale" in value : "words" in value;

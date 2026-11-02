@@ -6,12 +6,14 @@ import { PollStateActions } from "./PollStateActions.tsx";
 
 interface Props {
   poll: AdminPoll;
+  leading?: ReactNode;
   draftActions?: ReactNode;
   canActivate?: boolean;
 }
 
-export const PollActions = ({ poll, draftActions, canActivate = true }: Props) => (
+export const PollActions = ({ poll, leading, draftActions, canActivate = true }: Props) => (
   <div className="mt-3 flex justify-end gap-2">
+    {leading}
     <DeletePollButton poll={poll} />
     {draftActions}
     <PollStateActions poll={poll} canActivate={canActivate} />

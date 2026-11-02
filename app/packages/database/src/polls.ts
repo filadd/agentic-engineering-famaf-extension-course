@@ -7,7 +7,7 @@ import * as Schema from "effect/Schema";
 import { repositoryOf } from "./repository.ts";
 import { polls } from "./schema.ts";
 
-const { results: _results, ...storedPollFields } = AdminPoll.fields;
+const { results: _results, responses: _responses, ...storedPollFields } = AdminPoll.fields;
 
 // The content of the other poll type is null in the row and absent in the poll.
 const decodeRow = Schema.decodeUnknownEffect(

@@ -40,7 +40,7 @@ classDiagram
     ResponseValue <|-- Feedback
 ```
 
-El punto se guarda como número de 1 a 5, no como el emoji que se toca. El texto es opcional, y cuando el alumno no escribe nada la clave no está en el valor, igual que los campos que no aplican a los otros tipos. El texto se guarda tal como lo escribió, sin recortar.
+El punto se guarda como número de 1 a 5, no como el emoji que se toca. El texto es opcional, y cuando el alumno no escribe nada la clave no está en el valor, igual que los campos que no aplican a los otros tipos. Un texto con contenido se guarda tal como lo escribió, sin recortar; un texto en blanco, vacío o de solo espacios y saltos de línea, no se guarda.
 
 > [!NOTE] Por qué el puntaje es un número y no el emoji
 > Los emojis de la pantalla pueden cambiar y el número no cambia de significado. Guardado el punto, un cambio de emojis no reinterpreta lo que ya contestaron los alumnos.
@@ -73,7 +73,7 @@ sequenceDiagram
 
 El envío reemplaza la respuesta anterior del mismo alumno: hay una por alumno y por encuesta, y volver a mandarla cambia el valor que ya estaba. La respuesta que vuelve trae la encuesta con lo que el alumno mandó y sin resultados, así que la pantalla pasa al estado de gracias sin esperar otra lectura.
 
-Del lado del profe, la lectura trae todas las respuestas de la encuesta con el nombre y el avatar de cada alumno.
+Del lado del profe, las respuestas llegan dentro de la encuesta: la misma lectura que trae las barras trae, en cada encuesta de feedback, todas sus respuestas con el nombre y el avatar de cada alumno, sin un pedido aparte. La encuesta del alumno no las lleva.
 
 ## ⚖️ Las reglas del envío
 
@@ -89,7 +89,7 @@ flowchart TD
     G --> O((Respuesta guardada))
 ```
 
-La API acepta el envío solo de un estudiante, sobre una encuesta de tipo feedback y activa, con un punto entre 1 y 5. El texto es opcional y no tiene tope: si llega vacío o no llega, la respuesta se guarda con el punto solo.
+La API acepta el envío solo de un estudiante, sobre una encuesta de tipo feedback y activa, con un punto entre 1 y 5. El texto es opcional y no tiene tope. Si no llega, la respuesta se guarda con el punto solo. Si llega en blanco, la API rechaza el envío; la web no lo manda: cuando el campo queda en blanco, envía el punto solo.
 
 Mientras la encuesta está abierta el alumno puede reemplazar su respuesta, y cuando el profe la cierra ya no. La web aplica las mismas reglas antes de mandar el pedido, y el backend manda. Un envío rechazado no guarda nada.
 
@@ -119,7 +119,7 @@ stateDiagram-v2
 
 Sin responder, la tarjeta muestra los cinco emojis, el campo de texto y el botón de envío, que queda deshabilitado hasta que el alumno elige un emoji. Al enviar, el botón muestra que espera y los emojis se deshabilitan.
 
-Respondido, la tarjeta agradece el envío y muestra el emoji elegido y el texto debajo, con el enlace "Cambiar mi respuesta". Editando, vuelve el formulario con lo que había mandado y el botón dice "Modificar feedback". En el estado de error, la tarjeta muestra la alerta de error de la app y conserva lo que el alumno cargó.
+Respondido, la tarjeta agradece el envío y muestra el emoji elegido y el texto debajo, con el botón "Cambiar mi respuesta", un pill sin borde ni fondo (`pill-ghost`). Editando, vuelve el formulario con lo que había mandado y el botón dice "Modificar feedback". En el estado de error, la tarjeta muestra la alerta de error de la app y conserva lo que el alumno cargó.
 
 Cerrada, la tarjeta muestra solo la respuesta del alumno y ya no ofrece cambiarla.
 
@@ -129,11 +129,18 @@ Cerrada, la tarjeta muestra solo la respuesta del alumno y ya no ofrece cambiarl
 
 En la card de la sesión, la tarjeta del feedback ocupa el lugar de las encuestas, debajo de las que están activas. En el aula aparece como cualquier encuesta activa.
 
+En el panel del aula, un borrador de feedback se ve como lo verá el alumno: los cinco emojis con sus extremos y el campo de texto, sin poder tocarlos.
+
 Del lado del profe, la tarjeta vive en la pestaña Encuestas y se abre, se cierra y se borra como cualquier encuesta. Muestra el total de respuestas y el reparto en las cinco barras de la encuesta de escala, con el emoji debajo de cada barra. Un botón abre un modal que solo lista las respuestas, cada una con el nombre, el emoji y el texto.
 
 [Prototipo de la tarjeta del profe y su modal, con las respuestas de una sesión](../prototipos/admin-feedback.html)
 
 La lista se ordena por el id de la respuesta. Ese id no cambia cuando el alumno edita su respuesta, así que el orden es el de la primera vez que cada alumno respondió, y no hace falta guardar cuándo se envió.
+
+Con el modal abierto, cuando un alumno responde, la lista se actualiza sin cerrarse: el aviso del aula hace que la web vuelva a pedir las encuestas de la sesión, y el modal muestra las respuestas que llegan con ellas.
+
+> [!NOTE] Por qué la lista viaja dentro de la encuesta
+> Un pedido propio para la lista sumaría un endpoint, su clave de caché y su refresco, y tendría que decidir qué responder para una encuesta que no es de feedback. Dentro de la encuesta, la lista existe solo en el feedback y se refresca con las barras. El costo es que cada aviso de encuestas del aula hace que la web del profe vuelva a pedir todas las encuestas de la sesión con sus textos, también en el panel del aula, que no los muestra. Con unos 30 alumnos son unos pocos KB por pedido.
 
 ## 🔔 Lo que pasa después de guardar
 

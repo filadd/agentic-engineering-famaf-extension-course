@@ -82,7 +82,7 @@ export const polls = sqliteTable(
     sessionId: text("session_id")
       .notNull()
       .references(() => sessions.id),
-    type: text("type", { enum: ["choice", "words", "scale"] }).notNull(),
+    type: text("type", { enum: ["choice", "words", "scale", "feedback"] }).notNull(),
     status: text("status", { enum: ["draft", "active", "closed"] }).notNull(),
     prompt: text("prompt").notNull(),
     options: text("options", { mode: "json" }).$type<ReadonlyArray<string>>(),

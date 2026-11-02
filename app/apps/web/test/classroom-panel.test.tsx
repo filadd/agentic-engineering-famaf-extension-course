@@ -1,7 +1,7 @@
 import { screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, test } from "vitest";
 
-import { choicePoll, planning, sessionDetail } from "./fixtures/content.ts";
+import { choicePoll, feedbackPoll, planning, sessionDetail } from "./fixtures/content.ts";
 import { student, teacher } from "./fixtures/people.ts";
 import { classroomSocket } from "./helpers/classroom-socket.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
@@ -47,6 +47,19 @@ describe("/aula panel", () => {
     );
 
     await enter({ activePolls: [choicePoll(planning.id)] });
+
+    const show = screen.getByRole("button", { name: "Mostrar el panel" });
+
+    expect((await within(show).findByLabelText("1 encuestas sin votar")).textContent).toBe("1");
+  });
+
+  test("hidden with a feedback the student has not answered shows the badge too", async () => {
+    localStorage.setItem(
+      "kurasu:classroom",
+      JSON.stringify({ panelHidden: true, presenceCollapsed: false, tab: "questions" }),
+    );
+
+    await enter({ activePolls: [feedbackPoll(planning.id)] });
 
     const show = screen.getByRole("button", { name: "Mostrar el panel" });
 

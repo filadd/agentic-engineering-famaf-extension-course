@@ -121,7 +121,9 @@
   .lbl { white-space: nowrap; }
   .ptabs button[data-tab="people"] { display: none; }
   .row-edit { display: flex; justify-content: flex-end; margin-top: 8px; }
-  .link { font: inherit; font-size: 13px; background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; color: #1F1B18; }
+  .link { font: inherit; font-size: 14px; background: none; border: 1.5px solid transparent; border-radius: 999px; padding: 7px 14px; cursor: pointer; color: inherit; }
+  .link:hover { background: color-mix(in srgb, currentColor 12%, transparent); }
+  .link:disabled { opacity: 0.35; cursor: default; }
   .side-scroll .people { max-height: none; padding: 0; margin: 0; }
 
   .offline { display: flex; align-items: center; gap: 8px; margin: 10px 32px 0; padding: 8px 14px; border-radius: 12px; background: #F8D0A0; color: #1F1B18; font-size: 14px; }

@@ -1,7 +1,9 @@
 import type { Poll } from "@kurasu/contract/polls";
 import { useState } from "react";
 
+import { FeedbackAnswer } from "./FeedbackAnswer.tsx";
 import { PollCard } from "./PollCard.tsx";
+import { feedbackAnswerOf } from "./feedback-faces.ts";
 import { pollMeta } from "./poll-meta.ts";
 
 interface Props {
@@ -24,6 +26,11 @@ export const ClosedPolls = ({ polls }: Props) => {
           showResults
           mine={poll.myResponse}
           bordered
+          body={
+            poll.type === "feedback" ? (
+              <FeedbackAnswer answer={feedbackAnswerOf(poll)} isClosed />
+            ) : undefined
+          }
           open={openId === poll.id}
           onToggle={() => setOpenId(openId === poll.id ? null : poll.id)}
         />

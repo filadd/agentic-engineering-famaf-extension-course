@@ -1,5 +1,5 @@
 import type { Material } from "@kurasu/contract/materials";
-import type { AdminPoll, Poll } from "@kurasu/contract/polls";
+import type { AdminPoll, FeedbackResponse, Poll } from "@kurasu/contract/polls";
 import type { AdminQuestion, Question } from "@kurasu/contract/questions";
 import type { Session, SessionSummary } from "@kurasu/contract/sessions";
 
@@ -54,6 +54,33 @@ export const wordsPoll = (sessionId: string, n = 3): Poll => ({
   myResponse: null,
   results: null,
 });
+
+export const feedbackPoll = (sessionId: string, n = 4): Poll => ({
+  id: ulid("P", n),
+  sessionId,
+  type: "feedback",
+  prompt: "¿Cómo estuvo la sesión de hoy?",
+  status: "active",
+  myResponse: null,
+  results: null,
+});
+
+export const adminFeedback = (
+  sessionId: string,
+  status: AdminPoll["status"],
+  responses: ReadonlyArray<FeedbackResponse>,
+  n = 4,
+): AdminPoll => {
+  const picks = [0, 0, 0, 0, 0];
+
+  for (const response of responses) {
+    picks[response.pick - 1] = (picks[response.pick - 1] ?? 0) + 1;
+  }
+
+  const { myResponse: _, ...rest } = feedbackPoll(sessionId, n);
+
+  return { ...rest, status, results: { count: responses.length, feedback: picks }, responses };
+};
 
 export const voted = (
   poll: Poll,

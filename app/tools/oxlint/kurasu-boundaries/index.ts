@@ -1,6 +1,7 @@
 import { eslintCompatPlugin } from "@oxlint/plugins";
 
 import { coreNoAdaptersRule } from "./rules/core-no-adapters.ts";
+import { moduleEntryRule } from "./rules/module-entry.ts";
 import { packagesNoAppsRule } from "./rules/packages-no-apps.ts";
 import { webImportsRule } from "./rules/web-imports.ts";
 
@@ -11,6 +12,7 @@ const kurasuBoundariesPlugin = eslintCompatPlugin({
     "web-imports": webImportsRule,
     "core-no-adapters": coreNoAdaptersRule,
     "packages-no-apps": packagesNoAppsRule,
+    "module-entry": moduleEntryRule,
   },
 });
 

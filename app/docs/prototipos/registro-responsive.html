@@ -58,7 +58,8 @@
   .panel .go { justify-content: center; }
   .go .btn { background: var(--active); color: var(--active-ink); border-color: var(--active); font-family: 'Rubik', sans-serif; font-weight: 500; font-size: 15px; padding: 11px 20px; }
   .go .btn:disabled { opacity: 0.35; cursor: default; }
-  .linkbtn { margin-top: 14px; font: inherit; font-size: 14px; background: none; border: 0; text-decoration: underline; color: var(--muted); cursor: pointer; }
+  .linkbtn { margin-top: 14px; font: inherit; font-size: 14px; background: none; border: 1.5px solid transparent; border-radius: 999px; padding: 7px 14px; cursor: pointer; color: inherit; }
+  .linkbtn:hover { background: color-mix(in srgb, currentColor 12%, transparent); }
   .inbox-mail { margin-top: 22px; background: #fff; color: #1F1B18; border: 1px solid #dadce0; border-radius: 12px; padding: 16px; text-align: left; font-family: Arial, sans-serif; }
   .inbox-mail small { display: block; color: #5f6368; font-size: 12px; }
   .inbox-mail p { color: #3c4043; font-size: 14px; }

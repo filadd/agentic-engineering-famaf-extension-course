@@ -2,7 +2,7 @@ import type { AdminPoll, Poll, ResponseValue } from "@kurasu/contract/polls";
 import type { ReactNode } from "react";
 
 import { Icon } from "../../ui/Icon.tsx";
-import { PollResults } from "./PollResults.tsx";
+import { PollResults } from "./PollResults/index.ts";
 import { scaleLabelsOf } from "./scale-labels.ts";
 
 interface Props {
@@ -38,7 +38,11 @@ export const PollCard = ({
     <span className="min-w-0 flex-1">
       {status}
       <span className="flex items-start gap-2 font-display font-medium">
-        <Icon name="chart-bar" size={18} className="mt-0.5" />
+        <Icon
+          name={poll.type === "feedback" ? "chat-messages" : "chart-bar"}
+          size={18}
+          className="mt-0.5"
+        />
         <span>{poll.prompt}</span>
       </span>
       <span className="mt-0.5 block text-[13px] opacity-70">{meta}</span>
