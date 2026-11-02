@@ -4,6 +4,7 @@ import { AppHeader } from "../../../features/me/AppHeader.tsx";
 import { Greeting } from "../../../features/me/Greeting.tsx";
 import { AdminFeatured } from "../../../features/sessions/AdminFeatured.tsx";
 import { AdminSessionRail } from "../../../features/sessions/AdminSessionRail.tsx";
+import { findFeatured } from "../../../features/sessions/find-featured.ts";
 import { sessionExamples } from "../../../features/sessions/session-examples.ts";
 import { useAdminSessions } from "../../../features/sessions/useAdminSessions.ts";
 import { UsersButton } from "../../../features/sessions/UsersButton.tsx";
@@ -13,7 +14,7 @@ const AdminHomeRoute = () => {
   const sessions = useAdminSessions();
 
   const all = sessions.data ?? [];
-  const featured = all.find((session) => session.featured);
+  const featured = findFeatured(all);
 
   return (
     <main className="px-12 pt-8 pb-10">

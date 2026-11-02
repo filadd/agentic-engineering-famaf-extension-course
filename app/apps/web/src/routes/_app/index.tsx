@@ -8,6 +8,7 @@ import { usePolls } from "../../features/polls/usePolls.ts";
 import { FeaturedQuestions } from "../../features/questions/FeaturedQuestions.tsx";
 import { AllSessions } from "../../features/sessions/AllSessions.tsx";
 import { FeaturedSession } from "../../features/sessions/FeaturedSession.tsx";
+import { findFeatured } from "../../features/sessions/find-featured.ts";
 import { sessionExamples } from "../../features/sessions/session-examples.ts";
 import { useSessions } from "../../features/sessions/useSessions.ts";
 import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
@@ -15,16 +16,16 @@ import { SkeletonOf } from "../../ui/SkeletonOf.tsx";
 const HomeSearch = Schema.Struct({ sesion: Schema.optional(Schema.String) });
 
 // The featured session is the one the teacher marked; every enabled session,
-// the featured one included, goes below in the teacher's order. Until /api/me says who entered, the page draws the
-// student's skeleton without asking for the student's lists, which the
-// teacher cannot read.
+// the featured one included, goes below in the teacher's order. Until /api/me
+// says who entered, the page draws the student's skeleton without asking for
+// the student's lists, which the teacher cannot read.
 const HomeRoute = () => {
   const search = Route.useSearch();
   const me = useMe();
 
   const student = me.data?.role === "student";
   const sessions = useSessions({ enabled: student });
-  const featured = sessions.data?.find((session) => session.featured);
+  const featured = findFeatured(sessions.data);
 
   const activePolls = usePolls(
     { sessionId: featured?.id ?? "", status: "active" },

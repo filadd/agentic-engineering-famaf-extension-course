@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 import { StudentClassroom } from "../../features/classroom/StudentClassroom.tsx";
 import { StudentClassroomSkeleton } from "../../features/classroom/StudentClassroomSkeleton.tsx";
+import { findFeatured } from "../../features/sessions/find-featured.ts";
 import { useSessions } from "../../features/sessions/useSessions.ts";
 
 // The student only enters the classroom of the featured session. The
@@ -15,7 +16,7 @@ const ClassroomRoute = () => {
 
   const [entered, setEntered] = useState<string>();
 
-  const featured = sessions.data?.find((session) => session.featured)?.id;
+  const featured = findFeatured(sessions.data)?.id;
 
   if (entered == null && featured != null) {
     setEntered(featured);
