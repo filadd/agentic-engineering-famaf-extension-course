@@ -417,13 +417,13 @@ describe("answering a feedback in the classroom's Encuestas tab", () => {
   });
 
   test("a feedback closed while answering moves to Cerradas", async () => {
-    let closedNow = false;
+    let isClosedNow = false;
 
     const { user, panel } = await enter([feedback]);
 
     server.use(
       http.patch(url("/polls/:id"), () => {
-        closedNow = true;
+        isClosedNow = true;
 
         return apiError("PollNotActive");
       }),
@@ -431,10 +431,10 @@ describe("answering a feedback in the classroom's Encuestas tab", () => {
         const status = new URL(request.url).searchParams.get("status");
 
         if (status === "closed") {
-          return HttpResponse.json(closedNow ? [closed(feedback, null, null)] : []);
+          return HttpResponse.json(isClosedNow ? [closed(feedback, null, null)] : []);
         }
 
-        return HttpResponse.json(closedNow ? [] : [feedback]);
+        return HttpResponse.json(isClosedNow ? [] : [feedback]);
       }),
     );
 

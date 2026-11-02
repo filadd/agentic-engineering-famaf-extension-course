@@ -9,18 +9,18 @@ interface Props {
 }
 
 export const FeedbackResponsesButton = ({ poll }: Props) => {
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
       <Button
         variant="pill-dark"
         className="border-coal bg-coal text-white"
-        onClick={() => setOpen(true)}
+        onClick={() => setIsOpen(true)}
       >
         Ver las respuestas
       </Button>
-      {open ? <FeedbackResponsesSheet poll={poll} onClose={() => setOpen(false)} /> : null}
+      {isOpen ? <FeedbackResponsesSheet poll={poll} onClose={() => setIsOpen(false)} /> : null}
     </>
   );
 };

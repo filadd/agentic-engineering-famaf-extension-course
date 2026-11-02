@@ -2,6 +2,7 @@ import type { AdminPoll } from "@kurasu/contract/polls";
 
 import { Sheet } from "../../ui/Sheet.tsx";
 import { FeedbackResponseRow } from "./FeedbackResponseRow.tsx";
+import { answers } from "./poll-meta.ts";
 
 interface Props {
   poll: AdminPoll;
@@ -9,11 +10,10 @@ interface Props {
 }
 
 export const FeedbackResponsesSheet = ({ poll, onClose }: Props) => {
-  const count = poll.results.count;
   const responses = poll.responses ?? [];
 
   return (
-    <Sheet open onClose={onClose} title={`${count} ${count === 1 ? "respuesta" : "respuestas"}`}>
+    <Sheet open onClose={onClose} title={answers(responses.length)}>
       {responses.length === 0 ? (
         <div className="py-1.5 text-sm text-muted">Todavía no hay respuestas.</div>
       ) : (

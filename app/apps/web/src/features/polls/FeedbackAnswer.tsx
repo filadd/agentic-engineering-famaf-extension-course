@@ -1,17 +1,15 @@
-import type { ResponseValue } from "@kurasu/contract/polls";
+import type { FeedbackValue } from "@kurasu/contract/polls";
 import type { ReactNode } from "react";
 
 import { feedbackFaces } from "./feedback-faces.ts";
 
-type FeedbackValue = Extract<ResponseValue, { pick: number }>;
-
 interface Props {
   answer: FeedbackValue | null;
-  closed: boolean;
+  isClosed: boolean;
   action?: ReactNode;
 }
 
-export const FeedbackAnswer = ({ answer, closed, action }: Props) =>
+export const FeedbackAnswer = ({ answer, isClosed, action }: Props) =>
   answer == null ? (
     <div className="mt-2 text-sm opacity-70">No respondiste esta encuesta.</div>
   ) : (
@@ -22,10 +20,10 @@ export const FeedbackAnswer = ({ answer, closed, action }: Props) =>
         </span>
         <div>
           <div className="font-display font-medium">
-            {closed ? "La encuesta se cerró." : "Gracias, ya nos llegó tu feedback."}
+            {isClosed ? "La encuesta se cerró." : "Gracias, ya nos llegó tu feedback."}
           </div>
           <div className="text-[13px] opacity-70">
-            {closed ? "Esta encuesta no acepta cambios." : "Podés cambiarlo cuando quieras."}
+            {isClosed ? "Esta encuesta no acepta cambios." : "Podés cambiarlo cuando quieras."}
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import { FeedbackAnswer } from "./FeedbackAnswer.tsx";
 import { PollCard } from "./PollCard.tsx";
+import { feedbackAnswerOf } from "./feedback-faces.ts";
 import { pollMeta } from "./poll-meta.ts";
 
 interface Props {
@@ -27,12 +28,7 @@ export const ClosedPolls = ({ polls }: Props) => {
           bordered
           body={
             poll.type === "feedback" ? (
-              <FeedbackAnswer
-                answer={
-                  poll.myResponse != null && "pick" in poll.myResponse ? poll.myResponse : null
-                }
-                closed
-              />
+              <FeedbackAnswer answer={feedbackAnswerOf(poll)} isClosed />
             ) : undefined
           }
           open={openId === poll.id}

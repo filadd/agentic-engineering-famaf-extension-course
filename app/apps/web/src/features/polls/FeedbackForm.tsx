@@ -6,7 +6,10 @@ import { Button } from "../../ui/Button.tsx";
 import { InlineError } from "../../ui/InlineError.tsx";
 import { FeedbackAnswer } from "./FeedbackAnswer.tsx";
 import { FeedbackScale } from "./FeedbackScale.tsx";
+import { feedbackAnswerOf } from "./feedback-faces.ts";
 import { useVote } from "./useVote.ts";
+
+const textLink = "text-sm text-coal underline";
 
 interface Props {
   poll: Poll;
@@ -14,7 +17,7 @@ interface Props {
 }
 
 export const FeedbackForm = ({ poll, onClosed }: Props) => {
-  const mine = poll.myResponse != null && "pick" in poll.myResponse ? poll.myResponse : null;
+  const mine = feedbackAnswerOf(poll);
 
   const [isEditing, setIsEditing] = useState(false);
   const [pick, setPick] = useState<number | null>(mine?.pick ?? null);
@@ -29,13 +32,9 @@ export const FeedbackForm = ({ poll, onClosed }: Props) => {
     return (
       <FeedbackAnswer
         answer={mine}
-        closed={false}
+        isClosed={false}
         action={
-          <button
-            type="button"
-            className="text-sm text-coal underline"
-            onClick={() => setIsEditing(true)}
-          >
+          <button type="button" className={textLink} onClick={() => setIsEditing(true)}>
             Cambiar mi respuesta
           </button>
         }
@@ -61,7 +60,7 @@ export const FeedbackForm = ({ poll, onClosed }: Props) => {
         {mine == null ? null : (
           <button
             type="button"
-            className="text-sm text-coal underline"
+            className={textLink}
             disabled={vote.isPending}
             onClick={() => setIsEditing(false)}
           >
