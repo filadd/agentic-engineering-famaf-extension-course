@@ -1,0 +1,58 @@
+{
+  "cli_version": "0.12.2",
+  "checkpoint_id": "01M6D7PSSRZKVE968M97MCF36R",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 2,
+  "files_touched": [
+    ".mahou/wiki/alchemy/local-dev.md",
+    ".mahou/wiki/alchemy/local-tests.md",
+    "app/apps/api/package.json",
+    "app/apps/api/src/classroom/aula.ts",
+    "app/apps/api/src/files/bucket.ts",
+    "app/apps/api/src/files/r2.ts",
+    "app/apps/api/src/mail/binding.ts",
+    "app/apps/api/src/mail/email-sending.ts",
+    "app/apps/api/src/worker.ts",
+    "app/apps/api/test/helpers/api-test.ts",
+    "app/apps/api/test/helpers/stack.ts",
+    "app/apps/infra/alchemy.run.ts",
+    "app/apps/infra/package.json",
+    "app/apps/infra/src/drop-suppressed-recipients.ts",
+    "app/apps/infra/src/web.ts",
+    "app/packages/database/package.json",
+    "app/packages/database/src/resource.ts",
+    "app/pnpm-lock.yaml",
+    "app/tools/oxlint/kurasu-boundaries/rules/core-no-adapters.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 76,
+    "cache_creation_tokens": 67158,
+    "cache_read_tokens": 11317656,
+    "output_tokens": 15553,
+    "api_call_count": 36
+  },
+  "redaction": {
+    "replacements": 20,
+    "layers": {
+      "betterleaks": 3,
+      "connection_string": 0,
+      "credential_key": 0,
+      "credential_value": 13,
+      "credentialed_uri": 0,
+      "entropy": 4,
+      "key_context": 0,
+      "provider_token": 0,
+      "shell_stdin": 0
+    }
+  }
+}
