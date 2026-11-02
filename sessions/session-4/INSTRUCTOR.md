@@ -4,170 +4,137 @@
 
 ## Objetivo de la sesión (en una frase)
 
-Que salgan sabiendo **mantener documentos vivos del proyecto**, que separan el problema de la solución y registran las decisiones, y usarlos como contexto para planificar y construir.
+Que vean, sobre un proyecto real y en vivo, cómo se separa el problema de la solución, cómo se mantienen documentos vivos que registran las decisiones y cómo esos documentos y los subagentes sostienen el contexto del agente, para que lo puedan replicar en su proyecto.
+
+## Formato
+
+La sesión es una **demostración en vivo con slides de conceptos**. No hay práctica en clase ni tarea.
+
+- **El deck** (`deck/index.html`) lleva solo conceptos. No menciona las partes en vivo y se puede mirar después como resumen.
+- **La parte en vivo** es una feature nueva de kurasu, el aula virtual del curso: **un chat en el aula de la sesión destacada**. Se trabaja con los skills de mahou (explore, shape, design, write-documentation y, si da el tiempo, program design o implement), proyectando la terminal y el canvas.
+- **Se alterna**: un bloque de slides presenta un concepto y enseguida se lo ve aplicado en el trabajo en vivo.
+- **Las preguntas se contestan cuando salen.** Los ratos en que el agente está trabajando son el momento natural para hacerlo.
 
 ## Audiencia y supuestos
 
 - **Dura 2 horas y no se instala nada.**
-- **Con qué llegan**: su proyecto, un `AGENTS.md`, al menos un skill, y la feature de la tarea de la Sesión 3: una que no pueden describir en una frase. Si alguien no la trajo, que la elija durante el recap.
+- **Con qué llegan**: su proyecto, un `AGENTS.md`, al menos un skill, las notas de la tarea de la Sesión 3 (qué le tuvieron que explicar igual al agente) y una feature que no pueden describir en una frase.
 - Grupo heterogéneo, de primer año a graduados.
-- El riesgo de la clase no es técnico: es que documentar se sienta como tarea escolar. Los dos bloques prácticos terminan con el agente usando los docs; ese contraste es lo que lo evita.
+- **Ya vieron kurasu**: es el aula donde siguen las slides, y la Sesión 2 mostró la grabación de cómo se construyó. Hoy ven el proceso en vivo, con las decisiones tomándose en el momento.
 
 ## Plan tema por tema
 
-### Recap (~10 min)
+### Recap
 
-Discusión, no slides. Dos disparadores:
+Slides 1 a 3. Discusión, no slides. Tres disparadores:
 
-**1. Show-and-tell de skills.** ¿Alguien creó un skill nuevo durante la semana? ¿Encontró alguno hecho que le sirvió? Dos o tres casos alcanzan. Preguntar por el criterio: qué convirtieron en skill y qué dejaron en el `AGENTS.md`.
+1. **¿Creaste o encontraste un skill nuevo?** Dos o tres casos. Preguntar por el criterio: qué convirtieron en skill y qué dejaron en el `AGENTS.md`.
+2. **¿Qué le tuviste que explicar igual?** Es la tarea de la Sesión 3. Lo que sale acá es justo lo que hoy va a los docs: anotar dos o tres respuestas y volver a ellas en el bloque del proyecto.
+3. **¿Qué dudas quedaron de la Sesión 3?** MCP y subagentes suelen dejar preguntas sueltas. Las de subagentes se pueden guardar para el bloque de subagentes.
 
-**2. ¿Qué dudas quedaron de la Sesión 3?** Pregunta abierta. MCP y subagentes suelen dejar preguntas sueltas.
+### Encuadre
 
-### Qué vamos a ver hoy (~5 min)
+Slide 4. Deuda cognitiva y rendición cognitiva, y la frase de la sesión: *"Documentar es pensar antes de construir."* Los dos conceptos vuelven en el cierre.
 
-El encuadre: en la Sesión 2 escribieron un plan por tarea, en la Sesión 3 la configuración que no cambia. Hoy escriben documentos del proyecto que alimentan los planes y registran las decisiones.
+### El proyecto
 
-Los dos conceptos que enmarcan la sesión, presentados acá y retomados en el cierre:
+Slides 5 y 6, y después en vivo.
 
-- **Deuda cognitiva**: el costo mental de delegar de forma repetida el razonamiento, la memoria y la resolución de problemas en la IA. Cada decisión que no tomaste vos es una decisión que no entendés.
-- **Rendición cognitiva**: el paso siguiente: aceptar lo que el agente produce sin leerlo de verdad, y adoptar sus decisiones como propias. Cuando no entendés el problema en profundidad, las respuestas del agente se convierten en tu opinión, porque no tenés con qué contrastarlas.
+**Concepto.** El `AGENTS.md` como índice. La Sesión 3 lo dejó anunciado en la slide *Cuando un proyecto es muy grande* ("Agus lo cuenta en la próxima clase"). Lo de cada turno va en el `AGENTS.md` y el resto queda a un link de distancia. Después, qué va en cada lugar: `AGENTS.md`, `docs/` y wiki.
 
-La frase de la sesión:
+**En vivo.** Recorrer la estructura de kurasu, en el editor o en GitHub:
 
-> *"Documentar es pensar antes de construir."*
+- `app/AGENTS.md`: unas pocas líneas que dicen dónde están los docs y qué nota agregar cuando cambia algo. Es el índice de la slide 5.
+- `app/docs/README.md`: la carta de los docs. Qué tiene cada carpeta, cómo se nombra una nota, cómo se escribe (primero cómo funciona, y el porqué en un callout al lado de lo que justifica).
+- `app/docs/architecture/README.md`: el índice de las notas, una fila por nota. Abrir una que conozcan desde el lado de usuario, por ejemplo `tiempo-real-del-aula.md` o `feedback-de-sesion.md`.
+- `app/docs/prototipos/`: los prototipos HTML de cada pantalla, linkeados desde su nota.
+- `.mahou/wiki/INDEX.md`: la wiki del agente. Abrir `architecture.md` o `web.md` para mostrar la diferencia con los docs: los docs explican el sistema, la wiki explica cómo trabajar en este código.
+- `.mahou/*.md`: la configuración que los skills leen del proyecto (dónde van las tareas, cómo se escribe la documentación).
 
-### Dos dominios (~15 min)
+Cerrar con las respuestas del recap: ¿en cuál de estos lugares iría cada cosa que tuvieron que explicar igual?
 
-Ejemplo primero, concepto después. El ejemplo es **una sola feature**: agregar soporte multi-usuario a la lista de tareas (el proyecto A de la Sesión 1, el mismo del ejercicio de la Sesión 3). La misma feature descrita dos veces:
+### El problema
 
-- **Dominio del problema**: la necesidad. Varias personas quieren usar la lista y cada una quiere ver solo lo suyo. Se detalla con herramientas del lado del problema:
-  - **Actores**: quién usa el sistema (usuario registrado, visitante).
-  - **Datos y relaciones**: qué cosas existen y cómo se conectan (usuario, tarea, cada tarea pertenece a un usuario).
-  - **Procesos**: qué hace cada actor (registrarse, entrar, trabajar sobre sus tareas).
+Slides 7 y 8, y después en vivo.
 
-  Todo en términos del problema, sin hablar del sistema. La charla que originó el framework hablaba de procesos del día a día porque la audiencia no era técnica; acá la audiencia es técnica y los problemas son problemas en general, no solo procesos.
+**Concepto.** Slide 7: problema y solución en general, sin ejemplo. El problema es qué necesita quien lo va a usar y se describe sin nombrar el sistema; la solución es una de muchas formas de atenderlo. Dos ideas tienen que quedar:
 
-- **Dominio de la solución**: el sistema que resuelve esa necesidad. Se detalla con herramientas del lado de la solución:
-  - **Diagramas de datos**: la tabla `users`, el `user_id` en `tasks`.
-  - **Breadboards o bocetos de pantallas**: registro, login, el header con la sesión.
-  - **Flujos**: el usuario entra, la sesión se valida, la lista se filtra.
-
-  Es **una** de las muchas formas posibles de resolver esa necesidad.
-
-Las dos ideas que tienen que quedar:
-
-1. **El mismo problema admite muchas soluciones.** Si arrancás por la solución, el riesgo es doble: tomás decisiones sin haber considerado el problema en profundidad, y muchas de esas decisiones las termina derivando el agente, que por defecto devuelve la respuesta promedio de todo el conocimiento que ya tiene.
+1. **El mismo problema admite muchas soluciones.** Si arrancás por la solución, tomás decisiones sin haber considerado el problema, y muchas las termina tomando el agente, que por defecto devuelve la respuesta promedio de todo lo que ya vio.
 2. **La distinción importa con o sin IA.** Es la separación de siempre entre requerimientos y diseño.
 
-Cierre del bloque, pregunta a la sala: ¿dónde vive esta distinción en el proyecto de ustedes hoy? En ningún lado: el código es todo dominio de la solución, y el problema quedó en el historial de chats. Eso abre el bloque siguiente.
+Slide 8: definir el problema es mapear la realidad (actores, entidades, procesos, reglas). La slide dice que muchas veces esto lo hace un equipo de producto, y llega como requerimiento. Decir en voz alta que en su proyecto no hay equipo de producto: lo hacen ellos, con el agente preguntándoles.
 
-### Documentar lo que ya construiste (~30 min)
+Las slides no nombran la feature del chat. El ejemplo de los dos conceptos es lo que se hace en vivo a continuación.
 
-~5 de plantillas, ~25 de práctica.
+**En vivo.** Arrancar el chat del aula con explore y después shape.
 
-**Las plantillas (~5 min).** Dos tipos de documento, commiteados en el repo:
+- **Explore**: contarle al agente el problema con palabras propias y preguntarle cómo funcionan hoy el aula, las preguntas y el tiempo real. Los scouts que despacha son subagentes: nombrarlo y dejarlo para el bloque de subagentes.
+- **Shape**: el árbol de decisiones a nivel de comportamiento. **Las preguntas las responde la sala.** Leer cada pregunta en voz alta y decidir con ellos, a mano alzada o con una encuesta en kurasu. Es el momento en que ven la interrogación desde el lado de quien decide.
+- Preguntas que seguramente aparecen: quién puede escribir, si el profe modera o borra mensajes, si los mensajes quedan después de la sesión, en qué se diferencia un mensaje de una pregunta del aula (el backlog de kurasu tiene una idea de mensajes privados al profe que se superpone con esto), si hay reacciones o respuestas.
+- **Acotar desde el principio**: "chat en el aula de la sesión destacada". Un chat completo puede ocupar toda la clase en shape.
 
-`docs/PROJECT.md`, uno solo. La descripción general del proyecto:
+Qué remarcar mientras pasa: cada vez que alguien de la sala propone una solución ("con un WebSocket", "una tabla de mensajes") cuando la pregunta es de comportamiento, señalarlo: es el otro dominio, y todavía no toca. Al cerrar shape, mostrar cómo quedaron los actores, entidades, procesos y reglas de la slide 8 para el chat.
 
-```markdown
-# <Proyecto>
+### La solución
 
-Qué es el proyecto y para quién.
+Slide 9, y después en vivo.
 
-## Objetivo
-El objetivo principal: qué tiene que lograr para valer la pena.
+**Concepto.** Lo que buscamos decidir antes de escribir código, cada decisión con su porqué: modelo, flujos, estados, componentes, pantallas y prototipos. Es una de las soluciones posibles al problema que acaban de definir.
 
-## Restricciones
-Lo que ya está decidido y no se rediscute por feature:
-stack, límites, supuestos.
-```
+**En vivo.** Design sobre el árbol de shape, recorriendo las mismas seis cosas de la slide: el modelo de datos del chat, cómo viaja un mensaje por el aula en tiempo real (el Durable Object de cada sesión ya existe), los estados de un mensaje y del chat, qué componente hace cada parte, las pantallas del panel con sus estados de carga y error, y un prototipo del panel para reaccionar. Las decisiones con alternativas reales se las sigue planteando a la sala.
 
-`docs/features/<nombre>.md`, uno por feature:
+Cuando la sala no se pone de acuerdo sobre cómo se ve algo, mirar el prototipo: decide más rápido que la descripción.
 
-```markdown
-# <Feature>
+### Documentar
 
-El problema que resuelve: qué necesidad cubre y qué tiene que
-poder hacer quien la usa.
+Slide 10, y después en vivo.
 
-## Diseño
+**Concepto.** Documentos vivos: doc → código → review → reconciliar, y en el próximo cambio el doc se lee al explorar. El review hace dos preguntas. ¿Hizo lo que acordamos? Se chequea contra la documentación de lo que decidimos, para validar que lo que se hizo es lo que pedimos. ¿Hubo cambios durante la implementación? Implementar a veces destapa problemas que no estaban claros en el diseño: hay que cubrirlos y llevarlos al doc, y eso es reconciliar.
 
-### Modelo
-Los datos en juego: entidades, campos, relaciones.
+**En vivo.** Write-documentation con lo que salió del design: una nota nueva en `app/docs/architecture/` para el chat, las notas existentes que cambian (modelo de datos, tiempo real del aula) y la fila nueva en el índice. Mostrar el diff de los docs, no solo el resultado: los docs cambian con la feature, y la nota nueva sigue la carta de `docs/README.md`.
 
-### Flujo: <nombre>
-Uno por interacción: las pantallas que recorre y qué se puede
-hacer en cada una, los pasos, las reglas que se validan, y las
-decisiones que se tomaron en el camino, cada una con su motivo.
-```
+### Subagentes
 
-Dos cosas para decir sobre las plantillas:
+Slide 11, y después en vivo si da el tiempo.
 
-- **Son plantillas, no formularios.** Cada proyecto las adapta: se borran secciones que sobran, se agregan las que faltan. El error es dejarlas como vinieron.
-- **Relación con el `AGENTS.md`.** Algo de superposición puede haber, pero idealmente el `AGENTS.md` apunta a estos documentos: él lleva lo operativo de cada turno (comandos, convenciones) y referencia los docs para el entendimiento del proyecto.
+**Concepto.** Un contexto por trabajo: el subagente se lleva el trabajo entero y vuelve solo la conclusión. Decir de palabra que el brief es todo lo que sabe el subagente, y que los docs en el repo son la fuente de verdad que comparten todos. La Sesión 3 presentó la primitiva y `pi-subagents`; acá se ve el uso.
 
-**El trabajo (~25 min).** Documentar el proyecto que ya tienen, de forma interactiva: el agente explora el código, el historial de commits y los planes de las sesiones anteriores, muestra un borrador del `PROJECT.md` y de un `<feature>.md` por cada feature existente, y pregunta lo que no puede saber: el problema que se quiso resolver y el porqué de cada decisión. El estudiante responde y el doc final sale de esa conversación.
+**En vivo.** Según cuánto quede:
 
-Qué vigilar caminando la sala:
+- **Siempre**: volver a los scouts del explore y mostrar qué pidió el agente principal y qué le volvió.
+- **Si queda tiempo**: arrancar program design o implement. Implement despacha un subagente por repo con las tareas, las notas del diseño y las reglas del repo, y después reviewers por faceta. No hace falta que termine: alcanza con ver el brief que recibe cada uno y cómo crece el contexto del agente principal mientras ellos trabajan.
 
-- **El problema, primero.** Tiene que describir qué se quiere resolver con la feature, no cómo está construida. Si arranca con tablas o componentes, quedó en el dominio equivocado.
-- **Las decisiones, dentro de cada flujo.** Si no hay ninguna o dicen generalidades ("elegimos React por su popularidad"), el ejercicio no se hizo. Las decisiones reales tienen la forma "el estado vive en el server y no en el cliente porque X". Varias ni las tomaron ellos: las tomó el agente en la Sesión 1. Eso se decide ahora, en retrospectiva.
+### Cierre
 
-### Pausa (~5 min)
+Slides 12 a 15. Lo que viene después de la slide 15 se dice de palabra: el deck no lo tiene.
 
-Dejar proyectadas las plantillas.
+- **Todo tiene un costo.** Plata, contexto y tu atención. Si la herramienta lo muestra, enseñar cuánto contexto y cuántos tokens usó la corrida en vivo.
+- **Cuándo no usar IA.** La IA amplifica lo que ya sabés; sin los fundamentos, amplifica la confusión. "Don't use AI as a crutch" (MIT Missing Semester). Nombrar la atrofia: lo que dejás de hacer, lo dejás de saber hacer.
+- **Ser dueño.** Entender, decidir, discutir, mantener. Volver a deuda y rendición: hoy la sala tomó las decisiones del chat; el agente escribió, pero no pensó por ellos.
+- **¿Qué aprendimos?** Las ocho cartas del recap.
+- **Lo que viene**, de palabra:
+  - **Demos**: la Sesión 5 abre con una hora de demos del proyecto. Se anunció en la Sesión 1 y ésta es la última clase antes. Voluntario, sin nota, 5 a 7 minutos, con el repo listo.
+  - **La transición**: termina el tramo de "cómo trabajo bien con esta herramienta". La Sesión 5 abre el harness por adentro y la Sesión 6 cambia el modelo que tiene abajo.
 
-### Documentar la próxima feature e implementarla (~40 min)
+## Antes de la clase
 
-Explicación corta (~5) y el resto trabajo continuo: doc → plan → implementación.
-
-**La explicación (~5 min).** Toman la feature que trajeron. Puede ser nueva o una modificación de una existente; en el segundo caso extienden el doc que esa feature ya tiene. Escriben o actualizan su `docs/features/<nombre>.md` antes de tocar código. Tres instrucciones:
-
-1. **No le pidas el documento: pedile que te haga preguntas.** Contale el problema con tus palabras y que te interrogue. Las preguntas exponen lo que dabas por sentado y no estaba escrito. El borrador se escribe después, cuando las decisiones están tomadas. Hay un skill hecho para esto: [grill-me](https://github.com/mattpocock/skills/blob/main/skills/productivity/grill-me/SKILL.md) de Matt Pocock, que entrevista hasta resolver el árbol de decisiones. Es un `SKILL.md` como los de la Sesión 3.
-2. **El documento es de alto nivel.** Si la feature toca una librería o una API, context7 (Sesión 3) sirve para entenderla, pero los detalles de implementación no van al doc: van al plan que sale después.
-3. **El doc alimenta el plan.** La cadena completa: doc → plan → implementación → review. El plan sale con las decisiones ya tomadas, y el review compara contra dos cosas: el plan (¿hizo lo que acordamos?) y el doc (¿respeta las decisiones del proyecto?).
-
-**El trabajo (~35 min).** Escribir el doc de la feature vía interrogación, generar el plan con Plannotator partiendo del doc, ejecutar. No hace falta terminar la implementación; alcanza con generar el plan desde el doc.
-
-Qué vigilar caminando la sala:
-
-- Que la interrogación sea real. Preguntarle al estudiante: ¿qué pregunta te hizo el agente que no tenías respondida? Si no hay ninguna, le pidió el documento directo y no hay ninguna decisión propia adentro.
-- Que el plan cite el doc. Si el plan contradice una decisión escrita, mostrarlo: es el doc funcionando como criterio de review.
-
-**Extra: orquestación (~5 min, opcional, mientras trabajan).** Una vuelta por la sala o una slide fija para los que van rápido. Con los docs en el repo hay una fuente de verdad compartida, y eso habilita varios agentes a la vez: un subagente implementa mientras otro revisa contra el doc, o dos features en paralelo con worktrees.
-
-### Cierre (~15 min)
-
-- **¿Qué cambió cuando el agente tuvo el doc?** Casos concretos: qué preguntó el agente en la interrogación, qué hizo el plan distinto.
-- **Deuda y rendición cognitiva, de vuelta.** La diferencia entre delegar la escritura y delegar el pensamiento. Si el doc lo escribió el agente sin preguntarte nada, delegaste las dos cosas.
-- **Cuándo no usar IA.** La IA amplifica lo que ya sabés; sin los fundamentos, amplifica la confusión. "Don't use AI as a crutch" (MIT Missing Semester).
-- **Ser dueño.** Entender, decidir, discutir, mantener. Si no podés explicar tu sistema sin abrir el código, no sos dueño del sistema.
-- **Nombrar la transición**: con esta sesión termina el tramo de "cómo trabajo bien con esta herramienta". Las próximas dos desarman la máquina: la Sesión 5 abre el harness por adentro y la Sesión 6 cambia el modelo que tiene abajo.
-- **Recordar la demo**: la Sesión 5 abre con **una hora de demos del proyecto**. Se anunció en la Sesión 1 y ésta es la última clase antes. El que quiera mostrar, que venga con el repo listo y sepa qué quiere contar en 5 a 7 minutos. No es una entrega, es voluntario y no se corrige.
-- **Tarea**: mantener los docs vivos durante la semana. Cada decisión nueva va al doc de su feature; anotar cuándo los docs sirvieron y cuándo quedaron desactualizados respecto del código.
-
-## Timing de la sesión (~2 h)
-
-| Bloque | Tiempo |
-|---|---|
-| Recap | 10 min |
-| Qué vamos a ver hoy | 5 min |
-| Dos dominios | 15 min |
-| Documentar lo que ya construiste (plantillas + trabajo) | 30 min |
-| Pausa | 5 min |
-| Documentar la próxima feature e implementarla | 40 min |
-| Cierre | 15 min |
+- **Ensayar la corrida entera una vez** sobre una rama aparte, con el mismo pedido inicial. Sirve para saber dónde se traba y cuánto tarda cada etapa.
+- **Guardar los artefactos del ensayo** (`.scratch/` y la rama). Si la corrida en vivo se cuelga (red, modelo lento, una discusión que se alarga), se sigue desde lo que dejó el ensayo.
+- **Preparar el pedido inicial** del chat, para no improvisarlo frente a la sala.
+- **Deployar kurasu** si se va a usar una encuesta para que la sala responda las preguntas de shape: los logs de los PRs #18 y #19 dejaron el deploy pendiente.
+- **Pantalla**: terminal y canvas con letra grande; nada de `.env*`, `models.json` ni tokens a la vista.
 
 ## Herramientas y recursos referenciados
 
-- Nada nuevo que instalar. Se usan [Plannotator](https://www.npmjs.com/package/@plannotator/pi-extension) (Sesión 2), [`pi-subagents`](https://www.npmjs.com/package/pi-subagents) (Sesión 2) y [context7](https://context7.com/) vía `pi-mcp-adapter` (Sesión 3).
-- [grill-me](https://github.com/mattpocock/skills/blob/main/skills/productivity/grill-me/SKILL.md), el skill de Matt Pocock que entrevista sobre una idea hasta resolver el árbol de decisiones. Opcional para el bloque de 40.
+- **kurasu** (`app/` en este repo, https://kurasu.asermax.com): el proyecto de la parte en vivo y el aula donde la sala sigue el deck.
+- **mahou**: los skills de la parte en vivo (explore, shape, design, write-documentation, program design, implement) y su wiki por proyecto en `.mahou/wiki/`.
+- [`pi-subagents`](https://www.npmjs.com/package/pi-subagents), instalado en la Sesión 3.
+- [grill-me](https://github.com/mattpocock/skills/blob/main/skills/productivity/grill-me/SKILL.md), el skill de Matt Pocock que entrevista sobre una idea hasta resolver el árbol de decisiones. Es una versión liviana de shape para quien quiera probar la interrogación en su proyecto.
 - "Your Brain on ChatGPT: Accumulation of Cognitive Debt when Using an AI Assistant for Essay Writing Task" (MIT Media Lab, 2025), la fuente del término deuda cognitiva. Es un estudio chico y sobre ensayos, no sobre código: usar el término, no sobrevender el paper.
 - MIT Missing Semester 2026, clase de agentic coding: "don't use AI as a crutch", ya citado en la Sesión 1.
 - La charla interna de Filadd "Documentando para entender" (2026-08-14), la fuente del framework de dos dominios. No es material público.
 
 ## Pendientes (para próximas iteraciones)
 
-- **Preparar el ejemplo de dos dominios** (multi-usuario en la lista de tareas) sobre el proyecto demo, con los diagramas y breadboards de los dos lados listos para mostrar.
-- **Probar grill-me en Pi** con el proyecto demo: confirmar que el skill carga y que la interrogación funciona como en Claude Code.
-- **Escribir los dos prompts/skills de la sesión** (los TODO del ejercicio): el de exploración interactiva de la Parte 1 (el agente explora, muestra un borrador y pregunta lo que no puede saber) y el de interrogación de la Parte 2, basado en grill-me.
+- **Hacer el ensayo** de la corrida en vivo y anotar acá dónde se trabó y qué etapa conviene cortar si falta tiempo.
+- **Alinear la Sesión 5**: su bloque de demos todavía hace el recap de la Sesión 4 con la tarea de mantener los docs vivos (`INSTRUCTOR.md` y `slides.md`), y esa tarea ya no existe.

@@ -2,10 +2,10 @@ import type { Session } from "@kurasu/contract/sessions";
 
 import { useAdminMaterials } from "../materials/useAdminMaterials.ts";
 import { useSlidesMaterial } from "../materials/useSlidesMaterial.ts";
-import { useMoveSlide } from "../sessions/useMoveSlide.ts";
 import { PresentButton } from "./PresentButton.tsx";
 import { SlideStage } from "./SlideStage.tsx";
 import { SlideStageSkeleton } from "./SlideStageSkeleton.tsx";
+import { useSlideMoves } from "./useSlideMoves.ts";
 
 interface Props {
   session: Session;
@@ -16,9 +16,8 @@ interface Props {
 export const TeacherSlides = ({ session }: Props) => {
   const materials = useAdminMaterials(session.id);
   const slides = useSlidesMaterial(materials.data);
-  const move = useMoveSlide();
+  const moves = useSlideMoves(session);
 
-  const position = { slide: session.currentSlide, step: session.currentStep };
   const controls = <PresentButton sessionId={session.id} />;
 
   return materials.data == null || (slides != null && slides.html == null) ? (
@@ -26,8 +25,8 @@ export const TeacherSlides = ({ session }: Props) => {
   ) : (
     <SlideStage
       html={slides?.html ?? null}
-      position={position}
-      onNavigate={(next) => move.mutate({ id: session.id, position: next })}
+      position={moves.position}
+      onNavigate={moves.navigate}
       controls={controls}
     />
   );

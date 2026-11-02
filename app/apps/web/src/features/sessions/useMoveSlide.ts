@@ -3,7 +3,6 @@ import type { Position } from "@kurasu/slides/messages";
 import { useQueryClient } from "@tanstack/react-query";
 
 import type { EndpointError, MutationOptions } from "../../api/api-error.ts";
-import { optimisticPatch } from "../../api/optimistic-patch.ts";
 import { queryKeys } from "../../api/query-keys.ts";
 import { useApiMutation } from "../../api/useApiMutation.ts";
 
@@ -12,6 +11,8 @@ export interface SlideMove {
   readonly position: Position;
 }
 
+// A saved move cancels a refetch still on the way, because the refetch could
+// carry an older position than the one just saved.
 export const useMoveSlide = (
   options?: MutationOptions<Session, SlideMove, EndpointError<"adminSessions", "update">>,
 ) => {
@@ -23,19 +24,16 @@ export const useMoveSlide = (
         params: { id: input.id },
         payload: { currentSlide: input.position.slide, currentStep: input.position.step },
       }),
-    optimistic: [
-      optimisticPatch<Session, SlideMove>({
-        key: (input) => queryKeys.adminSession(input.id),
-        patch: (session, input) => ({
-          ...session,
-          currentSlide: input.position.slide,
-          currentStep: input.position.step,
-        }),
-      }),
-    ],
     errorToast: () => "No se pudo mover la slide.",
-    onSuccess: (session, input) =>
-      queryClient.setQueryData(queryKeys.adminSession(input.id), session),
+    onSuccess: async (session, input) => {
+      await queryClient.cancelQueries({
+        queryKey: queryKeys.adminSession(input.id),
+        exact: true,
+      });
+      queryClient.setQueryData(queryKeys.adminSession(input.id), session);
+    },
+    onError: (_error, input) =>
+      queryClient.invalidateQueries({ queryKey: queryKeys.adminSession(input.id), exact: true }),
     options,
   });
 };

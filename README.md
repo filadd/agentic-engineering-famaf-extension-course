@@ -11,7 +11,7 @@ The six run as two blocks. Same cohort throughout — "advanced" describes depth
 1. **The Vibe Coding Experience** — prompt-and-accept workflow, anatomy of a coding agent (tool + harness + LLM), analyze what the AI actually produced
 2. **Planning & Review** — explore, design and document before implementing; review moved earlier; the test pyramid and deciding cases up front; verifying with the agent, against the API and on screen
 3. **Tooling & Skills** — tools and harness deep dive, AGENTS.md in depth, custom skills, MCP, documentation tools
-4. **Context Engineering** — spec-driven development, subagents, agent orchestration (Teams pattern), full workflow integration. **Closes the base arc.**
+4. **Context Engineering** — a live run on a real feature: `AGENTS.md` as an index, problem vs. solution, living documents, subagents in use, and the judgment material (cost, limits, ownership). **Closes the base arc.**
 
 ### Advanced — *what is it made of, and what if I swap its parts?*
 
@@ -27,4 +27,4 @@ COURSE_PROGRAM.md  — full course design document
 
 ## Tool
 
-The course runs on [Pi](https://pi.dev) for all six sessions — terminal-based, minimal, standard `AGENTS.md`. Students install it in session 1, and later sessions add extensions on top of it rather than switching harness: `@plannotator/pi-extension` (file-based plan mode and review) and `pi-subagents` in session 2. The course uses Pi 1, which ships MCP built in, so session 3 installs nothing new. In session 6 the same tool is pointed at an open-weights model served by UNC's HPC center — which is the point of teaching structure instead of a product.
+The course runs on [Pi](https://pi.dev) for all six sessions — terminal-based, minimal, standard `AGENTS.md`. Students install it in session 1, and later sessions add extensions on top of it rather than switching harness: `@plannotator/pi-extension` (file-based plan mode and review) in session 2, and `pi-subagents` in session 3. The course uses Pi 1, which ships MCP built in, so MCP needs no extension. In session 6 the same tool is pointed at an open-weights model served by UNC's HPC center — which is the point of teaching structure instead of a product.

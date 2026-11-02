@@ -78,6 +78,11 @@ sequenceDiagram
 
 El profe mueve la slide desde la pestaña Aula del admin de la sesión (1). Su web le dice a su HTML a qué `slide` y `step` ir (2) y le manda la nueva posición a la API (3), que la guarda en D1, en `current_slide` y `current_step` de la sesión (4) y le avisa al aula (5). El aula avisa a los conectados (6), cada web le pide la posición guardada a la API (7, 8), y la de quien sigue al profe lleva su HTML ahí (9) (ver [tiempo real del aula](tiempo-real-del-aula.md)).
 
+La web del profe guarda una posición por vez. Si el profe sigue moviéndose mientras se guarda una, la web le muestra cada movimiento al instante y se queda solo con la última posición, que manda cuando responde el pedido anterior. Mientras guarda, la web del profe muestra su propia posición y no la que le devuelven la API o los avisos del aula. Cuando termina de guardar, vuelve a mostrar la posición guardada. Los estudiantes y la pestaña de presentar van directo a la última posición, sin pasar por las del medio. Si un pedido falla, aparece un toast y la web vuelve a la posición que tiene guardada la API.
+
+> [!NOTE] Por qué el profe no manda cada movimiento
+> Las respuestas y los avisos llegan con demora. Si la web mandara un pedido por movimiento y tomara cada respuesta, una respuesta vieja la devolvería a una posición anterior mientras el profe sigue avanzando, y el próximo movimiento saldría desde ahí. Guardar de a una posición y quedarse con la última manda menos pedidos y deja la pantalla donde el profe la llevó.
+
 Para presentar, el profe abre las slides en otra pestaña, que muestra la posición actual sin controles. Cuando el profe vuelve a la sesión, sigue desde la misma slide y el mismo paso, porque la entidad `Session` guarda su posición (ver [modelo de datos](modelo-de-datos.md)).
 
 ## 👀 Seguir al profe
