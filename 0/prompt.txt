@@ -1,0 +1,92 @@
+<skill name="explore-with-canvas" location="/home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--explore-with-canvas/SKILL.md">
+References are relative to /home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--explore-with-canvas.
+
+Load mahou:explore first, then mahou:canvas. Then read `.mahou/explore-with-canvas.md` if present.
+
+# Explore with canvas
+
+`explore` keeps its opening, how each question is answered and its decision rules.
+
+The document is `canvas/explore.tldr.json` in the change's scratch folder.
+
+## The canvas
+
+- **The opening** goes in an `area` labelled `Problem`: what the sources ask for, what the user decided that departs from them, and where they contradict each other or the user's direction.
+- **The decision log** is an `area` labelled `Decisions`, next to the problem. Add each decision the user settles as one line, in the order settled, and never move or rebuild the log, so the user can always go back to it.
+- **Lay the answers out freely on the canvas.** Draw related topics close together, and join them with an arrow when the relation needs saying. Give the answer first, then the facts that support it, then the decisions it raises. Write each decision as a violet card titled `❓ <title>`. Keep verified facts apart from what a source asserts.
+- **Draw diagrams with tldraw shapes**, which are easier to change when a later answer changes the diagram.
+- **A prototype, an architecture drawing or a spike result** goes next to the answer it is part of. Draw screens as mockups copied from the prototype, and architecture drawings with `architecture-exploration`'s rules on this same canvas.
+- **A moodboard**, when the user wants to explore the visual design and direction of something: load `references/moodboard.md` and run it on this same canvas.
+
+## Messages from the agent
+
+Everything you would say in the chat goes on the canvas, as an Agent note: a grey dashed rectangle labelled `Agent`, next to the answer or shape the note refers to. Replace the note's text when the message changes instead of adding another note.
+</skill>
+
+vamos a explorar lo que implica poder incluir el sistema de preguntas para que aparezca en la tarjeta de la sesión similar a las encuestas
+
+---
+
+moving forward, use claude sonnet agents when delegating
+
+---
+
+<skill name="fast-track" location="/home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--fast-track/SKILL.md">
+References are relative to /home/agus/.cache/pi-cc-plugins/skills/mahou/9fec6e6d0821/skills--fast-track.
+
+Load mahou:basics first. Then read `.mahou/fast-track.md` if present.
+
+# Fast track
+
+The canvas stage skill keeps its procedure, its records and its ending except where a rule below replaces it. The user turning fast track on is the consent to rules 2 and 3, which replace the confirmation that mahou:basics rule 2 asks for while fast track is on.
+
+## Turning it on
+
+- When the user types it on its own, with or without a stage, fast track holds for every canvas stage skill run later in the session. When the argument names a stage skill, load it next and pass it the rest of the argument.
+- Loaded by a canvas stage skill whose arguments ask for a fast track.
+
+Say in one line that fast track is on.
+
+## What changes
+
+1. **Lay out the whole tree at once.** The first reply draws every branch, or every part of every branch, with its leaves, its prose and the representation the stage proposes for it. Drop the waits the stage skill puts between them: no approval of the opening tree before the branches open, no approval of a branch or part before the next one opens.
+2. **Record what earlier artifacts settled without a confirmation round.** A decision that a file in the change's scratch folder already shows, such as the exploration's decisions, a prototype or `status.md`, becomes a ✓ leaf with its source written on it. A leaf the user corrects goes back to ❔.
+3. **Settle single-answer decisions directly.** When a decision follows from leaves already settled or from how the code works today, it becomes a ✓ leaf marked "follows from <leaf or fact>" instead of a proposal asked for confirmation.
+4. **Ask only the open decisions, all of them at once.** Every question whose prerequisites are settled goes on the canvas in the same round, each in its branch or part. The canvas skills' limit of two open questions does not apply.
+5. **Record each answer as you read it.** Write the reading once in the branch's Agent note, so the user can correct the reading, and apply the correction in place when the user sends it.
+6. **Settle a branch or part when its last question closes.** Relabel its area `settled`, draw its final representation as the stage skill describes, and delete its Agent note. Do not ask the user to approve it.
+
+## What stays
+
+- Anything that acts outside the change's scratch folder waits for the user's approval: switching or deleting a branch, writing to the docs folder, and the recording step.
+- Anything else the stage skill says that a rule above does not replace.
+</skill>
+
+let's continue with the shape
+
+---
+
+# Annotations on pi · last message
+
+## Annotation 1 (line 21)
+Comment on: "**Prototypes index:** add `card-preguntas.html` and `profe-destacada.html`. The open question is whether they replace or sit alongside `inicio-responsive.html`, `admin-sesion.html` and `admin-sesiones.html`."
+> for prototypes that affect existing entries we should update the existing prototypes with the new functionality instead; let's make sure we include that on the corresponding file under .mahou
+
+## Annotation 2 (lines 24–26)
+Looks good: "- the item points to the session; - its name is the session title; - its email line reads `Se abrieron las preguntas de la sesión "<título>".`"
+
+---
+
+sounds good, let's add tht invariant
+
+---
+
+hmm for the prototypes make sure yo double check once done since the glm agenst have no vision and might mess up
+
+---
+
+why are the proto subagenst not showing on the pi ui?
+
+---
+
+have it do the check of the changes
