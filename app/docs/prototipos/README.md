@@ -12,10 +12,10 @@ Esta carpeta guarda los prototipos HTML de las pantallas, que las notas de [arqu
 
 | Prototipo | Pantalla | Lo enlaza |
 |---|---|---|
-| [inicio-responsive.html](inicio-responsive.html) | Inicio del estudiante, con la sesión destacada y su panel de preguntas destacadas, "Otras sesiones" con su camino, y el inicio sin destacada | [Estados de encuestas y sesiones](../architecture/estados-de-encuestas-y-sesiones.md) |
+| [inicio-responsive.html](inicio-responsive.html) | Inicio del estudiante, con la sesión destacada y su panel de preguntas destacadas, "Todas las sesiones" con su camino y la estrella en la destacada, y el inicio sin destacada | [Estados de encuestas y sesiones](../architecture/estados-de-encuestas-y-sesiones.md) |
 | [aula-responsive.html](aula-responsive.html) | Aula del estudiante, con la slide actual y el panel | [Tiempo real del aula](../architecture/tiempo-real-del-aula.md), [API de las slides](../architecture/api-de-las-slides.md) |
 | [registro-responsive.html](registro-responsive.html) | Registro con el código de registro y sus mensajes | [Login y acceso](../architecture/login-y-acceso.md) |
-| [admin-sesiones.html](admin-sesiones.html) | Lista de sesiones del profe, con el chip "Destacada" en la destacada | [Estados de encuestas y sesiones](../architecture/estados-de-encuestas-y-sesiones.md) |
+| [admin-sesiones.html](admin-sesiones.html) | Lista de sesiones del profe, con la estrella de la destacada en el camino | [Estados de encuestas y sesiones](../architecture/estados-de-encuestas-y-sesiones.md) |
 | [admin-sesion.html](admin-sesion.html) | Admin de una sesión, con sus pestañas Contenido, Encuestas y Aula, el switch "Destacada", el modal al habilitar y las confirmaciones al dejar de ser la destacada, el switch "Preguntas destacadas" del aula, y en Contenido las novedades pendientes y el modal del anuncio | [Estados de encuestas y sesiones](../architecture/estados-de-encuestas-y-sesiones.md), [Tiempo real del aula](../architecture/tiempo-real-del-aula.md), [API de las slides](../architecture/api-de-las-slides.md), [Novedades por mail](../architecture/novedades-por-mail.md) |
 | [admin-usuarios.html](admin-usuarios.html) | Usuarios del profe, con el QR y el código de registro | [Login y acceso](../architecture/login-y-acceso.md) |
 | [marca-cuervo.html](marca-cuervo.html) | Marca del cuervo: favicon, título de la pestaña, card de login y registro y header, en celular y escritorio | [Componentes](../architecture/componentes.md) |

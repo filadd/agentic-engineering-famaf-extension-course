@@ -204,7 +204,7 @@ Object.assign(ICONS, {
 const ic = (n, s = 20) => `<span class="i" style="width:${s}px;height:${s}px">${ICONS[n]}</span>`;
 
 const SLIDES = [
-  { title: 'Planificación y revisión', text: 'Sesión 2 de 6' },
+  { title: 'Planificación y revisión' },
   { title: 'El problema del vibe coding', list: ['El agente decide por vos', 'No sabés qué cambió', 'Los errores aparecen tarde'] },
   { title: 'Explorar antes de pedir', text: 'Leer el código y los docs, hacer preguntas, y recién después decidir qué cambiar.' },
   { title: 'Un plan que se pueda revisar', list: ['Pasos chicos', 'Cada paso dice cómo se verifica', 'Lo que queda afuera, escrito'] },
@@ -351,7 +351,6 @@ const content = () => `
   <div class="cols">
   <div class="stack">
     <div class="card">
-      <div class="kicker">Sesión 2 de 6</div>
       <label class="field">Título<input value="Planificación y revisión"></label>
       <label class="field">Resumen<textarea>Antes de escribir código: explorar, planificar y revisar lo que el agente produce.</textarea></label>
       <button class="switch enable" data-enable><span>${v.enabled ? 'Habilitada' : 'Deshabilitada'}</span><span class="knob ${v.enabled ? 'on' : ''}"></span></button>
@@ -526,7 +525,7 @@ const dialog = () => {
       <h3>Habilitar "Planificación y revisión"</h3>
       <p style="margin:10px 0 0">Los estudiantes van a ver la sesión en su inicio.</p>
       <button class="switch mfeat" data-mfeat ${d.busy ? 'disabled' : ''}><span>Destacada</span><span class="knob ${d.feature ? 'on' : ''}"></span></button>
-      ${d.feature && v.other != null ? `<div class="warn">Hoy la destacada es la sesión 3 y deja de serlo: ${effectsList(v.other.polls, v.other.hands, false)}</div>` : ''}
+      ${d.feature && v.other != null ? `<div class="warn">Hoy la destacada es "Tooling y skills" y deja de serlo: ${effectsList(v.other.polls, v.other.hands, false)}</div>` : ''}
       ${err}
       <div class="actions">${dialogActions('dark', 'Habilitar', 'Habilitando…')}</div>
     </div>
@@ -538,7 +537,7 @@ const dialog = () => {
   <div class="scrim" ${scrim}>
     <div class="modal" data-stay>
       <h3>¿Destacar "Planificación y revisión"?</h3>
-      <p style="margin:10px 0 0">La sesión 3 deja de ser la destacada:</p>
+      <p style="margin:10px 0 0">"Tooling y skills" deja de ser la destacada:</p>
       ${effectsList(v.other.polls, v.other.hands, false)}
       ${err}
       <div class="actions">${dialogActions('danger solid', 'Destacar', 'Destacando…')}</div>

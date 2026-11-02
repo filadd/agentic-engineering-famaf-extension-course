@@ -87,7 +87,7 @@
   .node { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-family: 'Rubik', sans-serif; font-weight: 700; flex: none; }
   .node.done { background: var(--active); color: var(--active-ink); }
   .node.live { background: #E8505B; color: #fff; box-shadow: 0 0 0 6px color-mix(in srgb, #E8505B 25%, transparent); }
-  .node.lock { background: var(--locked); color: var(--muted); }
+  .node.lock { background: transparent; border: 2px dashed var(--muted); }
   .node.later { background: var(--locked); }
   .node.add { background: transparent; border: 2px dashed var(--muted); color: var(--muted); }
   .link { width: 4px; flex: 1; min-height: 14px; background: var(--line); border-radius: 2px; }
@@ -125,7 +125,7 @@
 <body>
 <div class="intro">
   <h1>Sesiones del profe</h1>
-  <p>La misma página que ve el estudiante: arriba va la sesión que el profe marcó como destacada, que en el camino es el nodo rojo y lleva el chip "Destacada". Sin sesión destacada no hay card arriba y los estudiantes no entran a ningún aula. Debajo van todas las sesiones en el camino colapsable. El profe ve todas, con su estado, y cada una abre su página de admin. "Nueva sesión" abre un modal y la suma al final, deshabilitada. La card "+ Nueva sesión" cierra el camino. Las sesiones se reordenan arrastrándolas desde el asa. "Usuarios" lleva a la página de usuarios, donde está el QR de registro.</p>
+  <p>La misma página que ve el estudiante: arriba va la sesión que el profe marcó como destacada, que en el camino es el nodo rojo con una estrella. Sin sesión destacada no hay card arriba y los estudiantes no entran a ningún aula. Debajo van todas las sesiones en el camino colapsable; ningún nodo lleva número: check antes de la destacada, vacío después y punteado en las deshabilitadas. El profe ve todas, con su estado, y cada una abre su página de admin. "Nueva sesión" abre un modal y la suma al final, deshabilitada. La card "+ Nueva sesión" cierra el camino. Las sesiones se reordenan arrastrándolas desde el asa. "Usuarios" lleva a la página de usuarios, donde está el QR de registro.</p>
 </div>
 <div id="alts"></div>
 
@@ -136,7 +136,6 @@ Object.assign(ICONS, {
 });
 const ic = (n, s = 20) => `<span class="i" style="width:${s}px;height:${s}px">${ICONS[n]}</span>`;
 
-const featChip = (small) => `<span class="chip feat ${small ? 'sm' : ''}">${ic('star-fill', small ? 11 : 14)} Destacada</span>`;
 
 const BASE = [
   { title: 'La experiencia vibe coding', summary: 'Armamos una app entera pidiéndosela al agente y miramos qué salió bien y qué no.' },
@@ -174,11 +173,11 @@ const nodeOf = (v, i) => {
   const s = v.sessions[i];
 
   if (s.featured) {
-    return `<div class="node live">${i + 1}</div>`;
+    return `<div class="node live">${ic('star-fill', 26)}</div>`;
   }
 
   if (!s.enabled) {
-    return `<div class="node lock">${i + 1}</div>`;
+    return '<div class="node lock"></div>';
   }
 
   const featured = featuredIndex(v);
@@ -205,7 +204,6 @@ const hero = (v) => {
   const s = v.sessions[i];
 
   return `<div class="card hero" style="background:${color(i + 1)}">
-    <div class="kicker">Sesión ${i + 1} de ${v.sessions.length} ${featChip()} ${stateTag(s)}</div>
     <h3>${s.title}</h3>
     <p>${s.summary}</p>
     <div class="foot">${openBtn()}</div>
@@ -217,12 +215,12 @@ const path = (alt, v) => {
     const last = i === v.sessions.length - 1 && alt !== 'B';
     const card = v.open === i
       ? `<div class="card ${s.enabled ? '' : 'locked'}" style="${s.enabled ? `background:${color(i + 1)}` : ''}">
-          <div class="head" data-toggle="${i}"><span class="grip" title="Arrastrar para reordenar">${ic('grip-vertical', 18)}</span><h3>${s.title}</h3>${s.featured ? featChip(true) : ''}${stateTag(s)}</div>
+          <div class="head" data-toggle="${i}"><span class="grip" title="Arrastrar para reordenar">${ic('grip-vertical', 18)}</span><h3>${s.title}</h3>${stateTag(s)}</div>
           <p>${s.summary || 'Sin resumen todavía.'}</p>
           <div class="foot">${openBtn()}</div>
         </div>`
       : `<div class="card closed ${s.enabled ? '' : 'locked'}" style="${s.enabled ? `background:${color(i + 1)}` : ''}">
-          <div class="head" data-toggle="${i}"><span class="grip" title="Arrastrar para reordenar">${ic('grip-vertical', 18)}</span><h3>${s.title}</h3>${s.featured ? featChip(true) : ''}${stateTag(s)}</div>
+          <div class="head" data-toggle="${i}"><span class="grip" title="Arrastrar para reordenar">${ic('grip-vertical', 18)}</span><h3>${s.title}</h3>${stateTag(s)}</div>
         </div>`;
 
     return `<div class="rail">${nodeOf(v, i)}${last ? '' : '<div class="link"></div>'}</div><div class="step ${v.dragOver === i ? 'over' : ''}" draggable="true" data-drag="${i}">${card}</div>`;
