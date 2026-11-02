@@ -10,11 +10,11 @@ interface Props {
 }
 
 export const ActivePolls = ({ polls }: Props) => {
-  const [closedWhileVoting, setClosedWhileVoting] = useState(false);
+  const [closedWhileAnswering, setClosedWhileAnswering] = useState(false);
 
-  return polls.length === 0 && !closedWhileVoting ? null : (
+  return polls.length === 0 && !closedWhileAnswering ? null : (
     <div className="mt-3.5 flex flex-col gap-3">
-      {closedWhileVoting ? (
+      {closedWhileAnswering ? (
         <div role="status" className="paper px-[18px] py-3 text-sm">
           El profe cerró esa encuesta antes de que respondieras.
         </div>
@@ -25,7 +25,7 @@ export const ActivePolls = ({ polls }: Props) => {
           poll={poll}
           meta={pollMeta(poll)}
           showResults={false}
-          body={<VoteForm poll={poll} onClosed={() => setClosedWhileVoting(true)} />}
+          body={<VoteForm poll={poll} onClosed={() => setClosedWhileAnswering(true)} />}
         />
       ))}
     </div>

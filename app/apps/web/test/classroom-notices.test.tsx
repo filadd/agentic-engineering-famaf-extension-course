@@ -85,7 +85,7 @@ describe("/aula notices", () => {
 
     socket.dropAll();
 
-    await waitFor(() => expect(socket.connections()).toBe(2), { timeout: 3000 });
+    await waitFor(() => expect(socket.connections()).toBe(2));
     await waitFor(() =>
       expect(counts(counter)).toMatchObject({
         "/polls": expect.any(Number),

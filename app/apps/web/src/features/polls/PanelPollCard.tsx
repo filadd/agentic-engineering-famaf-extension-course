@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import { PollCard } from "./PollCard.tsx";
 import { pollTypeLabels } from "./poll-labels.ts";
+import { answers } from "./poll-meta.ts";
 import { PollPreview } from "./PollPreview.tsx";
 import { PollStateActions } from "./PollStateActions.tsx";
 import { PollStatusChip } from "./PollStatusChip.tsx";
@@ -10,8 +11,6 @@ import { PollStatusChip } from "./PollStatusChip.tsx";
 interface Props {
   poll: AdminPoll;
 }
-
-const answers = (count: number) => `${count} ${count === 1 ? "respuesta" : "respuestas"}`;
 
 // The classroom panel's card of a poll: it only activates and closes. A draft
 // shows as the students will see it; the rest show their results. Closed
