@@ -5,7 +5,7 @@ import { ConfirmDialog } from "./ConfirmDialog.tsx";
 
 interface Props<A> extends Pick<
   ComponentProps<typeof ConfirmDialog>,
-  "title" | "text" | "confirmLabel" | "pendingLabel"
+  "title" | "text" | "content" | "confirmIcon" | "confirmLabel" | "pendingLabel"
 > {
   renderTrigger: (ask: () => void) => ReactNode;
   onConfirm: () => Promise<A>;

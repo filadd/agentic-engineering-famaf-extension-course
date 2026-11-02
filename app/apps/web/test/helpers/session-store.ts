@@ -48,7 +48,15 @@ export const sessionStore = (initial: ReadonlyArray<Session>) => {
       const change = await readJson(request, SessionChange);
 
       writes.push({ method: "PATCH", body: change });
-      sessions = sessions.map((each) => (each.id === params["id"] ? { ...each, ...change } : each));
+      sessions = sessions.map((each) => {
+        if (each.id === params["id"]) {
+          const changed = { ...each, ...change };
+
+          return change.enabled === false ? { ...changed, featured: false } : changed;
+        }
+
+        return change.featured === true ? { ...each, featured: false } : each;
+      });
 
       return HttpResponse.json(sessions.find((each) => each.id === params["id"]));
     }),

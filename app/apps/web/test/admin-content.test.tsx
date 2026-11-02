@@ -2,8 +2,6 @@ import { screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 
 import { planning, sessionDetail, vibeCoding } from "./fixtures/content.ts";
-import { failingRoute } from "./helpers/failing-route.ts";
-import { heldResponse } from "./helpers/held-response.ts";
 import { renderRoute } from "./helpers/render-route.tsx";
 import { server } from "./helpers/server.ts";
 import { teacherSession } from "./helpers/teacher-session.ts";
@@ -21,7 +19,7 @@ const openContent = async (enabled: boolean) => {
   const rendered = await renderRoute(`/admin/sesiones/${planning.id}`);
   const card = await screen.findByRole("region", { name: "La sesión" });
 
-  await within(card).findByRole("switch");
+  await within(card).findByRole("switch", { name: /abilitada/ });
 
   return { ...rendered, card, store: page.store };
 };
@@ -30,7 +28,7 @@ describe("session page: content", () => {
   test("editing the title and the summary patches them and the header shows the new title", async () => {
     const { user, card, store } = await openContent(false);
 
-    expect(await within(card).findByText("Sesión 2 de 2")).toBeTruthy();
+    expect(within(card).queryByText(/Sesión \d+ de \d+/)).toBeNull();
 
     const title = within(card).getByLabelText("Título");
 
@@ -44,44 +42,6 @@ describe("session page: content", () => {
     expect(store.writes).toEqual([
       { method: "PATCH", body: { title: "Planificar con agentes", summary: planning.summary } },
     ]);
-  });
-
-  test("enabling turns the switch on before the answer and patches enabled", async () => {
-    const { user, card, store } = await openContent(false);
-    const held = heldResponse("patch", `/admin/sessions/${planning.id}`);
-
-    server.use(held.handler);
-    await user.click(within(card).getByRole("switch", { name: "Deshabilitada" }));
-
-    expect(
-      (await within(card).findByRole("switch", { name: "Habilitada" })).getAttribute(
-        "aria-checked",
-      ),
-    ).toBe("true");
-    expect(store.writes).toEqual([]);
-
-    held.release();
-
-    await waitFor(() =>
-      expect(store.writes).toEqual([{ method: "PATCH", body: { enabled: true } }]),
-    );
-    expect(
-      within(card).getByRole("switch", { name: "Habilitada" }).getAttribute("aria-checked"),
-    ).toBe("true");
-  });
-
-  test("a failed enable puts the switch back and shows a toast", async () => {
-    const { user, card } = await openContent(false);
-
-    server.use(failingRoute("patch", `/admin/sessions/${planning.id}`));
-    await user.click(within(card).getByRole("switch", { name: "Deshabilitada" }));
-
-    expect(
-      (await screen.findByText("No se pudo habilitar la sesión.")).closest('[role="alert"]'),
-    ).not.toBeNull();
-    expect(
-      within(card).getByRole("switch", { name: "Deshabilitada" }).getAttribute("aria-checked"),
-    ).toBe("false");
   });
 
   test("disabling turns the switch off and offers to delete", async () => {

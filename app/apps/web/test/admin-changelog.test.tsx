@@ -270,6 +270,7 @@ describe("session page: the changelog list after other actions", () => {
     const counter = countChangelogReads();
 
     await user.click(screen.getByRole("switch", { name: "Deshabilitada" }));
+    await user.click(screen.getByRole("button", { name: "Habilitar" }));
 
     await waitFor(() => expect(counter.count(changelogPath)).toBeGreaterThan(0));
   });
