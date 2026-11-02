@@ -1,0 +1,57 @@
+can you help me get into session 4 status, include checking anything in the vault in ~/workspace/asermax/shin-sekai to make sure there isn't anything out of sync (make sure to pull the latest changes)
+the situation is that i didn't put anything together and my idea was to do more of a show and tell of my process based on what we explored so far in previous sessions
+
+---
+
+let's start with the sync for now, make sure to commit and push the changes on the vault
+
+---
+
+regarding the session, my idea is to do something a bit more live rather than show something I already did
+i was thinking:
+- write a short set of slides with some main concepts: diseño del problem, diseño de la solución, documentación, subagentes, maybe something else?
+- jump in between those and working on a new feature using my mahou skills (e.g. a chat on the classroom of kurasu)
+- answer any questions that come up regarding the process
+
+what do you think, does it fit?
+
+---
+
+let's drop the timing, let's add an initial step of showing the structure of the project with the agents md and the wiki and then we go with the next
+no need ot mention the live portions on the slides, the idea is that it's a companion with concepts only
+write the instructor and slides and let's build the actual slides in html following the same styles as the session 2
+
+---
+
+open it with xdg-open once it's done
+
+---
+
+a couple of adjustments:
+- i like up to slide 6, would drop the invariants tho
+- after that, i was thinking one or two slides talking about the concept of problem and solution, not the actual todo example; the idea is to apply those using the skil for the chat feature, but not mention the feature at all, rather explain what we're looking for when we do an exploration to design the solution
+- for the problem definitions, we can use a single slide doing a general explanation of how you map reality, but explain that many times this is closer to what a produc team does
+- for the solution definition we can go into details about what we define: flows, modeling, states, components, etc
+- drop the templates
+- merge slide 11 into 13, drop the "va" y "no va"
+- drop "lo que viene"
+
+---
+
+drop the "Cuando no hay uno..." in slide 8
+let's drop the plan step in slide 10
+the "hizo lo qu eacordamos" text under should be "Chequeamos contra la documentación de lo que decidimos para validar que se hizo es lo que pedimos"; cambiemos el "Respeta las decisiones..." por "Hubieron cambios durante la implementación?" and explain that the implementation some times find issues that weren't clear during design and we need to cover
+drop the brief slide
+add some spacing under the rail, it's too close to the titles
+
+---
+
+also, did we include the slides API for kurasu?
+
+---
+
+open them again
+
+---
+
+perfect, let's sync the vault, commit and push both there an dhere
