@@ -16,10 +16,10 @@ const teacher = "01HTCH00000000000000000000";
 const ana = "01HSTA00000000000000000000";
 const beto = "01HSTB00000000000000000000";
 
-const toRaise = "01HSA000000000000000000000";
+const notFeatured = "01HSA000000000000000000000";
 const disabled = "01HSB000000000000000000000";
 const twoHands = "01HSC000000000000000000000";
-const toLowerOwn = "01HSD000000000000000000000";
+const featured = "01HSD000000000000000000000";
 const toLowerByTeacher = "01HSE000000000000000000000";
 
 const studentHands = (url: string, sessionId: string) =>
@@ -79,17 +79,17 @@ test(
   Effect.scoped(
     Effect.gen(function* () {
       const { url } = yield* stack;
-      const socket = yield* openClassroom(url, toRaise, yield* cookieFor(teacher));
+      const socket = yield* openClassroom(url, featured, yield* cookieFor(teacher));
       const cookie = yield* cookieFor(ana);
 
       const response = yield* request(url, "POST", "/api/raised-hands", {
         cookie,
-        body: { sessionId: toRaise },
+        body: { sessionId: featured },
       });
 
       expect(response.status).toBe(201);
       expect(yield* bodyOf(RaisedHand, response)).toEqual({
-        sessionId: toRaise,
+        sessionId: featured,
         user: { id: ana, name: "Ana", avatar: "fox" },
       });
 
@@ -106,13 +106,46 @@ test(
 
     const response = yield* request(url, "POST", "/api/raised-hands", {
       cookie,
-      body: { sessionId: toRaise },
+      body: { sessionId: featured },
     });
 
     expect(response.status).toBe(201);
-    expect((yield* studentHands(url, toRaise)).filter((hand) => hand.userId === beto)).toHaveLength(
-      1,
-    );
+    expect(
+      (yield* studentHands(url, featured)).filter((hand) => hand.userId === beto),
+    ).toHaveLength(1);
+  }),
+);
+
+test(
+  "raising the hand in a session that is not the featured one answers SessionNotFound and stores nothing",
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+    const cookie = yield* cookieFor(ana);
+
+    const response = yield* request(url, "POST", "/api/raised-hands", {
+      cookie,
+      body: { sessionId: notFeatured },
+    });
+
+    expect(response.status).toBe(404);
+    expect(failedWith(response, SessionNotFound)).toBe(true);
+    expect(owners(yield* studentHands(url, notFeatured))).toEqual([beto]);
+  }),
+);
+
+test(
+  "lowering the hand in a session that is not the featured one answers SessionNotFound",
+  Effect.gen(function* () {
+    const { url } = yield* stack;
+    const cookie = yield* cookieFor(beto);
+
+    const response = yield* request(url, "DELETE", `/api/raised-hands?sessionId=${notFeatured}`, {
+      cookie,
+    });
+
+    expect(response.status).toBe(404);
+    expect(failedWith(response, SessionNotFound)).toBe(true);
+    expect(owners(yield* studentHands(url, notFeatured))).toEqual([beto]);
   }),
 );
 
@@ -121,15 +154,15 @@ test(
   Effect.scoped(
     Effect.gen(function* () {
       const { url } = yield* stack;
-      const socket = yield* openClassroom(url, toLowerOwn, yield* cookieFor(teacher));
+      const socket = yield* openClassroom(url, featured, yield* cookieFor(teacher));
       const cookie = yield* cookieFor(ana);
 
-      const response = yield* request(url, "DELETE", `/api/raised-hands?sessionId=${toLowerOwn}`, {
+      const response = yield* request(url, "DELETE", `/api/raised-hands?sessionId=${featured}`, {
         cookie,
       });
 
       expect(response.status).toBe(204);
-      expect(owners(yield* studentHands(url, toLowerOwn))).toEqual([beto]);
+      expect(owners(yield* studentHands(url, featured))).toEqual([beto]);
 
       yield* socket.waitFor(isChanged("hands"));
     }),

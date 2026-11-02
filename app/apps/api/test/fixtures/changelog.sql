@@ -3,32 +3,32 @@ INSERT INTO users (id, email, name, avatar, role, has_access) VALUES
   ('01CSTA00000000000000000000', 'ana@novedades.kurasu.test', 'Ana', 'fox', 'student', 1),
   ('01CSTB00000000000000000000', 'beto@novedades.kurasu.test', 'Beto', 'frog', 'student', 1);
 
-INSERT INTO sessions (id, position, title, summary, enabled, deleted_at) VALUES
-  ('01CS0100000000000000000000', 1, 'Para habilitar', 'Resumen', 0, NULL),
-  ('01CS0200000000000000000000', 2, 'Ya habilitada', 'Resumen', 1, NULL),
-  ('01CS0300000000000000000000', 3, 'Para deshabilitar', 'Resumen', 1, NULL),
-  ('01CS0400000000000000000000', 4, 'Sigue deshabilitada', 'Resumen', 0, NULL),
-  ('01CS0500000000000000000000', 5, 'Título nuevo', 'Resumen', 1, NULL),
-  ('01CS0600000000000000000000', 6, 'Para subir material', 'Resumen', 1, NULL),
-  ('01CS0700000000000000000000', 7, 'Deshabilitada con material', 'Resumen', 0, NULL),
-  ('01CS0800000000000000000000', 8, 'Subida inválida', 'Resumen', 1, NULL),
-  ('01CS0900000000000000000000', 9, 'Para borrar material', 'Resumen', 1, NULL),
-  ('01CS1000000000000000000000', 10, 'Material ya anunciado', 'Resumen', 1, NULL),
-  ('01CS1100000000000000000000', 11, 'Para activar', 'Resumen', 1, NULL),
-  ('01CS1200000000000000000000', 12, 'Deshabilitada con borrador', 'Resumen', 0, NULL),
-  ('01CS1300000000000000000000', 13, 'Para cerrar', 'Resumen', 1, NULL),
-  ('01CS1400000000000000000000', 14, 'Cerrar votada', 'Resumen', 1, NULL),
-  ('01CS1500000000000000000000', 15, 'Para editar', 'Resumen', 1, NULL),
-  ('01CS1600000000000000000000', 16, 'Para borrar encuesta', 'Resumen', 1, NULL),
-  ('01CS1700000000000000000000', 17, 'Para borrar borrador', 'Resumen', 1, NULL),
-  ('01CS1800000000000000000000', 18, 'Primer voto', 'Resumen', 1, NULL),
-  ('01CS1900000000000000000000', 19, 'Segundo voto', 'Resumen', 1, NULL),
-  ('01CS2000000000000000000000', 20, 'Con novedades', 'Resumen', 1, NULL),
-  ('01CS2100000000000000000000', 21, 'Otra con novedades', 'Resumen', 1, NULL),
-  ('01CS2200000000000000000000', 22, 'Sin novedades', 'Resumen', 1, NULL),
-  ('01CS2300000000000000000000', 23, 'Muchas novedades', 'Resumen', 1, NULL),
-  ('01CS2400000000000000000000', 24, 'Borrada', 'Resumen', 0, 1790000000000),
-  ('01CS2500000000000000000000', 25, 'Para descartar', 'Resumen', 1, NULL);
+INSERT INTO sessions (id, position, title, summary, enabled, featured, deleted_at) VALUES
+  ('01CS0100000000000000000000', 1, 'Para habilitar', 'Resumen', 0, 0, NULL),
+  ('01CS0200000000000000000000', 2, 'Ya habilitada', 'Resumen', 1, 0, NULL),
+  ('01CS0300000000000000000000', 3, 'Para deshabilitar', 'Resumen', 1, 0, NULL),
+  ('01CS0400000000000000000000', 4, 'Sigue deshabilitada', 'Resumen', 0, 0, NULL),
+  ('01CS0500000000000000000000', 5, 'Título nuevo', 'Resumen', 1, 0, NULL),
+  ('01CS0600000000000000000000', 6, 'Para subir material', 'Resumen', 1, 0, NULL),
+  ('01CS0700000000000000000000', 7, 'Deshabilitada con material', 'Resumen', 0, 0, NULL),
+  ('01CS0800000000000000000000', 8, 'Subida inválida', 'Resumen', 1, 0, NULL),
+  ('01CS0900000000000000000000', 9, 'Para borrar material', 'Resumen', 1, 0, NULL),
+  ('01CS1000000000000000000000', 10, 'Material ya anunciado', 'Resumen', 1, 0, NULL),
+  ('01CS1100000000000000000000', 11, 'Para activar', 'Resumen', 1, 0, NULL),
+  ('01CS1200000000000000000000', 12, 'Deshabilitada con borrador', 'Resumen', 0, 0, NULL),
+  ('01CS1300000000000000000000', 13, 'Para cerrar', 'Resumen', 1, 0, NULL),
+  ('01CS1400000000000000000000', 14, 'Cerrar votada', 'Resumen', 1, 0, NULL),
+  ('01CS1500000000000000000000', 15, 'Para editar', 'Resumen', 1, 0, NULL),
+  ('01CS1600000000000000000000', 16, 'Para borrar encuesta', 'Resumen', 1, 0, NULL),
+  ('01CS1700000000000000000000', 17, 'Para borrar borrador', 'Resumen', 1, 0, NULL),
+  ('01CS1800000000000000000000', 18, 'Primer voto', 'Resumen', 1, 1, NULL),
+  ('01CS1900000000000000000000', 19, 'Segundo voto', 'Resumen', 1, 0, NULL),
+  ('01CS2000000000000000000000', 20, 'Con novedades', 'Resumen', 1, 0, NULL),
+  ('01CS2100000000000000000000', 21, 'Otra con novedades', 'Resumen', 1, 0, NULL),
+  ('01CS2200000000000000000000', 22, 'Sin novedades', 'Resumen', 1, 0, NULL),
+  ('01CS2300000000000000000000', 23, 'Muchas novedades', 'Resumen', 1, 0, NULL),
+  ('01CS2400000000000000000000', 24, 'Borrada', 'Resumen', 0, 0, 1790000000000),
+  ('01CS2500000000000000000000', 25, 'Para descartar', 'Resumen', 1, 0, NULL);
 
 INSERT INTO materials (id, session_id, name, is_slides, size, content_type) VALUES
   ('01CM9100000000000000000000', '01CS0900000000000000000000', 'Apunte A', 0, 10, 'application/pdf'),
@@ -36,7 +36,7 @@ INSERT INTO materials (id, session_id, name, is_slides, size, content_type) VALU
   ('01CM1010000000000000000000', '01CS1000000000000000000000', 'Apunte anunciado', 0, 10, 'application/pdf');
 
 INSERT INTO polls (id, session_id, type, status, prompt) VALUES
-  ('01CP1100000000000000000000', '01CS1100000000000000000000', 'words', 'draft', 'Consigna para activar'),
+  ('01CP1100000000000000000000', '01CS1800000000000000000000', 'words', 'draft', 'Consigna para activar'),
   ('01CP1200000000000000000000', '01CS1200000000000000000000', 'words', 'draft', 'Borrador oculto'),
   ('01CP1300000000000000000000', '01CS1300000000000000000000', 'words', 'active', 'Encuesta para cerrar'),
   ('01CP1400000000000000000000', '01CS1400000000000000000000', 'words', 'active', 'Encuesta votada'),
@@ -44,7 +44,7 @@ INSERT INTO polls (id, session_id, type, status, prompt) VALUES
   ('01CP1600000000000000000000', '01CS1600000000000000000000', 'words', 'active', 'Encuesta para borrar'),
   ('01CP1700000000000000000000', '01CS1700000000000000000000', 'words', 'draft', 'Borrador para borrar'),
   ('01CP1800000000000000000000', '01CS1800000000000000000000', 'words', 'active', 'Encuesta sin votos'),
-  ('01CP1900000000000000000000', '01CS1900000000000000000000', 'words', 'active', 'Encuesta con un voto');
+  ('01CP1900000000000000000000', '01CS1800000000000000000000', 'words', 'active', 'Encuesta con un voto');
 
 INSERT INTO responses (id, poll_id, user_id, value) VALUES
   ('01CR14000000000000000000A0', '01CP1400000000000000000000', '01CSTA00000000000000000000', '{"words":["hola"]}'),
@@ -59,8 +59,10 @@ INSERT INTO changelog_entries (id, session_id, type, entity_id, name, created_at
   ('01CE0700000000000000000000', '01CS0900000000000000000000', 'material-added', '01CM9100000000000000000000', 'Apunte A', 1790000000000),
   ('01CE0800000000000000000000', '01CS0900000000000000000000', 'material-added', '01CM9200000000000000000000', 'Apunte B', 1790000000001),
   ('01CE0900000000000000000000', '01CS1300000000000000000000', 'poll-opened', '01CP1300000000000000000000', 'Encuesta para cerrar', 1790000000000),
+  ('01CE0950000000000000000000', '01CS1400000000000000000000', 'poll-opened', '01CP1400000000000000000000', 'Encuesta votada', 1790000000000),
   ('01CE1000000000000000000000', '01CS1600000000000000000000', 'poll-opened', '01CP1600000000000000000000', 'Encuesta para borrar', 1790000000000),
   ('01CE1100000000000000000000', '01CS1800000000000000000000', 'poll-opened', '01CP1800000000000000000000', 'Encuesta sin votos', 1790000000000),
+  ('01CE1150000000000000000000', '01CS1800000000000000000000', 'poll-opened', '01CP1900000000000000000000', 'Encuesta con un voto', 1790000000001),
   ('01CE1200000000000000000000', '01CS2000000000000000000000', 'poll-opened', '01CP2000000000000000000000', 'Encuesta de la veinte', 1790000002000),
   ('01CE1300000000000000000000', '01CS2000000000000000000000', 'session-enabled', '01CS2000000000000000000000', 'Con novedades', 1790000000000),
   ('01CE1400000000000000000000', '01CS2000000000000000000000', 'material-added', '01CM2000000000000000000000', 'Apunte de la veinte', 1790000001000),

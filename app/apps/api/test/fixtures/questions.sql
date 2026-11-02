@@ -4,11 +4,11 @@ INSERT INTO users (id, email, name, avatar, role, has_access) VALUES
   ('01QSTB00000000000000000000', 'beto@preguntas.kurasu.test', 'Beto', 'panda', 'student', 1),
   ('01QSTC00000000000000000000', 'carla@preguntas.kurasu.test', 'Carla', 'frog', 'student', 1);
 
-INSERT INTO sessions (id, position, title, summary, enabled) VALUES
-  ('01QSA000000000000000000000', 1, 'Sesión 1', 'Resumen', 1),
-  ('01QSB000000000000000000000', 2, 'Sesión 2', 'Resumen', 0),
-  ('01QSC000000000000000000000', 3, 'Sesión 3', 'Resumen', 1),
-  ('01QSD000000000000000000000', 4, 'Sesión 4', 'Resumen', 1);
+INSERT INTO sessions (id, position, title, summary, enabled, featured) VALUES
+  ('01QSA000000000000000000000', 1, 'Sesión 1', 'Resumen', 1, 1),
+  ('01QSB000000000000000000000', 2, 'Sesión 2', 'Resumen', 0, 0),
+  ('01QSC000000000000000000000', 3, 'Sesión 3', 'Resumen', 1, 0),
+  ('01QSD000000000000000000000', 4, 'Sesión 4', 'Resumen', 1, 0);
 
 INSERT INTO questions (id, session_id, author_id, body, answered) VALUES
   ('01QQ1000000000000000000000', '01QSC000000000000000000000', '01QSTA00000000000000000000', '¿La propia?', 0),
