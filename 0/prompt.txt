@@ -1,0 +1,486 @@
+<supervisor-agent>
+You are implementing the "preguntas en la card destacada" change in kurasu (`app/`), in a git worktree on branch `feat/preguntas-en-la-card`. Work with high reasoning effort. Your current directory is that worktree; do not touch the main checkout at /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course except to read the scratch files named below. Do not spawn subagents of your own.
+
+## The change
+
+Read these before touching code (all in your worktree unless absolute):
+- `app/docs/architecture/estados-de-encuestas-y-sesiones.md` (the main note: the featured session as a mark, its rules, the home and admin screens), and the notes it links: `modelo-de-datos.md`, `invariantes.md`, `acceso-a-datos.md`, `tiempo-real-del-aula.md`, `novedades-por-mail.md`, `carga-y-acciones-de-la-web.md`, `feedback-de-sesion.md`.
+- The program design: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/preguntas-en-la-card/program-design/kurasu.md. Its eight branches and the Standards section name every type, function, component and file the change adds or touches, with the decisions Q1–Q3. Follow it. Where it and the notes disagree, the program design wins (its "Cambios a la fuente" section lists those points; the notes were already updated in `d09d518`).
+- The design tree: /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/preguntas-en-la-card/design.md.
+- The prototypes, which settle how the screens look and behave, not how they are coded: `app/docs/prototipos/inicio-responsive.html` (student home), `app/docs/prototipos/admin-sesion.html` (session admin: Destacada switch, enable modal, confirmations, Preguntas destacadas, Activar) and `app/docs/prototipos/admin-sesiones.html` (teacher session list).
+
+Summary. Today the featured session is derived (the last enabled one). It becomes an explicit mark the teacher sets: `sessions.featured` and `sessions.featured_questions` (migration `0004_featured_session`, booleans default false, a partial unique index so at most one session is featured). `SessionSummary` and `SessionChange` gain `featured` and `featuredQuestions`. Only the featured session accepts student writes (voting on a poll, asking, voting and deleting a question, raising and lowering a hand): elsewhere they keep today's 404 (`PollNotFound`/`QuestionNotFound`/`SessionNotFound`), through one `featuredSession` check that replaces `visibleSession` in those writes. Activating a poll or turning on featured questions outside the featured session answers a new `NotFeatured` (409). Featuring a session that would stay disabled answers `SessionDisabled`. When a session stops being featured (because another one is featured, the mark is removed, or it is disabled), its active polls close, its raised hands are lowered and its featured questions turn off, all in one D1 batch with the session change: `Sessions.update` reads the leaving session's active poll ids, then runs `Batch.run([sessions.writes.update(leaving, {featured:false, featuredQuestions:false}), polls.writes.updateWhere(ids, {status: closed}) (omitted when empty), hands.writes.removeWhere({sessionId}), sessions.writes.update(id, change)])`; `Repository.writes` is the deferred version of the write methods (opaque `Write`), built in `repositoryOf` from the `statements` it already has; the new core port `Batch` (`core/src/batch.ts`) has the adapter `D1Batch` (`database/src/batch.ts`), wired in `worker.ts`. The leaving session's classroom gets `session`, `polls` and `hands` notices, and its changelog items are removed. Turning featured questions on creates the new changelog item `questions-opened`; turning them off removes it. The first vote on a poll no longer removes `poll-opened`. `GET /api/classroom` enters the marked session; with no featured session nobody enters. The announcement mail links the featured session to `/` and the others to `/?sesion=<id>` (unchanged), and names "Preguntas abiertas" when they are on.
+
+Web: the student home shows the featured card (`HighlightedSession` → `FeaturedSession`) with active polls of the featured session only and, when featured questions are on, a questions panel (`FeaturedQuestions`: the three most voted plus the student's own, "Mostrar N preguntas más" / "Mostrar menos", reusing `QuestionForm`, `QuestionList` with `emptyText`, `VoteToggle`, `DeleteOwnQuestion`). The list below is always titled "Todas las sesiones" (`EarlierSessions` → `AllSessions`) and includes the featured one, whose node is a star on red; no node shows a number; the featured card in the list shows "Entrar al aula"; `?sesion=<id>` of the featured session opens its card in the list. `railLook` (done/live/later) in `rail-look.ts` is shared by home and admin; `icons.ts` adds "star" (26px in the 44px node, 20px in the 32px mobile node). `/aula` takes the featured session by the mark. Admin of a session: `FeaturedSwitch`, `EnableSessionDialog` (narrow `Sheet`, opened when enabling), confirmations through `ConfirmDialog` (new `content` slot and `confirmIcon`) with `FeaturedEffects` counting active polls and raised hands via `useAdminPolls`/`useAdminRaisedHands`; `ContentTab` gets the featured session once via `useFeaturedSession` (`useAdminSessions({...options, select: findFeatured})`, module-level select) and passes it to `EnabledSwitch` and `FeaturedSwitch`; dialogs name the other featured session by title; "Sesión N de M" goes away (hero and Contenido card); `useUpdateSession` applies no optimistic patch for the waiting changes and invalidates sessions, adminSessions, adminChangelog, allAdminPolls and allAdminRaisedHands; `FeaturedQuestionsSwitch` is instant with a patch. Teacher list: `AdminHighlighted` → `AdminFeatured`, no chip, star on the featured node, disabled = empty dashed node, no numbers; `SessionLinks` prop `highlighted` → `featured`; `FeaturedLabel` is dropped. `PollStateActions` gets `isFeatured` (from the route) and hides Activar outside the featured session.
+
+Out of scope: anything not in the program design; the mail link stays as it is.
+
+## The tasks
+
+They live in Entire trail #3 (https://entire.com/gh/filadd/-/trails/3). Work them in this order:
+1. **La marca en la base y el contrato.** Migration `0004_featured_session` with `featured`, `featured_questions` and the partial unique index. `SessionSummary` and `SessionChange` add `featured` and `featuredQuestions`; errors add `NotFeatured` (409). The changelog adds `questions-opened`, with its label, line and color.
+2. **Batches que cruzan stores.** The core adds the `Write` type and the `Batch` port; `Repository` adds `writes`. `repositoryOf` builds `writes` from its `statements`, `D1Batch` implements the port, `worker.ts` wires it.
+3. **Cambiar la destacada (API).** `Sessions.update` builds the leaving of the featured session as above, removes its changelog items and notifies its classroom. `SessionDisabled` and `NotFeatured` as above. Featured questions on/off create and remove `questions-opened`. `Sessions.featured` reads the mark. Tests in a new `featured.test.ts` with its own fixture.
+4. **La regla de la destacada en las escrituras (API).** `featuredSession` in the student writes; Activar outside the featured session answers `NotFeatured`; the first vote stops removing `poll-opened`. The fixtures of polls, questions, raised-hands, classroom and announcements mark their featured session; the classroom without a featured session goes in its own file.
+5. **Inicio del estudiante (web).** Renames, "Todas las sesiones", `railLook`, `RailNode` `later`, the star, `SessionLinks` `featured`, active polls of the featured session only, `/aula` by the mark, the `sessionSummary` fixture with the two fields.
+6. **Panel de preguntas en la card (web).** `FeaturedQuestions` in the `questions` slot of `FeaturedSession`.
+7. **Admin de una sesión (web).** `FeaturedSwitch`, `EnableSessionDialog`, `FeaturedEffects`, `useFeaturedSession`, `ConfirmDialog` slots, `EnabledSwitch` modal and confirmation, `useUpdateSession` without optimistic patch on waiting changes, no "Sesión N de M".
+8. **Lista de sesiones del profe (web).** `AdminFeatured`, `AdminSessionRail` with `railLook`, star, dashed node for disabled, no numbers.
+9. **Activar y Preguntas destacadas en el aula del profe (web).** `PollStateActions` with `isFeatured`, hiding Activar outside the featured session in the tab and the panel; `FeaturedQuestionsSwitch` above the panel's questions.
+
+Each API test file runs on its own D1, and a D1 holds only one featured session: plan the fixtures accordingly (that is why featuring and "no featured session" get their own files).
+
+## Tracker states
+
+The tracker is the description of Entire trail #3, plain text with one `[ ]` line per task (see `/home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.mahou/implement.md`). There is no in-progress state. When a task is implemented, tested and committed, read the description with `entire trail show 3 --json`, change that task's `[ ]` to `[x]`, and write the whole description back with `entire trail update 3 --body "<full body>"` (it replaces the description entirely; keep the line breaks). Work the trail does not list becomes a new `[ ]` line, worked like the rest; a task that dissolves is struck with a line saying why. Name each in your report. Do not run `entire trail link` or anything that pushes.
+
+## The tests
+
+The rows below are copied from /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/preguntas-en-la-card/test-design/kurasu.md. On `test` rows (including `test + manual`): a `★` row is a new test you write, at the integration level the repository uses (`apps/api/test`, `apps/web/test`), named after what the test proves; an unstarred row whose expected outcome is the one the suite already checks is a regression row, left untouched and still passing; an unstarred row whose expected outcome changed is updated to match it; a test listed under `Deleted:` is removed. Row ids are for the matrix only: no row id, tracker id or scratch path in any test name, comment or docstring. The `manual` part of a row is for later; do not run it, and do nothing for `A45` beyond writing the migration.
+
+## No son raíces
+
+- `featuredSession`, `Batch`, `writes` y `railLook`: corren dentro de `A#1`, `A#2`, `B#1` y `B#5`. La regla `test-location` solo permite tests en `apps/api/test` y `apps/web/test`.
+- La migración `0004_featured_session`: una fila a mano, `A45`; el resto de las filas la da por aplicada.
+
+## Lo que el cambio toca del código compartido
+
+| Cambio compartido | Filas que lo cubren |
+|---|---|
+| `visibleSession` pasa a `featuredSession` en las escrituras del estudiante | A14, A16, A17, A19, A20, A22, A24 |
+| `Sessions.featured` lee la marca | A35, A36, A42, B20 |
+| `Sessions.update` separa la salida de la destacada | A7, A11, A12 |
+| `SessionSummary` suma dos campos | A31, A32, A34 |
+| `Polls.vote` deja de sacar `poll-opened` | A14, A39, A40 |
+| La lista del inicio incluye a la destacada | B4, B6, B7, B8, B10 |
+| `useUpdateSession` pierde el parche al habilitar | B28, B35 |
+| `PollStateActions` recibe isFeatured | B38 |
+
+## Tareas de implementación
+
+- Los fixtures de `polls.sql`, `questions.sql` y `raised-hands.sql` marcan como destacada la sesión donde corren las escrituras que salen bien; los tests que escriben en otra sesión de esos archivos se mueven a la destacada o esperan el 404.
+- Un archivo nuevo de API para el cambio de destacada (`featured.test.ts`), con su fixture, porque destacar cambia la destacada de todo el D1 del archivo.
+- El fixture de la web `sessionSummary` suma `featured` y `featuredQuestions`; cada test que lista sesiones elige su destacada (`vote-card`, `session-links`, `loading`, `home`, `classroom-notices`, los del admin).
+- Un archivo nuevo de API sin destacada (`classroom-unfeatured.test.ts` o similar) para A37.
+
+---
+
+## A `apps/api/`: lo que la web llama
+
+Integración con `alchemy/Test/Vitest` contra el Stack local. Cada archivo tiene su D1 y a lo sumo una destacada en su fixture.
+
+### A#1 `PATCH /api/admin/sessions/:id` · cambiar la destacada y sus preguntas · settled
+
+Dado: { featured?, featuredQuestions?, enabled?, … } con la cookie del profe. Archivo: `apps/api/test/sessions.test.ts (featured.test.ts para la marca)`.
+
+```
+PATCH /api/admin/sessions/:id
+├─ Pedido
+│  ├─ destacar
+│  ├─ sacar la marca
+│  ├─ habilitar destacando
+│  ├─ deshabilitar
+│  ├─ prender o apagar las preguntas destacadas
+│  └─ título, resumen o slide
+├─ Sesión del pedido
+│  ├─ deshabilitada
+│  ├─ habilitada no destacada
+│  └─ la destacada
+└─ Otra destacada
+   ├─ ninguna
+   └─ otra con encuestas activas, manos y preguntas destacadas
+```
+
+| ★ | Fila | Qué hace el test | Pedido | Sesión del pedido | Otra destacada | Esperado | Kind | Setup |
+|---|---|---|---|---|---|---|---|---|
+| ★ | A1 | Destaca una habilitada sin otra destacada | destacar | habilitada no destacada | ninguna | `200` con `featured: true`; las dos listas la traen destacada; no se crea ninguna novedad | test + manual | – |
+| ★ | A2 | Destaca una habilitada cuando otra es la destacada | destacar | habilitada no destacada | otra con encuestas activas, manos y preguntas destacadas | `200`; la otra queda con `featured` y `featuredQuestions` en falso, sus encuestas activas cerradas (el feedback también), sus manos borradas y sus preguntas sin tocar; salen `questions-opened` y el `poll-opened` de cada encuesta cerrada; su aula recibe `session`, `polls` y `hands` | test + manual | otra destacada con dos encuestas activas, una de feedback, dos manos y preguntas destacadas prendidas |
+| ★ | A3 | Habilita destacando cuando otra es la destacada | habilitar destacando | deshabilitada | otra con encuestas activas, manos y preguntas destacadas | `200` habilitada y destacada en un pedido; la otra sale como en A2; queda la novedad `session-enabled` | test + manual | otra destacada |
+| ★ | A4 | Destaca una deshabilitada sin habilitarla | destacar | deshabilitada | ninguna | `409 SessionDisabled`; no cambia nada | test | – |
+| ★ | A5 | Le saca la marca a la destacada | sacar la marca | la destacada | ninguna | `200` sin destacada; sus encuestas activas cerradas, sus manos borradas, sus preguntas destacadas apagadas; su aula recibe `session`; nadie entra a ningún aula | test + manual | la destacada con una encuesta activa y una mano |
+| ★ | A6 | Deshabilita la destacada | deshabilitar | la destacada | ninguna | `200` deshabilitada y sin marca; sale como en A5 y sale `session-enabled` | test | la destacada con una encuesta activa |
+|  | A7 | Deshabilita una que no es la destacada | deshabilitar | habilitada no destacada | otra con encuestas activas, manos y preguntas destacadas | `200`; conserva sus encuestas, sus manos y su posición; la destacada no cambia | test | – |
+| ★ | A8 | Prende las preguntas destacadas de la destacada | prender o apagar las preguntas destacadas | la destacada | ninguna | `200` con `featuredQuestions: true`; queda `questions-opened` con el título de la sesión | test + manual | – |
+| ★ | A9 | Apaga las preguntas destacadas | prender o apagar las preguntas destacadas | la destacada | ninguna | `200`; sale `questions-opened` | test | la destacada con las preguntas prendidas |
+| ★ | A10 | Prende las preguntas destacadas de una no destacada | prender o apagar las preguntas destacadas | habilitada no destacada | otra con encuestas activas, manos y preguntas destacadas | `409 NotFeatured`; no guarda nada ni crea la novedad | test + manual | – |
+|  | A11 | Edita el título y el resumen de la destacada | título, resumen o slide | la destacada | ninguna | `200`; sigue destacada con sus encuestas y manos: el cambio no corre el batch | test | – |
+|  | A12 | Mueve la slide de la destacada | título, resumen o slide | la destacada | ninguna | `200` con la posición nueva; sigue destacada | test | – |
+| ★ | A13 | Destaca la que ya es la destacada | destacar | la destacada | ninguna | `200`; no cierra nada ni avisa: nadie deja de ser la destacada | test | – |
+
+Sin cambios en la suite: crear una sesión, una slide de 0, borrar una deshabilitada y borrar una habilitada (no tocan la marca).
+
+Dropped:
+- `prender las preguntas × deshabilitada`: una deshabilitada nunca es la destacada, así que es el mismo `409` que A10.
+
+### A#2 `Escrituras del estudiante` · la regla de la destacada · settled
+
+Dado: la cookie de un estudiante: PATCH /api/polls/:id, POST /api/questions, PATCH y DELETE /api/questions/:id, POST y DELETE /api/raised-hands. Archivo: `apps/api/test/polls.test.ts, questions.test.ts, raised-hands.test.ts`.
+
+Alcance: Cada archivo tiene una sola destacada en su fixture, la sesión donde corren las escrituras que salen bien; las demás sesiones de escritura pasan a otro archivo o se destacan en su test.
+
+```
+Escrituras del estudiante
+├─ Escritura
+│  ├─ votar una encuesta
+│  ├─ preguntar
+│  ├─ votar una pregunta
+│  ├─ borrar la propia
+│  └─ levantar o bajar la mano
+└─ Sesión
+   ├─ la destacada
+   ├─ habilitada no destacada
+   └─ deshabilitada
+```
+
+| ★ | Fila | Qué hace el test | Escritura | Sesión | Esperado | Kind | Setup |
+|---|---|---|---|---|---|---|---|
+|  | A14 | Vota una encuesta de la destacada | votar una encuesta | la destacada | `200` con el voto; el `poll-opened` sigue pendiente | test + manual | sesión de encuestas destacada en el fixture |
+| ★ | A15 | Vota una encuesta de una sesión no destacada | votar una encuesta | habilitada no destacada | `404 PollNotFound`; no guarda el voto | test | – |
+|  | A16 | Vota una encuesta de una deshabilitada | votar una encuesta | deshabilitada | `404 PollNotFound` | test | – |
+|  | A17 | Pregunta en la destacada | preguntar | la destacada | `201` con la pregunta propia; aviso `questions` | test + manual | sesión de acciones destacada |
+| ★ | A18 | Pregunta en una no destacada | preguntar | habilitada no destacada | `404 SessionNotFound`; no guarda la pregunta | test + manual | – |
+|  | A19 | Pregunta en una deshabilitada | preguntar | deshabilitada | `404 SessionNotFound` | test | – |
+|  | A20 | Vota una pregunta de la destacada | votar una pregunta | la destacada | `200`, un voto más | test | – |
+| ★ | A21 | Vota una pregunta de una no destacada | votar una pregunta | habilitada no destacada | `404 QuestionNotFound` | test | – |
+|  | A22 | Borra la propia en la destacada | borrar la propia | la destacada | `204`; sale con sus votos | test | – |
+| ★ | A23 | Borra la propia en una no destacada | borrar la propia | habilitada no destacada | `404 QuestionNotFound`; la pregunta sigue | test | – |
+|  | A24 | Levanta y baja la mano en la destacada | levantar o bajar la mano | la destacada | `200` y `204`; aviso `hands` | test | sesión de manos destacada |
+| ★ | A25 | Levanta la mano en una no destacada | levantar o bajar la mano | habilitada no destacada | `404 SessionNotFound`; no guarda la mano | test | – |
+| ★ | A26 | Baja la mano en una no destacada | levantar o bajar la mano | habilitada no destacada | `404 SessionNotFound` | test | – |
+
+Sin cambios en la suite: los rechazos propios de cada escritura (encuesta cerrada, valor inválido, pregunta vacía, votar la propia, borrar la ajena): se controlan después de la sesión y no cambian.
+
+Dropped:
+- `votar una pregunta, borrar la propia o la mano × deshabilitada`: pasan por el mismo `featuredSession` que A19 y A16, y ya tenían su test de sesión oculta.
+
+### A#3 `PATCH /api/admin/polls/:id` · activar fuera de la destacada · settled
+
+Dado: { status } con la cookie del profe. Archivo: `apps/api/test/polls.test.ts`.
+
+```
+PATCH /api/admin/polls/:id
+├─ Transición
+│  ├─ activar
+│  ├─ cerrar
+│  └─ editar un borrador
+└─ Sesión
+   ├─ la destacada
+   └─ no destacada
+```
+
+| ★ | Fila | Qué hace el test | Transición | Sesión | Esperado | Kind | Setup |
+|---|---|---|---|---|---|---|---|
+|  | A27 | Activa un borrador de la destacada | activar | la destacada | `200` activa; la ven los alumnos y queda `poll-opened` | test + manual | – |
+| ★ | A28 | Activa un borrador de una no destacada | activar | no destacada | `409 NotFeatured`; sigue en borrador, sin novedad | test + manual | – |
+| ★ | A29 | Cierra una activa de una no destacada | cerrar | no destacada | `200` cerrada: cerrar no pide la destacada | test | – |
+|  | A30 | Edita un borrador de una no destacada | editar un borrador | no destacada | `200` con el contenido nuevo | test | – |
+
+Sin cambios en la suite: crear y borrar encuestas, y los rechazos de transición y contenido (no miran la destacada).
+
+### A#4 `GET /api/sessions y GET /api/admin/sessions` · las listas con la marca · settled
+
+Dado: la cookie de un estudiante o del profe. Archivo: `apps/api/test/sessions.test.ts`.
+
+```
+GET /api/sessions y GET /api/admin/sessions
+├─ Lado
+│  ├─ estudiante
+│  └─ profe
+└─ Estado
+   ├─ con destacada y preguntas prendidas
+   └─ sin destacada
+```
+
+| ★ | Fila | Qué hace el test | Lado | Estado | Esperado | Kind | Setup |
+|---|---|---|---|---|---|---|---|
+|  | A31 | El estudiante lista las habilitadas | estudiante | con destacada y preguntas prendidas | por posición, sin `enabled`; actualizado: cada una con `featured` y `featuredQuestions` | test | – |
+|  | A32 | El profe lista todas | profe | con destacada y preguntas prendidas | con `enabled`; actualizado: con `featured` y `featuredQuestions` | test | – |
+| ★ | A33 | Sin destacada, las dos listas | estudiante | sin destacada | todas con `featured: false`; la última habilitada no se marca sola | test | – |
+|  | A34 | Reordenar no cambia la destacada | profe | con destacada y preguntas prendidas | las dos listas en el orden nuevo y la misma destacada; actualizado: decía que la última habilitada pasa a ser la destacada | test | – |
+
+Sin cambios en la suite: leer una habilitada o deshabilitada, y que el estudiante no lea una deshabilitada.
+
+### A#5 `GET /api/classroom` · entrar al aula · settled
+
+Dado: ?sessionId con la cookie de un estudiante o del profe. Archivo: `apps/api/test/classroom.test.ts`.
+
+Alcance: Sin destacada va en su propio archivo, porque el fixture de `classroom.test.ts` tiene una.
+
+```
+GET /api/classroom
+├─ Quién
+│  ├─ estudiante
+│  └─ profe
+└─ Sesión
+   ├─ la destacada
+   ├─ habilitada no destacada
+   └─ sin destacada
+```
+
+| ★ | Fila | Qué hace el test | Quién | Sesión | Esperado | Kind | Setup |
+|---|---|---|---|---|---|---|---|
+|  | A35 | Un estudiante entra a la destacada | estudiante | la destacada | `101` y se oye presente; actualizado: la destacada es la marcada, no la última | test + manual | sesión marcada en el fixture |
+|  | A36 | Un estudiante no entra a una no destacada | estudiante | habilitada no destacada | `404`; actualizado: la sesión es posterior a la destacada, no anterior | test | una habilitada después de la destacada |
+| ★ | A37 | Sin destacada nadie entra | estudiante | sin destacada | `404` en cualquier habilitada | test | – |
+|  | A38 | El profe entra a una no destacada | profe | habilitada no destacada | `101` | test | – |
+
+Sin cambios en la suite: deshabilitada, borrada, sin cookie y la presencia (no cambian).
+
+### A#6 `Novedades` · lo que crea y saca cada cambio · settled
+
+Dado: las escrituras que tocan novedades. Archivo: `apps/api/test/changelog.test.ts`.
+
+```
+Novedades
+└─ Cambio
+   ├─ primer voto
+   ├─ cerrar
+   └─ destacar
+```
+
+| ★ | Fila | Qué hace el test | Cambio | Esperado | Kind | Setup |
+|---|---|---|---|---|---|---|
+|  | A39 | El primer voto no saca la novedad | primer voto | `poll-opened` sigue pendiente; actualizado: decía que la saca | test | encuesta activa en una sesión destacada |
+|  | A40 | Cerrar saca la novedad | cerrar | sale `poll-opened`; actualizado: ya no cierra una cuya novedad salió con el primer voto | test | – |
+| ★ | A41 | Destacar no crea novedad | destacar | la lista de la sesión no cambia | test | – |
+
+Sin cambios en la suite: habilitar, deshabilitar, subir y borrar material, activar, editar, borrar, listar y descartar.
+
+Deleted:
+- "a later vote on a poll answers 200 and records nothing": sin el primer voto que saca la novedad, ya no hay caso posterior que distinguir; A39 lo cubre.
+
+### A#7 `POST /api/admin/announcements` · el link del mail · settled
+
+Dado: { sessionId, message, entryIds } con la cookie del profe. Archivo: `apps/api/test/announcements.test.ts`.
+
+```
+POST /api/admin/announcements
+└─ Sesión
+   ├─ la destacada
+   └─ otra habilitada
+```
+
+| ★ | Fila | Qué hace el test | Sesión | Esperado | Kind | Setup |
+|---|---|---|---|---|---|---|
+|  | A42 | El anuncio de la destacada lleva a la home | la destacada | el link es la home sin parámetro; actualizado: la destacada es la marcada en el fixture, no la última | test | sesión marcada |
+|  | A43 | El anuncio de otra lleva a ?sesion=<id> | otra habilitada | el link lleva `?sesion=<id>` | test | – |
+| ★ | A44 | El mail de Preguntas abiertas | la destacada | una línea `Se abrieron las preguntas de la sesión "<título>".` | test | novedad `questions-opened` pendiente |
+
+Sin cambios en la suite: el resto del cuerpo, los envíos fallidos y los límites.
+
+### A#8 `Migración 0004_featured_session` · una fila a mano · settled
+
+Dado: la base local con datos. Archivo: `a mano`.
+
+```
+Migración 0004_featured_session
+```
+
+| ★ | Fila | Qué hace el test | Esperado | Kind | Setup |
+|---|---|---|---|---|---|
+| ★ | A45 | Aplica la migración sobre la base local con sesiones | las columnas `featured` y `featured_questions` en falso en todas; el índice rechaza un segundo `featured = 1` | manual | – |
+
+---
+
+## B `apps/web/`: lo que la persona usa
+
+Pantallas con el router real y la API respondida por MSW.
+
+### B#1 `/ · inicio del estudiante` · la card destacada y Todas las sesiones · settled
+
+Dado: un estudiante con sesiones habilitadas. Archivo: `apps/web/test/home.test.tsx`.
+
+```
+/ · inicio del estudiante
+├─ Destacada
+│  ├─ una destacada
+│  └─ ninguna
+├─ Lista
+│  ├─ habilitadas antes
+│  ├─ habilitadas después
+│  └─ solo la destacada
+└─ Link
+   ├─ sin ?sesion
+   ├─ ?sesion de otra
+   ├─ ?sesion de la destacada
+   └─ ?sesion desconocido
+```
+
+| ★ | Fila | Qué hace el test | Destacada | Lista | Link | Esperado | Kind | Setup |
+|---|---|---|---|---|---|---|---|---|
+|  | B1 | Sin sesiones habilitadas | ninguna | solo la destacada | sin ?sesion | "Todavía no hay sesiones habilitadas…", sin lista ni aula | test | – |
+| ★ | B2 | Una destacada con anteriores y posteriores | una destacada | habilitadas antes | sin ?sesion | la card destacada arriba; "Todas las sesiones" con todas en el orden del profe: check antes, estrella en la destacada, vacío después; ningún número | test + manual | tres habilitadas, la del medio destacada |
+| ★ | B3 | La destacada en la lista, desplegada | una destacada | habilitadas después | sin ?sesion | "Entrar al aula" y su modal de preguntas deja preguntar; las demás cards no tienen "Entrar al aula" | test | – |
+|  | B4 | Una sola, destacada | una destacada | solo la destacada | sin ?sesion | la card arriba y la lista con esa sola; actualizado: la lista existe aunque haya una | test | – |
+| ★ | B5 | Sin destacada | ninguna | habilitadas antes | sin ?sesion | sin card de arriba; la lista sin check ni estrella; ninguna card tiene "Entrar al aula" | test + manual | – |
+|  | B6 | ?sesion de otra la despliega y la centra | una destacada | habilitadas antes | ?sesion de otra | solo esa card abierta, centrada | test | – |
+|  | B7 | ?sesion de la destacada | una destacada | habilitadas antes | ?sesion de la destacada | despliega su card en la lista; actualizado: antes no abría nada | test | – |
+|  | B8 | ?sesion desconocido | una destacada | habilitadas antes | ?sesion desconocido | no abre nada y no muestra error | test | – |
+| ★ | B9 | Las encuestas activas son las de la destacada | una destacada | habilitadas antes | sin ?sesion | pide `GET /polls?sessionId=<destacada>&status=active` y muestra solo esas | test | – |
+|  | B10 | A los cinco minutos vuelve a pedir | una destacada | habilitadas antes | sin ?sesion | las sesiones y las encuestas de la destacada | test | – |
+
+Sin cambios en la suite: el caret, abrir una card a la vez y las encuestas de la card (mismo componente).
+
+### B#2 `/ · panel de preguntas de la card` · preguntar desde el inicio · settled
+
+Dado: la destacada con featuredQuestions. Archivo: `apps/web/test/home-questions.test.tsx`.
+
+```
+/ · panel de preguntas de la card
+├─ Preguntas
+│  ├─ ninguna
+│  ├─ tres o menos
+│  └─ más de tres, una propia abajo
+├─ Acción
+│  ├─ ver
+│  ├─ desplegar y plegar
+│  ├─ preguntar
+│  ├─ votar
+│  └─ borrar la propia
+└─ API
+   ├─ acepta
+   └─ falla
+```
+
+| ★ | Fila | Qué hace el test | Preguntas | Acción | API | Esperado | Kind | Setup |
+|---|---|---|---|---|---|---|---|---|
+| ★ | B11 | El panel no aparece con las preguntas apagadas | tres o menos | ver | acepta | la card como hoy; el link Preguntas sigue | test | – |
+| ★ | B12 | Sin preguntas | ninguna | ver | acepta | el campo y "Todavía no hay preguntas. Hacé la primera." | test + manual | – |
+| ★ | B13 | Más de tres preguntas | más de tres, una propia abajo | ver | acepta | las tres más votadas y la propia, en orden de votos; "Mostrar 2 preguntas más" | test + manual | – |
+| ★ | B14 | Despliega y pliega | más de tres, una propia abajo | desplegar y plegar | acepta | todas dentro de la card; "Mostrar menos" vuelve a plegar | test | – |
+| ★ | B15 | Pregunta desde la card | tres o menos | preguntar | acepta | `POST /questions`; aparece como propia y la lista se vuelve a pedir | test + manual | – |
+| ★ | B16 | La pregunta falla | tres o menos | preguntar | falla | el texto queda escrito con el error debajo del campo | test | – |
+| ★ | B17 | Vota y saca el voto | tres o menos | votar | acepta | el voto se marca antes de la respuesta; reordena por votos | test | – |
+| ★ | B18 | El voto falla | tres o menos | votar | falla | vuelve atrás y aparece un toast | test | – |
+| ★ | B19 | Borra la propia | más de tres, una propia abajo | borrar la propia | acepta | pide confirmación y la saca | test | – |
+
+Dropped:
+- `borrar × falla`: el error de la confirmación es el de `ConfirmAction`, que ya cubre el modal.
+
+### B#3 `/aula` · entrar y salir de la destacada · settled
+
+Dado: un estudiante. Archivo: `apps/web/test/classroom-notices.test.tsx`.
+
+```
+/aula
+└─ Destacada
+   ├─ sigue siendo la misma
+   ├─ deja de serlo
+   └─ no hay
+```
+
+| ★ | Fila | Qué hace el test | Destacada | Esperado | Kind | Setup |
+|---|---|---|---|---|---|---|
+|  | B20 | Entra a la sesión marcada | sigue siendo la misma | abre el aula de la sesión con `featured`, no la última | test | – |
+|  | B21 | Deja de ser la destacada | deja de serlo | el aviso `session` vuelve a pedir la lista y lo lleva al inicio | test + manual | – |
+| ★ | B22 | Sin destacada | no hay | va al inicio | test | – |
+
+Sin cambios en la suite: los avisos de encuestas y slide, el corte y un mensaje que no decodifica.
+
+### B#4 `/admin/sesiones/$id · Contenido` · Destacada, modal y confirmaciones · settled
+
+Dado: el profe en una sesión. Archivo: `apps/web/test/admin-featured.test.tsx`.
+
+```
+/admin/sesiones/$id · Contenido
+├─ Acción
+│  ├─ habilitar
+│  ├─ deshabilitar
+│  ├─ destacar
+│  └─ sacar la marca
+├─ Sesión
+│  ├─ deshabilitada
+│  ├─ no destacada
+│  └─ la destacada
+├─ Otra destacada
+│  ├─ ninguna
+│  └─ otra
+└─ API
+   ├─ acepta
+   ├─ espera
+   └─ falla
+```
+
+| ★ | Fila | Qué hace el test | Acción | Sesión | Otra destacada | API | Esperado | Kind | Setup |
+|---|---|---|---|---|---|---|---|---|---|
+| ★ | B23 | Habilitar abre el modal con Destacada prendido | habilitar | deshabilitada | ninguna | acepta | el modal sin aviso; Habilitar manda `enabled` y `featured` | test + manual | – |
+| ★ | B24 | Habilitar con otra destacada | habilitar | deshabilitada | otra | acepta | el aviso con el título de la otra y cuántas encuestas cierran y manos bajan | test + manual | la otra con una encuesta activa y una mano |
+| ★ | B25 | Habilitar apagando Destacada | habilitar | deshabilitada | otra | acepta | el aviso desaparece; manda solo `enabled` | test | – |
+| ★ | B26 | Habilitar espera | habilitar | deshabilitada | ninguna | espera | "Habilitando…"; Cancelar deshabilitado; ni Escape ni un click afuera cierran | test | – |
+| ★ | B27 | Habilitar falla | habilitar | deshabilitada | ninguna | falla | "No se pudo guardar el cambio. Probá de nuevo." dentro del modal, que sigue abierto | test | – |
+|  | B28 | Deshabilitar una no destacada | deshabilitar | no destacada | otra | acepta | el switch se apaga antes de la respuesta, sin diálogo | test | – |
+| ★ | B29 | Deshabilitar la destacada | deshabilitar | la destacada | ninguna | acepta | la confirmación con los efectos; al confirmar manda `enabled: false` | test + manual | – |
+| ★ | B30 | Destacar sin otra destacada | destacar | no destacada | ninguna | acepta | sin diálogo; el switch espera la respuesta | test | – |
+| ★ | B31 | Destacar con otra destacada | destacar | no destacada | otra | acepta | "¿Destacar …?" con "<título> deja de ser la destacada:" y los efectos | test + manual | – |
+| ★ | B32 | Sacar la marca | sacar la marca | la destacada | ninguna | acepta | la confirmación con "Se apaga el modo de preguntas destacadas." si estaba prendido | test | – |
+| ★ | B33 | Una confirmación falla | destacar | no destacada | otra | falla | el error dentro del diálogo, sin toast | test + manual | – |
+| ★ | B34 | Destacada con la sesión deshabilitada | destacar | deshabilitada | ninguna | acepta | el switch deshabilitado y "Habilitá la sesión para poder destacarla." | test | – |
+|  | B35 | La card no lleva "Sesión N de M" | habilitar | no destacada | ninguna | acepta | actualizado: el test de edición buscaba "Sesión 2 de 2" | test | – |
+
+Sin cambios en la suite: editar título y resumen, borrar y cancelar el borrado.
+
+Dropped:
+- `deshabilitar × deshabilitada` y `sacar la marca × no destacada`: el switch no ofrece esas acciones.
+
+Deleted:
+- "enabling turns the switch on before the answer and patches enabled" y "a failed enable puts the switch back and shows a toast": habilitar abre el modal y espera; B23 y B27 los reemplazan.
+
+### B#5 `/admin · lista de sesiones` · la estrella y sin números · settled
+
+Dado: el profe. Archivo: `apps/web/test/admin-sessions.test.tsx`.
+
+```
+/admin · lista de sesiones
+└─ Destacada
+   ├─ una
+   └─ ninguna
+```
+
+| ★ | Fila | Qué hace el test | Destacada | Esperado | Kind | Setup |
+|---|---|---|---|---|---|---|
+|  | B36 | La lista con destacada | una | la card de arriba con título, resumen y Abrir; el camino con check, estrella y vacío, punteado en las deshabilitadas; ningún número ni chip; actualizado: buscaba "Sesión 3" con su número | test + manual | – |
+| ★ | B37 | Sin destacada | ninguna | "Ninguna sesión destacada: los estudiantes no entran a ningún aula." y el camino sin check | test | – |
+
+Sin cambios en la suite: crear, reordenar, abrir y Usuarios.
+
+### B#6 `/admin/sesiones/$id · Encuestas y Aula` · Activar y Preguntas destacadas · settled
+
+Dado: el profe en una sesión. Archivo: `apps/web/test/admin-polls.test.tsx y admin-classroom.test.tsx`.
+
+```
+/admin/sesiones/$id · Encuestas y Aula
+├─ Lugar
+│  ├─ pestaña Encuestas
+│  └─ panel del aula
+└─ Sesión
+   ├─ la destacada
+   └─ no destacada
+```
+
+| ★ | Fila | Qué hace el test | Lugar | Sesión | Esperado | Kind | Setup |
+|---|---|---|---|---|---|---|---|
+|  | B38 | Un borrador de la destacada tiene Activar | pestaña Encuestas | la destacada | Activar como siempre | test | – |
+| ★ | B39 | Un borrador de una no destacada | pestaña Encuestas | no destacada | sin Activar; "Solo se activan encuestas en la sesión destacada." debajo del último borrador | test + manual | – |
+| ★ | B40 | El panel de una no destacada | panel del aula | no destacada | sin Activar y con la misma línea | test | – |
+| ★ | B41 | El switch Preguntas destacadas en la destacada | panel del aula | la destacada | prende al instante, con "Las preguntas aparecen en la card destacada del inicio."; manda `featuredQuestions` | test + manual | – |
+| ★ | B42 | El switch en una no destacada | panel del aula | no destacada | deshabilitado, con "Solo la sesión destacada puede mostrar sus preguntas en el inicio." | test | – |
+| ★ | B43 | El switch falla | panel del aula | la destacada | vuelve atrás y aparece un toast | test | – |
+
+Sin cambios en la suite: crear, editar, cerrar y borrar encuestas, y las preguntas del panel.
+
+## Repository rules
+
+- You are already in the worktree on `feat/preguntas-en-la-card`, created from local `main` (`d09d518`). Do not fetch, pull, rebase or switch branches. If the tree is dirty when you start, stop and ask.
+- If `app/node_modules` is missing, run `pnpm install --frozen-lockfile` in `app/`. `app/.env.local` is not in the worktree (it holds secrets and was not copied); development defaults come from `app/.env.schema`. If a check or test fails because an env value is missing, stop and ask instead of creating the file.
+- Follow `app/AGENTS.md`, the user's style file `/home/agus/.pi/agent/AGENTS.md`, and the local wiki entries at /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.mahou/wiki/: `architecture.md`, `api.md`, `web.md`, `fence.md`, `alchemy/local-tests.md`, `alchemy/local-dev.md`, `browser/websocket-upgrade.md` when you touch the classroom socket, plus the global wiki entry `/home/agus/workspace/asermax/claude-plugins/mahou/skills/wiki/references/naming/booleans.md` (booleans start with `is`). Where a wiki entry defines a component or library for what you build (the shared `Sheet`, `ConfirmDialog`, the shared button and pills, `PollCard` slots, the API hooks), use it instead of a custom equivalent.
+- Keep changes minimal and consistent with the surrounding code. When the change alters how a part works beyond what the notes say, record it in `app/docs/architecture/` as `app/AGENTS.md` says.
+- Run `pnpm run check` and `pnpm test` in `app/`; everything must pass. The API suite takes about a minute. `classroom-slides.test.tsx` has failed once under load and passed on rerun (see the `fence` wiki entry); rerun before treating such a failure as yours.
+- Commit on the branch through the mahou:commit-changes skill, and commit the groups it proposes without asking the user to confirm them. Use conventional commits. Do not push and do not open a pull request. Do not touch other repositories or the main checkout.
+- Avoid `rm -rf` when another way works (`rm -r` on a named path, or leave temporary files in `/tmp`). List in your report every file outside the worktree and every process you leave behind.
+
+## How to answer
+
+A design ambiguity that changes the outcome is a question back to the supervisor, not a guess: end your turn with the question. Apply a decision the user made exactly as decided; if you think another fix fits better, ask instead of applying your own.
+
+Your final message is your report, and only that message is read. It has: the branch, the commits (hash and message), a summary per task, the row-to-test mapping (row id → test file and test name, and for regression rows whether they were left untouched or updated), the tail of the `pnpm run check` and `pnpm test` output, the trail updates you made, what you left outside the worktree, and what you could not resolve. Do not send a shorter message after the report. Every later instruction to you repeats this.
+</supervisor-agent>
