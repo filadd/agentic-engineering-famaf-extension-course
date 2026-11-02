@@ -3,7 +3,7 @@
   "checkpoint_id": "01M6D7PSSRZKVE968M97MCF36R",
   "strategy": "manual-commit",
   "branch": "main",
-  "checkpoints_count": 3,
+  "checkpoints_count": 4,
   "files_touched": [
     ".mahou/wiki/alchemy/local-dev.md",
     ".mahou/wiki/alchemy/local-tests.md",
@@ -39,14 +39,21 @@
       "compact_transcript": "/1/transcript.jsonl",
       "content_hash": "/1/content_hash.txt",
       "prompt": "/1/prompt.txt"
+    },
+    {
+      "metadata": "/2/metadata.json",
+      "transcript": "/2/full.jsonl",
+      "compact_transcript": "/2/transcript.jsonl",
+      "content_hash": "/2/content_hash.txt",
+      "prompt": "/2/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 126,
-    "cache_creation_tokens": 163630,
-    "cache_read_tokens": 13216193,
-    "output_tokens": 24474,
-    "api_call_count": 61
+    "input_tokens": 132,
+    "cache_creation_tokens": 197292,
+    "cache_read_tokens": 13348052,
+    "output_tokens": 27823,
+    "api_call_count": 64
   },
   "redaction": {
     "replacements": 20,

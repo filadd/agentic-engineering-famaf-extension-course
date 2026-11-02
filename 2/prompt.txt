@@ -1,0 +1,81 @@
+<supervisor-agent>
+No lances subagentes: hacé todo vos.
+
+You are doing an editing pass. Read /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/preguntas-en-la-card/unslop-pd.txt. Do not edit anything.
+Do not read anything else.
+
+The file holds the lines a documentation change adds, in Spanish, one paragraph or table row per line. Some lines are markdown callouts ("> [!NOTE] …") or table rows; judge only the prose.
+
+Apply ONLY the rules below. Read every sentence, and at each one ask what the
+reader does differently because of it. Flag the sentence when the answer is
+nothing, when it is the answer an earlier sentence already gave, or when it
+breaks one of the rules. Report only what one of these rules covers.
+
+RULES:
+
+Rule numbers are stable ids that other skills cite. A removed rule leaves a gap.
+
+### Content
+
+3. **Superficial -ing phrases.** "highlighting...", "ensuring...", "reflecting...", "showcasing...", "fostering...". Delete or expand with real sources.
+5. **Vague attributions.** "Experts believe", "Industry reports suggest", "Some critics argue". Name the source or delete.
+
+### Language
+
+7. **AI vocabulary.** Additionally, crucial, delve, enduring, enhance, fostering, garner, interplay, intricate, landscape (abstract), pivotal, showcase, tapestry (abstract), testament, underscore, vibrant. Replace with plain words.
+8. **Fancy ways to say "is".** "serves as", "stands as", "boasts", "features". Say "is" or "has".
+9. **"Not just X, but Y."** State the point directly instead.
+10. **Rule of three.** Don't force ideas into groups of three. Use the natural number.
+11. **Synonym cycling.** Protagonist, main character, central figure, hero all in one paragraph. Pick one, repeat it.
+12. **False ranges.** "from X to Y" where X and Y aren't on a meaningful scale. List topics directly.
+
+### Style
+
+13. **Em dash overuse.** Avoid em dashes entirely. Use periods or commas only (no parentheses, no en dashes, no hyphen-as-dash substitutes). If a thought needs separation, end the sentence or use a comma.
+14. **Colon overuse.** Colons are fine before a list or example, not as mid-sentence connectors. "If you're coming from traditional automation: instead of registering event handlers, you describe conditions" adds nothing with the colon. Rewrite to let the point stand on its own without comparison framing. "Describing when the scheduler should fire works best as plain English." Same meaning, no crutch punctuation.
+15. **Boldface overuse.** Don't bold every proper noun or acronym.
+16. **Inline-header lists.** The tell is a bold label and colon that restates the line: "**Performance:** Performance improved...". Convert those to prose. A bold lead-in that ends in a period, names the item, and is followed by genuinely new detail ("**Schema in TypeScript.** Tables live in one file.") is fine, not a tell. A lead-in written as a slogan, a whole claim stated as a motto ("**Shapes say what a thing is.**", "**Nothing overlaps.**"), does not name the item and falls outside that exemption. Make the lead-in the plain instruction itself: "**Draw each kind of part with its own shape.**"
+17. **Title case headings.** Use sentence case.
+18. **Decorative emojis.** Remove from headings and bullets.
+19. **Curly quotes.** Use straight quotes.
+
+### Communication artifacts
+
+20. **Chatbot phrases.** "I hope this helps!", "Let me know if...", "Of course!", "Certainly!", "Found the smoking gun!" Remove.
+22. **Sycophantic tone.** "Great question! You're absolutely right!" Respond directly.
+
+### Filler
+
+23. **Filler phrases.** "In order to" becomes "To". "Due to the fact that" becomes "Because". Delete "It is important to note that".
+24. **Excessive hedging.** "could potentially possibly be argued that it might" becomes "may".
+25. **Generic conclusions.** "The future looks bright." State specific plans or facts.
+
+### Jargon
+
+26. **Abstract metaphor nouns.** Substrate (base), wedge, wedge in (add), vector (way, method), locus, vantage, nexus, primitive as a noun, harness as a metaphor, surface as in "API surface", bedrock, scaffolding as a metaphor, modality, paradigm, gold-plating (more than the job needs), ratchet as a metaphor (the mechanism's real name, or a limit that only tightens), evacuate for moving code (move out), endgame (the last phase), north star, flywheel. These read as technical but usually have a plainer concrete word. Pick the concrete word.
+
+### Plain speech
+
+27. **Say what it does, not how it feels.** "the database stays close at hand", "SQL you can read", "types that follow your schema" name a feeling. The fix names the mechanism or a number: "`.toSQL()` returns the exact string sent to the database", "a column rename fails the build". Ask what the sentence tells the reader to do or know, then write that. If you can't restate it as a concrete instruction, fact, or number, cut it. One more check: if the sentence could appear unchanged in another project's docs, it says nothing about this one. Cut it.
+28. **Shorten or split dense sentences.** If the reader has to backtrack to parse a sentence, break it in two or drop clauses. One idea per sentence.
+29. **Active voice.** Prefer it. Catch "is/are/was/were + past participle" and name the actor: "queries are validated" becomes "the compiler validates queries", "the file is parsed by the loader" becomes "the loader parses the file". Passive is fine only when the actor is unknown or genuinely doesn't matter.
+30. **Cut adverbs, or use a stronger verb.** "runs quickly" becomes "is fast" or the number, and "significantly improves" becomes the measured delta. An adverb propping up a weak verb means the verb is wrong.
+31. **Prefer the plain word.** "utilize" and "leverage" become "use", "facilitate" becomes "help", "numerous" becomes "many", "in the event that" becomes "if". The fancier synonym is rarely clearer.
+32. **Mannered prose.** Metaphor or flourish where a literal phrase exists: aphorisms ("wire it or delete it"), rhetorical fragments for effect, personified code ("the plan holds it"), artifacts that talk, figurative verbs ("rides along", "stands on"), stock framing phrases. "A dial worth turning" becomes "a parameter worth varying". Say what you mean. An artifact talks when a shape, label, arrow, name, type or test "says", "shows" or "tells" something to state a rule: "shapes say what a thing is" becomes "draw each module as a rectangle and each store as a cylinder". A sentence that reports what an artifact really produced ("the test shows the bug") stays. Rule 26 covers the metaphor nouns.
+33. **Over-compression.** Dropped articles, verbless fragments, symbol-speak, and abbreviations that make the reader decode instead of read. "Parser rejects bad date → exit 2, no write" becomes "The parser rejects a bad date, exits with code 2, and writes nothing." Write whole sentences with their articles and verbs, and spell out arrows and abbreviations.
+34. **Describing the message instead of writing it.** Some words refer to the subject. Others refer to the text itself: how many parts it has, what order they come in, that something is about to arrive, that you are about to say it. The second kind carries no information, because the thing being announced arrives in the very next words anyway. Delete it. Then confirm the deletion by checking that every fact survived. These spans sit anywhere in a sentence, not only in front of a colon. At the front: "Two things to take into account:" and "One thing worth doing now:" and "Processing X, the next step is:". Mid-sentence: "the config is fine, but there is one thing worth flagging here". Inside a clause: "I should mention that the build fails on ARM" becomes "the build fails on ARM". Trailing: "which brings us to the next point" just goes. A whole sentence can be this kind too, when its subject is the text or a part of it ("this document", "this section", "the list below") and its verb says what the text is, covers, contains or is for: an opening that states the text's purpose or scope. Delete it, and if a fact appeared only in that sentence, state the fact about the subject instead: "This section explains how the cache expires. Entries expire after an hour." becomes "Cache entries expire after an hour." Same rule for headings: name what is in the section ("Issues found", "Considerations"), do not count it or trail it ("Two things to consider", "What follows"). A count also goes stale the moment an item is added or removed.
+35. **Restating what you just said.** A second pass over the same idea, in different words at the same level of detail, telling a reader who understood the first pass nothing new. "That is the thing being deleted" after already naming what to delete. "In other words", "put differently", "that is to say" followed by a paraphrase rather than a sharpening. A closing sentence that recaps the paragraph above it, or an opening sentence and a closing sentence that state the same thesis around a body that already made it. The earlier mention can be anywhere in the text, the title and the description included, so an opening that restates the heading or the description counts too. Ask what the reader can do or know after the second version that they could not after the first. If the answer is nothing, cut it. Keep a restatement only when it adds precision, gives a concrete example, or translates a term the first version assumed the reader knew. A summary that reduces a concept spread over several paragraphs to its main points also stays. 16 is one narrow instance of this, a bold lead that restates its own line.
+36. **Pronoun referent overload.** The same pronoun standing for two different things in one sentence, or a relative pronoun dropped where the wrong attachment is the easier parse. "The counts alone do not show a sentence appearing twice, a unit whose text also appears inside the unit before it, or any text it says was left behind": the first "it" is the unit, the second is the tool from the sentence before, and "any text it says was left behind" dropped its "that", so "it says" reads as the verb until "was" breaks the parse. Name the referent, or restore the "that": "inside the previous unit", "any text the tool says was left behind". 28's backtrack test finds the sentence, but splitting cannot repair it: a short sentence can still make the reader resolve one word twice.
+37. **Negation where a positive fits.** Double negatives ("not uncommon", "not unlike", "nothing prevents") make the reader invert twice to recover a plain fact, and "not about" framing ("the question is not about X", "this is not a matter of Y") says what something is not while leaving what it is unstated. State the fact: "not uncommon" becomes "common", "not unlike" becomes "like", "the question is not about X" becomes naming what the question is about. A single honest negative stays ("the item does not fail").
+38. **Actions turned into nouns.** An event or action written as a noun phrase ("the server failing to start", "the removal of the file", "validation of the input") and then made the subject of a weak verb ("goes in the chat", "happens", "takes place", "is needed"). The reader has to unpack the noun back into who does what to what. Write the clause with its actor and its verb: "Only the server failing to start goes in the chat" becomes "When the server fails to start, tell the user in the chat", and "Validation of the input happens in the parser" becomes "The parser validates the input". A noun stays when it names something the text keeps referring to, such as a defined term ("the migration", "the release").
+39. **"What" clauses that withhold the content.** A clause such as "what a thing is", "what flows", "what the arrows cannot show" or "what a system's architecture is" points at information without giving it, and the reader has to guess what belongs there. Replace the clause with the content, or with a concrete example: "label each arrow with what flows" becomes "label each arrow with the payload or action it carries", and "a question about what a system's architecture is" becomes "a question about which parts a system has and how they connect". The clause stays when the words right after it list the content.
+
+EXCLUSIONS: an adjectival participle ("the bullets that are missing", "before a
+change is done") is not a passive under 29, and an adverb that changes
+the truth of the sentence ("skip it silently", "usually already") stays. Emoji heading prefixes, callout syntax and bold on domain terms are required by the project's docs charter and stay.
+
+OUTPUT: write the findings to /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/preguntas-en-la-card/unslop-pd-round1.txt, one line per finding, in this format:
+<file>:<line> | rule <n> | "<exact quoted span>" | <proposed rewrite>
+Only sentences with a finding get a line. End with a line TOTAL: <n>.
+Then reply only with the TOTAL line.
+</supervisor-agent>
