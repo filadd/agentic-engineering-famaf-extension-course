@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pesos abiertos — Sesión 6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,800;1,400&display=swap" rel="stylesheet">
+<!--
+Sesión 6 — bloque "Modelos de pesos abiertos" (30 min).
+Fuente del contenido: Flavio Copes, "Open-weight AI models: what open weights means
+and how they work" — https://flaviocopes.com/open-weight-models/ (actualizado 4 nov 2026).
+Una slide por sección del post, en su orden. Diseño: terminal oscura. Navegación: ← / → / espacio / PageUp / PageDown / Home / End.
+Las notas de orador/a van como comentarios HTML dentro de cada slide.
+NO incluye: bloque CCAD, demo de Agus, práctica ni retrospectiva.
+-->
+<style>
+:root{
+  --bg:#050806;
+  --panel:#0a0f0b;
+  --panel-2:#0e1510;
+  --line:#1d2e22;
+  --green:#3dff8a;
+  --green-dim:#23a35a;
+  --green-faint:#14502e;
+  --amber:#ffb627;
+  --amber-dim:#a8741a;
+  --red:#ff5f56;
+  --text:#c9f5d6;
+  --muted:#6f9a7c;
+  --white:#eafff0;
+  --glow:0 0 6px rgba(61,255,138,.45), 0 0 18px rgba(61,255,138,.15);
+  --glow-a:0 0 6px rgba(255,182,39,.45), 0 0 18px rgba(255,182,39,.15);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);overflow:hidden}
+body{font-family:"JetBrains Mono","IBM Plex Mono",ui-monospace,monospace;color:var(--text);-webkit-font-smoothing:antialiased}
+
+/* Stage: fixed 1600×900, scaled to the viewport */
+#viewport{position:fixed;inset:0 0 32px 0;display:grid;place-items:center}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center;flex:none}
+
+.slide{position:absolute;inset:0;display:none;padding:34px 40px 30px}
+.slide.active{display:block;animation:boot .35s steps(6,end)}
+@keyframes boot{0%{opacity:0;filter:brightness(2.2)}60%{opacity:1}100%{opacity:1;filter:none}}
+
+/* Terminal window frame */
+.win{height:100%;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;background:linear-gradient(180deg,var(--panel-2),var(--panel));box-shadow:0 0 0 1px #000,0 30px 80px rgba(0,0,0,.6),inset 0 0 120px rgba(61,255,138,.035);overflow:hidden}
+.bar{display:flex;align-items:center;gap:10px;height:40px;padding:0 16px;border-bottom:1px solid var(--line);background:#08100b;color:var(--muted);font-size:15px;flex:none}
+.dot{width:13px;height:13px;border-radius:50%;background:#2a3a2f}
+.dot.r{background:#ff5f56}.dot.y{background:#ffbd2e}.dot.g{background:#27c93f}
+.bar .path{margin-left:14px;letter-spacing:.02em}
+.bar .path b{color:var(--green-dim);font-weight:400}
+.bar .right{margin-left:auto;color:var(--green-faint)}
+.body{flex:1;padding:34px 48px 26px;display:flex;flex-direction:column;min-height:0}
+
+/* Prompt-style headings */
+.cmd{font-size:22px;color:var(--muted);margin-bottom:10px}
+.cmd .ps{color:var(--green-dim)}
+.cmd .ps .at{color:var(--amber-dim)}
+.cmd .c{color:var(--white)}
+h1,h2{font-weight:800;color:var(--green);text-shadow:var(--glow);letter-spacing:-.01em}
+h1{font-size:76px;line-height:1.05}
+h2{font-size:46px;line-height:1.12;margin-bottom:26px}
+h2 .hash{color:var(--green-faint);text-shadow:none}
+.amber{color:var(--amber);text-shadow:var(--glow-a)}
+.green{color:var(--green)}
+.muted{color:var(--muted)}
+.white{color:var(--white)}
+.dim{color:var(--green-faint)}
+p,li{font-size:26px;line-height:1.5}
+p + p{margin-top:14px}
+strong{color:var(--white);font-weight:600}
+em{color:var(--amber);font-style:normal}
+code,.k{color:var(--amber)}
+a{color:var(--green);text-decoration:none;border-bottom:1px dashed var(--green-dim)}
+
+ul.term{list-style:none}
+ul.term li{padding-left:34px;position:relative;margin:6px 0}
+ul.term li::before{content:"›";position:absolute;left:6px;color:var(--green-dim)}
+ul.term.x li::before{content:"✗";color:var(--red)}
+ul.term.ok li::before{content:"✓";color:var(--green)}
+ol.term{list-style:none;counter-reset:n}
+ol.term li{counter-increment:n;padding-left:62px;position:relative;margin:5px 0}
+ol.term li::before{content:"[" counter(n,decimal-leading-zero) "]";position:absolute;left:0;color:var(--amber-dim)}
+
+pre{font-family:inherit;font-size:24px;line-height:1.42;color:var(--text);white-space:pre}
+.box{border:1px solid var(--line);border-radius:6px;padding:20px 24px;background:rgba(0,0,0,.25)}
+.box.a{border-color:var(--amber-dim)}
+.lbl{font-size:16px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin-bottom:10px}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:34px;flex:1;min-height:0}
+.cols.w{grid-template-columns:1.25fr 1fr}
+.mt{margin-top:22px}
+.mt-auto{margin-top:auto}
+.small, .small li, .small p{font-size:21px}
+.xs, .xs li, .xs p{font-size:19px}
+
+blockquote{border-left:4px solid var(--amber);padding:6px 0 6px 28px;font-size:34px;line-height:1.4;color:var(--white)}
+blockquote cite{display:block;margin-top:18px;font-size:20px;color:var(--muted);font-style:normal}
+
+table{border-collapse:collapse;width:100%;font-size:22px}
+th,td{text-align:left;padding:12px 16px;border-bottom:1px dashed var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:400;font-size:17px;text-transform:uppercase;letter-spacing:.12em;border-bottom:1px solid var(--green-faint)}
+td:first-child{color:var(--green);white-space:nowrap}
+tr.hl td{background:rgba(255,182,39,.06)}
+tr.hl td:first-child{color:var(--amber)}
+table.rel td{padding:9px 14px}
+h2 .dim{text-shadow:none}
+ol.term li.hl{background:rgba(255,182,39,.08);border-left:3px solid var(--amber);border-radius:3px;padding-top:6px;padding-bottom:6px}
+ol.term.wide li{padding-left:80px}
+
+.cursor{display:inline-block;width:.58em;height:1em;background:var(--green);vertical-align:-.12em;margin-left:4px;box-shadow:var(--glow);animation:blink 1.05s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* Status line (tmux-ish) */
+#status{position:fixed;left:0;right:0;bottom:0;height:30px;display:flex;align-items:center;gap:0;font-size:13px;background:#071009;border-top:1px solid var(--line);color:var(--muted);z-index:5;user-select:none}
+#status span{padding:0 12px;height:100%;display:flex;align-items:center}
+#status .seg{background:var(--green-dim);color:#021006;font-weight:600}
+#status .ttl{color:var(--text)}
+#status .r{margin-left:auto}
+#status .cnt{background:var(--amber);color:#1a1000;font-weight:600}
+#progress{position:fixed;left:0;bottom:30px;height:2px;background:var(--green);box-shadow:var(--glow);z-index:5;transition:width .25s}
+
+/* CRT overlays */
+.crt{pointer-events:none;position:fixed;inset:0;z-index:10}
+.crt.scan{background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0,rgba(0,0,0,0) 2px,rgba(0,0,0,.22) 3px,rgba(0,0,0,0) 4px);mix-blend-mode:multiply}
+.crt.vig{background:radial-gradient(ellipse at center,rgba(0,0,0,0) 60%,rgba(0,0,0,.55) 100%)}
+.crt.flick{background:rgba(61,255,138,.012);animation:flick 6s infinite}
+@keyframes flick{0%,100%{opacity:.6}48%{opacity:.6}50%{opacity:1}52%{opacity:.5}}
+@media (prefers-reduced-motion:reduce){.crt.flick,.cursor{animation:none}.slide.active{animation:none}}
+
+/* Specific bits */
+.qbar{font-size:24px;line-height:1.55;white-space:pre}
+.qbar .b16{color:var(--red)}
+.qbar .b4{color:var(--green);text-shadow:var(--glow)}
+.qbar .breal{color:var(--amber)}
+.qbar .mem{color:var(--muted)}
+.tag{display:inline-block;font-size:16px;padding:2px 10px;border:1px solid var(--green-faint);border-radius:3px;color:var(--green-dim);margin-right:8px}
+.tag.a{border-color:var(--amber-dim);color:var(--amber)}
+.grid6{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.grid6 .box p{font-size:20px;line-height:1.42}
+.grid6 .box h3{font-size:23px;color:var(--green);margin-bottom:8px;font-weight:600}
+.grid6 .box h3 span{color:var(--amber-dim);margin-right:8px}
+.title-art{font-size:15px;line-height:1.05;color:var(--green-faint);white-space:pre;margin-bottom:26px}
+.ascii-weights{font-size:17px;line-height:1.35;color:var(--green-faint);white-space:pre;overflow:hidden}
+.ascii-weights i{font-style:normal;color:var(--green-dim)}
+.ascii-weights b{font-weight:400;color:var(--amber)}
+
+/* ASCII art */
+.art{font-family:inherit;white-space:pre;line-height:1.15;color:var(--green-dim)}
+.art .g{color:var(--green);text-shadow:var(--glow)}
+.art .a{color:var(--amber);text-shadow:var(--glow-a)}
+.art .d{color:var(--green-faint)}
+.art .m{color:var(--muted)}
+.art .r{color:var(--red)}
+.banner{font-size:15px;line-height:1.02;margin-top:4px}
+#dial{line-height:1.2;color:var(--green-dim)}
+.ln{display:block}
+
+/* Animations (only on slide enter; skipped with prefers-reduced-motion) */
+.typing::after{content:"";display:inline-block;width:.55em;height:.9em;background:var(--green);vertical-align:-.08em;margin-left:3px;box-shadow:var(--glow)}
+.slide.go .rv{animation:print .2s steps(7,end) var(--d,0ms) both}
+@keyframes print{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 -2% 0 0)}}
+.qbar .b4[data-shrink]{transition:color .2s}
+.qbar .b4.big{color:var(--red);text-shadow:none}
+.crt.flash{opacity:0;background:linear-gradient(to bottom,rgba(61,255,138,0) 0,rgba(61,255,138,.08) 46%,rgba(220,255,230,.22) 50%,rgba(61,255,138,.08) 54%,rgba(61,255,138,0) 100%);background-size:100% 260%}
+.crt.flash.on{animation:flash .34s steps(5,end)}
+@keyframes flash{0%{opacity:1;background-position:0 100%;filter:none}40%{opacity:.75}100%{opacity:0;background-position:0 0}}
+@media (prefers-reduced-motion:reduce){.slide.go .rv{animation:none}.crt.flash{display:none}}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+
+<!-- ───────────── 01 · PORTADA ───────────── -->
+<section class="slide" data-title="portada">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/modelos</b></span><span class="right">tty1</span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">famaf<span class="at">@</span>sesion-6</span>:~/modelos$ <span class="c">xxd muse-glimmer-Q4.gguf | head</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:30px"><div class="ascii-weights" id="hexdump"></div>
+<pre class="art banner" aria-label="OPEN WEIGHTS"> <span class="g">██████</span><span class="d">╗</span> <span class="g">██████</span><span class="d">╗</span> <span class="g">███████</span><span class="d">╗</span><span class="g">███</span><span class="d">╗</span>   <span class="g">██</span><span class="d">╗</span>
+<span class="g">██</span><span class="d">╔═══</span><span class="g">██</span><span class="d">╗</span><span class="g">██</span><span class="d">╔══</span><span class="g">██</span><span class="d">╗</span><span class="g">██</span><span class="d">╔════╝</span><span class="g">████</span><span class="d">╗</span>  <span class="g">██</span><span class="d">║</span>
+<span class="g">██</span><span class="d">║</span>   <span class="g">██</span><span class="d">║</span><span class="g">██████</span><span class="d">╔╝</span><span class="g">█████</span><span class="d">╗</span>  <span class="g">██</span><span class="d">╔</span><span class="g">██</span><span class="d">╗</span> <span class="g">██</span><span class="d">║</span>
+<span class="g">██</span><span class="d">║</span>   <span class="g">██</span><span class="d">║</span><span class="g">██</span><span class="d">╔═══╝</span> <span class="g">██</span><span class="d">╔══╝</span>  <span class="g">██</span><span class="d">║╚</span><span class="g">██</span><span class="d">╗</span><span class="g">██</span><span class="d">║</span>
+<span class="d">╚</span><span class="g">██████</span><span class="d">╔╝</span><span class="g">██</span><span class="d">║</span>     <span class="g">███████</span><span class="d">╗</span><span class="g">██</span><span class="d">║</span> <span class="d">╚</span><span class="g">████</span><span class="d">║</span>
+ <span class="d">╚═════╝</span> <span class="d">╚═╝</span>     <span class="d">╚══════╝╚═╝</span>  <span class="d">╚═══╝</span>
+<span class="a">██</span><span class="d">╗</span>    <span class="a">██</span><span class="d">╗</span><span class="a">███████</span><span class="d">╗</span><span class="a">██</span><span class="d">╗</span> <span class="a">██████</span><span class="d">╗</span> <span class="a">██</span><span class="d">╗</span>  <span class="a">██</span><span class="d">╗</span><span class="a">████████</span><span class="d">╗</span><span class="a">███████</span><span class="d">╗</span>
+<span class="a">██</span><span class="d">║</span>    <span class="a">██</span><span class="d">║</span><span class="a">██</span><span class="d">╔════╝</span><span class="a">██</span><span class="d">║</span><span class="a">██</span><span class="d">╔════╝</span> <span class="a">██</span><span class="d">║</span>  <span class="a">██</span><span class="d">║╚══</span><span class="a">██</span><span class="d">╔══╝</span><span class="a">██</span><span class="d">╔════╝</span>
+<span class="a">██</span><span class="d">║</span> <span class="a">█</span><span class="d">╗</span> <span class="a">██</span><span class="d">║</span><span class="a">█████</span><span class="d">╗</span>  <span class="a">██</span><span class="d">║</span><span class="a">██</span><span class="d">║</span>  <span class="a">███</span><span class="d">╗</span><span class="a">███████</span><span class="d">║</span>   <span class="a">██</span><span class="d">║</span>   <span class="a">███████</span><span class="d">╗</span>
+<span class="a">██</span><span class="d">║</span><span class="a">███</span><span class="d">╗</span><span class="a">██</span><span class="d">║</span><span class="a">██</span><span class="d">╔══╝</span>  <span class="a">██</span><span class="d">║</span><span class="a">██</span><span class="d">║</span>   <span class="a">██</span><span class="d">║</span><span class="a">██</span><span class="d">╔══</span><span class="a">██</span><span class="d">║</span>   <span class="a">██</span><span class="d">║</span>   <span class="d">╚════</span><span class="a">██</span><span class="d">║</span>
+<span class="d">╚</span><span class="a">███</span><span class="d">╔</span><span class="a">███</span><span class="d">╔╝</span><span class="a">███████</span><span class="d">╗</span><span class="a">██</span><span class="d">║╚</span><span class="a">██████</span><span class="d">╔╝</span><span class="a">██</span><span class="d">║</span>  <span class="a">██</span><span class="d">║</span>   <span class="a">██</span><span class="d">║</span>   <span class="a">███████</span><span class="d">║</span>
+ <span class="d">╚══╝╚══╝</span> <span class="d">╚══════╝╚═╝</span> <span class="d">╚═════╝</span> <span class="d">╚═╝</span>  <span class="d">╚═╝</span>   <span class="d">╚═╝</span>   <span class="d">╚══════╝</span></pre></div>
+    <div class="mt-auto">
+      <div class="cmd"><span class="ps">$</span> <span class="c">cat README.md</span></div>
+      <h1>Modelos de<br><span class="amber">pesos abiertos</span><span class="cursor"></span></h1>
+      <p class="mt muted">Qué son los <em>pesos</em>, por qué <em>open-weight ≠ open source</em>, licencias y <em>quantization</em>.</p>
+      <p class="small mt" style="color:var(--muted)">Sesión 6 · De Vibe Coding a Agentic Engineering · FaMAF — UNC<br>
+      Basado en <span class="white">Flavio Copes</span>, “Open-weight AI models” — <a href="https://flaviocopes.com/open-weight-models/">flaviocopes.com/open-weight-models</a></p>
+    </div>
+  </div>
+</div>
+<!-- Abrir el bloque: 30 minutos. El contenido es el post de Flavio Copes, en español, con una slide por sección del post. Todo lo que diga del CCAD acá es anticipación: todavía no escucharon a Ale ni vieron la GPU de Agus. El hexdump de arriba es decorativo: "esto es lo que te bajás: números". -->
+</section>
+
+<!-- ───────────── 02 · AGENDA ───────────── -->
+<section class="slide" data-title="agenda">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/modelos</b></span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">ls -1 agenda/</span></div>
+    <h2><span class="hash">#</span> Agenda</h2>
+    <div class="cols">
+      <ol class="term small">
+        <li>¿Qué son los <strong>pesos</strong>?</li>
+        <li>La <strong>arquitectura</strong> y los pesos son cosas distintas</li>
+        <li>¿Qué significa <strong>open-weight</strong>?</li>
+        <li>Open access, open weights y <strong>open source</strong></li>
+        <li>Por qué importa la <strong>receta</strong> de entrenamiento</li>
+        <li>Qué pasa cuando <strong>bajás</strong> un modelo local</li>
+        <li>Por qué importa la <strong>quantization</strong></li>
+      </ol>
+      <ol class="term small" style="counter-reset:n 7">
+        <li>Qué te <strong>permiten</strong> los open weights</li>
+        <li>La <strong>licencia</strong> importa tanto como la descarga</li>
+        <li><strong>Lanzamientos</strong> grandes recientes</li>
+        <li>¿Por qué liberar los pesos de un modelo <strong>tan grande</strong>?</li>
+        <li>Lo que los open weights <strong>no</strong> te dan</li>
+        <li>Cómo <strong>usaría</strong> un modelo open-weight</li>
+        <li>Cómo <strong>evaluar</strong> un modelo open-weight</li>
+      </ol>
+    </div>
+  </div>
+</div>
+<!-- Las secciones son las del post, en el mismo orden. Nombrar el orden como una escalada: qué es la cosa, qué se puede hacer con ella, qué no, y al final un criterio para elegir. Ensayar con reloj. -->
+</section>
+
+<!-- ───────────── 04 · QUÉ SON LOS PESOS ───────────── -->
+<section class="slide" data-title="pesos">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/modelos</b></span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">man weights</span></div>
+    <h2 style="margin-bottom:18px"><span class="hash">#</span> ¿Qué son los pesos?</h2>
+    <div class="cols" style="grid-template-columns:1fr 1.1fr">
+      <div style="display:flex;flex-direction:column">
+        <ul class="term small">
+          <li>Un LLM es como una <strong>consola de sonido</strong> con miles de millones de perillas. Antes de entrenar, están <strong>casi al azar</strong></li>
+          <li>Entrenar: pasar datos, medir el error de la predicción, <strong>mover las perillas</strong>, y repetir muchísimas veces</li>
+          <li>Los <em>pesos</em> son los valores aprendidos, guardados como <strong>tensores</strong>: arreglos multidimensionales de números</li>
+          <li><code>8B</code>, <code>30B</code> = miles de millones de parámetros, casi todos pesos. Los modelos frontera: cientos de miles de millones, o billones</li>
+        </ul>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+<pre class="art knobs" style="font-size:23px"><span class="d">╔═ </span><span class="m">consola de sonido</span><span class="d"> ══════════════╗</span>
+║ (<span class="knob a">-</span>) (<span class="knob a">/</span>) (<span class="knob a">\</span>) (<span class="knob a">|</span>) (<span class="knob a">|</span>) (<span class="knob a">|</span>) (<span class="knob a">-</span>) ··   ║
+║ (<span class="knob a">|</span>) (<span class="knob a">/</span>) (<span class="knob a">|</span>) (<span class="knob a">|</span>) (<span class="knob a">\</span>) (<span class="knob a">\</span>) (<span class="knob a">|</span>) ··   ║
+<span class="d">╚═ </span><span class="m">cada perilla = un número de W</span><span class="d"> ══╝</span></pre>
+<pre class="box" style="font-size:19px;line-height:1.45"><span class="muted"># una capa = multiplicar por una matriz de pesos</span>
+  <span class="white">entrada x</span>          <span class="amber">pesos W</span>              <span class="green">salida y</span>
+                  ┌ <span class="amber"> 0.73 -0.02  1.21</span> ┐
+[0.2 0.9 0.1]  ·  │ <span class="amber">-0.65  0.44  0.08</span> │  =  <span class="green">[-0.41 0.49 0.26]</span>
+                  └ <span class="amber"> 0.31  1.02 -0.57</span> ┘
+<span class="muted">                       ▼</span>
+  y ─▶ capa 2 (otra W) ─▶ … ─▶ <span class="white">P(siguiente token)</span>
+
+<span class="muted"># entrenar = ajustar los números de cada W</span>
+<span class="muted"># un modelo 30B ≈ 30 mil millones de esos números</span></pre>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ~3 min. La analogía del post, y la misma idea en álgebra: cada capa multiplica su entrada por una matriz de pesos; las perillas de la consola son las entradas de W. Los números son ilustrativos (la cuenta sí está bien: x·W = y). -->
+</section>
+
+<!-- ───────────── 05 · ARQUITECTURA, PESOS, RUNTIME ───────────── -->
+<section class="slide" data-title="seis-piezas">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/modelos/local</b></span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">tree --setup-local</span></div>
+    <h2><span class="hash">#</span> La arquitectura y los pesos son cosas distintas</h2>
+    <div class="cols">
+      <div>
+        <p><span class="green">arquitectura</span> — capas, conexiones, mecanismo de atención, el camino de los datos</p>
+        <p><span class="amber">pesos</span> — los números aprendidos puestos dentro de esa arquitectura</p>
+        <p><span class="white">runtime</span> — el software que carga las dos cosas y calcula respuestas</p>
+        <div class="box a mt">
+          <p class="white">Una API esconde todo esto detrás de un <span class="amber">request HTTP</span>. Un release open-weight te deja traer las piezas a tu máquina.</p>
+        </div>
+      </div>
+<pre class="box" style="font-size:22px;line-height:1.6"><span class="green">setup-local/</span>
+├── <span class="white">1</span> arquitectura y configuración
+├── <span class="white">2</span> <span class="amber">pesos</span>
+├── <span class="white">3</span> tokenizer
+├── <span class="white">4</span> generation settings + instrucciones
+│     de carga
+├── <span class="white">5</span> runtime de inferencia
+│     <span class="muted">Ollama · llama.cpp · MLX · Transformers</span>
+└── <span class="white">6</span> memoria y cómputo suficientes</pre>
+    </div>
+  </div>
+</div>
+<!-- Las seis piezas del post. El contraste con la API es la sesión entera en una línea. Avisar que en quince minutos Agus muestra estas piezas en su máquina. -->
+</section>
+
+<!-- ───────────── 06 · QUÉ SIGNIFICA OPEN-WEIGHT ───────────── -->
+<section class="slide" data-title="open-weight">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/modelos</b></span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">grep -i "open-weight" glossary.txt</span></div>
+    <h2><span class="hash">#</span> ¿Qué significa open-weight?</h2>
+    <p style="font-size:30px">Un modelo <em>open-weight</em> es uno cuyos pesos aprendidos <strong>se pueden descargar</strong>.<br><span class="amber">Qué podés hacer con ellos lo decide la licencia.</span></p>
+    <div class="cols mt" style="flex:none;grid-template-columns:1fr 1.25fr">
+      <div class="box">
+        <div class="lbl">el ejemplo del post</div>
+        <p class="small"><strong>Muse Glimmer</strong> — Meta, agosto 2026. 30B parámetros, pensado para <strong>agentes locales</strong>: lee texto e imágenes, llama tools y se recupera cuando una tool falla.</p>
+        <p class="small mt">Meta lo publicó bajo <span class="amber">Apache 2.0</span>, una licencia permisiva.</p>
+      </div>
+      <div class="box a">
+        <div class="lbl">qué trae su model card</div>
+<pre style="font-size:23px"><span class="muted">license:</span> <span class="amber">apache-2.0</span>
+<span class="muted">files:</span>
+  <span class="green">├─</span> pesos en precisión completa
+  <span class="green">├─</span> dos versiones a 4 bits
+  <span class="green">├─</span> el vision encoder
+  <span class="green">└─</span> un modelo compañero chico que
+     acelera la generación</pre>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ~2 min. Definición mínima, con Muse Glimmer como ejemplo concreto (vuelve en la tabla de lanzamientos). La frase clave: la disponibilidad no te dice los derechos; eso es la licencia. -->
+</section>
+
+<!-- ───────────── 07 · CUATRO NIVELES ───────────── -->
+<section class="slide" data-title="niveles">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/modelos</b></span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">diff open-access open-weights open-source</span></div>
+    <h2><span class="hash">#</span> Open access, open weights y open source</h2>
+    <table>
+      <tr><th>nivel</th><th>qué obtenés</th><th>qué podés hacer</th></tr>
+      <tr><td>hosted access</td><td>una web o una API</td><td>mandar requests a servidores de otro</td></tr>
+      <tr class="hl"><td>open weights</td><td>los parámetros entrenados, descargables</td><td>correrlo, fine-tune, cuantizarlo, hostearlo</td></tr>
+      <tr><td>open-source AI</td><td>pesos + los materiales preferidos para estudiar y modificar el sistema</td><td>usar, estudiar, modificar y compartir el sistema entero</td></tr>
+    </table>
+    <div class="box a mt-auto">
+      <div class="lbl amber">la definición de la OSI</div>
+      <p class="small">La <span class="white">Open Source AI Definition</span> pide más que los parámetros finales: el código para entrenar y correr el sistema, e información suficiente sobre los datos de entrenamiento como para <strong>recrearlo sustancialmente</strong>.</p>
+      <p class="small mt">El límite se sigue discutiendo. Cuando una empresa publica los parámetros sin todo lo que usó para crearlos, <span class="amber">“open weight” es el término preciso</span>.</p>
+      <p class="xs muted mt"><a href="https://opensource.org/ai/open-source-ai-definition">opensource.org/ai/open-source-ai-definition</a> · <a href="https://opensource.org/ai/open-weights">opensource.org/ai/open-weights</a></p>
+    </div>
+  </div>
+</div>
+<!-- ~3 min. La tabla es un espectro: cada fila te da más que la anterior. Casi todo lo que se vende como "IA open source" es open weight; la imprecisión está en el marketing, no en los estudiantes. -->
+</section>
+
+<!-- ───────────── 09 · LA RECETA DE ENTRENAMIENTO ───────────── -->
+<section class="slide" data-title="receta">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/modelos/coding-model</b></span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">git log --training-data</span> <span class="red" style="color:var(--red)">fatal: no history in checkpoint</span></div>
+    <h2><span class="hash">#</span> Por qué importa la receta de entrenamiento</h2>
+    <div class="cols w">
+      <div>
+        <p class="small">Un lab publica un modelo de código potente. <span class="green">Podés</span> bajarlo, evaluarlo, hacerle fine-tune con tu código e inspeccionar cómo se comporta.</p>
+        <p class="small muted mt">Y aun así pueden quedar sin respuesta:</p>
+        <ol class="term small">
+          <li>¿Qué repositorios incluyeron?</li>
+          <li>¿Respetaron las licencias?</li>
+          <li>¿Cómo filtraron la información privada?</li>
+          <li>¿Qué datos de benchmarks aparecieron en el entrenamiento?</li>
+          <li>¿Qué datos sintéticos salieron de otros modelos?</li>
+          <li>¿Cómo sacaron los ejemplos de baja calidad?</li>
+          <li>¿Qué proceso de RL cambió el modelo después del pretraining?</li>
+        </ol>
+      </div>
+<pre class="box" style="font-size:21px;line-height:1.55;align-self:start"><span class="muted">datos de entrenamiento</span> ─┐
+                         ├─▶ <span class="amber">pesos aprendidos</span>
+<span class="muted">receta + código</span> ────────┘        │
+                                  ▼
+                       <span class="green">checkpoint.safetensors</span>
+                       <span class="dim">(no muestra de dónde salió)</span></pre>
+    </div>
+  </div>
+</div>
+<!-- ~2 min. Leer dos o tres preguntas en voz alta, no todas. La idea: el checkpoint es como un binario sin fuentes. -->
+</section>
+
+<!-- ───────────── 10 · DESCARGAR Y CORRER ───────────── -->
+<section class="slide" data-title="descarga">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/modelos</b></span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">ls -lh ~/models/</span></div>
+    <h2><span class="hash">#</span> Qué pasa cuando bajás un modelo local</h2>
+    <div class="cols">
+      <div>
+        <p><span class="green">safetensors</span> — solo tensores, <strong>nada ejecutable</strong>. Más seguro y más rápido de cargar que los viejos archivos basados en <em>pickle</em> de Python.</p>
+        <p><span class="green">GGUF</span> — tensores + metadata en <strong>un solo archivo</strong>. Lo cargan llama.cpp, Ollama y LM Studio.</p>
+<pre class="box mt" style="font-size:24px"><span class="muted">↓</span> <span class="green" data-fill>████████████████████</span> <span class="pct">100</span>%
+
+model-<span class="amber">Q4</span>_<span class="green">K_M</span>.gguf
+      <span class="amber">│</span>  <span class="green">└─ nombre del método</span>
+      <span class="amber">└──── ~4 bits: quantization</span></pre>
+        <p class="xs muted mt">Probalo: <a href="https://flaviocopes.com/run-llm-locally/#run-your-first-model-with-ollama">flaviocopes.com/run-llm-locally</a> — correr tu primer modelo con Ollama</p>
+      </div>
+<pre class="box" style="font-size:21px;line-height:1.55;align-self:start"><span class="muted"># 1. el runtime lee config, reserva</span>
+<span class="muted">#    memoria, carga los pesos y espera</span>
+
+  "hola, ¿qué es…"
+        │ <span class="muted">2. tokenizer</span>
+        ▼
+  [ 15339, 11, 1268, … ]
+        │ <span class="muted">3. capas × pesos</span>
+        ▼
+  P(siguiente token)
+        │ <span class="muted">4. elige uno,</span>
+        ▼ <span class="muted">   lo agrega</span>
+  <span class="amber">token</span> ──────────▶ <span class="green">↺ repetir</span></pre>
+    </div>
+  </div>
+</div>
+<!-- ~4 min. Que "más seguro" tenga una razón técnica: safetensors no ejecuta código al cargar. Señalar el Q4: es el puente a la slide siguiente. Los IDs de tokens del diagrama son ilustrativos. -->
+</section>
+
+<!-- ───────────── 11 · QUANTIZATION ───────────── -->
+<section class="slide" data-title="quantization">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/modelos</b></span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">python -c "print(30e9 * bits / 8 / 1e9)"</span></div>
+    <h2 style="margin-bottom:20px"><span class="hash">#</span> Por qué importa la quantization</h2>
+<div style="display:flex;gap:28px;align-items:stretch">
+<pre class="box" style="font-size:25px;line-height:1.6;flex:1;display:flex;flex-direction:column;justify-content:center"><span class="muted"># los pesos ocupan mucha memoria</span>
+30 mil millones × <span class="b16" style="color:var(--red)">16 bits</span> ÷ 8 = <span class="white">60 GB</span>
+<span class="muted"># quantization: guardarlos con menos bits</span>
+30 mil millones × <span class="green"> 4 bits</span> ÷ 8 = <span class="white">15 GB</span></pre>
+<pre class="box art" id="dial" data-noln data-rv style="font-size:19px"><span class="d">      .-'''''''''''-.</span>
+    .'       8       '.
+<span class="d">   /                   \</span>
+<span class="d">  ;                     ;</span>
+  | 16       <span class="a">●══════</span>4   |
+<span class="d">  '---------------------'</span>
+<span class="m">      bits por peso</span></pre></div>
+    <div class="box mt">
+<pre class="qbar"><span class="mem">16-bit </span><span class="b16" data-fill>████████████████████████████████████████████████████████████</span> 60 GB
+<span class="mem">~4-bit </span><span class="b4" data-shrink="60">███████████████</span><span class="pad">                                             </span> <span class="num">15</span> GB</pre>
+    </div>
+    <div class="cols mt" style="flex:none">
+      <ul class="term small">
+        <li><span class="green">+</span> archivo más chico, menos memoria, puede correr más rápido</li>
+        <li><span class="amber">−</span> menos precisión: <strong>puede cambiar la calidad</strong>. Los buenos métodos conservan más de lo que sugiere la cuenta de bits, pero <strong>probá ese modelo y esa cuantización en tu tarea</strong></li>
+      </ul>
+      <p class="small">Las cuantizaciones de la comunidad aparecen rápido: un release pensado para GPUs de datacenter suele estar <strong>en días</strong> en formatos para Apple silicon, GPUs de consumo o CPU.</p>
+    </div>
+  </div>
+</div>
+<!-- ~3 min. LA CUENTA VA EN EL PIZARRÓN y no se borra: Agus la usa contra los 16 GB de su GPU. Cada █ es 1 GB. El tradeoff no se deduce, se mide. -->
+</section>
+
+<!-- ───────────── 13 · LO QUE PERMITEN ───────────── -->
+<section class="slide" data-title="beneficios">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/modelos</b></span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">open-weights --help</span></div>
+    <h2 style="margin-bottom:20px"><span class="hash">#</span> Qué te permiten los open weights</h2>
+    <div class="grid6">
+      <div class="box"><h3><span>01</span>Fijar la versión</h3><p>El proveedor puede actualizar, cambiar el precio o retirar un modelo. Con los pesos bajados, tu app <strong>no cambia en silencio</strong>.</p></div>
+      <div class="box"><h3><span>02</span>Datos en tu máquina</h3><p>Notas, código, registros de clientes. Pero <em>local no es automáticamente privado</em>: el agente puede llamar APIs, subir archivos o escribir logs. Revisá todo el flujo.</p></div>
+      <div class="box"><h3><span>03</span>Elegir quién lo corre</h3><p>Comparar precio, velocidad, ubicación y confiabilidad. Ej.: <strong>GLM-5.3</strong> en la app ZCode, vía la API de Z.ai en Claude Code, o en tu GPU con vLLM.</p></div>
+      <div class="box"><h3><span>04</span>Fine-tune</h3><p>Terminología de la empresa, un framework interno, un estilo, clasificar tickets, un idioma flojo. Full fine-tuning es caro; <strong>LoRA</strong> entrena un set chico de parámetros agregados.</p></div>
+      <div class="box"><h3><span>05</span>Estudiarlo y probarlo</h3><p>Inspeccionar activaciones, sacar o reemplazar capas, comparar cuantizaciones. La comunidad lo porta a hardware que el creador nunca probó.</p></div>
+      <div class="box a"><h3><span>06</span>Modelos chicos como piezas</h3><p>Clasificar, extraer campos, resumir documentos privados, un paso de un sistema mayor. <strong>No tiene que ganar todos los benchmarks</strong>: tiene que hacer una tarea de forma confiable.</p></div>
+    </div>
+  </div>
+</div>
+<!-- ~4 min. El 06 es, según el autor, el uso más interesante para él. El matiz del 02 ("local no significa privado automáticamente") es el que desarma el reflejo más común de la sala: decirlo con peso. -->
+</section>
+
+<!-- ───────────── 14 · LICENCIA ───────────── -->
+<section class="slide" data-title="licencia">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/modelos</b></span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">cat LICENSE | less</span></div>
+    <h2><span class="hash">#</span> La licencia importa tanto como la descarga</h2>
+    <div class="cols w">
+      <div>
+        <p class="small">Todo modelo tiene una licencia o términos de uso. <strong>Que se pueda bajar no significa que lo puedas usar para cualquier cosa.</strong></p>
+        <p class="small muted mt">Antes de construir encima, chequeá si permite:</p>
+<pre class="box mt" style="font-size:23px;line-height:1.7"><span class="green">[ ]</span> uso comercial
+<span class="green">[ ]</span> redistribuir pesos originales o modificados
+<span class="green">[ ]</span> ofrecerlo como servicio hosteado
+<span class="green">[ ]</span> fine-tune, cuantizar, convertir formatos
+<span class="green">[ ]</span> uso por encima de cierto tamaño de empresa
+    o cantidad de usuarios
+<span class="green">[ ]</span> uso en industrias o aplicaciones puntuales</pre>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <p class="small">Algunas familias usan licencias conocidas como <span class="amber">Apache 2.0</span>; otras, licencias propias con restricciones extra.</p>
+        <p class="small">“Está en Hugging Face” <strong>no dice nada</strong> de los términos legales.</p>
+<pre class="art" style="font-size:20px;color:var(--green-dim)">┌─────────────────┐        <span class="a">.---.</span>
+│ <span class="a">LICENSE</span>         │       <span class="a">/     \</span>
+│ <span class="g">═══════════════</span> │       <span class="a">|     |</span>
+│ ─────────────── │     <span class="a">┌─┴─────┴─┐</span>
+│ ───────────     │     <span class="a">│    ●    │</span>
+│ ─────────────── │     <span class="a">│    ┃    │</span>
+│ ───── <span class="a">§</span> ?       │     <span class="a">└─────────┘</span>
+└─────────────────┘</pre>
+        <div class="box a mt-auto">
+          <div class="lbl amber">para ver la diferencia</div>
+          <p class="small">La documentación de licencias de Hugging Face lista licencias de software estándar junto a acuerdos propios de cada modelo:</p>
+          <p class="small mt"><a href="https://huggingface.co/docs/hub/repositories-licenses">huggingface.co/docs/hub/repositories-licenses</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ~3 min. Lo que hay que mirar ANTES de meter un modelo en un proyecto. Si da el tiempo, abrir la página de licencias de Hugging Face y mostrar Apache 2.0 al lado de una licencia propia. -->
+</section>
+
+<!-- ───────────── 15 · RELEASES GRANDES ───────────── -->
+<section class="slide" data-title="releases">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/hf.co</b></span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">hf ls --sort=released --year=2026</span></div>
+    <h2 style="margin-bottom:16px"><span class="hash">#</span> Lanzamientos grandes recientes</h2>
+    <table class="xs rel" style="font-size:19px">
+      <tr><th>modelo</th><th>parámetros</th><th>licencia</th><th>pesos</th><th>para notar</th></tr>
+      <tr class="hl"><td>Muse Glimmer</td><td>30B</td><td>Apache 2.0</td><td>agosto 2026 (Meta)</td><td>completo &gt;55 GB; cuantizado &lt;20 GB: corre en tu máquina</td></tr>
+      <tr><td>Qwen3.8-2.4T-A95B</td><td>2.4T MoE · 95B activos</td><td>propia (Qwen3.8-Max)</td><td>12 ago</td><td>anunciado el 19 jul como “open-weight pronto”</td></tr>
+      <tr class="hl"><td>Qwen3.8-27B</td><td>27B denso, multimodal</td><td>Apache 2.0</td><td>14 ago</td><td>misma familia, otra licencia: leer las dos cards</td></tr>
+      <tr><td>Kimi K3</td><td>2.8T MoE · 16 de 896 expertos</td><td>Kimi K3 License</td><td>27 jul</td><td>~1.56 TB en 96 shards; recomiendan 64+ aceleradores</td></tr>
+      <tr><td>Mistral Large 4</td><td>~1T MoE · 49B activos</td><td>propia, basada en MIT</td><td>fin de octubre</td><td>casi todo octubre fue solo API</td></tr>
+      <tr><td>Kimi K3.1 Pro</td><td>2.8T MoE · 104B activos</td><td>K3.1-Pro License</td><td>4 nov</td><td>contexto de 1.048.576 tokens</td></tr>
+    </table>
+    <blockquote class="mt-auto" style="font-size:27px;padding-top:2px;padding-bottom:2px"><span class="green">“Abierto”</span> describe acceso y permisos. <span class="amber">“Accesible”</span> describe si lo podés usar de verdad con tus recursos.</blockquote>
+  </div>
+</div>
+<!-- ~2 min. No es un tour de familias. Muse Glimmer es el que corre en una máquina como las de la sala; los de billones de parámetros son abiertos pero no accesibles. Misma familia, licencias distintas (Qwen3.8). Material perecedero: verificar la semana de la clase. -->
+</section>
+
+<!-- ───────────── 16 · POR QUÉ LIBERAR LOS PESOS ───────────── -->
+<section class="slide" data-title="por-que-liberar">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/hf.co/moonshotai</b></span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">who --uses kimi-k3</span></div>
+    <h2><span class="hash">#</span> ¿Por qué liberar los pesos de un modelo tan grande?</h2>
+    <p>Correrlo en una laptop es solo uno de los beneficios. Con los pesos, <strong>otros pueden usarlos</strong>:</p>
+    <div class="grid6 mt">
+      <div class="box"><h3><span>01</span>Empresas de inferencia</h3><p>Lo hostean y lo ofrecen como servicio.</p></div>
+      <div class="box"><h3><span>02</span>Investigadores</h3><p>Lo estudian.</p></div>
+      <div class="box"><h3><span>03</span>Fabricantes de hardware</h3><p>Optimizan sus chips para correrlo.</p></div>
+      <div class="box"><h3><span>04</span>Equipos de frameworks</h3><p>Le agregan soporte.</p></div>
+      <div class="box"><h3><span>05</span>Expertos en quantization</h3><p>Bajan la memoria que necesita.</p></div>
+    </div>
+  </div>
+</div>
+<!-- ~1 min. La lista del post. Si preguntan por qué una empresa regalaría algo tan caro: cada uno de estos actores mejora el ecosistema alrededor del modelo sin pedirle permiso al lab. -->
+</section>
+
+<!-- ───────────── 17 · LO QUE NO TE DAN ───────────── -->
+<section class="slide" data-title="no-garantiza">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/modelos</b></span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">open-weights --guarantees</span></div>
+    <h2><span class="hash">#</span> Lo que los open weights <span class="amber">no</span> te garantizan</h2>
+    <div class="cols" style="grid-template-columns:.9fr 1fr 1fr">
+      <div>
+      <ul class="term x small">
+        <li>Buena calidad de salida</li>
+        <li>Respuestas correctas</li>
+        <li>Datos sin sesgo</li>
+        <li>Hardware barato</li>
+        <li>Generación rápida en tu máquina</li>
+        <li>Permiso para usarlo como quieras</li>
+        <li>Info para reproducir el entrenamiento</li>
+      </ul>
+<pre class="art mt" style="font-size:18px;color:var(--green-dim)">    _________________
+   <span class="d">╱</span>  <span class="g">open-weights</span>  <span class="d">╱│</span>
+  ┌────────────────┐ │
+  │ <span class="g">0.73 -0.02 1.2</span> │ │
+  │ <span class="g">-0.65 0.44 ...</span> │ │
+  │                │<span class="d">╱</span>
+  └────────────────┘
+  <span class="a">garantías: no incluidas</span></pre>
+      </div>
+      <div class="box">
+        <div class="lbl">≠ barato</div>
+        <p class="small">Almacenamiento, memoria de inferencia y contexto largo cuestan. Tráfico alto = más GPUs. Alguien tiene que operarlo.</p>
+        <p class="small">Para un modelo gigante, una API hosteada puede salir <strong>mucho más barata</strong>.</p>
+        <p class="xs muted mt">Contá hardware, energía, horas de ingeniería, observabilidad, escalado, failover, seguridad y actualizaciones — no solo el precio por token.</p>
+      </div>
+      <div class="box a">
+        <div class="lbl amber">≠ seguro</div>
+        <p class="small">Self-hosting te hace <strong>el operador</strong>: elegís runtime, asegurás la máquina, actualizás, medís calidad, decidís a qué accede.</p>
+        <p class="small">No elimina las alucinaciones. Un agente local puede <em>borrar un archivo</em>, <em>exponer un secreto</em> o seguir una instrucción maliciosa.</p>
+        <p class="xs muted mt">El riesgo es modelo + tools + permisos amplios + poca revisión, corra donde corra.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ~3 min. CON EL MISMO PESO que la lista de beneficios y sin apurarla. Puente: "en quince minutos van a ver a un operador; en cuarenta y cinco, a otro, con un cluster atrás". -->
+</section>
+
+<!-- ───────────── 18 · CÓMO LO USARÍA ───────────── -->
+<section class="slide" data-title="como-usarlo">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/modelos</b></span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">cat ~/.flavio/estrategia.md</span></div>
+    <h2><span class="hash">#</span> Cómo usaría un modelo open-weight</h2>
+    <p class="muted">El autor no reemplazaría todos los modelos en la nube por uno local.</p>
+    <div class="cols mt" style="flex:none">
+      <div class="box">
+        <div class="lbl green">empezar por</div>
+        <p><strong>Tareas chicas y frecuentes</strong>, donde la privacidad y un costo predecible importan más que el razonamiento de frontera.</p>
+      </div>
+      <div class="box a">
+        <div class="lbl amber">evitar uno local cuando</div>
+        <ul class="term x">
+          <li>tu hardware no lo corre cómodo</li>
+          <li>unas pocas llamadas a una API cuestan menos que el hardware</li>
+          <li>la tarea necesita el mejor razonamiento disponible</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ~1 min. Es la opinión del autor, no una regla. Lo útil es el criterio: privacidad y costo predecible de un lado; hardware, costo de API y calidad de razonamiento del otro. -->
+</section>
+
+<!-- ───────────── 19 · CÓMO EVALUAR (1/2) ───────────── -->
+<section class="slide" data-title="evaluar-1">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/modelos</b></span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">./preflight.sh &lt;modelo&gt; --checks=1-5</span></div>
+    <h2 style="margin-bottom:22px"><span class="hash">#</span> Cómo evaluar un modelo open-weight <span class="dim">(1/2)</span></h2>
+    <p class="small muted">Diez chequeos antes de bajarlo:</p>
+    <ol class="term wide mt">
+      <li><strong>¿Lo puedo bajar hoy?</strong> <span class="muted">Un release futuro sigue siendo una promesa.</span></li>
+      <li><strong>Licencia.</strong> <span class="muted">¿Puedo usarlo, modificarlo y redistribuirlo en mi proyecto?</span></li>
+      <li><strong>Cantidad de parámetros.</strong> <span class="muted">Suficiente para la tarea y chico para mi máquina. Totales y activos no son lo mismo.</span></li>
+      <li><strong>Quantization.</strong> <span class="muted">Qué versiones hay, cuánta memoria necesita cada una y cuánta calidad pierde.</span></li>
+      <li><strong>Soporte de runtime.</strong> <span class="muted">¿Son públicos el tokenizer, la configuración y el código de inferencia? ¿Anda en Ollama, llama.cpp, MLX, Transformers o en mi servidor?</span></li>
+    </ol>
+  </div>
+</div>
+<!-- ~2 min. Lo más accionable del bloque. Rampa a la demo de Agus: los puntos 3 y 4 (que entre, qué cuantización) son lo que él resuelve en vivo con 16 GB. -->
+</section>
+
+<!-- ───────────── 20 · CÓMO EVALUAR (2/2) ───────────── -->
+<section class="slide" data-title="evaluar-2">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/modelos</b></span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">./preflight.sh &lt;modelo&gt; --checks=6-10</span></div>
+    <h2 style="margin-bottom:22px"><span class="hash">#</span> Cómo evaluar un modelo open-weight <span class="dim">(2/2)</span></h2>
+    <ol class="term wide" style="counter-reset:n 5">
+      <li><strong>¿Base o instruct?</strong> <span class="muted">Un modelo base puede necesitar más entrenamiento para comportarse como asistente de chat.</span></li>
+      <li><strong>Largo de contexto.</strong> <span class="muted">¿Entra el input de mi tarea? ¿Cuánta memoria extra usa ese contexto?</span></li>
+      <li><strong>Model card.</strong> <span class="muted">Uso previsto, entrenamiento y evaluación, y las limitaciones que declara.</span></li>
+      <li><strong>Benchmarks reproducibles.</strong> <span class="muted">Un puntaje sin el mismo harness, prompts y tools es difícil de comparar.</span></li>
+      <li class="hl"><strong class="amber">Tu propio set de pruebas.</strong> <span class="white">¿Funciona con ejemplos reales de tu aplicación?</span></li>
+    </ol>
+    <blockquote class="mt-auto" style="font-size:30px">No elijas solo por un leaderboard. El mejor modelo es <span class="amber">el más chico</span> que hace tu tarea <span class="green">suficientemente bien</span>, en hardware que puedas correr.</blockquote>
+  </div>
+</div>
+<!-- ~2 min. El punto 7 (cuánto cuesta el contexto en memoria) también aparece en la demo de Agus. El 10 es lo que hacen ellos al final de la clase. -->
+</section>
+
+<!-- ───────────── 21 · TAKEAWAYS ───────────── -->
+<section class="slide" data-title="takeaways">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/modelos</b></span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">git diff --stat cabeza/</span></div>
+    <h2><span class="hash">#</span> Para llevarse</h2>
+<pre class="box" style="font-size:25px;line-height:1.75"><span class="green">+</span> pesos = <strong>resultado</strong> del entrenamiento, no el código ni los datos
+<span class="green">+</span> open-weight ≠ open source
+<span class="green">+</span> la <span class="amber">licencia</span> decide qué podés hacer — y cambia entre modelos de una misma familia
+<span class="green">+</span> 30B × 4 bits ÷ 8 ≈ 15 GB: la quantization (o cuantización) decide si entra en tu máquina
+<span class="green">+</span> abierto ≠ accesible: un 2.8T requiere hardware muy potente, que no es de simple acceso
+<span class="green">+</span> local ≠ barato, ≠ seguro: <span class="amber">el operador sos vos</span>
+<span class="green">+</span> elegí con <strong>tu propio set de pruebas</strong>, no con un leaderboard
+<span style="color:var(--red)">-</span> <span class="muted">“modelo abierto” como categoría útil</span></pre>
+  </div>
+</div>
+<!-- Repasar en un minuto, sin re-explicar. -->
+</section>
+
+<!-- ───────────── 23 · FUENTE ───────────── -->
+<section class="slide" data-title="fuente">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/modelos</b></span></div>
+  <div class="body" style="justify-content:center">
+    <div class="cmd"><span class="ps">$</span> <span class="c">cat CREDITS</span></div>
+<pre style="font-size:22px;line-height:1.6"><span class="muted">fuente  </span> <span class="white">Flavio Copes</span>
+<span class="muted">título  </span> Open-weight AI models: what open weights means and how they work
+<span class="muted">url     </span> <a href="https://flaviocopes.com/open-weight-models/">https://flaviocopes.com/open-weight-models/</a>
+<span class="muted">versión </span> actualizado el 4 nov 2026
+<span class="muted">ver     </span> OSI — Open Source AI Definition · <a href="https://opensource.org/ai">opensource.org/ai</a></pre>
+    <p class="mt" style="font-size:26px"><span class="green">$</span> <span class="white">exit</span><span class="cursor"></span></p>
+  </div>
+</div>
+<!-- Dejar los créditos proyectados mientras Agus enchufa la GPU. Transición a la demo. -->
+</section>
+
+</div></div>
+
+<div id="progress"></div>
+<div id="status">
+  <span class="seg">[sesion-6]</span>
+  <span class="ttl" id="st-title">1:portada*</span>
+  <span class="r muted">← → espacio · Home End</span>
+  <span class="cnt" id="st-count">01/21</span>
+</div>
+<div class="crt scan"></div>
+<div class="crt vig"></div>
+<div class="crt flick"></div>
+<div class="crt flash" id="flash"></div>
+
+<script>
+(() => {
+  const stage = document.getElementById('stage');
+  const slides = [...document.querySelectorAll('.slide')];
+  const total = slides.length;
+  const pad = n => String(n).padStart(2, '0');
+  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let cur = 0, gen = 0, fin = [];
+
+  function fit() {
+    const s = Math.min(window.innerWidth / 1600, (window.innerHeight - 32) / 900);
+    stage.style.transform = `scale(${s})`;
+  }
+
+  /* ── decorative hexdump of "weights" on the title slide ── */
+  const hd = document.getElementById('hexdump');
+  if (hd) {
+    const hex = () => Math.floor(Math.random() * 65536).toString(16).padStart(4, '0');
+    const lines = [];
+    for (let r = 0; r < 9; r++) {
+      const off = (0x3a2f00 + r * 16).toString(16).padStart(8, '0');
+      const words = Array.from({ length: 8 }, (_, k) => {
+        const w = hex();
+        return (r * 8 + k) % 11 === 3 ? `<b>${w}</b>` : (k % 2 ? `<i>${w}</i>` : w);
+      }).join(' ');
+      const asc = String.fromCharCode(...Array.from({ length: 12 }, () => 33 + Math.floor(Math.random() * 90))).replace(/[<>&]/g, '.');
+      lines.push(`<span class="ln">${off}: ${words}  ....${asc}</span>`);
+    }
+    hd.innerHTML = lines.join('');
+  }
+
+  /* ── split every <pre> into one block per line so lines can print one by one ── */
+  document.querySelectorAll('.slide pre').forEach(pre => {
+    if (pre.hasAttribute('data-noln')) return;
+    const lines = pre.innerHTML.replace(/\n$/, '').split('\n');
+    pre.innerHTML = lines.map(l => `<span class="ln">${l || '\u200b'}</span>`).join('');
+  });
+
+  const dialFrames = ["<span class=\"d\">      .-'''''''''''-.</span>\n    .'       8       '.\n<span class=\"d\">   /                   \\</span>\n<span class=\"d\">  ;                     ;</span>\n  | <span class=\"a\">16</span> <span class=\"a\">══════●</span>      4   |\n<span class=\"d\">  '---------------------'</span>\n<span class=\"m\">      bits por peso</span>", "<span class=\"d\">      .-'''''''''''-.</span>\n    .'       <span class=\"a\">8</span>       '.\n<span class=\"d\">   /         <span class=\"a\">║</span>         \\</span>\n<span class=\"d\">  ;          <span class=\"a\">║</span>          ;</span>\n  | 16       <span class=\"a\">●</span>      4   |\n<span class=\"d\">  '---------------------'</span>\n<span class=\"m\">      bits por peso</span>", "<span class=\"d\">      .-'''''''''''-.</span>\n    .'       8       '.\n<span class=\"d\">   /                   \\</span>\n<span class=\"d\">  ;                     ;</span>\n  | 16       <span class=\"a\">●══════</span>4   |\n<span class=\"d\">  '---------------------'</span>\n<span class=\"m\">      bits por peso</span>"];
+
+  /* ── animation helpers ── */
+  const orig = new WeakMap();
+  const keep = (n, v) => { if (!orig.has(n)) orig.set(n, v); return orig.get(n); };
+  function tween(dur, delay, step, done) {
+    const g = gen, t0 = performance.now() + delay;
+    const f = now => {
+      if (g !== gen) return;
+      const t = Math.min(1, Math.max(0, (now - t0) / dur));
+      step(t);
+      if (t < 1) requestAnimationFrame(f); else if (done) done();
+    };
+    requestAnimationFrame(f);
+  }
+  function later(ms, fn) { const g = gen; setTimeout(() => { if (g === gen) fn(); }, ms); }
+
+  // typewriter over every text node of el (prompt "$" stays put)
+  function type(el, delay, maxDur) {
+    const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (w.nextNode()) if (!w.currentNode.parentElement.closest('.ps')) nodes.push(w.currentNode);
+    const full = nodes.map(n => keep(n, n.nodeValue));
+    const N = full.reduce((a, x) => a + x.length, 0);
+    const dur = Math.min(maxDur, Math.max(160, N * 20));
+    el.style.minHeight = el.offsetHeight + 'px';
+    nodes.forEach(n => (n.nodeValue = ''));
+    const caret = !el.querySelector('.cursor');
+    if (caret) el.classList.add('typing');
+    const done = () => { nodes.forEach((n, i) => (n.nodeValue = full[i])); el.classList.remove('typing'); el.style.minHeight = ''; };
+    fin.push(done);
+    tween(dur, delay, t => {
+      let k = Math.round(N * t);
+      nodes.forEach((n, i) => { const take = Math.max(0, Math.min(full[i].length, k)); n.nodeValue = full[i].slice(0, take); k -= full[i].length; });
+    }, done);
+    return delay + dur;
+  }
+
+  // progress bars that fill: "█" grows, "░" is what is still missing
+  function fill(el, delay) {
+    const full = keep(el, el.textContent), n = [...full].length;
+    const pct = el.nextElementSibling && el.nextElementSibling.classList.contains('pct') ? el.nextElementSibling : null;
+    const done = () => { el.textContent = full; if (pct) pct.textContent = '100'; };
+    fin.push(done);
+    el.textContent = '░'.repeat(n); if (pct) pct.textContent = '0';
+    tween(650, delay, t => {
+      const e = 1 - Math.pow(1 - t, 2), k = Math.round(n * e);
+      el.textContent = '█'.repeat(k) + '░'.repeat(n - k);
+      if (pct) pct.textContent = String(Math.round(100 * e));
+    }, done);
+  }
+
+  // the 16-bit bar shrinking to its ~4-bit size, with the GB counter following
+  function shrink(el, delay) {
+    const from = +el.dataset.shrink, to = [...keep(el, el.textContent)].length;
+    const padEl = el.nextElementSibling, num = el.parentElement.querySelector('.num');
+    const set = k => { el.textContent = '█'.repeat(k); padEl.textContent = ' '.repeat(from - k); num.textContent = String(k); };
+    const done = () => { set(to); el.classList.remove('big'); };
+    fin.push(done);
+    set(from); el.classList.add('big');
+    tween(800, delay, t => { const e = t * t * (3 - 2 * t); set(Math.round(from - (from - to) * e)); if (t > .5) el.classList.remove('big'); }, done);
+  }
+
+  // mixing-desk knobs spin while "training", then settle on their value
+  function knobs(root, delay) {
+    const seq = '|/-\\';
+    root.querySelectorAll('.knob').forEach((k, i) => {
+      const final = keep(k, k.textContent), stop = 500 + Math.random() * 700;
+      const done = () => (k.textContent = final);
+      fin.push(done);
+      let j = i % 4;
+      tween(stop, delay, t => { if (t < 1) k.textContent = seq[(j = (j + 1) % 4)]; }, done);
+    });
+  }
+
+  // the bits dial: needle 16 → 8 → 4
+  function dial(el, delay) {
+    const done = () => (el.innerHTML = dialFrames[2]);
+    fin.push(done);
+    el.innerHTML = dialFrames[0];
+    later(delay + 350, () => (el.innerHTML = dialFrames[1]));
+    later(delay + 700, done);
+  }
+
+  function animate(slide) {
+    const flash = document.getElementById('flash');
+    flash.classList.remove('on'); void flash.offsetWidth; flash.classList.add('on');
+    if (RM) return;
+
+    const body = slide.querySelector('.body');
+    let t = 60;
+    body.querySelectorAll('.cmd').forEach((c, i) => { if (i === 0) t = type(c, 60, 420); });
+    const head = body.querySelector('h1, h2');
+    if (head) type(head, t, 600);
+
+    // lines that print one by one, like command output
+    const sel = 'li, tr, p, blockquote, .lbl, .grid6 h3, .ln, [data-rv], .cmd';
+    const cand = [...body.querySelectorAll(sel)].filter((e, i) => !(i === 0 && e.matches('.cmd')) && !e.closest('h1, h2'));
+    const firstCmd = body.querySelector('.cmd');
+    const items = cand.filter(e => e !== firstCmd && !cand.some(o => o !== e && o.contains(e) && !o.matches('pre')));
+    const start = t + 60;
+    const step = Math.min(70, 1050 / Math.max(1, items.length));
+    items.forEach((e, i) => {
+      e.classList.add('rv');
+      const d = Math.round(start + i * step);
+      e.style.setProperty('--d', d + 'ms');
+      e.dataset.d = d;
+    });
+    slide.classList.remove('go'); void slide.offsetWidth; slide.classList.add('go');
+    fin.push(() => slide.classList.remove('go'));
+
+    const delayOf = el => { const r = el.closest('.rv'); return (r ? +r.dataset.d : start) + 120; };
+    body.querySelectorAll('[data-fill]').forEach(el => fill(el, delayOf(el)));
+    body.querySelectorAll('[data-shrink]').forEach(el => shrink(el, delayOf(el)));
+    body.querySelectorAll('.knobs').forEach(el => knobs(el, delayOf(el.querySelector('.knob'))));
+    body.querySelectorAll('#dial').forEach(el => dial(el, delayOf(el)));
+  }
+
+  function show(i) {
+    fin.forEach(f => f()); fin = []; gen++;
+    cur = Math.max(0, Math.min(total - 1, i));
+    slides.forEach((el, k) => el.classList.toggle('active', k === cur));
+    document.getElementById('st-count').textContent = `${pad(cur + 1)}/${total}`;
+    document.getElementById('st-title').textContent = `${cur + 1}:${slides[cur].dataset.title}*`;
+    document.getElementById('progress').style.width = `${((cur + 1) / total) * 100}%`;
+    if (location.hash !== '#' + (cur + 1)) history.replaceState(null, '', '#' + (cur + 1));
+    animate(slides[cur]);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    switch (e.key) {
+      case 'ArrowRight': case 'ArrowDown': case 'PageDown': case ' ': case 'Enter':
+        e.preventDefault(); show(cur + 1); break;
+      case 'ArrowLeft': case 'ArrowUp': case 'PageUp': case 'Backspace':
+        e.preventDefault(); show(cur - 1); break;
+      case 'Home': e.preventDefault(); show(0); break;
+      case 'End': e.preventDefault(); show(total - 1); break;
+    }
+  });
+  document.addEventListener('click', e => {
+    if (e.target.closest('a')) return;
+    show(e.clientX < window.innerWidth / 3 ? cur - 1 : cur + 1);
+  });
+  window.addEventListener('hashchange', () => {
+    const n = parseInt(location.hash.slice(1), 10);
+    if (!isNaN(n) && n - 1 !== cur) show(n - 1);
+  });
+  window.addEventListener('resize', fit);
+
+  fit();
+  const n = parseInt(location.hash.slice(1), 10);
+  show(!isNaN(n) ? n - 1 : 0);
+})();
+</script>
+</body>
+</html>
