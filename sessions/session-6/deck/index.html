@@ -701,6 +701,95 @@ model-<span class="amber">Q4</span>_<span class="green">K_M</span>.gguf
 <!-- Repasar en un minuto, sin re-explicar. -->
 </section>
 
+<!-- ───────────── 22 · DEMO: OLLAMA ───────────── -->
+<section class="slide" data-title="demo-ollama">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/demo</b></span><span class="right">live</span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">ollama list</span></div>
+    <h2><span class="hash">#</span> Demo — un modelo en esta notebook</h2>
+<pre class="box" style="font-size:28px;line-height:1.8"><span class="muted"># 1. sin razonamiento: responde directo</span>
+<span class="green">$</span> <span class="white">ollama run</span> <span class="amber">qwen3.5:4b</span> --think=false
+
+<span class="muted"># 2. con razonamiento: primero piensa, después responde</span>
+<span class="green">$</span> <span class="white">ollama run</span> <span class="amber">qwen3.5:4b</span></pre>
+    <div class="cols mt" style="flex:none">
+      <ul class="term small">
+        <li>La <strong>misma pregunta</strong> las dos veces</li>
+        <li>Comparar la <strong>salida</strong> y la <strong>latencia</strong></li>
+      </ul>
+      <p class="small">Nada llama a una API en la nube: <span class="amber">las cuentas pasan en este hardware</span>.</p>
+    </div>
+  </div>
+</div>
+<!-- DEMO EN VIVO. Primero con --think=false: responde directo. Después sin el flag: el modelo muestra su razonamiento antes de responder. Hacer la misma pregunta las dos veces. ⚠️ Bajar el modelo antes de clase: no bajarlo por la red del aula. ⚠️ Esta demo no está en los 30 min del bloque: ensayarla con reloj. No reemplaza la demo de Agus: acá es un modelo chico en una notebook; en su slot es la GPU de 16 GB y la cuenta de la VRAM. -->
+</section>
+
+<!-- ───────────── 23 · DEMO: OLLAMA EN PI ───────────── -->
+<section class="slide" data-title="demo-pi">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/.pi/agent</b></span><span class="right">live</span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">$EDITOR ~/.pi/agent/models.json</span></div>
+    <h2><span class="hash">#</span> El mismo modelo, en Pi</h2>
+    <div class="cols w">
+<pre class="box" style="font-size:23px;line-height:1.5">{
+  <span class="green">"providers"</span>: {
+    <span class="amber">"ollama"</span>: {
+      <span class="green">"baseUrl"</span>: <span class="white">"http://localhost:11434/v1"</span>,
+      <span class="green">"api"</span>: <span class="amber">"openai-completions"</span>,
+      <span class="green">"apiKey"</span>: <span class="white">"ollama"</span>,
+      <span class="green">"models"</span>: [
+        { <span class="green">"id"</span>: <span class="amber">"qwen3.5:4b"</span> }
+      ]
+    }
+  }
+}</pre>
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <ol class="term small">
+          <li>Agregar el provider en <code>models.json</code></li>
+          <li>Entrar a <strong>Pi</strong></li>
+          <li><code>/model</code> → elegir el provider <span class="amber">ollama</span></li>
+        </ol>
+        <div class="box a mt-auto">
+          <div class="lbl amber">por qué alcanza con esto</div>
+          <p class="small">Ollama expone un endpoint <strong>compatible con la API de OpenAI</strong>. Cambiar de modelo es editar un JSON.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- La apiKey es un valor cualquiera: Ollama no la verifica, pero el campo es obligatorio. No detenerse en cada campo: en la práctica se camina el mismo archivo para el CCAD. Acá solo dejar la idea: es el mismo archivo y la misma forma. Los dos providers pueden estar juntos en "providers". -->
+</section>
+
+<!-- ───────────── 24 · DEMO: HUGGING FACE ───────────── -->
+<section class="slide" data-title="demo-hf">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/hf.co</b></span><span class="right">live</span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">open https://huggingface.co/collections/Qwen/qwen35</span></div>
+    <h2><span class="hash">#</span> Hugging Face: oficial y comunidad</h2>
+    <div class="cols">
+      <div class="box">
+        <div class="lbl green">oficial</div>
+        <p class="small">La colección de <strong>Qwen 3.5</strong>: tamaños, formatos y la licencia de cada model card.</p>
+        <p class="small mt"><a href="https://huggingface.co/collections/Qwen/qwen35">huggingface.co/collections/Qwen/qwen35</a></p>
+      </div>
+      <div class="box a">
+        <div class="lbl amber">comunidad · distill</div>
+        <p class="small">Tomaron <strong>45 mil outputs</strong> de <span class="white">Qwen3.8</span> y con ellos <strong>re-entrenaron</strong> <span class="white">Qwen3.5 4B</span>.</p>
+        <p class="small mt">Un modelo grande le enseña a uno chico.</p>
+      </div>
+    </div>
+<pre class="box mt" style="font-size:24px;line-height:1.6"><span class="green">$</span> <span class="white">ollama run</span> <span class="muted">hf.co/</span>empero-ai/Qwen3.8-4B-Distill-<span class="green">GGUF</span>:<span class="amber">Q4_K_M</span>
+             <span class="muted">│</span>                                   <span class="green">│</span>    <span class="amber">└─ quantization</span>
+             <span class="muted">│</span>                                   <span class="green">└────── formato</span>
+             <span class="muted">└─ directo desde Hugging Face</span></pre>
+  </div>
+</div>
+<!-- Mostrar primero la colección oficial; después el modelo de la comunidad. Distill: las respuestas de un modelo grande se usan para re-entrenar uno chico. Es "la comunidad lo porta / lo cambia" (beneficio 05) en un caso real. Señalar GGUF y Q4_K_M: son las slides de descarga y quantization. Un modelo de la comunidad trae su propia licencia y nadie garantiza su calidad: hay que medirlo con tu propio set de pruebas. -->
+</section>
+
 <!-- ───────────── 23 · FUENTE ───────────── -->
 <section class="slide" data-title="fuente">
 <div class="win">
