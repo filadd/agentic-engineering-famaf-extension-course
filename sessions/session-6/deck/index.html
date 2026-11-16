@@ -39,7 +39,7 @@ body{font-family:"JetBrains Mono","IBM Plex Mono",ui-monospace,monospace;color:v
 
 /* Stage: fixed 1600×900, scaled to the viewport */
 #viewport{position:fixed;inset:0 0 32px 0;display:grid;place-items:center}
-#stage{width:1600px;height:900px;position:relative;transform-origin:center center;flex:none}
+#stage{width:1600px;height:900px;position:absolute;left:50%;top:50%;transform-origin:center center;flex:none}
 
 .slide{position:absolute;inset:0;display:none;padding:34px 40px 30px}
 .slide.active{display:block;animation:boot .35s steps(6,end)}
@@ -169,6 +169,10 @@ ol.term.wide li{padding-left:80px}
 .crt.flash.on{animation:flash .34s steps(5,end)}
 @keyframes flash{0%{opacity:1;background-position:0 100%;filter:none}40%{opacity:.75}100%{opacity:0;background-position:0 0}}
 @media (prefers-reduced-motion:reduce){.slide.go .rv{animation:none}.crt.flash{display:none}}
+
+/* Inside kurasu the web owns the controls: no status line, no progress bar */
+.embedded #viewport{inset:0}
+.embedded #status,.embedded #progress{display:none}
 </style>
 </head>
 <body>
@@ -830,9 +834,15 @@ model-<span class="amber">Q4</span>_<span class="green">K_M</span>.gguf
   const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let cur = 0, gen = 0, fin = [];
 
+  // Inside kurasu the deck runs in a sandboxed iframe: the web moves it with kurasu:go messages and owns
+  // the navigation, so the deck leaves the keys, the clicks, the address bar and its own status line alone.
+  const embedded = window.parent !== window;
+  if (embedded) document.body.classList.add('embedded');
+
   function fit() {
-    const s = Math.min(window.innerWidth / 1600, (window.innerHeight - 32) / 900);
-    stage.style.transform = `scale(${s})`;
+    const s = Math.min(window.innerWidth / 1600, (window.innerHeight - (embedded ? 0 : 32)) / 900);
+    // Centered with translate, not with the grid: a grid aligns an item wider than the window to the left.
+    stage.style.transform = `translate(-50%, -50%) scale(${s})`;
   }
 
   /* ── decorative hexdump of "weights" on the title slide ── */
@@ -984,12 +994,12 @@ model-<span class="amber">Q4</span>_<span class="green">K_M</span>.gguf
     document.getElementById('st-count').textContent = `${pad(cur + 1)}/${total}`;
     document.getElementById('st-title').textContent = `${cur + 1}:${slides[cur].dataset.title}*`;
     document.getElementById('progress').style.width = `${((cur + 1) / total) * 100}%`;
-    if (location.hash !== '#' + (cur + 1)) history.replaceState(null, '', '#' + (cur + 1));
+    if (!embedded && location.hash !== '#' + (cur + 1)) history.replaceState(null, '', '#' + (cur + 1));
     animate(slides[cur]);
   }
 
   document.addEventListener('keydown', e => {
-    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (embedded || e.metaKey || e.ctrlKey || e.altKey) return;
     switch (e.key) {
       case 'ArrowRight': case 'ArrowDown': case 'PageDown': case ' ': case 'Enter':
         e.preventDefault(); show(cur + 1); break;
@@ -1000,18 +1010,36 @@ model-<span class="amber">Q4</span>_<span class="green">K_M</span>.gguf
     }
   });
   document.addEventListener('click', e => {
-    if (e.target.closest('a')) return;
+    // In the sandbox a link would load its page inside the iframe and replace the deck.
+    if (e.target.closest('a')) { if (embedded) e.preventDefault(); return; }
+    if (embedded) return;
     show(e.clientX < window.innerWidth / 3 ? cur - 1 : cur + 1);
   });
   window.addEventListener('hashchange', () => {
+    if (embedded) return;
     const n = parseInt(location.hash.slice(1), 10);
     if (!isNaN(n) && n - 1 !== cur) show(n - 1);
   });
   window.addEventListener('resize', fit);
 
   fit();
-  const n = parseInt(location.hash.slice(1), 10);
-  show(!isNaN(n) ? n - 1 : 0);
+
+  if (!embedded) {
+    const n = parseInt(location.hash.slice(1), 10);
+    show(!isNaN(n) ? n - 1 : 0);
+    return;
+  }
+
+  /* ── kurasu ── */
+  // kurasu counts slides and steps from 1. This deck has no inner steps, so every slide has one step.
+  show(0);
+  window.parent.postMessage({ type: 'kurasu:manifest', slides: slides.map(() => ({ steps: 1 })) }, '*');
+  window.addEventListener('message', e => {
+    const go = e.data;
+    if (e.source !== window.parent || go?.type !== 'kurasu:go' || !Number.isInteger(go.slide) || !Number.isInteger(go.step)) return;
+    const i = Math.min(Math.max(go.slide - 1, 0), total - 1);
+    if (i !== cur) show(i);
+  });
 })();
 </script>
 </body>
