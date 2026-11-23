@@ -15,7 +15,7 @@ The six run as two blocks. Same cohort throughout — "advanced" describes depth
 
 ### Advanced — *what is it made of, and what if I swap its parts?*
 
-5. **Coding Harness (internals)** — the agent loop and its extension points, the session tree, compaction, three ways to give a model a tool, subagents as mechanism, run modes, and agent security
+5. **Coding Harness (internals)** — what a harness is, with Pi as the specimen: its packages, the extension lifecycle and API, and demos (an extension written live, subagents, Pi in the browser); then pi-durable as another answer to the same design decisions (storage, execution environments, durability, multiplayer)
 6. **Open Source Models & CCAD** — open weights vs. hosted APIs, pointing your agent at an open-weights model running on UNC's HPC hardware, and what it takes to serve one yourself. **Closes the course.**
 
 ## Structure

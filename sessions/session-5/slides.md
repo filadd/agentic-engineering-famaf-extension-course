@@ -83,7 +83,7 @@ La base es la charla de BeerJS "Pi: el agente que se construye solo"; la segunda
 
 ## Demo
 
-<!-- 12 · tres demos, de la más chica a la más grande. 1: una extensión que registra /mascot; extender es barato y se lee. 2: un subagente en tres commits ya hechos, sin tipear en vivo: primero una tool delegate que abre una sesión headless y devuelve el resultado; después corre en background y el resultado vuelve como followUp; después un pipeline research, implement, review. 3: las dos capas de abajo corriendo en el navegador, con un filesystem en memoria y la página armándose en vivo, sin backend. -->
+<!-- 12 · tres demos, de la más chica a la más grande. 1: le pedimos a Pi, en vivo, que se escriba una extensión: una mascota que camina debajo del input y festeja cuando corrés un comando con ! (el prompt está en demos/demo-1-mascot/PROMPT.md); extender es barato y se lee. 2: una extensión de subagentes ya escrita (demos/demo-2-subagents): la tool delegate abre una sesión headless en background, devuelve el control enseguida y el resultado vuelve como followUp; la tool pipeline encadena agentes en secuencia, por ejemplo research, implement, review. 3: pi-ai y pi-agent-core corriendo en el navegador (demos/demo-3-browser-agent), con un filesystem en memoria y la página armándose en vivo, sin backend. -->
 
 ---
 
