@@ -1,0 +1,15 @@
+{
+  "tool_use_id": "repl_d4426cf4-b091-4bdd-ae39-16be77d2fcb6",
+  "agent_id": "a006e2af1f73560d4",
+  "subagent_type": "mahou:researcher",
+  "task_description": "Research pi-durable architecture",
+  "token_usage": {
+    "input_tokens": 22,
+    "cache_creation_tokens": 59948,
+    "cache_read_tokens": 351892,
+    "output_tokens": 8808,
+    "api_call_count": 51
+  },
+  "started_at": "2026-11-23T14:33:58.513267597-03:00",
+  "completed_at": "2026-11-23T14:35:09.118131834-03:00"
+}

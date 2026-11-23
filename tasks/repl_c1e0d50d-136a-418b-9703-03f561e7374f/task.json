@@ -1,0 +1,15 @@
+{
+  "tool_use_id": "repl_c1e0d50d-136a-418b-9703-03f561e7374f",
+  "agent_id": "ad707f149ed0622be",
+  "subagent_type": "mahou:researcher",
+  "task_description": "pi-durable task phases",
+  "token_usage": {
+    "input_tokens": 34,
+    "cache_creation_tokens": 97155,
+    "cache_read_tokens": 812896,
+    "output_tokens": 10124,
+    "api_call_count": 69
+  },
+  "started_at": "2026-11-23T15:11:29.341151335-03:00",
+  "completed_at": "2026-11-23T15:12:55.309453498-03:00"
+}

@@ -1,0 +1,15 @@
+{
+  "tool_use_id": "repl_d07391ef-fc24-449d-b796-ca2e664d08d2",
+  "agent_id": "a79bbb7ed69d84a5a",
+  "subagent_type": "mahou:code-scout",
+  "task_description": "How tentacles uses pi-durable",
+  "token_usage": {
+    "input_tokens": 14,
+    "cache_creation_tokens": 77779,
+    "cache_read_tokens": 274825,
+    "output_tokens": 5090,
+    "api_call_count": 35
+  },
+  "started_at": "2026-11-23T14:33:58.513266648-03:00",
+  "completed_at": "2026-11-23T14:34:38.489583331-03:00"
+}

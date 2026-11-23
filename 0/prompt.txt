@@ -1,0 +1,784 @@
+let's first sync the status with the vault project at ~/workspace/asermax/shin-sekai
+
+---
+
+we did session 1, 2, 3, 4 and we did 6 earlier with the visiting expositor due to dates conflicts; we only have one left in whcih we're going to combine 5 and the open weight models of 6
+
+---
+
+/explore-with-canvas I need to work on session 5 about agent's architecture and so on; go read that and also the pi-coding-agent talk I gave aw hile ago, should be archived on my vault
+put together the canvas with the pieces of information from those sources so we can start owkring on it
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: I think we're going to have to point to 1 hour for the theory we do not we do not need to worry about the demos or the open white block that's open weights block that's already settled we only need to worry about the agent talk which should be around an hour at most | selected: shape:q-length (geo: "❓ How long is the last class, and what pays for the open-wei…")</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: no I would be this class again don't worry that much about it let's concentrate on the agents talk | selected: shape:q-closing (geo: "❓ Where does the course closing happen? The INSTRUCTOR says …")</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: same ignore this | selected: shape:q-homework (geo: "❓ What happens to the extension exercise? It is homework "fo…")</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: nothing important | selected: shape:q-order (geo: "❓ Which goes first: the harness internals or the open-weight…")</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: what's the proposed times repeating what's the mCP proposed thing | selected: shape:q-mcp (geo: "❓ How does MCP appear now that Pi 1 ships it? The talk says …")</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: Now Let's ignore this for now | selected: shape:q-mcp-in (geo: "❓ Does any of propuesta-mcp enter the harness hour, and whic…")</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: we're not going to include this | selected: shape:q-mcp (geo: "❓ How does MCP appear now that Pi 1 ships it? The talk says …")</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: I think we can use the slides from the vrgs beer GS Js talk at the basis as the basis for my own talk if I remember correctly it took around 45 minutes to an hour to give it so the length is good enough but we need to add some ideas from pie durable as well so let's do something pick the slides from The Talk The Original talk and expand them as a storyboard under the area for that that you did on the right side expand like each slide come on the concept and a basic diagram of what this li...(truncated)</event>
+</task-notification>
+
+---
+
+<task-notification>
+plannotator: its tool.judge hook was skipped. "cc-plugin-sec-default" runs first and sent the event on past it.
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>a79bbb7ed69d84a5a</task-id>
+<tool-use-id>repl_d07391ef-fc24-449d-b796-ca2e664d08d2</tool-use-id>
+<output-file>/tmp/claude-1000/-home-agus-workspace-filadd-agentic-engineering-famaf-extension-course/b57d1c55-c2ad-4c07-9fbe-ffab3826ec7f/tasks/a79bbb7ed69d84a5a.output</output-file>
+<status>completed</status>
+<summary>Agent "How tentacles uses pi-durable" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>tentacles runs the pi-durable `Harness` inside one Cloudflare Durable Object per session. A local pi or Claude Code plugin reaches it through an HTTP API and a WebSocket, using tools that call a helper CLI. The agent loop, its state and its tools all run remotely; nothing of a remote agent runs on the developer's machine.
+
+Docs paths are under `/home/agus/workspace/asermax/tentacles/docs/`. Code paths are under `/home/agus/workspace/asermax/tentacles/`.
+
+**1. Parts and connections**
+- **Plugin** (`apps/plugin`, one source built into the pi package `@asermax/pi-tentacles` and a Claude plugin; `technical-design/plugin.md:11,56-60`).
+  - Harness glue is a pi extension (`src/pi/extension.ts`) or a Claude mod (`src/claude/engine.ts`). It registers one tool per action: spawn, prompt, messages, list, close, answer, plus wait on pi only.
+  - The helper CLI (`src/helper/*`) runs one process per command. A `watch` process holds one WebSocket per open session.
+- **Worker** (`packages/provider-cloudflare/src/worker.ts`).
+  - The only entry point. It serves the `/api` HTTP API (`packages/worker-api/src/api.ts:5`) behind a `TENTACLES_API_KEY` check (`worker.ts:72-86`), and also the preview route and a cron trigger.
+  - The plugin-facing calls are create, prompt, answer, close, messages, status and list, plus a per-session socket (`technical-design/worker-api.md:11-24`). Payloads are JSON, and create carries base64 gzip-tar archives for skills, agents and context, up to 5 MB each (`worker-api.md:40-44`).
+  - The socket sends one construct, the session state (status, settings, skill and agent names, question, failure, last entry), on connect and on every change (`worker-api.md:56`).
+- **Registry Durable Object** (`registry-object.ts`, `packages/sql-registry`). It holds one entry per session (id, name, parent harness and id, status, `last_stopped`, settings, preview token). It serves list and preview lookups and feeds the daily cleanup (`sessions.md:136-140`).
+- **Session Durable Object** (`session-object.ts:51`). It is keyed by session id and fills five contracts: SessionHost, SessionStorage, WakeTimer, ParentChannel and Workspace (`providers/cloudflare/deploy.md:73`). It reports each status change to the registry.
+- **Workspace container**: a Cloudflare Computer container running computerd, started on the first command sent to it.
+- **Shared Claude container** (`claude-object.ts`, `apps/claude-relay`): one container for all sessions, running pi-claude-code's relay and the claude CLI. It stops 15 minutes after the last call (`claude-object.ts:16`).
+- **Other parts**: Codemode Worker (QuickJS sandbox Durable Object), Browser Run for previews, AI Gateway for non-Claude models, and a cron trigger (`deploy.md:75-107`).
+- **Contracts**: the provider-neutral roles live in `packages/contracts/src/*`. A provider fills each one (`technical-design/runtime-components.md:64-83`).
+
+**2. Agent loop, state, persistence, resume**
+- The loop runs in the session Durable Object. `packages/core/src/session/session.ts:117` calls `Harness.open(storage, { models, registry, settings, onWake, env })`.
+- State lives in pi-durable's SQLite tables inside that Durable Object (`session-object.ts:106`, `openDurableObjectSqliteStorage`). Conversations are pi-durable's own. tentacles adds a SESSION record, a questions document, and skills, agents and context documents (`sessions.md:62-134`). The workspace files live in the same SQLite (`providers/cloudflare/computer-workspace.md:35`).
+- Status is derived from pi-durable state and is not a stored field (`sessions.md:131`, `core/src/session/state.ts`). The registry entry is a projection of it.
+- Resume after an eviction goes through pi-durable's `onWake` and the Durable Object alarm (`session.ts:133`, `session-object.ts:216` `alarm: () =&gt; handle.wake()`). The alarm is reserved for pi-durable (`invariants.md:24`).
+- Tools with `replay: "safe"` are rerun after an eviction. The workspace sets reads to safe and `write`, `edit`, `delete` and `exec` to unsafe (`workspace.md:98`, `computer-workspace.md:24`).
+- A waiting question keeps its id across replays. `restartLimit` is `Infinity` while the question's call is live (`session.ts:127-131`), so it survives any number of evictions (`question-round-trip.md:50`).
+- A daily cron deletes sessions whose last run stopped over a month ago, clearing the Durable Object storage and then the registry entry (`sessions.md:411-445`).
+
+**3. Tools, dispatch, steer, question, collect**
+- **Tool installation**: `packages/core/src/tools/extension.ts:55` installs pi-durable's `CodingTools`, codemode, the commit check, the preview tool, skills, context, agents and the root-only `ask_parent`. The `Workspace` contract's `create` returns pi-durable ToolRegistrations, each with its own `execute` (`workspace.md:98`).
+- **Where the shell and filesystem are** (`computer-workspace.md:17-35`):
+  - File tools work directly on the Durable Object's SQLite.
+  - `exec` runs either on an isolate shell (just-bash in a Dynamic Worker, text tools and `git` only) or in the container. The container mounts `/workspace` through FUSE.
+  - Only `/workspace` persists across a container stop.
+  - Git clones and pushes from the Durable Object, and GitHub tokens are added outside the container, by the git client or the egress gateway.
+- **Dispatch**: spawn packs the archives, calls create, and returns the session id once the first run has started (`worker-api.md:17`). A failed workspace setup leaves the session failed and returns the error.
+- **Steer**: a prompt maps to a follow-up or a steer (`session.ts:264-282`). While a question waits, any prompt becomes a steer and is queued until the answer.
+- **Question**: `ask_parent` stores the question and moves the session to waiting. The state goes over the socket to the helper `watch`, which wakes the parent with the session, question id and text. The parent calls the answer tool (`question-round-trip.md:38-48`).
+- **Collect**: finish and failure wakes carry the last message or the failure (`plugin.md:83-89`). The messages tool returns the last N root-conversation entries. On pi, `tentacles_wait` blocks. Claude Code has no wait tool, because helper processes are capped at ten minutes (`plugin.md:78-79`).
+- **Local list**: the plugin keeps a local session list, a pi session entry or a `CLAUDE_PLUGIN_DATA` file, and syncs it from the Worker at harness start (`plugin.md:101-136`).
+
+**4. Trade-offs the docs name**
+- There is no explicit comparison with pi-coding-agent, and the repo has no mention of it. The docs name these differences from a local agent:
+  - Nothing runs locally. Parent-side state and output are reachable only through the tools (`plugin.md:62`).
+  - Skills, agents and context are fixed at spawn. Context edits stay remote and never come back (`product-design/remote-agents.md:21-23`).
+  - The isolate shell has no node or npm and returns output only when the command ends. The container has a cold start of about 1 to 3 seconds (`computer-workspace.md:21,30,92`).
+  - A container stop loses running processes and anything outside `/workspace`, including mise runtimes (`computer-workspace.md:35`).
+  - `npm install` was slower in the synced workspace: 11.4 s against 4.8 s on the container's disk (`computer-workspace.md:40`).
+  - A headless `claude -p` parent never gets wakes (`plugin.md:98-99`).
+  - Deleted sessions linger in the local list until the plugin learns of them (`plugin.md:141`).
+  - Unpushed work is lost with the session a month after its last run (`remote-agents.md:66`).
+  - Containers can be placed outside North America, and nothing enforces the region (`deploy.md:90-91`).
+  - Cloudflare hosts every role in a single deploy. Mixing providers was considered and not taken (`runtime-components.md:112-113`).
+
+I did not read `core/src/session/state.ts` or the plugin helper client in depth. The wire format of each call is in `packages/worker-api/src/sessions.ts`, which I did not open. The version of pi-durable is pinned at 1.5.1 (`pnpm-workspace.yaml:31`).</result>
+<usage><subagent_tokens>80843</subagent_tokens><tool_uses>37</tool_uses><duration_ms>40421</duration_ms></usage>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>a006e2af1f73560d4</task-id>
+<tool-use-id>repl_d4426cf4-b091-4bdd-ae39-16be77d2fcb6</tool-use-id>
+<output-file>/tmp/claude-1000/-home-agus-workspace-filadd-agentic-engineering-famaf-extension-course/b57d1c55-c2ad-4c07-9fbe-ffab3826ec7f/tasks/a006e2af1f73560d4.output</output-file>
+<status>completed</status>
+<summary>Agent "Research pi-durable architecture" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result># Pi Durable (`@earendil-works/pi-durable`): report
+
+Today is 2026-11-23. All facts below come from primary sources unless marked otherwise. I ran no trial; everything is read from source and documentation.
+
+Two corrections to the premise:
+- The announcement is dated 2026-10-01 and was published together with Pi 1.0.
+- I found no Cloudflare-authored post. "pi-durable on Cloudflare" is the Earendil repo `earendil-works/pi-durable-cloudflare`.
+
+## 1. What it is
+
+- Pi Durable is an experimental harness framework for long-running, durable agents that run anywhere there is a JavaScript runtime. The announcement says it "does not replace the Pi coding agent". It is a framework for building any agentic application, coding agents included. (docs: https://earendil.com/posts/pi-durable/ and https://earendil.com/posts/pi-1-0/)
+- Version: 1.6.0, released 2026-11-20 (npm registry, https://registry.npmjs.org/@earendil-works/pi-durable). It is MIT licensed and the repo was pushed on 2026-11-23. The README says "Experimental. The API changes without notice between releases." (source: https://github.com/earendil-works/pi/tree/main/packages/durable)
+- Pi packages it reuses:
+  - It depends on `@earendil-works/pi-ai` for model access, which is the same package the coding agent uses.
+  - It depends on `@earendil-works/chord` (document state and operations), `pi-schema`, `pi-codemode` and `pi-telemetry`.
+  - The announcement says it shares the coding agent's TUI components in the demos.
+- What it replaces or bypasses: the package list has no `pi-agent-core`. Durable has its own `Harness`, task scheduler and storage layer. It ships its own read, write, edit and bash tools (`CodingTools`). The announcement shows no use of `pi-coding-agent`; its demos live inside that package under `experimental/`, borrowing its TUI.
+
+## 2. Architecture
+
+- **Terms** (announcement):
+  - Harness: storage plus the machinery to run conversations in parallel.
+  - Conversation: a transcript of immutable entries.
+  - Agent: a model plus its settings and tools.
+  - Task: everything the harness runs, from model calls to tool calls.
+  - Execution environment: where tools do their work.
+- **Where the loop runs.** In the process that owns the storage. "One process owns a storage at a time, and other clients attach to that process." There is no cross-process locking (README, Storage). Read-only viewers can open the same storage with `readOnly: true`.
+- **State and persistence.**
+  - Every change goes through atomic commits. Nothing is shown before its commit is stored. A commit can write entries, documents and tasks together.
+  - Documents are typed JSON next to the transcript. Built-in documents are `pi.agent`, `pi.live`, `pi.inbox`, `pi.usage` and `pi.provider`.
+  - Storage backends are memory, IndexedDB, SQLite, JSONL and a Cloudflare Durable Object SQLite backend.
+  - SQLite uses WAL with `synchronous = NORMAL`. Commits survive process crashes, but the newest may be lost on power or host failure.
+  - JSONL keeps the whole history in memory, so the README says to use SQLite for long-running agents.
+  - Older messages always stay in storage, even after compaction.
+- **Crash recovery.**
+  - Each task is a durable state machine that saves a checkpoint at every step. A new process opens the storage, finds unfinished tasks and calls `harness.resume()`.
+  - A cut-off model request is re-sent, and the partial answer stays in the transcript marked aborted. A request that keeps killing the process eventually ends.
+  - A cut-off tool call reruns only if the tool declares `replay: "safe"`. Otherwise the model is told the call was interrupted, along with the output stored so far.
+  - A `requestId` on a submission makes it exactly-once.
+  - Hooks that make decisions store them in a `memo`, where the first write wins.
+- **Tool execution.**
+  - Each tool call is its own task, and its intent is stored before it runs.
+  - Tools reach files and shell through an `ExecutionEnv`. The `env` function runs per tool call, so each conversation can use a different directory, container, remote VM or in-memory sandbox.
+  - Shipped: `NodeExecutionEnv` for local files. The README mentions pi-env's `RemoteExecutionEnv` and `LocalExecutionEnv`.
+  - Codemode runs model-written JavaScript in a QuickJS sandbox (`pi-codemode`) that can also resume after a restart. On Cloudflare you pass a `RemoteCodemodeSandbox`.
+  - The README does not document a built-in permission or approval system. The announcement shows an approval hook written as an extension (blocks `deploy`, asks in Slack).
+- **Client connection.**
+  - `conversation.watch()` returns the current view first, then each commit as Chord operations. These are "small enough to send over a socket", and you wire the transport yourself.
+  - `watchEvents()` converts commits into the coding agent's event shapes, at the cost of more bytes on the wire.
+  - The view holds a window of the newest 50 entries. `ConversationTranscript` handles reconnects and "load earlier".
+  - A late-joining or reconnecting client starts from the current view.
+  - I found no standard wire protocol. The Cloudflare example defines its own in `src/protocol.ts`.
+- **Background and long-running work.**
+  - Tasks are foreground by default, so Esc or an abort stops them and everything they own.
+  - A background task (`ownership: { kind: "conversation" }, background: true`) lets the conversation go idle while it runs, and an ordinary abort leaves it alone. The announcement gives a subagent and a reminder that fires tomorrow as examples.
+  - Tasks and conversations form one ownership tree, and aborts run bottom-up.
+  - Sleeps are stored (`runtime.sleepUntil`) and hold no invocation while waiting.
+  - Compaction is a task that runs in the background while the conversation continues. `reset()` and handoff start a new context.
+  - Subagents are not built in. A tool creates a child conversation it owns.
+- **Multiple clients and conversations.**
+  - Any number of clients can attach to any conversation, and any client can steer.
+  - Submitting to a busy conversation queues it in `pi.inbox`. `whenBusy: "steer"` joins the running work after the current tool round. A follow-up starts the next run.
+  - One harness runs many conversations concurrently. A conversation can fork at any entry and sees the parent's history without copying it.
+
+## 3. Differences from pi-coding-agent
+
+The coding-agent side comes from https://github.com/earendil-works/pi/tree/main/packages/coding-agent and the Pi 1.0 post. I did not re-verify the JSONL session tree or the four-tool default in the coding-agent docs, so those items are your premise, not confirmed here.
+
+| Aspect | Pi coding agent | Pi Durable (source) |
+|---|---|---|
+| Process model | "Runs on your (remote) machine, inside a terminal, driven by one person. If the process dies, you look at what happened and tell it to continue." | Process death is resumed automatically from checkpoints. Multiple humans can steer the same agents. |
+| Session state | Your premise: JSONL tree | Entries, documents and tasks in pluggable storage (SQLite, Durable Object, etc.) with atomic commits. JSONL is one optional backend. Forks share parent history. |
+| Core package | `pi-agent-core` loop | A separate `Harness` and task scheduler. |
+| Tools | Your premise: four tools | Built-ins are `CodingTools` (read, write, edit, bash), plus codemode and tool search. Each conversation selects its own tool set. Each call is a durable task with a `replay` declaration. |
+| Extensions | Your premise: in-process, full permissions | An extension is a named bundle of prompt sections, tools, hooks, tasks and documents. Conversations store extension names, never code. Extensions can be hot-replaced without stopping the agent. Hooks participate in durability. |
+| UI | TUI (`pi-tui`) | No UI is built in. UIs attach through `watch()`. Demos reuse the coding agent's TUI components. |
+| Subagents | The coding-agent README says it skips them | Not built in. A few lines of tool code build one. |
+| Where tools run | Local machine | The execution-environment interface allows the harness on one machine and tools on another. |
+
+## 4. Stated trade-offs
+
+- **Gains** (announcement): runs anywhere, long conversations through compaction, crash survival, multi-client steering, and malleability. The source is about 15,000 lines without tests, which Earendil gives as about 150k to 250k tokens, so an agent can read it.
+- **Costs and limits** (stated):
+  - It is experimental and the API may change.
+  - One process owns a storage, with no cross-process locking.
+  - Recovery re-sends cut-off model requests, which costs tokens.
+  - Non-idempotent tools must be written with replay semantics in mind. A tool without `replay: "safe"` is never rerun after a crash.
+  - A phase reruns from its top after a restart, so work after a wait must go in the next phase.
+  - SQLite can lose the newest commits on power or host failure.
+  - The `watchEvents()` compatibility layer costs more bytes than operations.
+  - Storage conformance suites and benchmarks ship in the package, but I found no published latency numbers.
+- **Not documented:** latency overhead, a security or permission model, and infrastructure cost comparisons. The announcement does not name them as trade-offs. The Cloudflare sample says it has "no authentication or rate limiting" and warns to add both before exposing a deployment.
+
+## 5. Cloudflare deployment
+
+Source: https://github.com/earendil-works/pi-durable-cloudflare, repo pushed 2026-11-10, depends on pi-durable 1.5.2.
+- One SQLite-backed Durable Object class, `Session`, holds the harness. Commits are DO storage transactions (`openDurableObjectSqliteStorage(ctx.storage)`). The README states that "multiple Pi storages opened through the Cloudflare adapter with the same storage object automatically share an operation queue."
+- Wake-up after eviction uses the `onWake` option. The harness arms no timers, and the host keeps a DO alarm armed from `harness.wake()` and calls `resume()` when it fires. The sample keeps a 60-second heartbeat alarm while work can run.
+- Clients connect over Cloudflare hibernating WebSockets. Each socket watches one conversation, receiving a first value and then Chord operations. A React client applies them. Each connection is tagged with a username for multiplayer.
+- The sample has features for forks, scheduled and recurring follow-ups, a search subagent, and an Activity view of live task ownership.
+- There is no Cloudflare Sandbox or container in the sample. I found no `env` or Sandbox usage in `src/chat.ts`, and `wrangler.jsonc` binds only the Durable Object. The pi-durable README mentions only `RemoteCodemodeSandbox` for Cloudflare. Remote tool execution is possible through the `ExecutionEnv` interface but is not demonstrated.
+- `wrangler.jsonc` enables observability and traces. The package emits telemetry spans (`pi.durable.phase`, etc.) through `pi-telemetry`.
+
+## 6. Terminology and diagrams worth reusing
+
+- The announcement has the harness definition quoted in section 2 and the "durable harness" framing. The Pi 1.0 post says "Pi must become more durable."
+- Terms: conversation, entry, commit, document, task, submission, steer vs follow-up, ownership tree, background task, `replay: "safe"`, memo, checkpoint, extension, execution environment.
+- Slack channel and thread analogy for forks: a channel is one conversation, and a thread is a fork at the message it replies to.
+- Checkout example: split payments with fail-fast abort and refund.
+- The announcement has a vacation-planner demo recording (restart mid-run, where only the unfinished search reruns). I found no architecture diagram.
+- The normative spec is at https://github.com/earendil-works/pi/blob/main/packages/durable/docs/spec.md. I did not read it.
+
+## Related repos by Earendil, not confirmed as part of pi-durable's design
+
+- `earendil-works/dquickts`: QuickJS with durable execution that snapshots the whole heap and resumes it in another process.
+- `earendil-works/gondolin`: a Linux microvm sandbox with a TypeScript control plane.
+- `earendil-works/absurd`: "An experiment in durability".
+- Third-party projects built on Pi Durable exist, such as `disler/durable-pi` and `HazAT/ultimate` (secondary, from GitHub search).
+
+## Not verified
+
+- The "Mario writes in more detail" post. Its link is on the Pi 1.0 page, but I did not locate or read it. The searches of mariozechner.at and lucumr.pocoo.org found no pi-durable article. Armin's "What is Codemode" post exists, but I did not read it.
+- The spec at `docs/spec.md`, the 30-plus examples, and the actual protocol file `src/protocol.ts` in the Cloudflare repo.
+- Any trial run, latency measurements, or security or permission behaviour beyond what the README states.
+- The Cloudflare Sandboxes product and any Cloudflare blog post.
+- The coding-agent claims in the premise: JSONL tree, four tools, extensions with full permissions. Only the README's "skips sub-agents and plan mode" and its extension and RPC modes were seen.</result>
+<usage><subagent_tokens>64661</subagent_tokens><tool_uses>58</tool_uses><duration_ms>70995</duration_ms></usage>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: we can drop this light this slide people already know who I am in the course | selected: shape:sb-s02-screen (geo)</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: let's update to include mCP and also called mode code mode which is now implemented in both so let's move them after skills so they match | selected: shape:sb-s08-cap (text: "Concept: rows appear one at a time; the ✗* build tension, th…")</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: let's change this one to match the same structure that we showed on the first slides regarding the layers of an a harness | selected: shape:sb-s09-screen (geo)</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: no need to separate into three and no need to mention the same items as the original slide I just wanted to match the same structure | selected: shape:sb-s09-t2 (geo: "Tools → pi-coding-agent: read, write, edit, bash")</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: let's get rid of the separation entry</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: there you go that's better | selected: shape:sb-s09-screen (geo)</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: didn't each part have some text on the original | selected: shape:sb-s09-screen (geo)</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: let's wrap each of the packages name into another box on the left side so they are all aligned and the explanations on the right side so they are online as well aligned as well | selected: shape:sb-s09-tui3 (geo: "pi-tui — terminal UI: editor, themes, keybindings, rendering…")</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: I liked this slide a lot but it was a little bit difficult to follow so we are going to iterate a little bit later once we we go through all these lights we're going to prototype the new slide deck and we can play a little bit with that | selected: shape:sb-s10-screen (geo)</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: can you remind me that Mom they are below never mind | selected: shape:sb-s12-screen (geo)</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: we need to bring the demo code into the Atlantic engineering folder authentic engineering folder next to the slides | selected: shape:sb-s12-screen (geo)</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: let's drop slide 14 and 15 | selected: shape:sb-s14-screen (geo)</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bohrvhimw</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>[Monitor expired after 30m with 20 events delivered. Re-arm it if you still need the watch.]</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bwn1htfww</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: we can drop this one as well | selected: shape:sb-s13-screen (geo)</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bwn1htfww</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: answer to all the questions I'm thinking that we can have some slides after the last one we left on the on the other part and the idea is to I think we can frame it from the side that basically what happens when you want to expand the behavior of the agent anyways outside in ways outside of what we already understand as a coordination coding agent and we can bring up the points of a long execution and durability and multiplayer and being able to run in multiple environments ask some ask s...(truncated)</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>ad707f149ed0622be</task-id>
+<tool-use-id>repl_c1e0d50d-136a-418b-9703-03f561e7374f</tool-use-id>
+<output-file>/tmp/claude-1000/-home-agus-workspace-filadd-agentic-engineering-famaf-extension-course/b57d1c55-c2ad-4c07-9fbe-ffab3826ec7f/tasks/ad707f149ed0622be.output</output-file>
+<status>completed</status>
+<summary>Agent "pi-durable task phases" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>Sources: spec = `packages/durable/docs/spec.md`, README = `packages/durable/README.md`, both on `main` of https://github.com/earendil-works/pi. I read them as raw files and did not run any trial. Spec line numbers refer to the file as of 2026-11-23.
+
+## 1. Lifecycle of a model request task and a tool call task
+
+**Model request: `pi.generation`** (spec §8.3, https://github.com/earendil-works/pi/blob/main/packages/durable/docs/spec.md; version 3)
+
+The checkpoint phases are `prepare` (initial, `{phase:"prepare", attempt:1}`), `request`, `retry`, `poll`, `tools`, `finish`, `drain`, `afterTools` and `yield`.
+
+- **`prepare`**
+  - One commit appends the planned `pi.system` entries and moves to `request`.
+  - The checkpoint then holds model, thinkingLevel, streamOptions and `cutoff` (the newest entry included in the request).
+  - Resume: it runs again from the top.
+- **`request`**
+  - Before the call, `pi.live.generation` is set (attempt number) by a deferred commit.
+  - Partial output is committed as `pi.live.generation.message`, throttled to every 100 ms by default. These commits are deferred: watches see them at once, and storage gets them with the next commit that reads `pi.live`, or within `persistWithinMs` (default 1000 ms).
+  - The terminal message is classified in one commit that also clears the partial.
+    - `stop`/`length` appends the `pi.assistant` entry.
+    - `toolUse` appends the assistant entry and starts the tool round, moving to `tools`.
+    - A retryable `error` appends the error entry and sleeps at `retry`.
+    - A deferred response sleeps at `poll`.
+    - Any other error, or `aborted` without an abort mark, appends the error entry and fails the task.
+  - Resume after a close: the request is re-sent with the same committed messages, model, thinking level and stream options, and `beforeRequest` runs again.
+  - Resume after a crash (the record's `restarts` &gt; 0):
+    - A leftover stored partial is first converted into an `aborted` `pi.assistant` entry.
+    - The attempt counts as failed. If the retry policy allows it, the task sleeps at `retry`, with the note "The host stopped while the model was answering, on attempt N".
+    - Otherwise the run ends `interrupted`.
+    - It is not re-sent immediately. After `restartLimit` crashes the run ends `restart_limit`.
+  - A crash before the first store leaves no aborted entry, and that attempt's usage is not recorded.
+- **`retry`**: waits until `until`, then returns to `prepare` with the next attempt. If run before `until`, it sleeps again.
+- **`poll`**
+  - The checkpoint holds the deferred `handle` and `pollAt`.
+  - On resume after a crash, a fetch that was in flight is charged as a failed attempt, but the deferred response is polled again instead of re-requesting.
+- **`tools`**: the task waits (`waiting` status, `allSettled`) on the round's tool tasks.
+- **`finish`, `drain`, `afterTools`, `yield`**: these are about hooks that run after a round or after the answer (afterRun, afterTools and onYield tasks). The abort and restart-limit rules for these phases are in spec §8.3.
+
+**Tool call: `pi.tool`** (spec §8.4; version 4)
+
+The checkpoint phases are `call` (initial), `execute` and `parked`. The spec comments `execute` as "Intent: `execute()` runs in the phase that commits it; reached as a phase only by recovery."
+
+- **`call`**
+  - It validates the arguments and runs the `beforeTool` chain.
+  - A deferred commit sets the slot in `pi.live.tools` to `running`.
+  - One commit then records intent: it moves to `execute` with the final arguments and `replay: "safe" | "unsafe"`.
+  - `execute()` runs in the same handler, then `afterTool` runs.
+  - The result commit appends one `pi.tool-result` entry, marks the slot `done` and completes with `{entryId, control}`.
+  - A tool that does not resolve, invalid arguments, or a block commit an error result with no intent.
+- **Partial output**
+  - Running output lives in the slot (`output`, `details`, `diagnostics`) as throttled, deferred commits (default 100 ms).
+  - Each run of `execute()` starts with empty output.
+- **`execute`** (reached only by recovery)
+  - If the stored and the current policy are both `safe`, it executes again with the stored arguments, wake and checkpoint, without `beforeTool`.
+  - Otherwise it commits an `interrupted` error result built from the durable partial output, and the task ends `failed`. If the run had been woken from a park, `cancel` runs first. The README says the same: "reruns on reopen only when it is declared `replay: "safe"`; otherwise the model gets an `interrupted` error result with the output committed so far."
+  - A close and a crash both leave `execute`, so a replay-unsafe run is never repeated.
+  - After `restartLimit` cut-offs it commits a `restart_limit` error result instead.
+- **`parked`**
+  - A tool can return a park (`sleeping` or `waiting`). One commit stores the latest details and diagnostics and the `parked` checkpoint.
+  - The `parked` handler runs when the park is woken. It commits intent (`execute` with the wake and checkpoint) and runs `execute()` again.
+  - A restart while parked runs no tool code (README line 426).
+- **Abort**: for `parked`, or `execute` with a wake, `cancel` runs first. An `aborted` error result is then committed from the slot's durable partial output.
+
+**Shared pattern:** spec §5.2 "Effect sandwich" is "commit intent phase / perform external effect / commit outcome or next phase". Its rule is that "Reopening in an intent phase means the effect may have happened."
+
+The word "safe" is a tool's `replay` field. "Interrupted notice" is the result the model gets in the transcript.
+
+## 2. Commit, entries, tasks, documents
+
+Spec §1 states the core rule: "A Session atomically commits immutable entries, full task records, and Chord-tracked documents. Only committed state is observable."
+
+- An entry (`EntryRecord`) is an immutable transcript record in one conversation. Its fields are `id`, `conversationId`, `kind`, optional `model` (messages), `data`, `head`, `edits` and `byTaskId`. Entry ids are Session-global, ordered and never reused.
+- A task is a durable state machine, stored as a `TaskRecord` holding its input, a checkpoint and a state (`pending`, `running`, `waiting`, `sleeping`, `completing`, `terminal`).
+- Memos are small JSON values inside the live task record.
+- A document is mutable JSON, stored as one base plus later deltas (Chord ops).
+- The storage layer (§10) takes a commit as a batch of writes: `conversation`, `entry`, `task`, `submission`, `document.create`, `document.copy`, `document.change` and `document.retire`. All are atomic with one `seq`. The mutation line runs one commit callback at a time, and storage writes are group-committed.
+- Deferred commits may touch only existing conversation documents. They are visible to watchers before they are stored, and a crash loses them.
+- A terminal task transition writes the terminal record, appends result entries, retires the task's documents and settles submissions in one commit (§5.3).
+
+## 3. defineTask, sleepUntil, signals
+
+- **`defineTask`** (§5.1): the definition is `{name, version, initial(input), phases, abort, migrate?, hooks?}`. `phases` is a handler per `phase` value in the checkpoint. A phase handler ends by calling `runtime.commit(...)` with the next state: `running` with a new checkpoint, `waiting`, `sleeping` or `terminal`. After a crash or close, a phase reruns from its top. `abort` is the handler for aborts.
+- **`runtime.sleepUntil(until, checkpoint, context)`** (§5.6): it commits a sleep and resolves when the sleep is stored. The phase then returns, and the task resumes at the checkpoint once the Harness clock (`HarnessOptions.now`, epoch ms) reaches `until`. Deadlines survive reopens. The spec says "There is no sleep inside a phase", so work after the wait goes in the next phase. Work before the sleep is not exactly-once.
+- **Signals** (§5.7): `defineSignal({name, version, schema})` gives a token, and `token.key("k")` names one wait.
+  - A task sleeps with `{status:"sleeping", signals:[...], until?}`.
+  - `harness.signal()` or `tx.signal()` delivers a value, with result `delivered`, `duplicate`, `invalid`, `closed` or `not_found`.
+  - The value is stored in the task's memos as `pi.signal.&lt;name&gt;/&lt;key&gt;`. A value delivered early is kept.
+  - On wake, `runtime.readSignal` returns `{kind:"value"}` or `{kind:"expired"}`.
+  - The wake reason is `time`, `expired`, `signal` or `tasks`. Each key can wake a task only once.
+
+## 4. Pi coding agent sessions
+
+Sources: `session-format.md` and `sessions.md` under https://github.com/earendil-works/pi/tree/main/packages/coding-agent/docs. I also read `src/core/session-manager.ts`.
+
+- **Storage:** JSONL at `~/.pi/agent/sessions/--&lt;path&gt;--/&lt;timestamp&gt;_&lt;session-id&gt;.jsonl`. The header is currently version 3.
+- **Entry types:** `session` (header, not in the tree), `message`, `model_change`, `thinking_level_change`, `usage`, `compaction`, `context_edit`, `branch_summary`, `custom`, `custom_message`, `label` and `session_info`.
+- **Tree:** every non-header entry has `id`, `parentId` (null for a root) and an ISO `timestamp`. Branching adds children to an earlier entry, in the same file. The leaf is the current position.
+- **Context building:** it walks leaf to root and honours the latest compaction (`firstKeptEntryId`).
+- **When entries are appended** (source code only): `_appendEntry` calls `_persist`, which does a synchronous `appendFileSync` of one line per entry. The file is created lazily on the first persist after the session contains a user or assistant message. At that point all entries so far are written in one go.
+- **In-flight turn if the process dies:** neither doc says anything about this. I found no statement in `session-format.md`, `sessions.md`, `sdk.md` or `how-pi-works.md`. From the code, an entry is only in the file once `_appendEntry` ran for it. I did not verify at which agent event (for example, message end) the manager appends. The docs and code I read show no resume or repair of a partial turn.
+
+## 5. ExecutionEnv
+
+- **Interface:** `ExecutionEnv extends FileSystem, Shell` (`packages/durable/src/env/index.ts`, `@earendil-works/pi-durable/env`).
+  - `FileSystem` has `id`, `absolutePath`, `joinPath`, `readTextFile`, `openTextLineReader`, `readTextLines`, `readBinaryFile`, `openBinaryReader`, `writeFile`, `appendFile`, `truncateFile`, `flushFile`, `renameFile`, `fileInfo`, `listDir`, optional `listFiles`, `openDirReader`, `watch`, `canonicalPath`, `exists`, `createDir`, `remove`, `createTempDir`, `createTempFile` and `cleanup`.
+  - `Shell` has `exec(command: string | string[], options, context)` and `cleanup`. A string command runs through a shell; an array runs the program directly.
+  - Methods return `Result&lt;T, FileError | ExecutionError&gt;`.
+- **`NodeExecutionEnv`:** import from `@earendil-works/pi-durable/env/node`, constructed as `new NodeExecutionEnv({cwd})`. It does not implement `listFiles`.
+- **pi-env** (https://github.com/earendil-works/pi/tree/main/packages/env):
+  - `RemoteExecutionEnv({connection, id, cwd})` talks to a Rust daemon over SSH. It implements `listFiles`.
+  - `LocalExecutionEnv({cwd, connection})` is `NodeExecutionEnv` plus `listFiles` through a local daemon.
+- **Can the env change between tool calls?** Yes, per the README and spec, both documentation:
+  - `HarnessOptions.env(target)` receives `{conversationId, cwd, read}`. README: "builds the execution environment for each tool call".
+  - A tool's `api.env` is built right before executing (§8.4). A fresh object per call is fine.
+  - `edit` and `write` serialize per env `id` and path, so equal ids must mean the same files.
+  - A throw from `env` becomes the call's error result.
+  - Because the function runs per call and receives `read`, an app can return a different env (different `cwd` or container) on a later call. The docs say "one container per conversation" is the intended use but do not describe switching mid-conversation. I did not run a trial.
+
+## 6. watch and submit
+
+- **`conversation.watch(context, window?)`** (README §Watching a Conversation, spec §9.3) returns a watch.
+  - `watch.value` is the view at attachment. `watch.start(listener)` receives `{kind:"value", value, ops, retired}` calls.
+  - `stop()` and `closed` give a `WatchEnd`: `stopped`, `aborted`, `ended`, `listener_error` or `failed`.
+  - The window is `{from?, min=50, max=2*min}`.
+  - Related methods:
+    - `harness.observeConversation`, `observeTaskGraph` and `observeDoc`: synchronous observers with `advance` and `detach`.
+    - `ConversationTranscript` helpers: `merge`, `loadEarlier`, `fillGap`, `resume`.
+    - `conversation.entries()`: paged scans.
+- **`watchEvents()`:** I found no such name in the README, the spec, `packages/coding-agent/docs/sdk.md` or `packages/durable/src/env`. I did not search the rest of the repository.
+- **`submit(draft, context)`:**
+  - `type:"input"` takes `content`, `whenBusy?: "steer" | "followUp" | "reject"`, `whenIdle?: "reject"`, `onAbort?: "withdraw" | "keep"`, `requestId?` and `notify?`.
+  - `type:"write"` takes `entry`. `type:"continue"` takes nothing.
+  - The default `whenBusy` is follow-up.
+  - `"reject"` throws `ConversationBusy`; `whenIdle:"reject"` throws `ConversationIdle`.
+  - Steers are placed after the current tool round. Follow-ups are placed when the run answers and start the next run.
+  - Related methods: `admit(tx, draft)` (the same admission inside your own commit), `submission.wait()`, `submission.abort(context)`, `harness.submission(id)`.
+  - The same `requestId` returns the same submission.
+- **What a late client receives:**
+  - The README says "A client that joins late or reconnects starts from the current view; nothing is replayed."
+  - That view is the newest 50 entries plus `pi.live`, `pi.inbox`, `pi.usage`, `pi.agent` and `pi.provider`, including the in-progress partial.
+  - With `from`, it gets entries after that id. If more than 10,000 ops are pending, a client gets one root replacement `[["r", view]]`.
+
+## Not verified
+
+- No trial was run, so nothing above is a verified fact. All of it comes from source and documentation.
+- Pi coding-agent behaviour when the process dies mid-turn, and the agent event at which entries are appended.
+- `watchEvents()`: no source found.
+- Whether an env can be switched mid-conversation: stated by inference from the per-call builder only.
+- Package versions and release dates were not collected. The package files were not read and the question did not ask for them.</result>
+<usage><subagent_tokens>102832</subagent_tokens><tool_uses>80</tool_uses><duration_ms>86104</duration_ms></usage>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bwn1htfww</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: I don't like this diagram because it doesn't represent the structure like pie a i should be in the bottom since it's the basis for the connection like the other diagrams and also the harness is not really a component on its own it's the represents the whole thing doesn't it | selected: shape:sb-p2-screen (geo)</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bwn1htfww</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: I think we can add storage as a good an extra feature on the first slide and as an extra slide like this idea explaining that we can save this session anywhere basically I think it's a nice point to bring up and regarding the order I think we should start with the simpler ones like a storage is the most basic then execution environments then durability and lastly multiplayer I think that order goes from simpler or more predictable tomorrow in testing more interesting so people stay engage...(truncated)</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bwn1htfww</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>voice: okay I think we're good to go and let's create the slides following the same style as the previous slides that we put together and we can use the Prototype skill for the review you don't need to create multiple variants only create one following the same styles that we have been doing but use the tool explain there for the review | selected: shape:sb (mock area)</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bwn1htfww</task-id>
+<summary>Monitor event: "Session 5 canvas: Send to Agent clicks and voice messages"</summary>
+<event>[Monitor expired after 30m with 5 events delivered. Re-arm it if you still need the watch.]</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>ab03122f21df66771</task-id>
+<tool-use-id>repl_49651d72-48de-45e7-b69e-6e89bf5f8051</tool-use-id>
+<output-file>/tmp/claude-1000/-home-agus-workspace-filadd-agentic-engineering-famaf-extension-course/b57d1c55-c2ad-4c07-9fbe-ffab3826ec7f/tasks/ab03122f21df66771.output</output-file>
+<status>completed</status>
+<summary>Agent "Build Session 5 deck prototype" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>The deck is built as one self-contained HTML file. It has 18 slides, because slide 9 is split into 9a and 9b as you asked.
+
+**Checks I ran in agent-browser at 1600×900:**
+- I walked the whole deck with ArrowRight. Every slide reached its last step and the URL hash followed (`#2.4`, `#7.9`, …).
+- At each slide's last step, a script looked for elements that spill past the slide or clip their content. It found three layout problems (a wide code window on slide 10, a wrapping bottom line on 9b, wrapped code on 17), plus some bugs I saw in the screenshots. I fixed them all and re-checked; nothing overflows now.
+- I put the deck inside an iframe. It sent its manifest, followed a `kurasu:go {slide: 10, step: 5}` to the right position, and hid its own HUD.
+- Nothing was committed. `.scratch` is ignored by your global gitignore, so `git status` is clean.
+
+**Style and API:** CSS and JS come from the session 4 deck: palette, fonts, mascot, step animations, `fitTitles`, keyboard navigation, the HUD and the kurasu block. Inside the iframe the deck ignores the keyboard and the address bar and leaves the controls to the web. Its step 0 counts as kurasu's step 1, the same as in session 4. Speaker notes are a `&lt;!-- Notas: … --&gt;` comment after each slide.
+
+**Slides** (deck steps; kurasu counts one more per slide):
+
+| # | Slide | Steps |
+|---|---|---|
+| 1 | Portada | 0 |
+| 2 | Harnesses (LLM showing; then tools/memoria/contexto, loop, interfaz, "harness" bracket) | 4 |
+| 3 | Ejemplos de harnesses | 3 |
+| 4 | Agentes de código | 3 |
+| 5 | ¿Qué es Pi? | 5 |
+| 6 | La misma filosofía | 2 |
+| 7 | La diferencia en números | 9 |
+| 8 | Arquitectura (bottom up) | 4 |
+| 9a | Extensiones: la vida de una sesión | 5 |
+| 9b | Extensiones: el agent loop | 8 |
+| 10 | Extensiones: API programática | 4 |
+| 11 | Demo | 3 |
+| 12 | ¿Y si queremos más que un coding agent? | 4 |
+| 13 | Arquitectura de pi-durable | 5 |
+| 14 | La sesión se guarda donde quieras | 2 |
+| 15 | Entornos de ejecución | 3 |
+| 16 | Durabilidad | 5 |
+| 17 | Multiplayer | 4 |
+
+**Manifest:**
+```
+{ type: "kurasu:manifest", slides: [{steps:1},{steps:5},{steps:4},{steps:4},{steps:6},{steps:3},{steps:10},{steps:5},{steps:6},{steps:9},{steps:5},{steps:4},{steps:5},{steps:6},{steps:3},{steps:4},{steps:6},{steps:5}] }
+```
+
+**Choices I made where the brief left room or I wasn't sure:**
+- **Slide 9b, the loop:** I put `context` inside the cycle, because Pi fires that event before every model call. The return arrow goes tool_result → context → LLM call, labelled "vuelve al LLM hasta que no pida más tools". If you want the arrow to land straight on the LLM, `context` has to move out of the cycle.
+- **Slide 9a, descriptions I wrote myself:**
+  - resources_discover says "las extensiones suman skills, prompts y temas". The talk spec said MCP servers, which Pi doesn't ship.
+  - Each hook has a trigger: `/new, /resume`, `/fork`, compacting, `/tree`.
+  - The caption says the extension "puede frenarlo o cambiar cómo se hace". I didn't check that wording against Pi's docs.
+- **Slide 10, the messages window:** it names the three modes in comments but no option field, because I don't know the exact parameter that `sendMessage`/`sendUserMessage` take.
+- **Slide 13:** I marked the middle row (tareas, entorno de ejecución) as "nuevo" too, since only the top row is the same as the coding agent.
+- **Slide 17:** the brief has client B "send a follow-up", so B's card shows `whenBusy: "followUp"`. pi-durable's options are steer, followUp and reject. The link back to slide 10 says "steer · followUp · nextTurn", as the brief asked.
+- **Slide 5:** I added a bar comparing Pi's prompt (&lt; 1.000 tokens) with ~5.000+ for a "todo de fábrica" agent.
+- **Portada:** "Pi:" is big on one line with the rest of the title below it, because the full title doesn't fit on one line. The kicker reads "Última clase · el harness".
+- **Placeholders:** the windows on slide 3 are drawn mockups with a "captura" badge, waiting for real screenshots.
+
+Nothing mentions tentacles, and the about-me, conclusions, questions and sources slides are not there.
+
+result: Pi deck prototype for the harness hour (18 slides, kurasu API like session 4) at /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/session-5/prototypes/deck.html</result>
+<usage><subagent_tokens>203942</subagent_tokens><tool_uses>429</tool_uses><duration_ms>626967</duration_ms></usage>
+</task-notification>
+
+---
+
+hmm i can't move through slides, is it a plannotator issue?
+
+---
+
+<task-notification>
+<task-id>be6oth3l0</task-id>
+<tool-use-id>repl_286fd6e9-5b85-4e9b-9c12-48fb7613e9ca</tool-use-id>
+<output-file>/tmp/claude-1000/-home-agus-workspace-filadd-agentic-engineering-famaf-extension-course/b57d1c55-c2ad-4c07-9fbe-ffab3826ec7f/tasks/be6oth3l0.output</output-file>
+<status>completed</status>
+<summary>Background command "plannotator annotate --render-html '/home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/session-5/prototypes/deck.html' --title 'Sesión 5 · deck del harness'" completed (exit code 0)</summary>
+</task-notification>
+
+---
+
+open it again
+
+---
+
+open it again once you're done
+
+---
+
+<task-notification>
+<task-id>ab03122f21df66771</task-id>
+<tool-use-id>repl_315adcda-1d52-4a33-8899-5e6bd6994c5b</tool-use-id>
+<output-file>/tmp/claude-1000/-home-agus-workspace-filadd-agentic-engineering-famaf-extension-course/b57d1c55-c2ad-4c07-9fbe-ffab3826ec7f/tasks/ab03122f21df66771.output</output-file>
+<status>completed</status>
+<summary>Agent "Build Session 5 deck prototype" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>All eleven round-2 corrections are applied to the same deck file, and your kurasu change is kept: the deck uses its own keys until the first `kurasu:go` arrives. Nothing was committed.
+
+**Checks:** in agent-browser at 1600×900 I walked all 18 slides with ArrowRight. Every slide reached its last step, the hash followed, and the overflow check found nothing on any slide. I also confirmed slide 14's first step and read the manifest from an iframe.
+
+**Changes per slide:**
+- **3 · Ejemplos:** the three real screenshots from the talk (`ChatGPT.app`, `lovable.app`, `claude — zsh`) are embedded as webp data URIs. They are wide (about 2:1), so the slide now shows three slightly overlapping windows, each with its label (chat web, vibe coding visual, coding agent en terminal) in the title bar. Steps are still 3.
+- **4 · Agentes de código:** the talk's logos are on the Claude Code and Codex windows. The talk's "Anthropic" image is the Claude Code pixel mascot, and its "OpenAI" image is the Codex icon, so those are the marks shown.
+- **6 · La misma filosofía:** the chips show the real VS Code, Vim and Claude Code icons from the talk, plus the Pi mark redrawn as inline SVG from the talk's path in the deck colours. The "editor"/"agente" labels are gone.
+- **8 · Arquitectura:** top to bottom it is now pi-tui, pi-coding-agent, pi-agent-core, pi-ai, revealed from the bottom up. The notes explain why agent-core sits lower.
+- **12 · Demo:** only "Demo" and the mascot, centered (0 steps). The mascot jumps when the slide opens. The three demos stay in the speaker notes.
+- **13 · PD1:** "agente general" is on the left with the same subtitle. The four "y si… …" lines are stacked on the right in your order, one per step. The title is unchanged.
+- **14 · PD2:**
+  - Step 1 shows the legend, the empty harness frame and pi-ai; then row 1, row 2, storage, and the clients last.
+  - "watch() + submit()" is gone and the client boxes are spaced apart.
+  - A dashed note beside the clients says pi-durable doesn't ship a client the way the coding agent ships pi-tui: you build it.
+- **16 · Entornos:** under the "puede vivir en otra máquina" line, three use cases appear one per step: sandbox, agente remoto con varios sistemas, sesión que se mueve entre entornos (6 steps now).
+- **17 · Durabilidad:** a full-width "Las tareas se anidan" note is the new step 6. It covers child tasks with `failFast` / `allSettled` / `any`, the single ownership tree, the bottom-up abort, and the model call waiting on its round's tool tasks with `allSettled`. The notes cite spec §5 and the README. I took these facts from your message, not from the spec itself.
+
+**New manifest:**
+```
+{ type: "kurasu:manifest", slides: [{steps:1},{steps:5},{steps:4},{steps:4},{steps:6},{steps:3},{steps:10},{steps:5},{steps:6},{steps:9},{steps:5},{steps:1},{steps:5},{steps:6},{steps:3},{steps:7},{steps:7},{steps:5}] }
+```
+Compared with round 1, slide 12 drops from 4 to 1, and slides 16 and 17 go from 4 and 6 to 7.
+
+**Couldn't source:**
+- **Logos for Amp, Droid, Aider, Cline and Goose:** the talk showed them only as text chips, and `05_Attachments` has none. They stay as a text list in the `otros/` window. I didn't draw marks I'm not sure of.
+- **A separate Anthropic or OpenAI company logo:** the talk used the Claude Code and Codex product icons instead.
+
+The screenshots, the slide 4 logos and the slide 6 icons all come from the talk deck. The file is still self-contained, now 119 KB.
+
+result: Round 2 applied to the Pi deck: real screenshots and logos from the talk, new order on the architecture slide, Demo slide reduced to title and mascot, PD1/PD2/PD4/PD5 reworked; manifest [1,5,4,4,6,3,10,5,6,9,5,1,5,6,3,7,7,5] at /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/session-5/prototypes/deck.html</result>
+<usage><subagent_tokens>264072</subagent_tokens><tool_uses>477</tool_uses><duration_ms>403645</duration_ms></usage>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>b4xm10yde</task-id>
+<tool-use-id>repl_8ec20f74-6330-453f-9c3b-99f683f0cf83</tool-use-id>
+<output-file>/tmp/claude-1000/-home-agus-workspace-filadd-agentic-engineering-famaf-extension-course/b57d1c55-c2ad-4c07-9fbe-ffab3826ec7f/tasks/b4xm10yde.output</output-file>
+<status>completed</status>
+<summary>Background command "plannotator annotate --render-html '/home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/session-5/prototypes/deck.html' --title 'Sesión 5 · deck del harness'" completed (exit code 0)</summary>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>ab03122f21df66771</task-id>
+<tool-use-id>repl_b9814b3e-4e2f-43d8-a5a9-6d9fc9ef4610</tool-use-id>
+<output-file>/tmp/claude-1000/-home-agus-workspace-filadd-agentic-engineering-famaf-extension-course/b57d1c55-c2ad-4c07-9fbe-ffab3826ec7f/tasks/ab03122f21df66771.output</output-file>
+<status>completed</status>
+<summary>Agent "Build Session 5 deck prototype" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>I applied all three round-3 corrections to the deck, which now has 19 slides. Nothing was committed.
+
+**Checks:** in agent-browser at 1600×900 I walked all 19 slides with ArrowRight. Every slide reached its last step (the last one is `#19.4`) and none overflows. The kurasu manifest, read from an iframe, matches the new slide count. I fixed the new slide's layout after the first screenshot, so I checked slide 19 again, at its first and last steps, after the fix.
+
+**Changes:**
+- **Slide 13 (PD1):**
+  - The left card's title is now "agente", with the same subtitle; the speaker notes say "un agente" to match.
+  - The four what-ifs are in the potential form, same order and still one per step: "y si… quisiéramos guardar la sesión en cualquier lado", "y si… las tools pudieran ejecutarse en otro lado", "y si… el agente pudiera correr por horas o días", "y si… varias personas pudieran seguir y dirigir la misma sesión".
+- **New slide 19, "Coding agent vs pi-durable":**
+  - It sits after Multiplayer: a "coding agent" row on top and a "pi-durable" row below, with one column per aspect in slide order (Storage, Entorno de ejecución, Durabilidad, Multiplayer).
+  - Each step reveals one column, so 4 steps.
+  - The coding agent row uses slide 14's green (the colour labelled "igual que en el coding agent") and the pi-durable row its pink ("nuevo").
+  - Card texts are as you wrote them.
+  - The speaker notes say neither is better and pi-durable doesn't replace the coding agent: they are different answers to the same design decisions.
+
+**New manifest:**
+```
+{ type: "kurasu:manifest", slides: [{steps:1},{steps:5},{steps:4},{steps:4},{steps:6},{steps:3},{steps:10},{steps:5},{steps:6},{steps:9},{steps:5},{steps:1},{steps:5},{steps:6},{steps:3},{steps:7},{steps:7},{steps:5},{steps:5}] }
+```
+
+result: Round 3 applied to the Pi deck: "agente" card title, what-ifs in the potential form, new final slide comparing the coding agent and pi-durable (4 steps); manifest [1,5,4,4,6,3,10,5,6,9,5,1,5,6,3,7,7,5,5] at /home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/session-5/prototypes/deck.html</result>
+<usage><subagent_tokens>284705</subagent_tokens><tool_uses>182</tool_uses><duration_ms>185311</duration_ms></usage>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bcrtgu2et</task-id>
+<tool-use-id>repl_7dca6a53-677e-49e3-8596-93c64d73c1bd</tool-use-id>
+<output-file>/tmp/claude-1000/-home-agus-workspace-filadd-agentic-engineering-famaf-extension-course/b57d1c55-c2ad-4c07-9fbe-ffab3826ec7f/tasks/bcrtgu2et.output</output-file>
+<status>completed</status>
+<summary>Background command "plannotator annotate --render-html '/home/agus/workspace/filadd/agentic-engineering-famaf-extension-course/.scratch/session-5/prototypes/deck.html' --title 'Sesión 5 · deck del harness'" completed (exit code 0)</summary>
+</task-notification>
+
+---
+
+let's stop the canvas and move the new deck and sildes into the main folder for session 5 and commit in a new branch to create a PR
+sync the same changes into the vault
