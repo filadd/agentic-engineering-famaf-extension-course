@@ -91,7 +91,7 @@ Cómo correr cada una está en `demos/README.md`. **No tipear en vivo** salvo la
 - Cómo implementa Pi 1 el MCP (`exposure`, code mode por dentro): solo aparece como una fila de la tabla.
 - La propuesta de Diego `propuesta-mcp/` (transportes, code mode y FastMCP): queda en pausa.
 - Los documentos de pi-durable: son interesantes pero confunden y no suman a la comparación.
-- La extensión como tarea: no hay clase después de esta para revisarla.
+- El ejercicio: la sesión no tiene práctica ni tarea. La extensión de tarea del diseño anterior se sacó, porque no hay clase después de esta para revisarla.
 
 ## Pendientes
 
@@ -99,4 +99,3 @@ Cómo correr cada una está en `demos/README.md`. **No tipear en vivo** salvo la
 - **Logos de Amp, Droid, Aider, Cline y Goose** en la slide 4: hoy son texto.
 - **Revisar contra las docs de Pi** el texto de la slide 9 (qué aporta `resources_discover` y "puede frenarlo o cambiar cómo se hace") y el parámetro de los modos de entrega de `sendMessage` en la slide 11.
 - **Confirmar que Claude Code tiene code mode**, como dice la tabla de la slide 7.
-- **`exercise/README.md`** sigue describiendo la extensión de tarea del diseño anterior.
