@@ -31,4 +31,4 @@ npm run dev
 
 El modelo (`proveedor/modelo`, por defecto `zai/glm-5.2`) y la API key se cargan desde el engranaje de la app y quedan en el `localStorage` del navegador. El pedido de la charla: *"armame una landing page para una cafetería"*.
 
-Las versiones de los paquetes (`@earendil-works/pi-ai` y `pi-agent-core` 0.79) son las de la charla; con Pi 1 puede hacer falta actualizarlas.
+Sirve cualquier `proveedor/modelo` del catálogo de `pi-ai` (salvo Amazon Bedrock, que no corre en el navegador). Como el navegador no tiene variables de entorno, la key se pasa explícita en cada pedido.

@@ -25,9 +25,9 @@ This is the closer for the "Pi, the self-building agent" talk (~5 min). The enti
 └─────────────────────┴──────────────────────────┘
 ```
 
-**Tech stack**: Vite + TypeScript, vanilla DOM (no framework), `@earendil-works/pi-agent-core/base` + `@earendil-works/pi-ai/base`.
+**Tech stack**: Vite + TypeScript, vanilla DOM (no framework), `@earendil-works/pi-agent-core` + `@earendil-works/pi-ai` + `@earendil-works/pi-schema` (tool parameters).
 
-**LLM**: Configurable at runtime via a settings screen. User enters a `provider/model` string (e.g. `zai/glm-5.2`) and an API key. Common provider APIs (openai-completions, anthropic-messages, etc.) are registered at startup so any model works. Settings persist in `localStorage`.
+**LLM**: Configurable at runtime via a settings screen. User enters a `provider/model` string (e.g. `zai/glm-5.2`) and an API key. Every built-in provider is registered at startup (`builtinModels()`) so any model in the catalog works. Settings persist in `localStorage`.
 
 ### Key components
 
@@ -40,13 +40,14 @@ This is the closer for the "Pi, the self-building agent" talk (~5 min). The enti
    - `get_console()` — return captured `console.log`/error output from the iframe
    - `reload()` — force-reload the iframe preview
 
-3. **Agent** — `Agent` from `@earendil-works/pi-agent-core/base`, configured with:
+3. **Agent** — `Agent` from `@earendil-works/pi-agent-core`, configured with:
    - Custom system prompt instructing it to build a single self-contained HTML page
    - The five browser tools
-   - `getApiKey` callback that reads the key from settings
-   - Model: resolved from the settings `provider/model` string via `getModel(provider, model)`
+   - `streamFn: models.streamSimple.bind(models)`
+   - `getApiKey` callback that reads the key from settings (browsers have no env vars, so the key is passed explicitly)
+   - Model: resolved from the settings `provider/model` string via `models.getModel(provider, model)`
 
-4. **LLM provider** — common provider APIs registered at startup (`openai-completions`, `anthropic-messages`). Calls go directly to the provider endpoint via native `fetch`. No backend proxy.
+4. **LLM provider** — a `Models` collection from `builtinModels()` (`@earendil-works/pi-ai/providers/all`); provider SDKs load lazily on the first request. Calls go directly to the provider endpoint via native `fetch`. No backend proxy.
 
 5. **Preview renderer** — when the single file changes, sets `iframe.srcdoc` to the new content. Injects a console-capture script that posts `console.log` and errors back to the parent via `postMessage`.
 
@@ -76,12 +77,10 @@ demo-3-browser-agent/
 
 ## Reuse
 
-- `Agent` class and `AgentTool` interface from `@earendil-works/pi-agent-core/base`
-- `getModel`, `Type` (typebox) from `@earendil-works/pi-ai/base`
-- Provider `register()` from `@earendil-works/pi-ai/openai-completions` (and `anthropic-messages` if needed)
-- `streamSimple` is used internally by `Agent` as the default `streamFn` — no need to import it explicitly
-- The base README documents this exact browser pattern: `import { Agent } from "@earendil-works/pi-agent-core/base"; import { getModel } from "@earendil-works/pi-ai/base"; register();`
-- `getModel(provider, model)` parses the `provider/model` settings string
+- `Agent` class and `AgentTool` interface from `@earendil-works/pi-agent-core`
+- `builtinModels()` from `@earendil-works/pi-ai/providers/all`; `models.getModel(provider, model)` resolves the `provider/model` settings string
+- `obj`, `str` from `@earendil-works/pi-schema` for the tool parameters (JSON Schema that also types `params`)
+- `models.streamSimple` is passed to `Agent` as `streamFn`; the pi-ai README's "Browser Usage" section documents passing the API key explicitly
 
 ## System prompt (draft)
 
@@ -102,12 +101,12 @@ Be concise in your explanations — let the code speak.
 ## Steps
 
 - [ ] Scaffold Vite + TypeScript project
-- [ ] Install `@earendil-works/pi-agent-core@^0.79.9` and `@earendil-works/pi-ai@^0.79.9`
+- [ ] Install `@earendil-works/pi-agent-core@^1.6.0`, `@earendil-works/pi-ai@^1.6.0` and `@earendil-works/pi-schema@^1.6.0`
 - [ ] Verify Z.AI GLM-5.2 bundles cleanly for the browser (OpenAI SDK + `openai-completions` provider)
 - [ ] Implement single-file store (string + callback-based change notifications)
 - [ ] Implement browser tools: `read`, `write`, `get_screenshot`, `get_console`, `reload`
 - [ ] Implement settings modal (`provider/model` text field + API key password field, persisted in localStorage)
-- [ ] Register common provider APIs at startup (openai-completions, anthropic-messages)
+- [ ] Register the built-in providers at startup (`builtinModels()`)
 - [ ] Implement agent setup (system prompt, model from settings, tools, `getApiKey`)
 - [ ] Build two-panel HTML layout + CSS
 - [ ] Build chat UI (agent event subscription → DOM updates)

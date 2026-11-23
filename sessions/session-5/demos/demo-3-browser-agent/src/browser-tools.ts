@@ -9,8 +9,8 @@
  * - reload:         Force-reload the preview
  */
 
-import type { AgentTool } from "@earendil-works/pi-agent-core/base";
-import { Type } from "@earendil-works/pi-ai/base";
+import type { AgentTool } from "@earendil-works/pi-agent-core";
+import { obj, str } from "@earendil-works/pi-schema";
 
 import { getFile, setFile } from "./file";
 import { getScreenshot, getConsole, reload as reloadPreview } from "./preview";
@@ -20,7 +20,7 @@ const readTool: AgentTool = {
 	name: "read",
 	label: "Read",
 	description: "Read the current HTML content of the page.",
-	parameters: Type.Object({}),
+	parameters: obj({}),
 	execute: async () => {
 		const content = getFile();
 		return {
@@ -35,29 +35,25 @@ const readTool: AgentTool = {
  * Pass an empty `oldText` to append `newText` to the end of the file.
  * Use `description` to narrate what this edit adds.
  */
-const editTool: AgentTool = {
+const editParameters = obj({
+	description: str({
+		description: "A short description of what this edit does, e.g. 'Adding the hero section'.",
+	}),
+	oldText: str({
+		description: "The exact text to replace. Use an empty string to append to the end of the file.",
+	}),
+	newText: str({
+		description: "The replacement text (or the new chunk to append if oldText is empty).",
+	}),
+});
+
+const editTool: AgentTool<typeof editParameters> = {
 	name: "edit",
 	label: "Edit",
 	description:
 		"Edit the HTML page by replacing a chunk. Pass empty oldText to append. Always describe what you're adding.",
-	parameters: Type.Object({
-		description: Type.String({
-			description: "A short description of what this edit does, e.g. 'Adding the hero section'.",
-		}),
-		oldText: Type.String({
-			description: "The exact text to replace. Use an empty string to append to the end of the file.",
-		}),
-		newText: Type.String({
-			description: "The replacement text (or the new chunk to append if oldText is empty).",
-		}),
-	}),
-	execute: async (_id, params) => {
-		const { description, oldText, newText } = params as {
-			description: string;
-			oldText: string;
-			newText: string;
-		};
-
+	parameters: editParameters,
+	execute: async (_id, { description, oldText, newText }) => {
 		const current = getFile();
 
 		// Append mode: empty oldText adds newText to the end.
@@ -87,7 +83,7 @@ const getScreenshotTool: AgentTool = {
 	name: "get_screenshot",
 	label: "Screenshot",
 	description: "Capture the rendered preview page as a base64-encoded SVG image to visually verify your work.",
-	parameters: Type.Object({}),
+	parameters: obj({}),
 	execute: async () => {
 		const screenshot = await getScreenshot();
 		// Return as image content if it looks like base64, otherwise as text error
@@ -112,7 +108,7 @@ const getConsoleTool: AgentTool = {
 	name: "get_console",
 	label: "Console",
 	description: "Read browser console output and errors from the preview page. Useful for debugging JavaScript.",
-	parameters: Type.Object({}),
+	parameters: obj({}),
 	execute: async () => {
 		const output = getConsole();
 		return {
@@ -127,7 +123,7 @@ const reloadTool: AgentTool = {
 	name: "reload",
 	label: "Reload",
 	description: "Force-reload the preview page. Clears the console and re-renders the current HTML.",
-	parameters: Type.Object({}),
+	parameters: obj({}),
 	execute: async () => {
 		reloadPreview();
 		return {
@@ -138,16 +134,17 @@ const reloadTool: AgentTool = {
 };
 
 /** Fetch content from a URL (HTTP GET) for research. Subject to CORS. */
-const fetchTool: AgentTool = {
+const fetchParameters = obj({
+	url: str({ description: "The http(s) URL to fetch." }),
+});
+
+const fetchTool: AgentTool<typeof fetchParameters> = {
 	name: "fetch",
 	label: "Fetch",
 	description:
 		"Fetch text content from a URL via HTTP GET. Use for research, looking up information, or fetching resources (e.g. placeholder image URLs, API data). Subject to browser CORS — some sites block cross-origin requests.",
-	parameters: Type.Object({
-		url: Type.String({ description: "The http(s) URL to fetch." }),
-	}),
-	execute: async (_id, params) => {
-		const { url } = params as { url: string };
+	parameters: fetchParameters,
+	execute: async (_id, { url }) => {
 		const res = await fetch(url);
 		const text = await res.text();
 		const truncated =
@@ -162,7 +159,7 @@ const fetchTool: AgentTool = {
 };
 
 /** All browser tools, ready to be passed to the Agent. */
-export const browserTools: AgentTool[] = [
+export const browserTools: AgentTool<any>[] = [
 	readTool,
 	editTool,
 	getScreenshotTool,

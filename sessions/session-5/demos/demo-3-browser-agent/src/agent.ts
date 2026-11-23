@@ -2,14 +2,14 @@
  * Agent setup.
  *
  * Creates a Pi Agent configured for in-browser web development.
- * Registers common provider APIs at startup so any model works.
+ * Registers every built-in provider so any "provider/model" string works;
+ * provider SDKs stay in lazy chunks until the first request.
  * The agent uses five browser tools (read, write, get_screenshot,
  * get_console, reload) instead of the built-in filesystem tools.
  */
 
-import { Agent } from "@earendil-works/pi-agent-core/base";
-import { getModel } from "@earendil-works/pi-ai/base";
-import { register as registerOpenAICompletions } from "@earendil-works/pi-ai/openai-completions";
+import { Agent } from "@earendil-works/pi-agent-core";
+import { builtinModels } from "@earendil-works/pi-ai/providers/all";
 
 import { browserTools } from "./browser-tools";
 import { getSettings, parseModelString } from "./settings";
@@ -59,18 +59,14 @@ invisible. So:
 default in the static markup.
 This keeps the page readable at every step of the stream.`;
 
-/** Register common provider APIs so models from any provider work. */
-export function registerProviders(): void {
-	registerOpenAICompletions();
-	// anthropic-messages would be: import { register } from "@earendil-works/pi-ai/anthropic"; register();
-}
+const models = builtinModels();
 
 /** Create the browser agent with current settings. */
 export function createBrowserAgent(): Agent {
 	const settings = getSettings();
 	const { provider, model: modelId } = parseModelString(settings.model);
 
-	const model = getModel(provider as never, modelId as never);
+	const model = models.getModel(provider, modelId);
 	if (!model) {
 		throw new Error(`Model not found: ${settings.model}. Make sure the provider/model string is correct.`);
 	}
@@ -82,6 +78,8 @@ export function createBrowserAgent(): Agent {
 			thinkingLevel: "off",
 			tools: browserTools,
 		},
+		streamFn: models.streamSimple.bind(models),
+		// Browsers have no environment variables, so the key from settings is passed explicitly.
 		getApiKey: async () => {
 			const current = getSettings();
 			return current.apiKey || undefined;

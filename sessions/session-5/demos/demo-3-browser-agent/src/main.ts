@@ -7,13 +7,12 @@
 
 import "./style.css";
 
-import { registerProviders, createBrowserAgent } from "./agent";
+import { createBrowserAgent } from "./agent";
 import { initPreview } from "./preview";
 import { initSettings, openSettingsModal, getSettings } from "./settings";
 import { initChatUI } from "./chat-ui";
 
 function main(): void {
-	registerProviders();
 	initSettings();
 	initPreview();
 

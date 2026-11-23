@@ -9,8 +9,7 @@
  *   text is dimmed and italicized.
  */
 
-import type { Agent } from "@earendil-works/pi-agent-core/base";
-import type { AgentEvent } from "@earendil-works/pi-agent-core/base";
+import type { Agent, AgentEvent } from "@earendil-works/pi-agent-core";
 import { marked } from "marked";
 
 import { getFile } from "./file";
