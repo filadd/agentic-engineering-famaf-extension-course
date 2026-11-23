@@ -794,6 +794,44 @@ model-<span class="amber">Q4</span>_<span class="green">K_M</span>.gguf
 <!-- Mostrar primero la colección oficial; después el modelo de la comunidad. Distill: las respuestas de un modelo grande se usan para re-entrenar uno chico. Es "la comunidad lo porta / lo cambia" (beneficio 05) en un caso real. Señalar GGUF y Q4_K_M: son las slides de descarga y quantization. Un modelo de la comunidad trae su propia licencia y nadie garantiza su calidad: hay que medirlo con tu propio set de pruebas. -->
 </section>
 
+<!-- ───────────── 25 · CASO: UN QWEN ADAPTADO A PI ───────────── -->
+<section class="slide" data-title="pi-adapted">
+<div class="win">
+  <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="path">famaf@sesion-6: <b>~/hf.co</b></span></div>
+  <div class="body">
+    <div class="cmd"><span class="ps">$</span> <span class="c">open https://huggingface.co/harness-hub/Qwen3.8-27B-pi-adapted</span></div>
+    <h2><span class="hash">#</span> Caso real: un Qwen adaptado a Pi</h2>
+    <div class="cols w">
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <ul class="term small">
+          <li>Base: <span class="white">Qwen3.8-27B</span>, sin tocar</li>
+          <li>Un <strong>adapter LoRA</strong> encima</li>
+          <li>Entrenado con <strong>RL</strong> corriendo <em>dentro de Pi</em>: sus tools, su loop</li>
+          <li>Licencia <span class="green">Apache 2.0</span> · hay <span class="green">GGUF</span></li>
+        </ul>
+        <div class="box a mt-auto">
+          <div class="lbl amber">la idea</div>
+          <p class="small">No adaptaron el modelo a un tema. Lo adaptaron <strong>a un harness</strong>. Con pesos cerrados, eso no lo podés hacer.</p>
+        </div>
+      </div>
+<pre class="box" style="font-size:23px;line-height:1.6"><span class="muted"># pass@1 bajo Pi · base → adaptado</span>
+
+<span class="white">SWE-bench Pro</span> <span class="muted">(hard 51)</span>
+<span class="muted">base </span> <span class="dim">████████</span>           39.2%
+<span class="green">pi   </span> <span class="green">█████████████</span>      <span class="green">64.7%</span>
+
+<span class="white">Terminal-Bench 2.1</span>
+<span class="muted">base </span> <span class="dim">████████</span>           39.5%
+<span class="green">pi   </span> <span class="green">███████████</span>        <span class="green">55.8%</span>
+
+<span class="amber">sin thinking</span>, y menos de la mitad
+de turnos por tarea</pre>
+    </div>
+  </div>
+</div>
+<!-- ~2 min. Es el beneficio 04 (fine-tune con LoRA) en un caso real, y une con la sesión 5: el harness es una pieza, y el modelo se puede entrenar para esa pieza. Lo publicó Hugging Face (harness-hub, nov 2026); lo anunció Clem Delangue en X. Números del model card: el tweet dice 29.4% → 62.7% en SWE-bench Pro, el card dice 39.2% → 64.7% con la tabla pareada; usamos el card. Matiz: los números son bajo Pi, con un intento por tarea y 100 pasos; no se comparan con el model card de Qwen, que usa otros harnesses y thinking al máximo. Con thinking xhigh el base llega a 74.5% en SWE-bench Pro: el adapter sin pensar llega cerca gastando ~4.5x menos tokens. Un 27B no entra en la notebook de la demo: mencionar el GGUF y seguir. Fuentes: huggingface.co/harness-hub/Qwen3.8-27B-pi-adapted · huggingface.co/blog/harness-hub/harness-adapters -->
+</section>
+
 <!-- ───────────── 23 · FUENTE ───────────── -->
 <section class="slide" data-title="fuente">
 <div class="win">
