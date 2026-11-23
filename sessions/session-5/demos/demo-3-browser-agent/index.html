@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Pi — Browser Agent</title>
+	</head>
+	<body>
+		<div id="app">
+			<!-- Chat panel -->
+			<div id="chat-panel" class="panel">
+				<div id="chat-header" class="chat-header">
+					<span class="chat-title">Pi Browser Agent</span>
+					<button id="settings-btn" class="settings-btn" title="Settings">⚙</button>
+				</div>
+				<div id="messages" class="messages"></div>
+				<div id="input-area" class="input-area">
+					<textarea id="chat-input" class="chat-input" placeholder="Ask the agent to build something..." rows="1"></textarea>
+					<button id="send-btn" class="send-btn">Send</button>
+				</div>
+			</div>
+
+			<!-- Preview panel -->
+			<div id="preview-panel" class="panel">
+				<div id="preview-header" class="preview-header">
+					<span class="preview-title">Live Preview</span>
+					<button id="reload-btn" class="reload-btn" title="Reload">↻</button>
+				</div>
+				<iframe id="preview-frame" class="preview-frame" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+			</div>
+		</div>
+
+		<!-- Settings modal -->
+		<div id="settings-modal" class="modal hidden">
+			<div class="modal-content">
+				<h2>Settings</h2>
+				<label>
+					<span>Model (provider/model)</span>
+					<input type="text" id="settings-model" placeholder="zai/glm-5.2" />
+				</label>
+				<label>
+					<span>API Key</span>
+					<input type="password" id="settings-apikey" placeholder="your-api-key" />
+				</label>
+				<div class="modal-actions">
+					<button id="settings-cancel" class="btn-secondary">Cancel</button>
+					<button id="settings-save" class="btn-primary">Save</button>
+				</div>
+			</div>
+		</div>
+
+		<script type="module" src="/src/main.ts"></script>
+	</body>
+</html>

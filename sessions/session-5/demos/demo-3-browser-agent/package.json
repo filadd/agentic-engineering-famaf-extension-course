@@ -1,0 +1,20 @@
+{
+  "name": "demo-3-browser-agent",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@earendil-works/pi-agent-core": "^0.79.9",
+    "@earendil-works/pi-ai": "^0.79.9",
+    "marked": "^16.4.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vite": "^7.1.7"
+  }
+}
