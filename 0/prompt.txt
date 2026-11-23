@@ -1,0 +1,76 @@
+let's bump all packages on the demo and make sure they still work
+
+---
+
+drop all the hint text from the PR, not sure whta's that about
+
+---
+
+what tools have we built with the toolsmitch so far?
+
+---
+
+<task-notification>
+<task-id>a2396f27d970b8284</task-id>
+<tool-use-id>repl_c830bb31-a426-4647-baf6-deff6eabad0b</tool-use-id>
+<output-file>/tmp/claude-1000/-home-agus-workspace-filadd-agentic-engineering-famaf-extension-course/b57d1c55-c2ad-4c07-9fbe-ffab3826ec7f/tasks/a2396f27d970b8284.output</output-file>
+<status>completed</status>
+<summary>Agent "Port Session 5 demos to Pi 1.6" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>I ported both demos and checked each without a paid model call. Nothing is committed. Before you commit: git does not track demo 2's extension. Your global gitignore (`~/.config/git/ignore`, line 38: `**/.pi`) ignores it, so `git ls-files` lists nothing under `demo-2-subagents/.pi`, and commit e331606 never included it. It needs `git add -f sessions/session-5/demos/demo-2-subagents/.pi/extensions/subagents.ts`.
+
+## Demo 3: browser agent
+
+**Changes**
+- **`src/agent.ts`:** replaced the `/base` imports and `register()` with `builtinModels()` from `@earendil-works/pi-ai/providers/all`. The model now comes from `models.getModel(provider, modelId)`, and the Agent gets `streamFn: models.streamSimple.bind(models)`. I kept `getApiKey`: the Agent passes its result as `apiKey` on each request, which is the explicit-key approach the README's "Browser Usage" section describes. `registerProviders()` is gone, and so is its call in `src/main.ts`.
+- **Why `builtinModels()`:** any provider/model string in the catalog works, which matches what the old code claimed. 0.79 only ever registered `openai-completions`. The SDKs stay in lazy chunks; the catalogs do not.
+- **`src/browser-tools.ts`:** the tools are now defined with `obj`/`str` from `@earendil-works/pi-schema`, added to `package.json` at ^1.6.0, its latest version. The edit and fetch parameter schemas live in their own constants, so `params` is typed; that fixes the implicit-any errors and removes the casts. The six tools, their descriptions and their behaviour are unchanged.
+- **`src/chat-ui.ts`:** imports now come from the package root.
+- **New `src/vite-env.d.ts`:** contains `/// &lt;reference types="vite/client" /&gt;`, which fixes the CSS side-effect import under TS 7.
+- **Default model:** `zai/glm-5.2` is still in the 1.6 zai catalog, so it stays.
+- **Docs:** `demos/README.md` no longer has the 0.79 note; it now says any catalog provider works except Bedrock, and that the key is passed explicitly. The commands did not change. I also updated `PLAN.md`'s stack and API references to 1.6, since the README points readers to it.
+
+**Build:** `npm run build` passes with no errors and two warnings:
+- The main chunk is 1.25 MB (122 kB gzipped) because `builtinModels()` includes every catalog.
+- Vite externalizes `node:fs`, which pi-ai's `utils/provider-env.js` imports. The browser showed no runtime error from it.
+
+To shrink the bundle, register only a few providers with their individual factories.
+
+**Browser check** (dev server on port 5199, now stopped):
+- The page loads with no console errors, and the chat and preview both render.
+- The settings dialog opens on load when no key is saved, Cancel closes it, and the gear reopens it.
+- With a fake key, the browser sent the zai request directly: the lazy `openai-completions` chunk loaded and the CORS preflight to api.z.ai returned 200. A curl with the same key got a 401 from z.ai.
+
+**Faux provider:** I added a temporary hook, active only in dev with `?faux`, and drove turns through the real chat input.
+- **First run:** the `edit` call appended HTML, the preview iframe rendered it, and the final markdown reply appeared after "2 previous steps". The faux provider served 2 calls with none left over.
+- **Second run:** the preview ended up reading "Hola reemplazado". Only the edit tool's own code can produce that; the live streaming preview only handles appends.
+
+I removed the hook afterwards (`grep faux src/` finds nothing) and kept no test script. I also deleted `package-lock.json` and `dist/`; `node_modules` stays since it is gitignored.
+
+**Not verified:** a real model turn. Separately, when a provider call fails (a bad key, for example), the chat shows nothing. The error lands in `agent.state.errorMessage`, and the UI never displays it. 0.79 behaved the same way, so I left it alone.
+
+## Demo 2: subagents extension
+
+**Type-check** against Pi 1.6's own types, using a throwaway tsconfig in the scratchpad that points the imports at `/usr/lib/node_modules/pi/node_modules`: before the fix it reported one error.
+```
+subagents.ts(88,3): error TS2353: ... 'modelRegistry' does not exist in type 'CreateAgentSessionOptions'.
+```
+The CHANGELOG confirms it: "Replaced the SDK's `CreateAgentSessionOptions.authStorage` and `modelRegistry` options with the async `modelRuntime` option". `ctx.modelRegistry` keeps its runtime private, so the extension cannot pass the parent's runtime to the child.
+
+**Fix:** I removed the `modelRegistry` option, with a comment saying why, and dropped it from the two `Pick&lt;ExtensionContext, …&gt;` types. When the option is missing, the child builds its own `ModelRuntime` from the same agent directory (auth.json and models.json), so it uses the same credentials. One limit: a key given only through `--api-key` on the parent would not reach the child. In plain JS the old option was silently ignored, so this mainly fixes the type error. After the fix, tsc exits 0.
+
+**Other APIs:** these all type-check and are still documented the same way in `docs/extensions.md` and `docs/sdk.md`:
+- `createAgentSession`, `DefaultResourceLoader` (`systemPromptOverride`, `appendSystemPromptOverride`, `reload()`), `SessionManager.inMemory`, `SettingsManager.inMemory`, `getAgentDir`
+- `registerTool` with `promptSnippet`, `promptGuidelines`, `renderCall`, `renderResult`
+- `registerMessageRenderer`, and `sendMessage` with `deliverAs: "followUp"` and `triggerTurn`
+- `typebox`, which is still a supported import (1.3.27 ships with Pi)
+
+**Load check (no model calls):**
+- `pi --mode rpc --approve --offline --no-session` started in the demo directory and answered `get_commands` and `get_state` with no extension errors.
+- Neither command lists tools, so the toolsmith built `/home/agus/.local/share/toolsmith/tools/bin/pi-ext-tools`, which loads extensions through Pi's SDK. It loaded `.pi/extensions/subagents.ts` with no errors and listed `delegate` and `pipeline` as active, with their prompt snippets and guidelines.
+
+**Not verified:** actually running `delegate` or `pipeline`. Both start a child session that calls the model.
+
+result: Demo 3 now runs on pi 1.6 (build passes, page loads cleanly in the browser, and a faux-provider turn edited the live preview end to end); demo 2's extension type-checks and loads in Pi 1.6 after dropping the removed `modelRegistry` option, but it is ignored by your global gitignore and needs `git add -f`.</result>
+<usage><subagent_tokens>191001</subagent_tokens><tool_uses>230</tool_uses><duration_ms>589537</duration_ms></usage>
+</task-notification>
