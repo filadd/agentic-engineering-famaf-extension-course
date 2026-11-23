@@ -1,0 +1,1279 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pi: el agente que se construye solo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=DM+Sans:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ───────────── Palette (pop noche) ───────────── */
+
+:root {
+  --radius: 20px;
+  --title-size: 58px;
+}
+
+:root {
+  --bg: #15153a;
+  --bg-pattern: radial-gradient(#ffffff16 2px, transparent 2px);
+  --bg-size: 28px 28px;
+  --ink: #fdf6e3;
+  --muted: #a9a6d6;
+  --card: #262660;
+  --line: #fdf6e3;
+  --border: 3px solid #fdf6e3;
+  --shadow: 8px 8px 0 #05051a;
+  --a1: #ff5c8a;
+  --a2: #5b8cff;
+  --a3: #ffd166;
+  --a4: #06d6a0;
+  --good: #06d6a0;
+  --bad: #ff5c5c;
+  --mascot: #ffd166;
+  --mascot-ink: #15153a;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --term-bg: #05051a;
+  --term-ink: #fdf6e3;
+}
+
+/* ───────────── Stage ───────────── */
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  overflow: hidden;
+  font-family: var(--font-body);
+  transition: background .4s, color .4s;
+}
+
+body {
+  background-image: var(--bg-pattern);
+  background-size: var(--bg-size);
+}
+
+#deck {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1280px;
+  height: 720px;
+  transform-origin: center;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  padding: 50px 72px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(60px) scale(.98);
+  transition: opacity .45s, transform .55s cubic-bezier(.2, .9, .3, 1.2);
+}
+
+.slide.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+.slide.past { transform: translateX(-60px) scale(.98); }
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  margin: 0 0 22px;
+  line-height: 1.1;
+  letter-spacing: -.02em;
+}
+
+h1 { font-size: 104px; }
+h2 { font-size: var(--title-size); white-space: nowrap; }
+h3 { font-size: 30px; }
+
+p { margin: 0; }
+
+.big { font-size: 40px; line-height: 1.25; }
+.mid { font-size: 30px; }
+.small { font-size: 22px; color: var(--muted); }
+.mono { font-family: var(--font-mono); }
+.center { text-align: center; }
+.hl { color: var(--a1); }
+
+.card {
+  background: var(--card);
+  border: var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px 26px;
+}
+
+.slide > .mascot { position: absolute; right: 80px; bottom: 50px; --size: 130px; }
+
+/* ───────────── Fragments ───────────── */
+
+[data-step] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .45s, transform .6s cubic-bezier(.2, .9, .3, 1.4);
+}
+
+[data-step].on { opacity: 1; transform: none; }
+
+.f-drop { transform: translateY(-120px) rotate(-8deg); }
+.f-drop.on { transform: rotate(var(--r, 0deg)); }
+.f-flip { transform: perspective(900px) rotateY(-95deg); transform-origin: left center; }
+.f-flip.on { transform: perspective(900px) rotateY(0); }
+.f-pop { transform: scale(.3); }
+.f-pop.on { transform: scale(1); }
+
+/* ───────────── Mascot ───────────── */
+
+.mascot {
+  width: var(--size, 120px);
+  height: var(--size, 120px);
+  display: inline-block;
+}
+
+.mascot svg { width: 100%; height: 100%; overflow: visible; animation: bob 2.4s ease-in-out infinite; }
+.mascot.jump svg { animation: jump .6s cubic-bezier(.3, 1.5, .5, 1) 1, bob 2.4s ease-in-out .6s infinite; }
+.mascot.bigjump svg { animation: bigjump .9s cubic-bezier(.3, 1.5, .5, 1) 1, bob 2.4s ease-in-out .9s infinite; }
+.mascot.shake svg { animation: shake .12s linear infinite; }
+
+@keyframes bob { 50% { transform: translateY(-5px) scaleY(1.02); } }
+@keyframes jump { 0% { transform: none; } 15% { transform: scale(1.15, .85); } 50% { transform: translateY(-90px) scale(.92, 1.1) rotate(-6deg); } 85% { transform: scale(1.12, .88); } 100% { transform: none; } }
+@keyframes bigjump { 0% { transform: none; } 15% { transform: scale(1.2, .8); } 45% { transform: translateY(-150px) rotate(-200deg); } 70% { transform: translateY(-40px) rotate(-360deg); } 85% { transform: scale(1.15, .85) rotate(-360deg); } 100% { transform: rotate(-360deg); } }
+@keyframes shake { 25% { transform: translateX(-3px) rotate(-2deg); } 75% { transform: translateX(3px) rotate(2deg); } }
+@keyframes wave { 50% { transform: rotate(-22deg); } }
+
+.mascot .arm { transform-origin: 84px 60px; animation: wave .5s ease-in-out infinite; }
+.mascot .drop { animation: drip 1.1s ease-in infinite; }
+.mascot .qmark { animation: qbob 1s ease-in-out infinite alternate; transform-origin: 80px 4px; }
+.mascot .steam { animation: steam .35s ease-in-out infinite alternate; }
+@keyframes qbob { to { transform: translateY(-4px) rotate(12deg); } }
+@keyframes steam { to { opacity: .4; transform: translate(2px, -2px); } }
+@keyframes drip { 0% { transform: translateY(-4px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(14px); opacity: 0; } }
+
+.confetti { position: absolute; width: 12px; height: 18px; border-radius: 3px; pointer-events: none; animation: confetti 1.4s cubic-bezier(.2, .6, .4, 1) forwards; }
+@keyframes confetti { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); opacity: 0; } }
+
+/* bloques en fila */
+.blk { padding: 14px 18px; border: var(--border); border-radius: 14px; background: var(--card); box-shadow: 5px 5px 0 #05051a; white-space: nowrap; font-size: 24px; font-weight: 700; }
+.blk small { display: block; margin-top: 4px; font-size: 15px; font-weight: 400; color: var(--muted); white-space: normal; max-width: 240px; }
+.blk.rev { background: color-mix(in srgb, var(--a1) 40%, var(--card)); }
+.blk.calm { background: color-mix(in srgb, var(--a4) 35%, var(--card)); }
+.blk.des { background: color-mix(in srgb, var(--a2) 35%, var(--card)); }
+.arrow { padding-top: 14px; font-size: 30px; font-weight: 700; color: var(--muted); }
+.row { display: flex; align-items: flex-start; gap: 12px; }
+.stg { opacity: 0; transform: scale(.6); transition: opacity .35s, transform .45s cubic-bezier(.2, .9, .3, 1.6); transition-delay: calc(var(--i) * .16s); }
+.on .stg { opacity: 1; transform: none; }
+
+
+/* portada */
+.cover { display: flex; flex-direction: column; justify-content: center; height: 100%; }
+.cover .kicker { font-size: 30px; color: var(--muted); }
+.cover h1 { font-size: 170px; margin: 0; line-height: 1; white-space: nowrap; }
+.cover .subt { margin: 6px 0 26px; font-family: var(--font-display); font-weight: 700; font-size: 58px; letter-spacing: -.02em; white-space: nowrap; min-height: 66px; }
+.cover .cursor { display: inline-block; width: .45em; height: .85em; background: var(--a1); vertical-align: -.06em; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.cover .mascot { position: absolute; right: 110px; top: 90px; --size: 200px; }
+.cover .mascot.enter { animation: dropIn .9s cubic-bezier(.3, 1.5, .5, 1) both; }
+@keyframes dropIn { from { transform: translateY(-600px) rotate(-20deg); } to { transform: none; } }
+
+.lead { margin: -8px 0 20px; font-size: 25px; color: var(--muted); }
+.lead b { color: var(--ink); }
+.punch-step { margin-top: 22px; }
+@keyframes loopflow { to { stroke-dashoffset: -19; } }
+
+/* ventanas */
+.win { display: flex; flex-direction: column; overflow: hidden; background: var(--card); border: var(--border); border-radius: 16px; box-shadow: var(--shadow); }
+.win .bar { display: flex; align-items: center; gap: 9px; padding: 10px 16px; background: #ffffff14; border-bottom: 2px solid #fdf6e322; }
+.win .bar i { width: 14px; height: 14px; border-radius: 50%; background: #ff5f57; }
+.win .bar i:nth-child(2) { background: #febc2e; }
+.win .bar i:nth-child(3) { background: #28c840; }
+.win .bar .title { margin-left: 10px; font-family: var(--font-mono); font-size: 16px; color: var(--muted); }
+.win .body { flex: 1; padding: 16px 20px; }
+.win.dark .body { background: var(--term-bg); font-family: var(--font-mono); font-variant-ligatures: none; }
+.shot { position: absolute; right: 10px; bottom: 8px; padding: 2px 8px; font-family: var(--font-mono); font-size: 12px; color: var(--muted); border: 1px dashed var(--muted); border-radius: 6px; }
+
+/* harness: capas */
+.stack { display: grid; grid-template-columns: 820px 240px; gap: 12px 26px; margin-top: 8px; }
+.layer { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; padding: 16px 24px; font-size: 28px; font-weight: 700; border: var(--border); border-radius: 14px; box-shadow: 5px 5px 0 #05051a; }
+.layer small { font-size: 20px; font-weight: 400; color: var(--muted); }
+.layer.ui { grid-row: 1; background: color-mix(in srgb, var(--a2) 34%, var(--card)); }
+.layer.loop { grid-row: 2; background: color-mix(in srgb, var(--a1) 30%, var(--card)); }
+.trio { grid-row: 3; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.trio .layer { flex-direction: column; gap: 4px; background: color-mix(in srgb, var(--a4) 26%, var(--card)); }
+.layer.llm { grid-row: 4; color: #15153a; background: var(--a3); }
+.layer.llm small { color: #15153a; opacity: .7; }
+.brace { grid-column: 2; grid-row: 1 / 4; display: flex; align-items: center; gap: 16px; }
+.brace .bar { align-self: stretch; width: 26px; border: 5px solid var(--a3); border-left: none; border-radius: 0 18px 18px 0; }
+.brace b { font-family: var(--font-display); font-size: 40px; color: var(--a3); }
+.side-llm { grid-column: 2; grid-row: 4; align-self: center; font-size: 20px; color: var(--muted); }
+
+/* ejemplos */
+.cascade { position: relative; height: 530px; }
+.cascade .win { position: absolute; width: 470px; }
+.cascade .win img { display: block; width: 100%; height: auto; }
+.win .bar .kind { margin-left: auto; padding: 2px 10px; font-size: 15px; font-weight: 700; color: #15153a; background: var(--a3); border-radius: 8px; }
+.wins3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 18px; }
+.wins3 .win { height: 400px; }
+.wins3 .body { position: relative; display: flex; flex-direction: column; gap: 12px; }
+.wins3 .cap { margin-top: 14px; font-size: 24px; font-weight: 700; text-align: center; }
+.bub { max-width: 80%; padding: 10px 14px; font-size: 16px; border-radius: 14px; }
+.bub.me { align-self: flex-end; background: color-mix(in srgb, var(--a2) 45%, var(--card)); }
+.bub.ai { align-self: flex-start; background: #ffffff12; }
+.chatbox { margin-top: auto; padding: 10px 14px; font-size: 15px; color: var(--muted); border: 2px solid #fdf6e344; border-radius: 999px; }
+.lov { flex: 1; display: grid; grid-template-columns: 90px 1fr; gap: 10px; }
+.lov .side { display: flex; flex-direction: column; gap: 8px; }
+.lov .side i { height: 34px; border-radius: 8px; background: #ffffff12; }
+.lov .prev { display: flex; flex-direction: column; gap: 10px; padding: 12px; border-radius: 10px; background: #fdf6e3; }
+.lov .prev .hero { height: 90px; border-radius: 8px; background: linear-gradient(120deg, var(--a1), var(--a3)); }
+.lov .prev i { height: 12px; border-radius: 6px; background: #15153a33; }
+.lov .prev i:nth-of-type(2) { width: 70%; }
+.lov .prev .btn { width: 90px; height: 28px; border-radius: 8px; background: var(--a2); }
+.tline { font-size: 16px; line-height: 1.5; }
+.tline .p { color: var(--a3); }
+.tline .ok { color: var(--good); }
+.tline .tool { color: var(--a2); }
+
+/* agentes de código */
+.dirs { display: grid; grid-template-columns: 1fr 1fr 1.15fr; gap: 30px; margin-top: 30px; align-items: start; }
+.dirs .body { display: flex; flex-direction: column; gap: 10px; font-size: 22px; }
+.dirs .prod { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 26px 0 14px; }
+.dirs .prod .logo { width: 84px; height: 84px; border-radius: 18px; }
+.dirs .prod b { font-family: var(--font-display); font-size: 36px; }
+.dirs .prod span { font-size: 19px; color: var(--muted); }
+.ls { font-family: var(--font-mono); font-size: 22px; line-height: 1.6; }
+.ls span { display: block; }
+.ls .more { color: var(--a3); }
+
+/* qué es pi */
+.author { display: inline-flex; gap: 12px; align-items: center; margin: -10px 0 20px; padding: 6px 16px; font-size: 20px; border: 2px solid var(--muted); border-radius: 999px; color: var(--muted); }
+.author b { color: var(--ink); }
+.pi-grid { display: grid; grid-template-columns: 500px 1fr; gap: 26px; }
+.pi-term .body { display: flex; flex-direction: column; gap: 14px; font-size: 20px; }
+.tools4 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tools4 span { padding: 14px 0; font-size: 26px; font-weight: 700; text-align: center; color: #15153a; background: var(--a4); border-radius: 10px; }
+.meter { display: flex; flex-direction: column; gap: 8px; }
+.meter .lbl { display: flex; justify-content: space-between; font-size: 18px; color: var(--muted); }
+.meter .lbl b { color: var(--a3); }
+.meter .ctx { position: relative; height: 24px; border: 2px solid #fdf6e3aa; border-radius: 999px; overflow: hidden; }
+.meter .ctx i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--a3); transition: width 1s cubic-bezier(.3, .9, .4, 1) .3s; }
+.meter .ctx.cc i { background: var(--a1); }
+.meter.on .ctx i { width: var(--w); }
+.pi-cards { display: flex; flex-direction: column; gap: 16px; }
+.pi-cards .card { display: grid; grid-template-columns: 54px 1fr auto; align-items: center; gap: 4px 16px; padding: 16px 20px; font-size: 20px; line-height: 1.3; }
+.pi-cards .card .ico { grid-row: span 2; font-size: 40px; }
+.pi-cards .card h3 { margin: 0; font-size: 26px; }
+.pi-cards .card span.d { grid-column: 2; color: var(--muted); }
+.pi-cards .card .viz { grid-column: 3; grid-row: 1 / 3; }
+.pi-cards .card:nth-child(1) { background: color-mix(in srgb, var(--a2) 26%, var(--card)); }
+.pi-cards .card:nth-child(2) { background: color-mix(in srgb, var(--a1) 22%, var(--card)); }
+.pi-cards .card:nth-child(3) { background: color-mix(in srgb, var(--a4) 22%, var(--card)); }
+.provs { display: flex; flex-wrap: wrap; gap: 6px; width: 190px; justify-content: flex-end; }
+.provs i { padding: 2px 8px; font-style: normal; font-family: var(--font-mono); font-size: 14px; border: 2px solid var(--a2); border-radius: 6px; }
+
+/* misma filosofía */
+.philo { display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px; margin-top: 16px; }
+.philo .head { display: flex; flex-direction: column; gap: 6px; padding: 18px 24px; border: var(--border); border-radius: 16px 16px 0 0; border-bottom: none; }
+.philo .head h3 { margin: 0; }
+.philo .head span { font-size: 21px; color: var(--muted); }
+.philo .col { display: flex; flex-direction: column; }
+.philo .col.full .head, .philo .col.full .cells { background: color-mix(in srgb, var(--a2) 22%, var(--card)); }
+.philo .col.min .head, .philo .col.min .cells { background: color-mix(in srgb, var(--a4) 20%, var(--card)); }
+.philo .cells { display: flex; flex-direction: column; gap: 18px; min-height: 330px; padding: 10px 24px 26px; border: var(--border); border-top: none; border-radius: 0 0 16px 16px; box-shadow: var(--shadow); }
+.philo .chip { display: flex; align-items: center; gap: 18px; padding: 18px 22px; font-family: var(--font-display); font-size: 36px; font-weight: 700; background: var(--card); border: var(--border); border-radius: 14px; }
+.philo .chip .ico { width: 56px; height: 56px; border-radius: 12px; object-fit: contain; }
+.philo .chip .ico .pimark, .pimark { display: block; width: 100%; height: 100%; }
+.philo .chip small { margin-left: auto; font-family: var(--font-body); font-size: 18px; font-weight: 400; color: var(--muted); }
+.philo .eq { align-self: center; font-size: 30px; font-weight: 700; color: var(--muted); }
+
+/* planilla */
+.sheet { width: 980px; margin: 4px auto 0; }
+.sheet .body { padding: 0; background: #fdf6e3; color: #15153a; }
+.sheet table { width: 100%; border-collapse: collapse; font-size: 21px; }
+.sheet td, .sheet th { height: 40px; padding: 0 16px; border: 1px solid #15153a2e; }
+.sheet .colhdr th { height: 26px; font-size: 13px; font-weight: 400; color: #15153a99; background: #e8e1cc; }
+.sheet .rn { width: 44px; padding: 0; font-size: 13px; color: #15153a99; text-align: center; background: #e8e1cc; }
+.sheet .hdr td { font-weight: 700; background: #ffd16655; }
+.sheet td.v { width: 220px; text-align: center; font-family: var(--font-mono); font-weight: 700; }
+.sheet tr[data-step] td { transition: background .6s; }
+.sheet tr.cur td:not(.rn) { background: #5b8cff22; }
+.yes { color: #079c75; }
+.no { color: #e0336a; }
+.sheet .foot td { height: 44px; font-size: 18px; font-style: italic; color: #15153acc; }
+
+/* arquitectura de pi */
+.pkgs { display: grid; grid-template-columns: 340px 1fr; gap: 14px 18px; margin-top: 18px; }
+.pkg { display: flex; align-items: center; padding: 18px 22px; border: var(--border); border-radius: 14px; box-shadow: 5px 5px 0 #05051a; min-height: 92px; }
+.pkg.name { justify-content: center; font-family: var(--font-mono); font-size: 27px; white-space: nowrap; font-weight: 700; }
+.pkg.desc { font-size: 23px; line-height: 1.3; }
+.pkg.desc b { color: var(--a3); }
+.pkg.tui { background: color-mix(in srgb, var(--a2) 34%, var(--card)); }
+.pkg.core { background: color-mix(in srgb, var(--a1) 30%, var(--card)); }
+.pkg.coding { background: color-mix(in srgb, var(--a4) 26%, var(--card)); }
+.pkg.ai { color: #15153a; background: var(--a3); }
+.pkg.desc { background: var(--card); }
+
+/* ciclo de vida: sesión */
+.life { display: flex; align-items: stretch; gap: 10px; margin-top: 34px; }
+.life .arrow { align-self: center; padding: 0; font-size: 34px; }
+.mom { display: flex; flex-direction: column; gap: 8px; width: 245px; padding: 16px 18px; border: var(--border); border-radius: 14px; background: var(--card); box-shadow: 5px 5px 0 #05051a; }
+.mom b { font-family: var(--font-mono); font-size: 18px; }
+.mom span { font-size: 18px; line-height: 1.3; color: var(--muted); }
+.mom.big { background: color-mix(in srgb, var(--a1) 30%, var(--card)); border-style: dashed; }
+.mom.big b { font-family: var(--font-display); font-size: 26px; }
+.mom.cur { outline: 4px solid var(--a3); outline-offset: 4px; }
+.hooks { position: relative; margin-top: 46px; padding: 22px 24px 20px; border: 3px dashed var(--a3); border-radius: 18px; }
+.hooks .lbl { position: absolute; top: -18px; left: 22px; padding: 2px 12px; font-size: 20px; font-weight: 700; color: #15153a; background: var(--a3); border-radius: 8px; }
+.hooks .row4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.hooks .hk { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border: 2px solid var(--a3); border-radius: 12px; }
+.hooks .hk b { font-family: var(--font-mono); font-size: 17px; }
+.hooks .hk span { font-size: 17px; color: var(--muted); }
+.hooks p { margin-top: 14px; font-size: 20px; }
+
+/* ciclo de vida: agent loop */
+.loopwrap { position: relative; width: 1136px; height: 430px; margin-top: 4px; }
+.loopwrap svg { position: absolute; inset: 0; overflow: visible; }
+.loopwrap .ln { fill: none; stroke: var(--ink); stroke-width: 3.5; stroke-linecap: round; }
+.loopwrap .ln.back { stroke: var(--a4); stroke-dasharray: 10 9; animation: loopflow 1.4s linear infinite; }
+.loopwrap marker path { fill: var(--ink); }
+.loopwrap marker#hg path { fill: var(--a4); }
+.node { position: absolute; display: flex; align-items: center; justify-content: center; height: 64px; padding: 0 14px; font-family: var(--font-mono); font-size: 20px; font-weight: 700; border: var(--border); border-radius: 14px; background: var(--card); box-shadow: 5px 5px 0 #05051a; transition: opacity .45s, transform .6s cubic-bezier(.2, .9, .3, 1.4), outline-color .3s; outline: 4px solid transparent; outline-offset: 4px; }
+.node.ext { background: color-mix(in srgb, var(--a1) 30%, var(--card)); }
+.node.llmn { color: #15153a; background: var(--a3); }
+.node.end { background: color-mix(in srgb, var(--a4) 30%, var(--card)); }
+.node.cur { outline-color: var(--a3); }
+.tag { position: absolute; padding: 8px 12px; font-size: 16px; line-height: 1.3; color: var(--ink); background: color-mix(in srgb, var(--a1) 16%, var(--bg)); border: 2px solid var(--a1); border-radius: 10px; }
+.tag b { display: block; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--a1); }
+.tag code { font-family: var(--font-mono); font-size: 14px; color: var(--a3); }
+.loopnote { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 15px; line-height: 1.25; text-align: center; color: var(--a4); }
+.loopnote .big { font-size: 34px; line-height: 1; }
+.elabel { position: absolute; font-size: 14px; color: var(--muted); }
+.onapi { display: flex; align-items: center; justify-content: center; gap: 48px; margin-top: 6px; padding: 14px 20px; font-size: 19px; white-space: nowrap; border: var(--border); border-radius: 14px; background: var(--card); }
+.onapi code { font-family: var(--font-mono); font-variant-ligatures: none; color: var(--a3); }
+
+/* api programática */
+.code4 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 26px; margin-top: 4px; }
+.code4 .win { height: 252px; }
+.code4 .body { display: flex; flex-direction: column; padding: 14px 20px; }
+.code4 pre { margin: 0; font-family: var(--font-mono); font-variant-ligatures: none; font-size: 16px; line-height: 1.45; }
+.code4 .fn { color: var(--a2); }
+.code4 .obj { color: var(--a1); }
+.code4 .s { color: var(--a4); }
+.code4 .c { color: var(--muted); }
+.code4 .what { margin-top: auto; font-family: var(--font-body); font-size: 17px; color: var(--a3); }
+
+/* demo */
+.demo-center { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; height: 100%; }
+.demo-center h1 { margin: 0; font-size: 150px; }
+.demo-center .mascot { --size: 170px; }
+
+/* PD1: ¿y si...? */
+.whatif { display: grid; grid-template-columns: 380px 1fr; gap: 30px; height: 480px; margin-top: 10px; }
+.whatif .center { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; text-align: center; background: color-mix(in srgb, var(--a4) 22%, var(--card)); }
+.whatif .center .ico { font-size: 70px; line-height: 1; }
+.whatif .center h3 { margin: 0; font-size: 36px; }
+.whatif .center p { font-size: 22px; line-height: 1.35; color: var(--muted); }
+.whatif .qs { display: flex; flex-direction: column; gap: 16px; }
+.whatif .q { flex: 1; display: flex; align-items: center; gap: 20px; padding: 14px 24px; font-size: 26px; line-height: 1.25; font-weight: 700; }
+.whatif .q .ico { font-size: 38px; line-height: 1; }
+.whatif .q .ys { color: var(--a3); }
+.whatif .q:nth-child(1) { background: color-mix(in srgb, var(--a2) 26%, var(--card)); }
+.whatif .q:nth-child(2) { background: color-mix(in srgb, var(--a3) 22%, var(--card)); }
+.whatif .q:nth-child(3) { background: color-mix(in srgb, var(--a1) 24%, var(--card)); }
+.whatif .q:nth-child(4) { background: color-mix(in srgb, var(--a2) 18%, var(--card)); }
+
+/* PD2: arquitectura de pi-durable */
+.dur { display: grid; grid-template-columns: 860px 1fr; gap: 0 26px; align-items: start; }
+.dur .col { display: flex; flex-direction: column; gap: 14px; }
+.clients { display: flex; align-items: center; gap: 34px; }
+.clients .noclient { flex: 1; padding: 6px 14px; font-size: 17px; line-height: 1.3; color: var(--muted); border: 2px dashed var(--muted); border-radius: 10px; }
+.clients .noclient b { color: var(--a3); }
+.clients .cl { padding: 10px 18px; font-size: 20px; font-weight: 700; border: var(--border); border-radius: 12px; background: var(--card); }
+.frame { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 34px 20px 20px; border: 4px solid var(--ink); border-radius: 20px; background: #ffffff08; }
+.frame .lbl { position: absolute; top: -20px; left: 22px; padding: 2px 14px; font-family: var(--font-display); font-size: 24px; font-weight: 700; color: #15153a; background: var(--ink); border-radius: 8px; }
+.frame .r { display: grid; gap: 12px; }
+.frame .r3 { grid-template-columns: repeat(3, 1fr); }
+.frame .r2 { grid-template-columns: repeat(2, 1fr); }
+.part { display: flex; flex-direction: column; gap: 2px; padding: 12px 18px; font-size: 23px; font-weight: 700; border: 3px solid; border-radius: 12px; }
+.part small { font-size: 17px; font-weight: 400; color: var(--muted); }
+.part.same { border-color: var(--a4); background: color-mix(in srgb, var(--a4) 20%, var(--card)); }
+.part.new { border-color: var(--a1); background: color-mix(in srgb, var(--a1) 22%, var(--card)); }
+.base { padding: 16px 22px; font-family: var(--font-mono); font-size: 26px; font-weight: 700; color: #15153a; background: var(--a3); border: var(--border); border-radius: 14px; box-shadow: 5px 5px 0 #05051a; }
+.base small { margin-left: 16px; font-family: var(--font-body); font-size: 19px; font-weight: 400; }
+.legend { display: flex; flex-direction: column; gap: 14px; margin-top: 70px; font-size: 20px; }
+.legend span { display: flex; align-items: center; gap: 12px; }
+.legend i { width: 26px; height: 26px; border: 3px solid; border-radius: 6px; }
+.legend .same i { border-color: var(--a4); background: color-mix(in srgb, var(--a4) 20%, var(--card)); }
+.legend .new i { border-color: var(--a1); background: color-mix(in srgb, var(--a1) 22%, var(--card)); }
+
+/* PD3: storage */
+.store { display: grid; grid-template-columns: 290px 150px 1fr; align-items: center; gap: 10px; margin-top: 4px; }
+.hbox { display: flex; flex-direction: column; gap: 10px; padding: 22px; font-size: 20px; border: 4px solid var(--ink); border-radius: 18px; background: #ffffff08; }
+.hbox b { font-family: var(--font-display); font-size: 30px; }
+.hbox code { font-family: var(--font-mono); font-size: 16px; color: var(--a3); }
+.flow { display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: var(--font-mono); font-size: 15px; color: var(--muted); text-align: center; }
+.flow .ar { font-size: 44px; line-height: 1; color: var(--ink); }
+.backends { display: flex; flex-direction: column; gap: 12px; }
+.be { display: grid; grid-template-columns: 50px 1fr; align-items: center; gap: 2px 14px; padding: 9px 18px; border: var(--border); border-radius: 14px; background: color-mix(in srgb, var(--a1) 18%, var(--card)); }
+.be .ico { grid-row: span 2; font-size: 30px; }
+.be b { font-size: 22px; }
+.be span { font-size: 16px; color: var(--muted); }
+.contrast { display: flex; align-items: center; gap: 18px; margin-top: 22px; padding: 14px 22px; font-size: 22px; border: 3px dashed var(--a4); border-radius: 14px; }
+.contrast code { font-family: var(--font-mono); color: var(--a3); }
+
+/* PD4: entornos */
+.envs { display: grid; grid-template-columns: 330px 260px 1fr; align-items: center; gap: 22px; margin-top: 16px; }
+.machine { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 30px 20px 20px; border: 3px solid transparent; border-radius: 20px; transition: border-color .5s; }
+.machine .lbl { position: absolute; top: -16px; left: 18px; padding: 2px 10px; font-size: 18px; font-weight: 700; color: #15153a; background: var(--a3); border-radius: 8px; opacity: 0; transition: opacity .5s; }
+.machine.away { border-color: var(--a3); border-style: dashed; }
+.machine.away .lbl { opacity: 1; }
+.machine .call { padding: 10px 14px; font-family: var(--font-mono); font-size: 17px; border: 2px solid #fdf6e366; border-radius: 10px; }
+.envfn { display: flex; flex-direction: column; gap: 8px; padding: 18px; background: color-mix(in srgb, var(--a2) 26%, var(--card)); }
+.envfn code { font-family: var(--font-mono); font-size: 19px; color: var(--a3); }
+.envfn span { font-size: 18px; line-height: 1.3; color: var(--muted); }
+.targets { display: flex; flex-direction: column; gap: 16px; }
+.tg { display: flex; align-items: center; gap: 16px; padding: 14px 20px; font-size: 23px; font-weight: 700; border: var(--border); border-radius: 14px; background: color-mix(in srgb, var(--a4) 20%, var(--card)); }
+.tg .ico { font-size: 34px; }
+.tg small { display: block; font-size: 16px; font-weight: 400; color: var(--muted); }
+.uses { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 26px; }
+.uses .card { display: flex; align-items: center; gap: 16px; padding: 16px 20px; font-size: 21px; font-weight: 700; line-height: 1.3; }
+.uses .card .ico { font-size: 36px; }
+.uses .card:nth-child(1) { background: color-mix(in srgb, var(--a4) 22%, var(--card)); }
+.uses .card:nth-child(2) { background: color-mix(in srgb, var(--a2) 26%, var(--card)); }
+.uses .card:nth-child(3) { background: color-mix(in srgb, var(--a1) 22%, var(--card)); }
+.arrowcol { display: flex; flex-direction: column; align-items: center; font-size: 40px; color: var(--muted); }
+
+/* PD5: durabilidad */
+.dur2 { display: grid; grid-template-columns: 430px 1fr; gap: 30px; margin-top: 4px; }
+.jsonl .body { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.jsonl .ln2 { padding: 4px 8px; border-radius: 6px; background: #ffffff0d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.jsonl .ln2.cut { color: var(--bad); background: #ff5c5c22; }
+.jsonl .txt { margin-top: 10px; font-family: var(--font-body); font-size: 19px; line-height: 1.35; color: var(--ink); }
+.jsonl .txt span { color: var(--muted); }
+.sandwich { display: flex; flex-direction: column; gap: 10px; }
+.sandwich h3 { margin: 0 0 4px; }
+.sw { display: flex; align-items: center; gap: 16px; padding: 14px 22px; font-size: 23px; font-weight: 700; border: var(--border); }
+.sw .n { font-family: var(--font-display); font-size: 30px; color: var(--a3); }
+.sw small { margin-left: auto; font-family: var(--font-mono); font-size: 15px; font-weight: 400; color: var(--muted); }
+.sw.bread { border-radius: 30px; background: color-mix(in srgb, var(--a3) 30%, var(--card)); }
+.sw.fill { border-radius: 10px; background: color-mix(in srgb, var(--a1) 30%, var(--card)); }
+.crash { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; padding: 14px 20px; font-size: 20px; line-height: 1.3; border: 3px dashed var(--bad); border-radius: 14px; }
+.crash b { color: var(--bad); }
+.crash code { font-family: var(--font-mono); font-size: 17px; color: var(--a3); }
+
+.nest { display: flex; align-items: center; gap: 16px; margin-top: 14px; padding: 10px 20px; font-size: 18px; line-height: 1.35; border: 3px solid var(--a2); border-radius: 14px; background: color-mix(in srgb, var(--a2) 14%, var(--card)); }
+.nest .ico { font-size: 34px; }
+.nest b { color: var(--a3); }
+.nest code { font-family: var(--font-mono); font-size: 16px; color: var(--a3); }
+
+/* comparación final */
+.vs-grid { display: grid; grid-template-columns: 170px repeat(4, minmax(0, 1fr)); grid-template-rows: auto 1fr 1fr; gap: 16px 18px; height: 500px; margin-top: 6px; }
+.vs-grid .vh { grid-row: 1; padding: 0 4px 4px; font-family: var(--font-display); font-size: 24px; font-weight: 700; }
+.vs-grid .vl { grid-column: 1; display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-size: 24px; font-weight: 700; }
+.vs-grid .vl .dot { flex: none; width: 22px; height: 22px; border: 3px solid; border-radius: 6px; }
+.vs-grid .dot.ca { border-color: var(--a4); background: color-mix(in srgb, var(--a4) 20%, var(--card)); }
+.vs-grid .dot.pd { border-color: var(--a1); background: color-mix(in srgb, var(--a1) 22%, var(--card)); }
+.vs-grid .vc { display: flex; align-items: center; padding: 16px 18px; font-size: 21px; line-height: 1.35; border: 3px solid; border-radius: 14px; box-shadow: 5px 5px 0 #05051a; }
+.vs-grid .vc.ca { border-color: var(--a4); background: color-mix(in srgb, var(--a4) 20%, var(--card)); }
+.vs-grid .vc.pd { border-color: var(--a1); background: color-mix(in srgb, var(--a1) 22%, var(--card)); }
+.vs-grid code { font-family: var(--font-mono); font-size: 17px; color: var(--a3); white-space: nowrap; }
+.vs-grid .vc.pd[data-step] { transition-delay: .15s; }
+
+/* PD6: multiplayer */
+.multi { display: grid; grid-template-columns: 340px 1fr 300px; gap: 24px; align-items: center; margin-top: 10px; }
+.multi .side { display: flex; flex-direction: column; gap: 22px; }
+.cli { display: flex; flex-direction: column; gap: 8px; padding: 16px 18px; font-size: 19px; }
+.cli h3 { margin: 0; font-size: 24px; }
+.cli code { font-family: var(--font-mono); font-size: 14px; white-space: nowrap; color: var(--a3); }
+.cli:nth-child(1) { background: color-mix(in srgb, var(--a1) 22%, var(--card)); }
+.cli:nth-child(2) { background: color-mix(in srgb, var(--a2) 26%, var(--card)); }
+.cli.late { background: color-mix(in srgb, var(--a4) 22%, var(--card)); }
+.convo .body { display: flex; flex-direction: column; gap: 10px; min-height: 330px; }
+.msg { padding: 10px 14px; font-size: 18px; border-radius: 12px; background: #ffffff10; }
+.msg b { display: block; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.msg.steer { border: 2px solid var(--a1); }
+.msg.steer b { color: var(--a1); }
+.msg.fu { border: 2px dashed var(--a2); }
+.msg.fu b { color: var(--a2); }
+.msg.busy::after { content: " ▍"; animation: blink 1s steps(1) infinite; }
+.tie { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 20px; font-size: 22px; }
+.tie code { padding: 3px 10px; font-family: var(--font-mono); font-size: 19px; color: #15153a; background: var(--a3); border-radius: 8px; }
+
+/* ───────────── HUD ───────────── */
+
+#hud {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  font: 14px/1 system-ui, sans-serif;
+  color: var(--muted);
+  opacity: .25;
+  transition: opacity .3s;
+  z-index: 60;
+}
+
+#hud:hover { opacity: 1; }
+#hud.hidden { display: none; }
+#hud .stepdots i { display: inline-block; width: 7px; height: 7px; margin: 0 2px; border-radius: 50%; background: currentColor; opacity: .3; }
+#hud .stepdots i.on { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div id="deck">
+
+  <!-- 1 · Portada -->
+  <section class="slide" data-id="portada">
+    <div class="cover">
+      <div class="kicker">Última clase · el harness</div>
+      <h1><span class="typed"></span></h1>
+      <div class="subt"><span class="typed2"></span><span class="cursor"></span></div>
+      <p class="mid">De Vibe Coding a Agentic Engineering · FaMAF</p>
+      <div class="mascot" data-mood="wave"></div>
+    </div>
+  </section>
+  <!-- Notas: arrancamos con el nombre: Pi es un coding agent open source con un núcleo mínimo. "Se construye solo" porque le pedís una capacidad nueva y lee su propio código para escribirse la extensión. La hora no es para vender Pi: es para entender qué es un harness, y Pi nos sirve de espécimen porque es chico y se puede abrir entero. -->
+
+  <!-- 2 · Harnesses -->
+  <section class="slide" data-id="harness">
+    <h2>Harnesses</h2>
+    <div class="stack">
+      <div class="layer ui" data-step="3">Interfaz <small>chat · terminal · web</small></div>
+      <div class="layer loop" data-step="2">Agent loop <small>pensar → actuar → observar</small></div>
+      <div class="trio" data-step="1">
+        <div class="layer">Tools <small>archivos, web, comandos</small></div>
+        <div class="layer">Memoria <small>conversación, estado</small></div>
+        <div class="layer">Contexto <small>proyecto, reglas</small></div>
+      </div>
+      <div class="layer llm">LLM <small>predice el próximo token</small></div>
+      <div class="brace" data-step="4"><span class="bar"></span><b>harness</b></div>
+      <div class="side-llm">el modelo</div>
+    </div>
+    <p class="mid center punch-step" data-step="4">Mismo modelo, distinto harness: <span class="hl">otro producto</span>.</p>
+  </section>
+  <!-- Notas: un LLM solo predice tokens: recibe texto y devuelve texto, no puede leer un archivo ni correr un comando. El harness (arnés) es lo que lo conecta al mundo: le da tools, memoria, contexto, un loop que repite pensar, actuar y observar, y una interfaz. Construir de abajo hacia arriba. Todos los productos de IA son un modelo más un harness, y la diferencia entre productos está en el harness, no en el modelo. -->
+
+  <!-- 3 · Ejemplos de harnesses -->
+  <section class="slide" data-id="ejemplos">
+    <h2>Ejemplos de harnesses</h2>
+    <div class="cascade">
+      <div class="win f-drop" data-step="1" style="left: 0; top: 0; --r: -1.5deg"><div class="bar"><i></i><i></i><i></i><span class="title">ChatGPT.app</span><span class="kind">chat web</span></div><img src="data:image/webp;base64,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" alt="ChatGPT"></div>
+      <div class="win f-drop" data-step="2" style="left: 666px; top: 10px; --r: 1.5deg"><div class="bar"><i></i><i></i><i></i><span class="title">lovable.app</span><span class="kind">vibe coding visual</span></div><img src="data:image/webp;base64,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" alt="Lovable"></div>
+      <div class="win f-drop" data-step="3" style="left: 333px; top: 262px; --r: -1deg"><div class="bar"><i></i><i></i><i></i><span class="title">claude — zsh</span><span class="kind">coding agent en terminal</span></div><img src="data:image/webp;base64,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" alt="Claude Code en la terminal"></div>
+    </div>
+  </section>
+  <!-- Notas: tres harnesses distintos que pueden tener el mismo modelo abajo. ChatGPT: chat web con pocas tools. Lovable: arma apps con una vista previa, sin que toques código. Un coding agent en terminal: lee y edita tus archivos y corre comandos en tu máquina. El harness que elegís define qué podés hacer. -->
+
+  <!-- 4 · Agentes de código -->
+  <section class="slide" data-id="agentes">
+    <h2>Agentes de código</h2>
+    <div class="dirs">
+      <div class="win f-pop" data-step="1"><div class="bar"><i></i><i></i><i></i><span class="title">anthropic/</span></div>
+        <div class="body prod"><img class="logo" src="data:image/webp;base64,UklGRioFAABXRUJQVlA4WAoAAAAgAAAAiwAAiwAASUNDUMgBAAAAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADZWUDggPAMAABAVAJ0BKowAjAA+YTCVRyQjIiEpEshIgAwJY27dX8Wb3yvW2vEYJ9wbyP4xPVL5gHOi8xH8I/vHqv/5b1D7xD6D3S1YBL/ZJuzGAHUN6TUXSUEfHPq4o0Wj7f9OJRIfuKlDR3m6xWEJ/s67JGxdklikzvgaQ0ChfAZU5FoZpduWMmsRGMSujIiFOkWXIEm5DB74L2Tl2JM2SnHXv/IvIqIjzQ51R3Btkhgxfw6F9OOkAAD+/Ha1A+y0XKUAG1n6ZQA2x1fvppwm4kX3YmZrRy3f0z/BfKiMi+jZPcAAA+wDX7IpBfISpe3XG9ie/Zj2Ce1g6AYYDV1Tym1X1uetV2nF83PeDW9pixvAs0c0yhhNltcNQV2CiI9g8cNkYW8NXwS9RlWEpihsttiju0YTKgz2295ZCm1p6Gs0hP5CKng1t/BG17kNzUTxstUMDyF4DukGjnLEjkHDpHZdxtA6tBuz3JyzDegIGZH58dqeHt5xrAjl7qOd+J3NXEGfyev2+3bR2x4uTvtvHHm4kMn/qT+e0R4onGaCBTsWeuMAuYKyptix2GxHpqYQqWG+6EzUUCQ0g/lxnWnPUdEYg/RuSfuDdb90Xc6HXCzhWtdM8j7f0hVFtavyMSscpKTDefaYMYD5t8D3SRVT0LzUUfq/jZfDA160eY54rleSJAIE4Eh/ytmF3asu8B3SuYxqU/Wl+x4jRNbjPmLcYfl0r4i+wlfwcm6gFPZRf9Wza/OaWBUnNyWOSxsCEvL1VRA5p9T+9WK7fctufUsoU9FsznjZ+LrT0HaZrH14+oIHb3hPcSzGAluu73TCUEJUHR3DxtDT5ud1cuugSFrb9GPiL/GuO+5eG6QMInrPEFS8hTsD21BcO+g2/cf89zqYmPgjeuMP/hD0Mpo/zF3aqYPYe5Edh182M2OfE+/CmfmATBbmzai9KyyDmyurjV0jqT0rgvAZjaLuE/qjWsSjkPHDaNcabG9JlSs1p+2S3tLKQYeLVrHSGhm3f/HAUa8zCY0739+3XZzX/GoBWvGU8HZoCFXB8E21J6ZK/oaRhCdbBCyYZOzMKvxg+hxOi7wmfWrvuJ1Koc8z1o3s+QAAAAAAAA==" alt=""><b>Claude Code</b><span>Anthropic</span></div>
+      </div>
+      <div class="win f-pop" data-step="2"><div class="bar"><i></i><i></i><i></i><span class="title">openai/</span></div>
+        <div class="body prod"><img class="logo" src="data:image/webp;base64,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" alt=""><b>Codex</b><span>OpenAI</span></div>
+      </div>
+      <div class="win dark f-pop" data-step="3"><div class="bar"><i></i><i></i><i></i><span class="title">otros/</span></div>
+        <div class="body ls"><span>amp/</span><span>droid/</span><span>aider/</span><span>cline/</span><span>goose/</span><span class="more">… y muchos más</span></div>
+      </div>
+    </div>
+  </section>
+  <!-- Notas: preguntar quiénes usaron alguno. Los dos grandes primero, después la carpeta de otros. No profundizar: es solo el mapa para ubicar a Pi en la próxima slide. -->
+
+  <!-- 5 · ¿Qué es Pi? -->
+  <section class="slide" data-id="quees">
+    <h2>¿Qué es Pi?</h2>
+    <div class="author">un coding agent open source de <b>Mario Zechner</b> (@badlogic)</div>
+    <div class="pi-grid">
+      <div class="win dark pi-term"><div class="bar"><i></i><i></i><i></i><span class="title">pi — zsh</span></div>
+        <div class="body">
+          <div data-step="1">
+            <p style="margin-bottom: 10px; color: var(--muted)">tools:</p>
+            <div class="tools4"><span>read</span><span>write</span><span>edit</span><span>bash</span></div>
+          </div>
+          <div class="meter" data-step="2">
+            <div class="lbl"><span>system prompt de Pi</span><b>&lt; 1.000 tokens</b></div>
+            <div class="ctx" style="--w: 16%"><i></i></div>
+            <div class="lbl"><span>un agente "todo de fábrica"</span><span>~5.000+</span></div>
+            <div class="ctx cc" style="--w: 85%"><i></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="pi-cards">
+        <div class="card f-flip" data-step="3"><span class="ico">🔌</span><h3>Multi-proveedor</h3><span class="d">cualquier modelo, sin atarte a una empresa</span><span class="viz provs"><i>OpenAI</i><i>Anthropic</i><i>Google</i><i>local</i></span></div>
+        <div class="card f-flip" data-step="4"><span class="ico">🔓</span><h3>Sin sistema de permisos</h3><span class="d">si necesitás límites, containerizá</span><span class="viz" style="font-size: 30px">📦</span></div>
+        <div class="card f-flip" data-step="5"><span class="ico">🌳</span><h3>Sesiones en árbol</h3><span class="d">forkear desde cualquier punto y volver</span>
+          <svg class="viz" width="120" height="60" viewBox="0 0 120 60"><path d="M6 30 H114 M40 30 Q50 30 56 12 H96 M70 30 Q80 30 86 50 H110" fill="none" stroke="var(--a4)" stroke-width="4" stroke-linecap="round"/><circle cx="6" cy="30" r="5" fill="var(--a4)"/><circle cx="40" cy="30" r="5" fill="var(--a4)"/><circle cx="70" cy="30" r="5" fill="var(--a4)"/></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Notas: cuatro tools (read, write, edit, bash) y un system prompt de menos de mil tokens. Habla con cualquier proveedor. No tiene sistema de permisos: corre con los permisos de tu usuario, y si necesitás límites, lo metés en un contenedor. Las sesiones son un árbol: podés volver a cualquier mensaje, abrir una rama y explorar sin perder la historia. Mario Zechner está metido en el open source hace mucho y da muy buenas charlas. No profundizar en cada punto: solo plantarlos. -->
+
+  <!-- 6 · La misma filosofía -->
+  <section class="slide" data-id="filosofia">
+    <h2>La misma filosofía</h2>
+    <div class="philo">
+      <div class="col full">
+        <div class="head"><h3>Todo de fábrica</h3><span>viene con todo, decidido por otros</span></div>
+        <div class="cells">
+          <div class="chip f-pop" data-step="1"><img class="ico" src="data:image/webp;base64,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" alt="">VS Code</div>
+          <span class="eq" data-step="2">≈</span>
+          <div class="chip f-pop" data-step="2"><img class="ico" src="data:image/webp;base64,UklGRioFAABXRUJQVlA4WAoAAAAgAAAAiwAAiwAASUNDUMgBAAAAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADZWUDggPAMAABAVAJ0BKowAjAA+YTCVRyQjIiEpEshIgAwJY27dX8Wb3yvW2vEYJ9wbyP4xPVL5gHOi8xH8I/vHqv/5b1D7xD6D3S1YBL/ZJuzGAHUN6TUXSUEfHPq4o0Wj7f9OJRIfuKlDR3m6xWEJ/s67JGxdklikzvgaQ0ChfAZU5FoZpduWMmsRGMSujIiFOkWXIEm5DB74L2Tl2JM2SnHXv/IvIqIjzQ51R3Btkhgxfw6F9OOkAAD+/Ha1A+y0XKUAG1n6ZQA2x1fvppwm4kX3YmZrRy3f0z/BfKiMi+jZPcAAA+wDX7IpBfISpe3XG9ie/Zj2Ce1g6AYYDV1Tym1X1uetV2nF83PeDW9pixvAs0c0yhhNltcNQV2CiI9g8cNkYW8NXwS9RlWEpihsttiju0YTKgz2295ZCm1p6Gs0hP5CKng1t/BG17kNzUTxstUMDyF4DukGjnLEjkHDpHZdxtA6tBuz3JyzDegIGZH58dqeHt5xrAjl7qOd+J3NXEGfyev2+3bR2x4uTvtvHHm4kMn/qT+e0R4onGaCBTsWeuMAuYKyptix2GxHpqYQqWG+6EzUUCQ0g/lxnWnPUdEYg/RuSfuDdb90Xc6HXCzhWtdM8j7f0hVFtavyMSscpKTDefaYMYD5t8D3SRVT0LzUUfq/jZfDA160eY54rleSJAIE4Eh/ytmF3asu8B3SuYxqU/Wl+x4jRNbjPmLcYfl0r4i+wlfwcm6gFPZRf9Wza/OaWBUnNyWOSxsCEvL1VRA5p9T+9WK7fctufUsoU9FsznjZ+LrT0HaZrH14+oIHb3hPcSzGAluu73TCUEJUHR3DxtDT5ud1cuugSFrb9GPiL/GuO+5eG6QMInrPEFS8hTsD21BcO+g2/cf89zqYmPgjeuMP/hD0Mpo/zF3aqYPYe5Edh182M2OfE+/CmfmATBbmzai9KyyDmyurjV0jqT0rgvAZjaLuE/qjWsSjkPHDaNcabG9JlSs1p+2S3tLKQYeLVrHSGhm3f/HAUa8zCY0739+3XZzX/GoBWvGU8HZoCFXB8E21J6ZK/oaRhCdbBCyYZOzMKvxg+hxOi7wmfWrvuJ1Koc8z1o3s+QAAAAAAAA==" alt="">Claude Code</div>
+        </div>
+      </div>
+      <div class="col min">
+        <div class="head"><h3>Lo mínimo</h3><span>armás lo que necesitás</span></div>
+        <div class="cells">
+          <div class="chip f-pop" data-step="1"><img class="ico" src="data:image/webp;base64,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" alt="">Vim</div>
+          <span class="eq" data-step="2">≈</span>
+          <div class="chip f-pop" data-step="2"><span class="ico"><svg viewBox="0 0 800 800" class="pimark" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="piG6" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff5c8a"/><stop offset="1" stop-color="#5b8cff"/></linearGradient></defs><path fill="url(#piG6)" fill-rule="evenodd" d="M165.29 165.29 H517.36 V400 H400 V517.36 H282.65 V634.72 H165.29 Z M282.65 282.65 V400 H400 V282.65 Z"/><path fill="url(#piG6)" d="M517.36 400 H634.72 V634.72 H517.36 Z"/></svg></span>Pi</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Notas: VS Code trae todo de fábrica; Vim trae lo mínimo y vos armás lo que necesitás. Claude Code es el VS Code de los agentes y Pi es el Vim. La diferencia con Vim: en Pi el agente puede leer su propio código y escribirse la extensión que le falta. -->
+
+  <!-- 7 · La diferencia en números -->
+  <section class="slide" data-id="numeros">
+    <h2>La diferencia en números</h2>
+    <div class="win sheet"><div class="bar"><i></i><i></i><i></i><span class="title">comparativa.xlsx</span></div>
+      <div class="body">
+        <table>
+          <tr class="colhdr"><th class="rn"></th><th>A</th><th>B</th><th>C</th></tr>
+          <tr class="hdr"><td class="rn">1</td><td></td><td class="v">Claude Code</td><td class="v">Pi</td></tr>
+          <tr data-step="1"><td class="rn">2</td><td>Herramientas</td><td class="v">25+</td><td class="v">4</td></tr>
+          <tr data-step="2"><td class="rn">3</td><td>Tamaño del prompt</td><td class="v">~5.000+</td><td class="v">&lt;1.000</td></tr>
+          <tr data-step="3"><td class="rn">4</td><td>Skills</td><td class="v yes">✓</td><td class="v yes">✓</td></tr>
+          <tr data-step="4"><td class="rn">5</td><td>MCP</td><td class="v yes">✓</td><td class="v yes">✓</td></tr>
+          <tr data-step="5"><td class="rn">6</td><td>Code mode</td><td class="v yes">✓</td><td class="v yes">✓</td></tr>
+          <tr data-step="6"><td class="rn">7</td><td>Subagentes</td><td class="v yes">✓</td><td class="v no">✗*</td></tr>
+          <tr data-step="7"><td class="rn">8</td><td>Plan mode</td><td class="v yes">✓</td><td class="v no">✗*</td></tr>
+          <tr data-step="8"><td class="rn">9</td><td>Memoria</td><td class="v yes">✓</td><td class="v no">✗*</td></tr>
+          <tr class="foot" data-step="9"><td class="rn">10</td><td colspan="3">* no viene de fábrica: hay extensiones o lo armás vos</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+  <!-- Notas: ir fila por fila. Herramientas y prompt muestran el tamaño. Skills, MCP y code mode están en los dos: no todo es ✗. Los ✗* generan la pregunta; la nota la responde: no es que Pi no lo tenga, es que no te lo impone. Cada feature de fábrica es una opinión de otro, algo que cambia entre versiones. -->
+
+  <!-- 8 · Arquitectura -->
+  <section class="slide" data-id="arquitectura">
+    <h2>Arquitectura</h2>
+    <div class="pkgs">
+      <div class="pkg name tui" data-step="4">pi-tui</div>
+      <div class="pkg desc" data-step="4"><span>UI de terminal: editor, temas, atajos. <b>Lo que ve el usuario.</b></span></div>
+      <div class="pkg name coding" data-step="3">pi-coding-agent</div>
+      <div class="pkg desc" data-step="3"><span>CLI, sesiones, extensiones, tools de código (read, write, edit, bash).</span></div>
+      <div class="pkg name core" data-step="2">pi-agent-core</div>
+      <div class="pkg desc" data-step="2"><span>Agente genérico: loop, bus de eventos, ejecución de tools. <b>No es solo para código.</b></span></div>
+      <div class="pkg name ai" data-step="1">pi-ai</div>
+      <div class="pkg desc" data-step="1"><span>API unificada de LLMs: OpenAI, Anthropic, Google, local, cualquier proveedor. <b>La base.</b></span></div>
+    </div>
+  </section>
+  <!-- Notas: la misma estructura de capas que el harness, con un paquete por capa, de la base hacia la superficie. pi-ai habla con cualquier proveedor. pi-agent-core es el loop genérico: sirve para cualquier agente, no solo de código, por eso va abajo de pi-coding-agent. pi-coding-agent es el producto: CLI, sesiones, extensiones y las cuatro tools. pi-tui es lo que se ve. Podés usar solo las capas que necesitás: la demo 3 usa solo las dos de abajo. -->
+
+  <!-- 9a · Extensiones: la sesión -->
+  <section class="slide" data-id="sesion">
+    <h2>Extensiones: la vida de una sesión</h2>
+    <div class="life">
+      <div class="mom" data-step="1"><b>session_start</b><span>se crea o se abre la sesión</span></div>
+      <span class="arrow" data-step="2">→</span>
+      <div class="mom" data-step="2"><b>resources_discover</b><span>las extensiones suman skills, prompts y temas</span></div>
+      <span class="arrow" data-step="3">→</span>
+      <div class="mom big" data-step="3"><b>agent loop ↻</b><span>un turno del agente, que se repite con cada mensaje: lo abrimos en la próxima</span></div>
+      <span class="arrow" data-step="4">→</span>
+      <div class="mom" data-step="4"><b>session_shutdown</b><span>se cierra la sesión</span></div>
+    </div>
+    <div class="hooks" data-step="5">
+      <span class="lbl">mientras vive, hooks antes de cada cambio de sesión</span>
+      <div class="row4">
+        <div class="hk"><b>session_before_switch</b><span>/new, /resume</span></div>
+        <div class="hk"><b>session_before_fork</b><span>/fork</span></div>
+        <div class="hk"><b>session_before_compact</b><span>antes de compactar el contexto</span></div>
+        <div class="hk"><b>session_before_tree</b><span>/tree: saltar a otra rama</span></div>
+      </div>
+      <p>La extensión se entera <span class="hl">antes</span> de que pase: puede frenarlo o cambiar cómo se hace.</p>
+    </div>
+  </section>
+  <!-- Notas: primero la vista de lejos. Una extensión es un archivo TypeScript que escucha eventos. La sesión arranca, las extensiones aportan recursos, después el agent loop corre una vez por cada mensaje, y al final se cierra. Los hooks session_before_* llegan antes de cambiar de sesión, forkear, compactar o moverse en el árbol: por ejemplo, una extensión puede escribir su propio resumen al compactar. Todo sin tocar el código de Pi. -->
+
+  <!-- 9b · Extensiones: el agent loop -->
+  <section class="slide" data-id="loop">
+    <h2>Extensiones: el agent loop</h2>
+    <div class="loopwrap">
+      <svg viewBox="0 0 1136 430" width="1136" height="430">
+        <defs>
+          <marker id="h" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z"/></marker>
+          <marker id="hg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z"/></marker>
+        </defs>
+        <path class="ln" data-step="2" d="M115 64 V114" marker-end="url(#h)"/>
+        <path class="ln" data-step="3" d="M230 152 C285 152 280 102 324 102" marker-end="url(#h)"/>
+        <path class="ln" data-step="4" d="M540 102 H694" marker-end="url(#h)"/>
+        <path class="ln" data-step="5" d="M805 134 V274" marker-end="url(#h)"/>
+        <path class="ln" data-step="6" d="M700 312 H546" marker-end="url(#h)"/>
+        <path class="ln back" data-step="6" d="M435 280 V140" marker-end="url(#hg)"/>
+        <path class="ln" data-step="7" d="M910 102 H954" marker-end="url(#h)"/>
+      </svg>
+
+      <div class="node" data-step="1" style="left: 0; top: 0; width: 230px">input</div>
+      <div class="node ext" data-step="2" style="left: 0; top: 120px; width: 230px">before_agent_start</div>
+      <div class="tag" data-step="2" style="left: 0; top: 200px; width: 230px"><b>🔌 punto de extensión</b>inyectar o modificar el system prompt</div>
+
+      <div class="node ext" data-step="3" style="left: 330px; top: 70px; width: 210px">context</div>
+      <div class="tag" data-step="3" style="left: 330px; top: -4px; width: 300px"><b>🔌 punto de extensión</b>modificar los mensajes que van al modelo</div>
+
+      <div class="node llmn" data-step="4" style="left: 700px; top: 70px; width: 210px">LLM call</div>
+
+      <div class="node ext" data-step="5" style="left: 700px; top: 280px; width: 210px">tool_call</div>
+      <div class="tag" data-step="5" style="left: 930px; top: 250px; width: 206px"><b>🔌 punto de extensión</b>bloquear o modificar argumentos. Permisos, plan mode: <code>{ block: true }</code></div>
+
+      <div class="node ext" data-step="6" style="left: 330px; top: 280px; width: 210px">tool_result</div>
+      <div class="tag" data-step="6" style="left: 330px; top: 360px; width: 330px"><b>🔌 punto de extensión</b>modificar lo que recibe el modelo</div>
+      <div class="loopnote" data-step="6" style="left: 545px; top: 150px; width: 150px"><span class="big">↻</span>vuelve al LLM hasta que no pida más tools</div>
+
+      <div class="node end" data-step="7" style="left: 960px; top: 70px; width: 176px">agent_end</div>
+      <span class="elabel" data-step="7" style="left: 914px; top: 72px">listo</span>
+    </div>
+    <div class="onapi" data-step="8">
+      <span><code>pi.on(evento, (e, ctx) =&gt; …)</code> → bloquear · modificar · inyectar</span>
+      <span><code>ctx.ui</code> → notify · confirm · select · custom</span>
+    </div>
+  </section>
+  <!-- Notas: ahora abrimos el loop, un momento por paso. Llega el input; before_agent_start deja inyectar o cambiar el system prompt. Después el loop: context deja modificar los mensajes antes de cada llamada al modelo; el modelo pide una tool; en tool_call la extensión puede bloquearla o cambiarle los argumentos (así se hacen los permisos, y un plan mode es devolver { block: true } a las tools que escriben); tool_result deja cambiar lo que vuelve al modelo. El loop sigue hasta que el modelo responde sin pedir tools, y ahí agent_end. Todos los eventos se escuchan igual, con pi.on, y ctx.ui deja mostrar UI propia. -->
+
+  <!-- 10 · API programática -->
+  <section class="slide" data-id="api">
+    <h2>Extensiones: API programática</h2>
+    <div class="code4">
+      <div class="win dark f-pop" data-step="1"><div class="bar"><i></i><i></i><i></i><span class="title">runtime.ts</span></div>
+        <div class="body"><pre><span class="obj">pi</span>.<span class="fn">setModel</span>(modelo)
+<span class="obj">pi</span>.<span class="fn">setActiveTools</span>([<span class="s">"read"</span>, <span class="s">"bash"</span>])
+<span class="obj">pi</span>.<span class="fn">setThinkingLevel</span>(<span class="s">"high"</span>)</pre><span class="what">modelo, tools y razonamiento, sin reiniciar</span></div>
+      </div>
+      <div class="win dark f-pop" data-step="2"><div class="bar"><i></i><i></i><i></i><span class="title">register.ts</span></div>
+        <div class="body"><pre><span class="obj">pi</span>.<span class="fn">registerTool</span>(…)
+<span class="obj">pi</span>.<span class="fn">registerCommand</span>(…)
+<span class="obj">pi</span>.<span class="fn">registerShortcut</span>(…)
+<span class="obj">pi</span>.<span class="fn">registerFlag</span>(…)
+<span class="obj">pi</span>.<span class="fn">registerProvider</span>(…)
+<span class="obj">pi</span>.<span class="fn">registerMessageRenderer</span>(…)</pre><span class="what">tools, comandos, atajos, flags, proveedores y renderers</span></div>
+      </div>
+      <div class="win dark f-pop" data-step="3"><div class="bar"><i></i><i></i><i></i><span class="title">mensajes.ts</span></div>
+        <div class="body"><pre><span class="obj">pi</span>.<span class="fn">sendMessage</span>(mensaje)
+<span class="obj">pi</span>.<span class="fn">sendUserMessage</span>(texto)
+<span class="c">// steer:    mientras el modelo responde</span>
+<span class="c">// followUp: cuando termina</span>
+<span class="c">// nextTurn: en el próximo turno</span></pre><span class="what">mandarle mensajes al agente, o como si los escribiera el usuario</span></div>
+      </div>
+      <div class="win dark f-pop" data-step="4"><div class="bar"><i></i><i></i><i></i><span class="title">session.ts</span></div>
+        <div class="body"><pre><span class="obj">ctx</span>.<span class="fn">newSession</span>()
+<span class="obj">ctx</span>.<span class="fn">fork</span>(…)
+<span class="obj">ctx</span>.<span class="fn">navigateTree</span>(…)
+<span class="obj">ctx</span>.<span class="fn">compact</span>()</pre><span class="what">crear, forkear, moverse en el árbol y compactar a mano</span></div>
+      </div>
+    </div>
+  </section>
+  <!-- Notas: no son solo hooks que miran: una extensión controla el agente. Runtime: cambiar modelo, tools activas y nivel de razonamiento sin reiniciar. Registrar: un archivo TypeScript suma tools, comandos, atajos, flags, proveedores y renderers; así se arma un subagente. Mensajes: inyectarlos con tres modos de entrega, steer mientras el modelo está respondiendo, followUp cuando termina, nextTurn encolado para el próximo turno. Guardar estos tres modos: vuelven en la última slide. Sesiones: crear, forkear, navegar el árbol y compactar. -->
+
+  <!-- 11 · Demo -->
+  <section class="slide demo-slide" data-id="demo">
+    <div class="demo-center">
+      <h1>Demo</h1>
+      <div class="mascot" data-mood="joy"></div>
+    </div>
+  </section>
+  <!-- Notas: tres demos, de la más chica a la más grande. 1: una extensión que registra /mascot; extender es barato y se lee. 2: un subagente en tres commits ya hechos, sin tipear en vivo: primero una tool delegate que abre una sesión headless y devuelve el resultado; después corre en background y el resultado vuelve como followUp; después un pipeline research, implement, review. 3: las dos capas de abajo corriendo en el navegador, con un filesystem en memoria y la página armándose en vivo, sin backend. -->
+
+  <!-- 12 · PD1 Más allá del coding agent -->
+  <section class="slide" data-id="masalla">
+    <h2>¿Y si queremos más que un coding agent?</h2>
+    <div class="whatif">
+      <div class="card center"><span class="ico">💻</span><h3>agente</h3><p>una persona, una terminal, mientras viva el proceso</p></div>
+      <div class="qs">
+        <div class="card q f-flip" data-step="1"><span class="ico">💾</span><span><span class="ys">y si…</span> quisiéramos guardar la sesión en cualquier lado</span></div>
+        <div class="card q f-flip" data-step="2"><span class="ico">🛰️</span><span><span class="ys">y si…</span> las tools pudieran ejecutarse en otro lado</span></div>
+        <div class="card q f-flip" data-step="3"><span class="ico">⏳</span><span><span class="ys">y si…</span> el agente pudiera correr por horas o días</span></div>
+        <div class="card q f-flip" data-step="4"><span class="ico">👥</span><span><span class="ys">y si…</span> varias personas pudieran seguir y dirigir la misma sesión</span></div>
+      </div>
+    </div>
+  </section>
+  <!-- Notas: un agente como el coding agent está pensado para una persona en una terminal, y la sesión vive lo que vive el proceso. Cuatro preguntas que se salen de eso, de la más simple a la más interesante. Cada una es una slide de acá en adelante, con pi-durable como ejemplo de cómo se resuelven. -->
+
+  <!-- 13 · PD2 Arquitectura de pi-durable -->
+  <section class="slide" data-id="durable">
+    <h2>Arquitectura de pi-durable</h2>
+    <div class="dur">
+      <div class="col">
+        <div class="clients" data-step="5">
+          <span class="cl">cliente</span><span class="cl">cliente</span><span class="cl">cliente</span>
+          <span class="noclient">pi-durable no trae un cliente de fábrica, como <span style="white-space: nowrap">pi-tui</span> en el coding agent: <b>lo armás vos</b></span>
+        </div>
+        <div class="frame" data-step="1">
+          <span class="lbl">Harness</span>
+          <div class="r r3" data-step="2">
+            <div class="part same">conversaciones<small>la sesión</small></div>
+            <div class="part same">tools</div>
+            <div class="part same">extensiones</div>
+          </div>
+          <div class="r r2" data-step="3">
+            <div class="part new">tareas<small>con checkpoints</small></div>
+            <div class="part new">entorno de ejecución</div>
+          </div>
+          <div class="r" data-step="4">
+            <div class="part new">storage<small>enchufable</small></div>
+          </div>
+        </div>
+        <div class="base" data-step="1">pi-ai<small>la misma base que el coding agent</small></div>
+      </div>
+      <div class="legend" data-step="1">
+        <span class="same"><i></i>igual que en el coding agent</span>
+        <span class="new"><i></i>nuevo</span>
+      </div>
+    </div>
+  </section>
+  <!-- Notas: misma estructura de capas. Abajo, pi-ai, el mismo que usa el coding agent. Arriba, el harness es todo el marco, no una caja más. Adentro, lo que ya conocen: conversaciones (la sesión), tools y extensiones. Lo nuevo: tareas con checkpoints, un entorno de ejecución separado, y un storage enchufable abajo de todo. Los clientes quedan afuera, y a diferencia del coding agent, que trae pi-tui, pi-durable no trae ninguno: el cliente lo armás vos (se engancha con watch() y submit()). Earendil dice que pi-durable no reemplaza al coding agent: es un framework para armar aplicaciones de agentes, coding agents incluidos. No usa pi-agent-core: tiene su propio Harness. -->
+
+  <!-- 14 · PD3 Storage -->
+  <section class="slide" data-id="storage">
+    <h2>La sesión se guarda donde quieras</h2>
+    <div class="store">
+      <div class="hbox"><b>Harness</b><span>cada cambio es un commit atómico</span><code>entradas · tareas</code></div>
+      <div class="flow" data-step="1"><span class="ar">⇉</span>los mismos commits</div>
+      <div class="backends" data-step="1">
+        <div class="be stg" style="--i: 0"><span class="ico">🧠</span><b>memoria</b><span>para tests y demos</span></div>
+        <div class="be stg" style="--i: 1"><span class="ico">🌐</span><b>IndexedDB</b><span>en el navegador</span></div>
+        <div class="be stg" style="--i: 2"><span class="ico">🗄️</span><b>SQLite</b><span>un archivo local</span></div>
+        <div class="be stg" style="--i: 3"><span class="ico">📄</span><b>JSONL</b><span>una línea por entrada</span></div>
+        <div class="be stg" style="--i: 4"><span class="ico">☁️</span><b>Durable Object</b><span>Cloudflare</span></div>
+      </div>
+    </div>
+    <div class="contrast" data-step="2"><span style="font-size: 32px">💻</span><span>El coding agent siempre escribe un JSONL en <code>~/.pi/agent/sessions</code>.</span></div>
+  </section>
+  <!-- Notas: el harness commitea siempre lo mismo, entradas y tareas, y el backend decide dónde queda. En el navegador va IndexedDB, en un servidor SQLite, en Cloudflare un Durable Object. Un proceso es dueño del storage; otros se pueden enganchar solo para leer. JSONL guarda todo en memoria, por eso el README recomienda SQLite para corridas largas. -->
+
+  <!-- 15 · PD4 Entornos de ejecución -->
+  <section class="slide" data-id="entornos">
+    <h2>Entornos de ejecución</h2>
+    <div class="envs">
+      <div class="machine">
+        <span class="lbl">otra máquina</span>
+        <div class="hbox"><b>Harness</b><span>la conversación, el loop</span></div>
+        <div class="call">→ tool call: <span style="color: var(--a2)">bash</span></div>
+      </div>
+      <div class="card envfn" data-step="1"><code>env(…)</code><span>arma el entorno en cada llamada a una tool</span></div>
+      <div class="targets" data-step="2">
+        <div class="tg stg" style="--i: 0"><span class="ico">📁</span><span>directorio local<small>tu máquina</small></span></div>
+        <div class="tg stg" style="--i: 1"><span class="ico">📦</span><span>contenedor<small>uno por conversación</small></span></div>
+        <div class="tg stg" style="--i: 2"><span class="ico">🛰️</span><span>VM o sandbox remoto<small>por SSH, en la nube</small></span></div>
+      </div>
+    </div>
+    <p class="mid center punch-step" data-step="3">El harness no tiene que estar donde actúan las tools: <span class="hl">puede vivir en otra máquina</span>.</p>
+    <div class="uses">
+      <div class="card f-pop" data-step="4"><span class="ico">🧪</span>aislar la ejecución en un sandbox</div>
+      <div class="card f-pop" data-step="5"><span class="ico">🌐</span>un agente remoto que interactúa con varios sistemas</div>
+      <div class="card f-pop" data-step="6"><span class="ico">🔀</span>una sesión que se mueve entre entornos</div>
+    </div>
+  </section>
+  <!-- Notas: en el coding agent las tools actúan en la misma máquina que corre el agente. En pi-durable el harness está separado de donde actúan las tools: una función env() arma el entorno en cada llamada a una tool, y ese entorno puede ser un directorio local, un contenedor o una VM o sandbox remoto. Como la función corre en cada llamada, cambiar de entorno en medio de una conversación sale por construcción. La documentación describe un contenedor por conversación. Tres usos: aislar la ejecución en un sandbox sin que el agente toque tu máquina; un agente remoto que actúa sobre varios sistemas desde un solo harness; una sesión que arranca en un entorno y sigue en otro. -->
+
+  <!-- 16 · PD5 Durabilidad -->
+  <section class="slide" data-id="durabilidad">
+    <h2>Durabilidad</h2>
+    <div class="dur2">
+      <div class="win dark jsonl" data-step="1"><div class="bar"><i></i><i></i><i></i><span class="title">sesion.jsonl</span></div>
+        <div class="body">
+          <div class="ln2">{"type":"message","role":"user",…}</div>
+          <div class="ln2">{"type":"message","role":"assistant",…}</div>
+          <div class="ln2">{"type":"tool_call","name":"bash",…}</div>
+          <div class="ln2 cut">💥 el proceso murió acá</div>
+          <p class="txt">Coding agent: un archivo, una línea por entrada.<br><span>Si muere a mitad de un turno, mirás qué quedó y le decís que siga.</span></p>
+        </div>
+      </div>
+      <div class="sandwich">
+        <h3 data-step="2">pi-durable: cada efecto es un sándwich</h3>
+        <div class="sw bread" data-step="2"><span class="n">1</span>commitear la intención<small>"voy a correr bash"</small></div>
+        <div class="sw fill" data-step="3"><span class="n">2</span>hacer el efecto<small>corre la tool</small></div>
+        <div class="sw bread" data-step="4"><span class="n">3</span>commitear el resultado<small>"salió esto"</small></div>
+        <div class="crash" data-step="5">
+          <b>💥 Si se cae entre 1 y 3:</b>
+          <span>la tool se vuelve a correr solo si declara <code>replay: "safe"</code>;</span>
+          <span>si no, el modelo recibe un resultado <code>"interrupted"</code> con lo que había.</span>
+        </div>
+      </div>
+    </div>
+    <div class="nest" data-step="6">
+      <span class="ico">🪆</span>
+      <span><b>Las tareas se anidan.</b> Una tarea puede ser dueña de tareas hijas, con política <code>failFast</code>, <code>allSettled</code> o <code>any</code>. Tareas y conversaciones forman un solo árbol de pertenencia, y un abort corre de abajo hacia arriba. Ej.: la llamada al modelo espera las tareas de tools de su ronda (<code>allSettled</code>).</span>
+    </div>
+  </section>
+  <!-- Notas: el coding agent agrega una línea al JSONL por entrada; si el proceso muere a mitad de un turno, no hay nada que lo retome: abrís la sesión, mirás y le decís que siga. pi-durable envuelve cada efecto entre dos commits: la intención y el resultado. Al reabrir, sabe qué quedó a medias. Las fases reales: pi.tool pasa por call, execute y resultado, y queda "parked" mientras espera; pi.generation pasa por prepare, request y tools o finish, más retry y poll. Si se cae a mitad de una respuesta del modelo, el parcial queda como entrada abortada y se reintenta según la política. Las tareas se anidan: una tarea puede ser dueña de tareas hijas con política failFast (falla una, se cancelan las demás), allSettled (espera a todas) o any (alcanza con una); tareas y conversaciones forman un solo árbol de pertenencia, y un abort corre de abajo hacia arriba, de las hojas a la raíz. Ejemplo: la llamada al modelo espera las tareas de tools de su ronda con allSettled. Fuente: spec de pi-durable §5 y README. -->
+
+  <!-- 17 · PD6 Multiplayer -->
+  <section class="slide" data-id="multiplayer">
+    <h2>Multiplayer</h2>
+    <div class="multi">
+      <div class="side">
+        <div class="card cli" data-step="1"><h3>👩 Cliente A</h3><span>corrige el rumbo mientras el agente trabaja</span><code>submit({ whenBusy: "steer" })</code></div>
+        <div class="card cli" data-step="2"><h3>🧑 Cliente B</h3><span>deja algo para cuando termine</span><code>submit({ whenBusy: "followUp" })</code></div>
+      </div>
+      <div class="win convo"><div class="bar"><i></i><i></i><i></i><span class="title">una conversación</span></div>
+        <div class="body">
+          <div class="msg"><b>usuario</b>migrá los tests a Vitest</div>
+          <div class="msg busy"><b>agente</b>leyendo la configuración…</div>
+          <div class="msg steer" data-step="1"><b>steer · A</b>ojo, no toques los e2e</div>
+          <div class="msg fu" data-step="2"><b>followUp · B</b>después actualizá el README</div>
+        </div>
+      </div>
+      <div class="card cli late" data-step="3"><h3>🙋 Llega tarde</h3><span>recibe la vista actual y después cada commit</span><code>watch() → vista + commits</code><span>nada se re-reproduce</span></div>
+    </div>
+    <div class="tie" data-step="4">Los mismos modos que vimos en la API de Pi: <code>steer</code><code>followUp</code><code>nextTurn</code></div>
+  </section>
+  <!-- Notas: una sola conversación y varios clientes. A manda un steer: entra mientras el agente está trabajando. B manda un follow-up: queda para cuando termine. Alguien que se engancha tarde llama a watch(): recibe la vista actual y después cada commit; no se le re-reproduce la historia. Son los mismos modos de entrega que vimos en la API programática del coding agent (steer, followUp, nextTurn), ahora entre personas distintas. -->
+
+  <!-- 18 · Coding agent vs pi-durable -->
+  <section class="slide" data-id="versus">
+    <h2>Coding agent vs pi-durable</h2>
+    <div class="vs-grid">
+      <div class="vl" style="grid-row: 2"><i class="dot ca"></i>coding agent</div>
+      <div class="vl" style="grid-row: 3"><i class="dot pd"></i>pi-durable</div>
+      <div class="vh" data-step="1" style="grid-column: 2">💾 Storage</div>
+      <div class="vc ca" data-step="1" style="grid-column: 2; grid-row: 2"><span>un JSONL en <code>~/.pi/<wbr>agent/<wbr>sessions</code></span></div>
+      <div class="vc pd" data-step="1" style="grid-column: 2; grid-row: 3"><span>memoria, IndexedDB, SQLite, JSONL, Durable Object</span></div>
+      <div class="vh" data-step="2" style="grid-column: 3">🛰️ Entorno de ejecución</div>
+      <div class="vc ca" data-step="2" style="grid-column: 3; grid-row: 2"><span>la máquina donde corre el proceso</span></div>
+      <div class="vc pd" data-step="2" style="grid-column: 3; grid-row: 3"><span><code>env()</code> en cada llamada: directorio local, contenedor, VM remota</span></div>
+      <div class="vh" data-step="3" style="grid-column: 4">⏳ Durabilidad</div>
+      <div class="vc ca" data-step="3" style="grid-column: 4; grid-row: 2"><span>si el proceso muere, mirás y le decís que siga</span></div>
+      <div class="vc pd" data-step="3" style="grid-column: 4; grid-row: 3"><span>cada efecto con checkpoint; <code>resume()</code> retoma donde quedó</span></div>
+      <div class="vh" data-step="4" style="grid-column: 5">👥 Multiplayer</div>
+      <div class="vc ca" data-step="4" style="grid-column: 5; grid-row: 2"><span>una persona, una terminal</span></div>
+      <div class="vc pd" data-step="4" style="grid-column: 5; grid-row: 3"><span>varios clientes: watch, steer, follow-up</span></div>
+    </div>
+  </section>
+  <!-- Notas: el cierre del bloque, aspecto por aspecto en el mismo orden de las slides: storage, entorno de ejecución, durabilidad, multiplayer. No es que uno sea mejor que el otro: pi-durable no reemplaza al coding agent. Son respuestas distintas a las mismas decisiones de diseño: dónde se guarda la sesión, dónde actúan las tools, qué pasa si el proceso se cae y quién puede seguir y dirigir la conversación. El coding agent elige lo simple para una persona en una terminal; pi-durable paga más complejidad para sostener lo demás. -->
+
+</div>
+
+<div id="hud">
+  <div><span class="count"></span> &nbsp; <span class="stepdots"></span></div>
+  <div>← → navegar · F pantalla completa · H ocultar</div>
+</div>
+
+<script>
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+const rand = (a, b) => a + Math.random() * (b - a);
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/* ───────────── Mascot ───────────── */
+
+const EYES = {
+  open: '<ellipse cx="38" cy="52" rx="5" ry="6.5" fill="var(--mascot-ink)"/><ellipse cx="62" cy="52" rx="5" ry="6.5" fill="var(--mascot-ink)"/><circle cx="40" cy="50" r="1.8" fill="#fff"/><circle cx="64" cy="50" r="1.8" fill="#fff"/>',
+  wide: '<circle cx="38" cy="51" r="8" fill="#fff" stroke="var(--mascot-ink)" stroke-width="2.5"/><circle cx="62" cy="51" r="8" fill="#fff" stroke="var(--mascot-ink)" stroke-width="2.5"/><circle cx="39" cy="52" r="3.5" fill="var(--mascot-ink)"/><circle cx="61" cy="52" r="3.5" fill="var(--mascot-ink)"/>',
+  half: '<path d="M32 51 h12 M56 51 h12" stroke="var(--mascot-ink)" stroke-width="3" stroke-linecap="round"/><path d="M33 52 q5 6 10 0 M57 52 q5 6 10 0" fill="var(--mascot-ink)"/><path d="M31 42 l12 3 M69 42 l-12 3" stroke="var(--mascot-ink)" stroke-width="3" stroke-linecap="round"/>',
+  x: '<path d="M33 47 l10 10 M43 47 l-10 10 M57 47 l10 10 M67 47 l-10 10" stroke="var(--mascot-ink)" stroke-width="3.5" stroke-linecap="round"/>',
+  happy: '<path d="M32 54 q6 -9 12 0 M56 54 q6 -9 12 0" fill="none" stroke="var(--mascot-ink)" stroke-width="3.5" stroke-linecap="round"/>',
+  odd: '<circle cx="38" cy="53" r="4" fill="var(--mascot-ink)"/><circle cx="62" cy="50" r="8" fill="#fff" stroke="var(--mascot-ink)" stroke-width="2.5"/><circle cx="61" cy="51" r="3.5" fill="var(--mascot-ink)"/><path d="M30 44 l14 -3 M55 36 l14 4" stroke="var(--mascot-ink)" stroke-width="3" stroke-linecap="round"/>',
+};
+
+const MOUTH = {
+  smile: '<path d="M42 64 Q50 73 58 64" fill="none" stroke="var(--mascot-ink)" stroke-width="3.5" stroke-linecap="round"/>',
+  grin: '<path d="M40 63 Q50 78 60 63 Z" fill="var(--mascot-ink)"/><path d="M45 69 Q50 73 55 69" fill="#ff7a93"/>',
+  worried: '<path d="M43 69 Q50 63 57 69" fill="none" stroke="var(--mascot-ink)" stroke-width="3.5" stroke-linecap="round"/>',
+  flat: '<path d="M44 67 h12" stroke="var(--mascot-ink)" stroke-width="3.5" stroke-linecap="round"/>',
+  wow: '<ellipse cx="50" cy="68" rx="4.5" ry="5.5" fill="var(--mascot-ink)"/>',
+  squiggle: '<path d="M40 68 q3 -4 6 0 t6 0 t6 0" fill="none" stroke="var(--mascot-ink)" stroke-width="3" stroke-linecap="round"/>',
+};
+
+const MOODS = {
+  happy: { eyes: "open", mouth: "smile" },
+  wave: { eyes: "happy", mouth: "grin", arm: true },
+  joy: { eyes: "happy", mouth: "grin" },
+  sweat: { eyes: "wide", mouth: "worried", drop: true },
+  dizzy: { eyes: "x", mouth: "squiggle" },
+  skeptic: { eyes: "half", mouth: "flat" },
+  wow: { eyes: "wide", mouth: "wow" },
+  confused: { eyes: "odd", mouth: "squiggle", q: true },
+  frustrated: { eyes: "half", mouth: "worried", steam: true },
+};
+
+const mascotSVG = (mood) => {
+  const m = MOODS[mood] || MOODS.happy;
+
+  return `<svg viewBox="0 0 100 100">
+    <ellipse cx="50" cy="94" rx="30" ry="4" fill="#000" opacity=".12"/>
+    ${m.arm ? '<path class="arm" d="M84 60 q14 -8 10 -26" fill="none" stroke="var(--mascot)" stroke-width="9" stroke-linecap="round"/>' : ""}
+    <path d="M50 12 C78 12 90 34 90 58 C90 80 74 90 50 90 C26 90 10 80 10 58 C10 34 22 12 50 12Z" fill="var(--mascot)" stroke="var(--mascot-ink)" stroke-width="2.5"/>
+    <ellipse cx="34" cy="28" rx="9" ry="5" fill="#fff" opacity=".45" transform="rotate(-25 34 28)"/>
+    <circle cx="28" cy="63" r="5" fill="#ff7a93" opacity=".45"/><circle cx="72" cy="63" r="5" fill="#ff7a93" opacity=".45"/>
+    ${EYES[m.eyes]}${MOUTH[m.mouth]}
+    ${m.q ? '<text class="qmark" x="74" y="12" font-size="30" font-weight="700" fill="var(--a1)" font-family="var(--font-display)">?</text>' : ""}
+    ${m.steam ? '<path class="steam" d="M84 22 l8 -8 M90 32 l11 -3 M76 16 l2 -11" stroke="var(--a1)" stroke-width="4" stroke-linecap="round"/>' : ""}
+    ${m.drop ? '<path class="drop" d="M80 26 q-5 8 0 11 q5 -3 0 -11Z" fill="#6ec3ff" stroke="var(--mascot-ink)" stroke-width="1.5"/>' : ""}
+  </svg>`;
+};
+
+const setMood = (el, mood) => {
+  if (el == null || el.dataset.cur === mood) {
+    return;
+  }
+
+  el.dataset.cur = mood;
+  el.innerHTML = mascotSVG(mood);
+};
+
+const replay = (el, cls) => {
+  el.classList.remove(cls);
+  void el.offsetWidth;
+  el.classList.add(cls);
+};
+
+const confetti = (container, x, y, count = 28) => {
+  const colors = ["--a1", "--a2", "--a3", "--a4"];
+
+  for (let i = 0; i < count; i += 1) {
+    const c = document.createElement("div");
+    c.className = "confetti";
+    c.style.left = `${x}px`;
+    c.style.top = `${y}px`;
+    c.style.background = `var(${colors[i % colors.length]})`;
+    c.style.setProperty("--dx", `${rand(-220, 220)}px`);
+    c.style.setProperty("--dy", `${rand(-200, 160)}px`);
+    c.style.setProperty("--rot", `${rand(-540, 540)}deg`);
+    container.appendChild(c);
+    setTimeout(() => c.remove(), 1500);
+  }
+};
+
+/* ───────────── Slide hooks ───────────── */
+
+let run = 0;
+let visit = 0;
+
+const typeInto = async (el, text, speed, token, clock = () => run) => {
+  el.textContent = "";
+
+  for (const ch of text) {
+    if (token !== clock()) {
+      return;
+    }
+
+    el.textContent += ch;
+    await sleep(speed);
+  }
+};
+
+
+const hooks = {
+  portada: (step, el, { entered }) => {
+    const m = $(".mascot", el);
+
+    if (!entered) {
+      return;
+    }
+
+    // Tied to the visit, not the render: the re-render after the web fonts load must not cut the typing
+    const token = visit;
+    m.classList.remove("enter");
+    m.style.opacity = 0;
+    $(".typed2", el).textContent = "";
+
+    typeInto($(".typed", el), "Pi:", 110, token, () => visit)
+      .then(() => typeInto($(".typed2", el), "el agente que se construye solo", 55, token, () => visit))
+      .then(() => {
+        if (token !== visit) {
+          return;
+        }
+
+        m.style.opacity = 1;
+        m.classList.add("enter");
+      });
+  },
+
+  demo: (step, el, { entered }) => {
+    if (entered) {
+      replay($(".mascot", el), "bigjump");
+    }
+  },
+
+  entornos: (step, el) => $(".machine", el).classList.toggle("away", step >= 3),
+};
+
+/* ───────────── Titles ───────────── */
+
+// Titles stay on one line: shrink the ones that would overflow the slide width
+const fitTitles = () => $$(".slide h2").forEach((h) => {
+  h.style.fontSize = "";
+
+  let size = parseFloat(getComputedStyle(h).fontSize);
+
+  while (h.scrollWidth > h.clientWidth && size > 30) {
+    size -= 2;
+    h.style.fontSize = `${size}px`;
+  }
+});
+
+/* ───────────── Navigation ───────────── */
+
+const slides = $$(".slide");
+let idx = 0;
+let step = 0;
+
+// Inside kurasu the deck runs in a sandboxed iframe: the web moves it with kurasu:go messages and owns the
+// navigation, so the deck leaves the keys, the address bar and its own HUD alone. Other iframes (a review tool's
+// preview, for instance) send no kurasu:go, so the deck keeps its own controls until the first one arrives.
+const framed = window.parent !== window;
+let embedded = false;
+
+const stepsOf = (s) => Number(s.dataset.steps || Math.max(0, ...$$("[data-step]", s).map((e) => Number(e.dataset.step))));
+
+const show = (entered, forward) => {
+  run += 1;
+
+  if (entered) {
+    visit += 1;
+  }
+
+  slides.forEach((s, i) => {
+    s.classList.toggle("active", i === idx);
+    s.classList.toggle("past", i < idx);
+  });
+
+  const slide = slides[idx];
+  slide.dataset.step = step;
+  $$("[data-step]", slide).forEach((e) => e.classList.toggle("on", Number(e.dataset.step) <= step));
+  $$("[data-step]", slide).forEach((e) => e.classList.toggle("cur", Number(e.dataset.step) === step));
+
+  const hook = hooks[slide.dataset.id];
+
+  if (hook != null) {
+    hook(step, slide, { entered, forward });
+  }
+
+  $(".count").textContent = `${idx + 1} / ${slides.length}`;
+  $(".stepdots").innerHTML = Array.from({ length: stepsOf(slide) }, (_, i) => `<i class="${i < step ? "on" : ""}"></i>`).join("");
+  if (!embedded) {
+    history.replaceState(null, "", `${location.search}#${idx + 1}${step > 0 ? `.${step}` : ""}`);
+  }
+};
+
+const next = () => {
+  if (step < stepsOf(slides[idx])) {
+    step += 1;
+    show(false, true);
+  } else if (idx < slides.length - 1) {
+    idx += 1;
+    step = 0;
+    show(true, true);
+  }
+};
+
+const prev = () => {
+  if (step > 0) {
+    step -= 1;
+    show(false, false);
+  } else if (idx > 0) {
+    idx -= 1;
+    step = stepsOf(slides[idx]);
+    show(true, false);
+  }
+};
+
+document.addEventListener("keydown", (e) => {
+  if (embedded) {
+    return;
+  }
+
+  if (["ArrowRight", " ", "PageDown", "Enter"].includes(e.key)) {
+    e.preventDefault();
+    next();
+  } else if (["ArrowLeft", "PageUp", "Backspace"].includes(e.key)) {
+    e.preventDefault();
+    prev();
+  } else if (e.key === "f" || e.key === "F") {
+    document.fullscreenElement == null ? document.documentElement.requestFullscreen() : document.exitFullscreen();
+  } else if (e.key === "h" || e.key === "H") {
+    $("#hud").classList.toggle("hidden");
+  }
+});
+
+const fit = () => {
+  const k = Math.min(innerWidth / 1280, innerHeight / 720);
+  $("#deck").style.transform = `translate(-50%, -50%) scale(${k})`;
+};
+
+addEventListener("resize", fit);
+
+/* ───────────── Init ───────────── */
+
+$$(".mascot").forEach((m) => setMood(m, m.dataset.mood));
+fit();
+
+fitTitles();
+
+const [hashSlide, hashStep] = location.hash.slice(1).split(".").map(Number);
+idx = Math.min(Math.max((hashSlide || 1) - 1, 0), slides.length - 1);
+step = Math.min(hashStep || 0, stepsOf(slides[idx]));
+show(true, step === 0);
+
+document.fonts.ready.then(() => {
+  fitTitles();
+  show(false, false);
+});
+
+/* ───────────── kurasu ───────────── */
+
+// kurasu counts slides and steps from 1 and gives a slide without inner steps one step, so the deck's
+// step 0 is kurasu's step 1.
+if (framed) {
+  window.parent.postMessage({
+    type: "kurasu:manifest",
+    slides: slides.map((s) => ({ steps: stepsOf(s) + 1 })),
+  }, "*");
+
+  addEventListener("message", (e) => {
+    const go = e.data;
+
+    if (e.source !== window.parent || go?.type !== "kurasu:go" || !Number.isInteger(go.slide) || !Number.isInteger(go.step)) {
+      return;
+    }
+
+    if (!embedded) {
+      embedded = true;
+      $("#hud").classList.add("hidden");
+    }
+
+    const nextIdx = Math.min(Math.max(go.slide - 1, 0), slides.length - 1);
+    const nextStep = Math.min(Math.max(go.step - 1, 0), stepsOf(slides[nextIdx]));
+    const forward = nextIdx > idx || (nextIdx === idx && nextStep >= step);
+    const entered = nextIdx !== idx;
+
+    if (!entered && nextStep === step) {
+      return;
+    }
+
+    idx = nextIdx;
+    step = nextStep;
+    show(entered, forward);
+  });
+}
+</script>
+</body>
+</html>
